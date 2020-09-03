@@ -15,6 +15,9 @@
 		02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B512501333200B28F13 /* LaunchScreen.storyboard */; };
 		02DD3B5E2501333200B28F13 /* mytimetablemakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B5D2501333200B28F13 /* mytimetablemakerTests.swift */; };
 		02DD3B692501333200B28F13 /* mytimetablemakerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */; };
+		02DD3B792501342E00B28F13 /* ic_train.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B762501342D00B28F13 /* ic_train.png */; };
+		02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B772501342D00B28F13 /* ic_settings1.png */; };
+		02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B782501342D00B28F13 /* ic_clock2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		02DD3B642501333200B28F13 /* mytimetablemakerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mytimetablemakerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemakerUITests.swift; sourceTree = "<group>"; };
 		02DD3B6A2501333200B28F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		02DD3B762501342D00B28F13 /* ic_train.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_train.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_train.png; sourceTree = "<group>"; };
+		02DD3B772501342D00B28F13 /* ic_settings1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_settings1.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_settings1.png; sourceTree = "<group>"; };
+		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_clock2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +110,9 @@
 				02DD3B4A2501333000B28F13 /* ViewController.swift */,
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
+				02DD3B782501342D00B28F13 /* ic_clock2.png */,
+				02DD3B772501342D00B28F13 /* ic_settings1.png */,
+				02DD3B762501342D00B28F13 /* ic_train.png */,
 				02DD3B512501333200B28F13 /* LaunchScreen.storyboard */,
 				02DD3B542501333200B28F13 /* Info.plist */,
 			);
@@ -232,9 +241,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02DD3B792501342E00B28F13 /* ic_train.png in Resources */,
 				02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */,
+				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
 				02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */,
+				02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
