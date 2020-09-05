@@ -1,5 +1,5 @@
 //
-//  VariousSettingTableViewController.swift
+//  VariousSettingsTableViewController.swift
 //  mytimetablemaker
 //
 //  Created by 中島正雄 on 2020/09/04.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class VariousSettingTableViewController: UITableViewController {
+class VariousSettingsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
