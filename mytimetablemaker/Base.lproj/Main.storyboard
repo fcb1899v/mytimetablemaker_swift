@@ -971,22 +971,22 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="158"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="6F4-HH-DjF">
-                                        <rect key="frame" x="10" y="73" width="394" height="25"/>
+                                        <rect key="frame" x="20" y="73" width="374" height="25"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MON 09/01/2020" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NMp-sD-Rux">
-                                                <rect key="frame" x="0.0" y="0.0" width="155" height="25"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MON SEP 1, 2020" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NMp-sD-Rux">
+                                                <rect key="frame" x="0.0" y="0.0" width="163.5" height="25"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="20"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hYp-Eq-hZ6">
-                                                <rect key="frame" x="199.5" y="0.0" width="125" height="25"/>
+                                                <rect key="frame" x="194" y="0.0" width="125" height="25"/>
                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="32"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_settings1.png" adjustsImageSizeForAccessibilityContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8PX-ih-hQW">
-                                                <rect key="frame" x="369" y="0.0" width="25" height="25"/>
+                                                <rect key="frame" x="349" y="0.0" width="25" height="25"/>
                                                 <gestureRecognizers/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="25" id="8m3-No-f0q"/>
@@ -1082,12 +1082,12 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                 <color key="tintColor" systemColor="systemIndigoColor" red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="158" id="Adf-2r-vKo"/>
+                                    <constraint firstItem="6F4-HH-DjF" firstAttribute="leading" secondItem="b5r-NN-oRr" secondAttribute="leading" constant="20" id="FxK-cM-U0r"/>
                                     <constraint firstAttribute="trailing" secondItem="e6r-gc-Z94" secondAttribute="trailing" constant="10" id="JIM-VT-Aof"/>
                                     <constraint firstItem="e6r-gc-Z94" firstAttribute="top" secondItem="6F4-HH-DjF" secondAttribute="bottom" constant="13" id="M7x-Vc-zY7"/>
                                     <constraint firstAttribute="bottom" secondItem="6F4-HH-DjF" secondAttribute="bottom" constant="60" id="VBA-gz-OFx"/>
-                                    <constraint firstItem="6F4-HH-DjF" firstAttribute="leading" secondItem="b5r-NN-oRr" secondAttribute="leading" constant="10" id="WBw-s4-q2h"/>
+                                    <constraint firstAttribute="trailing" secondItem="6F4-HH-DjF" secondAttribute="trailing" constant="20" id="Wx2-a3-utk"/>
                                     <constraint firstItem="e6r-gc-Z94" firstAttribute="leading" secondItem="b5r-NN-oRr" secondAttribute="leading" constant="10" id="g1o-2Q-ZlI"/>
-                                    <constraint firstAttribute="trailing" secondItem="6F4-HH-DjF" secondAttribute="trailing" constant="10" id="rop-tN-vTv"/>
                                 </constraints>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gn4-cs-2Hs">
