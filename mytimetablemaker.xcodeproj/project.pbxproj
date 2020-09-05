@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02061D362503589200B93F04 /* TimetableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02061D352503589200B93F04 /* TimetableViewController.swift */; };
 		0236F16925031113008AEFF2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0236F16825031113008AEFF2 /* MainViewController.swift */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
-		02DD3B4B2501333000B28F13 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B4A2501333000B28F13 /* ViewController.swift */; };
 		02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4C2501333000B28F13 /* Main.storyboard */; };
 		02DD3B502501333200B28F13 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4F2501333200B28F13 /* Assets.xcassets */; };
 		02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B512501333200B28F13 /* LaunchScreen.storyboard */; };
@@ -41,11 +41,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		02061D352503589200B93F04 /* TimetableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableViewController.swift; sourceTree = "<group>"; };
 		0236F16825031113008AEFF2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02DD3B482501333000B28F13 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		02DD3B4A2501333000B28F13 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		02DD3B4D2501333000B28F13 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		02DD3B4F2501333200B28F13 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		02DD3B522501333200B28F13 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -113,9 +113,9 @@
 			children = (
 				02DD3B462501333000B28F13 /* AppDelegate.swift */,
 				02DD3B482501333000B28F13 /* SceneDelegate.swift */,
-				02DD3B4A2501333000B28F13 /* ViewController.swift */,
 				0236F16825031113008AEFF2 /* MainViewController.swift */,
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
+				02061D352503589200B93F04 /* TimetableViewController.swift */,
 				02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */,
 				02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
@@ -282,9 +282,9 @@
 			files = (
 				02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */,
 				02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */,
-				02DD3B4B2501333000B28F13 /* ViewController.swift in Sources */,
 				0236F16925031113008AEFF2 /* MainViewController.swift in Sources */,
 				02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */,
+				02061D362503589200B93F04 /* TimetableViewController.swift in Sources */,
 				02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
