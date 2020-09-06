@@ -13,6 +13,7 @@ class SettingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -34,6 +35,15 @@ class SettingsTableViewController: UITableViewController {
         else if (identifier == "seguevsback2") { vc.goorback = "back2" }
         else if (identifier == "seguevsgo2") { vc.goorback = "go2" }
         else { vc.goorback = "back1" }
+    }
+
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+
+        view.tintColor = UIColor(rgb: 0x03DAC5)
+        
+        let header = view as! UITableViewHeaderFooterView
+        // テキスト色を変更する
+        header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
     }
 
     

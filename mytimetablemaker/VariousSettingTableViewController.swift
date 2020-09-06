@@ -17,7 +17,7 @@ class VariousSettingsTableViewController: UITableViewController {
 
         //VariousSettingsのタイトルを取得
         self.title = FileAndData.getVariousSettingsTitle(goorback: goorback!)
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -25,6 +25,16 @@ class VariousSettingsTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+
+        view.tintColor = UIColor(rgb: 0x03DAC5)
+        
+        let header = view as! UITableViewHeaderFooterView
+        // テキスト色を変更する
+        //header.textLabel?.textColor = UIColor(rgb: 0x3700B3)
+        header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
+    }
+    
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {
