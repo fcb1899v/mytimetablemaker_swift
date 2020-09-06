@@ -20,6 +20,23 @@ class SettingsTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let identifier = segue.identifier else {
+            // identifierが取れなかったら処理やめる
+            return
+        }
+        // segueから遷移先のNavigationControllerを取得
+        let nc = segue.destination as! UINavigationController
+        // NavigationControllerから遷移先のTableViewControllerを取得
+        let vc = nc.topViewController as! VariousSettingsTableViewController
+        //
+        if (identifier == "seguevsgo1") { vc.goorback = "go1" }
+        else if (identifier == "seguevsback2") { vc.goorback = "back2" }
+        else if (identifier == "seguevsgo2") { vc.goorback = "go2" }
+        else { vc.goorback = "back1" }
+    }
+
+    
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {

@@ -10,8 +10,13 @@ import UIKit
 
 class VariousSettingsTableViewController: UITableViewController {
 
+    var goorback: String?
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        //VariousSettingsのタイトルを取得
+        self.title = FileAndData.getVariousSettingsTitle(goorback: goorback!)
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false

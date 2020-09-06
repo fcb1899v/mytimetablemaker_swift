@@ -13,10 +13,16 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-    }
     
+    }
 
+    //ステータスバーの色を白に変更
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
+    
+    
     /*
     // MARK: - Navigation
 

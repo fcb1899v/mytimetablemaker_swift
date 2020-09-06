@@ -21,6 +21,8 @@
 		02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B782501342D00B28F13 /* ic_clock2.png */; };
 		02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */; };
 		02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */; };
+		02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4B2504C27B00628B40 /* FileAndData.swift */; };
+		02EABE4E2504CC9800628B40 /* ViewExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4D2504CC9800628B40 /* ViewExtention.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +63,8 @@
 		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_clock2.png; sourceTree = "<group>"; };
 		02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingTableViewController.swift; sourceTree = "<group>"; };
 		02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		02EABE4B2504C27B00628B40 /* FileAndData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAndData.swift; sourceTree = "<group>"; };
+		02EABE4D2504CC9800628B40 /* ViewExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtention.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,8 +118,10 @@
 				02DD3B462501333000B28F13 /* AppDelegate.swift */,
 				02DD3B482501333000B28F13 /* SceneDelegate.swift */,
 				0236F16825031113008AEFF2 /* MainViewController.swift */,
+				02EABE4B2504C27B00628B40 /* FileAndData.swift */,
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
 				02061D352503589200B93F04 /* TimetableViewController.swift */,
+				02EABE4D2504CC9800628B40 /* ViewExtention.swift */,
 				02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */,
 				02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
@@ -282,10 +288,12 @@
 			files = (
 				02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */,
 				02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */,
+				02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */,
 				0236F16925031113008AEFF2 /* MainViewController.swift in Sources */,
 				02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */,
 				02061D362503589200B93F04 /* TimetableViewController.swift in Sources */,
 				02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */,
+				02EABE4E2504CC9800628B40 /* ViewExtention.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
