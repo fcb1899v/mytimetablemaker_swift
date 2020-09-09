@@ -12,7 +12,6 @@ class SettingsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -21,6 +20,7 @@ class SettingsTableViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    //画面遷移時の値渡し
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else {
             // identifierが取れなかったら処理やめる
@@ -37,16 +37,15 @@ class SettingsTableViewController: UITableViewController {
         else { vc.goorback = "back1" }
     }
 
+    //TableViewのHeaderの書式変更
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-
+        //背景色の変更
         view.tintColor = UIColor(rgb: 0x03DAC5)
-        
-        let header = view as! UITableViewHeaderFooterView
         // テキスト色を変更する
+        let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
     }
 
-    
     // MARK: - Table view data source
 
 //    override func numberOfSections(in tableView: UITableView) -> Int {

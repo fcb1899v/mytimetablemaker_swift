@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020066EB2506FA6E003806ED /* DateAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020066EA2506FA6E003806ED /* DateAndTime.swift */; };
 		02061D362503589200B93F04 /* TimetableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02061D352503589200B93F04 /* TimetableViewController.swift */; };
 		0236F16925031113008AEFF2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0236F16825031113008AEFF2 /* MainViewController.swift */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
@@ -16,7 +17,6 @@
 		02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B512501333200B28F13 /* LaunchScreen.storyboard */; };
 		02DD3B5E2501333200B28F13 /* mytimetablemakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B5D2501333200B28F13 /* mytimetablemakerTests.swift */; };
 		02DD3B692501333200B28F13 /* mytimetablemakerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */; };
-		02DD3B792501342E00B28F13 /* ic_train.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B762501342D00B28F13 /* ic_train.png */; };
 		02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B772501342D00B28F13 /* ic_settings1.png */; };
 		02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B782501342D00B28F13 /* ic_clock2.png */; };
 		02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */; };
@@ -43,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		020066EA2506FA6E003806ED /* DateAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateAndTime.swift; sourceTree = "<group>"; };
 		02061D352503589200B93F04 /* TimetableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableViewController.swift; sourceTree = "<group>"; };
 		0236F16825031113008AEFF2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -58,9 +59,8 @@
 		02DD3B642501333200B28F13 /* mytimetablemakerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mytimetablemakerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemakerUITests.swift; sourceTree = "<group>"; };
 		02DD3B6A2501333200B28F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		02DD3B762501342D00B28F13 /* ic_train.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_train.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_train.png; sourceTree = "<group>"; };
-		02DD3B772501342D00B28F13 /* ic_settings1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_settings1.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_settings1.png; sourceTree = "<group>"; };
-		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../../../../Desktop/mytimetablemaker/mytimetablemaker/Assets.xcassets/ic_clock2.png; sourceTree = "<group>"; };
+		02DD3B772501342D00B28F13 /* ic_settings1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_settings1.png; path = "../../../AndroidStudioProjects/Timetable/app/src/main/res/drawable-v24/ic_settings1.png"; sourceTree = "<group>"; };
+		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../AndroidStudioProjects/Timetable/app/src/main/res/drawable/ic_clock2.png; sourceTree = "<group>"; };
 		02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingTableViewController.swift; sourceTree = "<group>"; };
 		02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		02EABE4B2504C27B00628B40 /* FileAndData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAndData.swift; sourceTree = "<group>"; };
@@ -119,6 +119,7 @@
 				02DD3B482501333000B28F13 /* SceneDelegate.swift */,
 				0236F16825031113008AEFF2 /* MainViewController.swift */,
 				02EABE4B2504C27B00628B40 /* FileAndData.swift */,
+				020066EA2506FA6E003806ED /* DateAndTime.swift */,
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
 				02061D352503589200B93F04 /* TimetableViewController.swift */,
 				02EABE4D2504CC9800628B40 /* ViewExtention.swift */,
@@ -127,7 +128,6 @@
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
 				02DD3B782501342D00B28F13 /* ic_clock2.png */,
 				02DD3B772501342D00B28F13 /* ic_settings1.png */,
-				02DD3B762501342D00B28F13 /* ic_train.png */,
 				02DD3B512501333200B28F13 /* LaunchScreen.storyboard */,
 				02DD3B542501333200B28F13 /* Info.plist */,
 			);
@@ -256,7 +256,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02DD3B792501342E00B28F13 /* ic_train.png in Resources */,
 				02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */,
 				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
@@ -286,6 +285,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				020066EB2506FA6E003806ED /* DateAndTime.swift in Sources */,
 				02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */,
 				02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */,
 				02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */,
