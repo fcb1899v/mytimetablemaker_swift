@@ -10,16 +10,37 @@ import UIKit
 
 class SettingsTableViewController: UITableViewController {
 
+
+    @IBOutlet weak var back2changelinetable: UITableViewCell!
+    @IBOutlet weak var go2changelinetable: UITableViewCell!
+    @IBOutlet weak var back2switch: UISwitch!
+    @IBOutlet weak var go2switch: UISwitch!
+    
+    var back2switchflag = true
+    var go2switchflag = true
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        back2switchflag = UserDefaults.standard.bool(forKey: "back2switch")
+        go2switchflag = UserDefaults.standard.bool(forKey: "go2switch")
+        back2switch.setOn(back2switchflag, animated: false)
+        go2switch.setOn(go2switchflag, animated: false)
     }
+    
+    @IBAction func back2displayswitch(_ sender: Any) {
+        back2switchflag = (sender as AnyObject).isOn
+        UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "back2switch")
+        print("back2 : " + String(back2switchflag))
+    }
+    
+    @IBAction func go2displayswitch(_ sender: Any) {
+        go2switchflag = (sender as AnyObject).isOn
+        UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "go2switch")
+        print("go2 : " + String(go2switchflag))
 
+    }
+    
     //画面遷移時の値渡し
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else {
@@ -45,72 +66,5 @@ class SettingsTableViewController: UITableViewController {
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
     }
-
-    // MARK: - Table view data source
-
-//    override func numberOfSections(in tableView: UITableView) -> Int {
-//        // #warning Incomplete implementation, return the number of sections
-//        return 0
-//    }
-
-//    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        // #warning Incomplete implementation, return the number of rows
-//        return 0
-//    }
-
-    /*
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

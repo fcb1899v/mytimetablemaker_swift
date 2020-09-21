@@ -60,3 +60,13 @@ extension UIColor {
         self.init(red: r, green: g, blue: b, alpha: a)
     }
 }
+
+extension MainViewController : UIColorPickerViewControllerDelegate {
+    
+    @available(iOS 14.0, *)
+    func colorPickerViewControllerDidFinish(_ colorpicker: UIColorPickerViewController, label: UILabel, stackview: UIStackView){
+        let color = colorpicker.selectedColor
+        label.textColor = color
+        stackview.backgroundColor = color
+    }
+}

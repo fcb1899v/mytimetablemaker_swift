@@ -10,96 +10,399 @@ import UIKit
 
 class MainViewController: UIViewController {
 
+    var timer = Timer()
     var timeflag = true
     var goorbackflag = true
-    
+    var goorback1 = "back1"
+    var goorback2 = "back2"
+
     @IBOutlet weak var datebutton: UIButton!
     @IBOutlet weak var timebutton: UIButton!
     @IBOutlet weak var backbutton: UIButton!
     @IBOutlet weak var gobutton: UIButton!
     @IBOutlet weak var startbutton: UIButton!
     @IBOutlet weak var stopbutton: UIButton!
+        
+    @IBOutlet weak var display2stackview: UIStackView!
+    @IBOutlet weak var centerlineview: UIView!
     
+    @IBOutlet weak var stationlabel10: UILabel!
+    @IBOutlet weak var stationlabel11: UILabel!
+    @IBOutlet weak var stationlabel12: UILabel!
+    @IBOutlet weak var stationlabel13: UILabel!
+    @IBOutlet weak var stationlabel14: UILabel!
+    @IBOutlet weak var stationlabel15: UILabel!
+    @IBOutlet weak var stationlabel16: UILabel!
+    @IBOutlet weak var stationlabel1e: UILabel!
+    
+    @IBOutlet weak var stationlabel20: UILabel!
+    @IBOutlet weak var stationlabel21: UILabel!
+    @IBOutlet weak var stationlabel22: UILabel!
+    @IBOutlet weak var stationlabel23: UILabel!
+    @IBOutlet weak var stationlabel24: UILabel!
+    @IBOutlet weak var stationlabel25: UILabel!
+    @IBOutlet weak var stationlabel26: UILabel!
+    @IBOutlet weak var stationlabel2e: UILabel!
+    
+    @IBOutlet weak var linelabel11: UILabel!
+    @IBOutlet weak var linelabel12: UILabel!
+    @IBOutlet weak var linelabel13: UILabel!
+    
+    @IBOutlet weak var linelabel21: UILabel!
+    @IBOutlet weak var linelabel22: UILabel!
+    @IBOutlet weak var linelabel23: UILabel!
+    
+    @IBOutlet weak var linetimetable11: UIStackView!
+    @IBOutlet weak var linetimetable12: UIStackView!
+    @IBOutlet weak var linetimetable13: UIStackView!
+            
+    @IBOutlet weak var linetimetable21: UIStackView!
+    @IBOutlet weak var linetimetable22: UIStackView!
+    @IBOutlet weak var linetimetable23: UIStackView!
+    
+    @IBOutlet weak var transittimelabel11: UIStackView!
+    @IBOutlet weak var transittimelabel12: UIStackView!
+    @IBOutlet weak var transittimelabel13: UIStackView!
+    @IBOutlet weak var transittimelabel1e: UIStackView!
+
+    @IBOutlet weak var transittimelabel21: UIStackView!
+    @IBOutlet weak var transittimelabel22: UIStackView!
+    @IBOutlet weak var transittimelabel23: UIStackView!
+    @IBOutlet weak var transittimelabel2e: UIStackView!
+
+    @IBOutlet weak var transportlabel11: UILabel!
+    @IBOutlet weak var transportlabel12: UILabel!
+    @IBOutlet weak var transportlabel13: UILabel!
+    @IBOutlet weak var transportlabel1e: UILabel!
+
+    @IBOutlet weak var transportlabel21: UILabel!
+    @IBOutlet weak var transportlabel22: UILabel!
+    @IBOutlet weak var transportlabel23: UILabel!
+    @IBOutlet weak var transportlabel2e: UILabel!
+    
+    //Main文
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        stationlabel10.text = FileAndData.getDeparturePoint(goorback: goorback1)
+        stationlabel11.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "1")
+        stationlabel12.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "2")
+        stationlabel13.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "2")
+        stationlabel14.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "3")
+        stationlabel15.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "3")
+        stationlabel16.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "4")
+        stationlabel1e.text = FileAndData.getDestination(goorback: goorback1)
+        linelabel11.text = FileAndData.getLinename(goorback: goorback1, keytag: "1")
+        linelabel12.text = FileAndData.getLinename(goorback: goorback1, keytag: "2")
+        linelabel13.text = FileAndData.getLinename(goorback: goorback1, keytag: "3")
+        linelabel11.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linelabel12.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linelabel13.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
+        linetimetable11.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linetimetable12.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linetimetable13.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (timer) in
+            if (self.timeflag == true) {
+                //現在日付の表示
+                DateAndTime.getCurrentDate(datebutton: self.datebutton)
+                //現在時刻の表示
+                DateAndTime.getCurrentTime(timebutton: self.timebutton)
+                //帰宅・外出ルートの表示・非表示
+                let back2switchflag = UserDefaults.standard.bool(forKey: "back2switch")
+                let go2switchflag = UserDefaults.standard.bool(forKey: "go2switch")
+                if (self.goorbackflag ==  true) {
+                    self.display2stackview.isHidden = !back2switchflag
+                    self.centerlineview.isHidden = !back2switchflag
+                } else {
+                    self.display2stackview.isHidden = !go2switchflag
+                    self.centerlineview.isHidden = !go2switchflag
+                }
+            }
+        })
+    }
+    
+    //帰宅ルートの表示ボタン
     @IBAction func backbutton(_ sender: Any) {
+        
         goorbackflag = DateAndTime.setButtonCondition(
             flag: true,
             button1: backbutton,
             button2: gobutton,
             color1: UIColor(rgb: 0x3700B3),
-            color2: UIColor(rgb: 0x8E8E93)
-        )
+            color2: UIColor(rgb: 0x8E8E93))
+        
+        goorback1 = "back1"
+        goorback2 = "back2"
+        
+        stationlabel10.text = FileAndData.getDeparturePoint(goorback: goorback1)
+        stationlabel11.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "1")
+        stationlabel12.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "2")
+        stationlabel13.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "2")
+        stationlabel14.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "3")
+        stationlabel15.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "3")
+        stationlabel16.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "4")
+        stationlabel1e.text = FileAndData.getDestination(goorback: goorback1)
+        linelabel11.text = FileAndData.getLinename(goorback: goorback1, keytag: "1")
+        linelabel12.text = FileAndData.getLinename(goorback: goorback1, keytag: "2")
+        linelabel13.text = FileAndData.getLinename(goorback: goorback1, keytag: "3")
+        linelabel11.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linelabel12.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linelabel13.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
+        linetimetable11.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linetimetable12.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linetimetable13.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
+
     }
-    
+
+    //外出ルートの表示ボタン
     @IBAction func gobutton(_ sender: Any) {
+        
         goorbackflag = DateAndTime.setButtonCondition(
             flag: false,
             button1: backbutton,
             button2: gobutton,
             color1: UIColor(rgb: 0x8E8E93),
-            color2: UIColor(rgb: 0x3700B3)
-        )
+            color2: UIColor(rgb: 0x3700B3))
+        
+        goorback1 = "go1"
+        goorback2 = "go2"
+        
+        stationlabel10.text = FileAndData.getDeparturePoint(goorback: goorback1)
+        stationlabel11.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "1")
+        stationlabel12.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "2")
+        stationlabel13.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "2")
+        stationlabel14.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "3")
+        stationlabel15.text = FileAndData.getDepartStation(goorback: goorback1, keytag: "3")
+        stationlabel16.text = FileAndData.getArriveStation(goorback: goorback1, keytag: "4")
+        stationlabel1e.text = FileAndData.getDestination(goorback: goorback1)
+        linelabel11.text = FileAndData.getLinename(goorback: goorback1, keytag: "1")
+        linelabel12.text = FileAndData.getLinename(goorback: goorback1, keytag: "2")
+        linelabel13.text = FileAndData.getLinename(goorback: goorback1, keytag: "3")
+        linelabel11.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linelabel12.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linelabel13.textColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
+        linetimetable11.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "1")
+        linetimetable12.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "2")
+        linetimetable13.backgroundColor = FileAndData.getLineColor(goorback: goorback1, keytag: "3")
     }
     
+    //現在時刻の再開ボタン
     @IBAction func startbutton(_ sender: Any) {
         timeflag = DateAndTime.setButtonCondition(
             flag: true,
             button1: startbutton,
             button2: stopbutton,
             color1: UIColor(rgb: 0x03DAC5),
-            color2: UIColor(rgb: 0x8E8E93)
-        )
+            color2: UIColor(rgb: 0x8E8E93))
         datebutton.isEnabled = false
         timebutton.isEnabled = false
     }
-    
+
+    //現在時刻の停止ボタン
     @IBAction func stopbutton(_ sender: Any) {
         timeflag = DateAndTime.setButtonCondition(
             flag: false,
             button1: startbutton,
             button2: stopbutton,
             color1: UIColor(rgb: 0x8E8E93),
-            color2: UIColor(rgb: 0x03DAC5)
-        )
+            color2: UIColor(rgb: 0x03DAC5))
         datebutton.isEnabled = true
         timebutton.isEnabled = true
     }
     
+    //日時の変更ボタン
     @IBAction func datebutton(_ sender: Any) {
         if timeflag == false {
-            present(DateAndTime.setDatePickerDialog(
+            CustomDialog.setDatePickerDialog(
+                viewcontroller: self,
+                datepickermode: .date,
                 datebutton: datebutton,
-                stringformat: "E, MMM d, yyyy"),
-                animated: true,
-                completion: nil
-            )
+                stringformat: "E, MMM d, yyyy")
         }
     }
     
+    //時刻の変更ボタン
     @IBAction func timebutton(_ sender: Any) {
         if timeflag == false {
-            present(DateAndTime.setTimePickerDialog(
-                timebutton: timebutton,
-                stringformat: "HH:mm"),
-                animated: true,
-                completion: nil)
+            CustomDialog.setDatePickerDialog(
+                viewcontroller: self,
+                datepickermode: .time,
+                datebutton: timebutton,
+                stringformat: "HH:mm")
         }
     }
-    
-    var timer = Timer()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
-                if self.timeflag == true {
-                    //現在日付の表示
-                    DateAndTime.getCurrentDate(datebutton: self.datebutton)
-                    //現在時刻の表示
-                    DateAndTime.getCurrentTime(timebutton: self.timebutton)
-                }
-            })
+
+    @IBAction func stationlabel10(_ sender: Any) {
+        CustomDialog.departurepointTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel10,
+            goorback: goorback1)
     }
-        
+    
+    @IBAction func stationlabel11(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel11,
+            goorback: goorback1,
+            keytag: "1")
+    }
+    
+    @IBAction func stationlabel12(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel12,
+            goorback: goorback1,
+            keytag: "2")
+    }
+    
+    @IBAction func stationlabel13(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel13,
+            goorback: goorback1,
+            keytag: "3")
+    }
+    
+    @IBAction func stationlabel14(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel14,
+            goorback: goorback1,
+            keytag: "4")
+    }
+    
+    @IBAction func stationlabel15(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel15,
+            goorback: goorback1,
+            keytag: "5")
+    }
+    
+    @IBAction func stationlabel16(_ sender: Any) {
+        CustomDialog.stationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel16,
+            goorback: goorback1,
+            keytag: "6")
+    }
+    
+    @IBAction func stationlabel1e(_ sender: Any) {
+        CustomDialog.destinationTextFieldDialog(
+            viewcontroller: self,
+            label: stationlabel1e,
+            goorback: goorback1)
+    }
+    
+    @IBAction func linelabel11(_ sender: Any) {
+        CustomDialog.lineTextFieldDialog(
+            viewcontroller: self,
+            label: linelabel11,
+            stackview: linetimetable11,
+            goorback: goorback1,
+            keytag: "1")
+    }
+    
+    @IBAction func linelabel12(_ sender: Any) {
+        CustomDialog.lineTextFieldDialog(
+            viewcontroller: self,
+            label: linelabel12,
+            stackview: linetimetable12,
+            goorback: goorback1,
+            keytag: "2")
+    }
+    
+    @IBAction func linelabel13(_ sender: Any) {
+        CustomDialog.lineTextFieldDialog(
+            viewcontroller: self,
+            label: linelabel13,
+            stackview: linetimetable13,
+            goorback: goorback1,
+            keytag: "3")
+    }
+    
+    @IBAction func linetimetable11(_ sender: Any) {
+        CustomDialog.rideTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "1")
+    }
+    
+    @IBAction func linetimetable12(_ sender: Any) {
+        CustomDialog.rideTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "2")
+    }
+
+    @IBAction func linetimetable13(_ sender: Any) {
+        CustomDialog.rideTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "3")
+    }
+    
+    @IBAction func transittimelabel11(_ sender: Any) {
+        CustomDialog.transitTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "1")
+    }
+    
+    @IBAction func transittomelabel12(_ sender: Any) {
+        CustomDialog.transitTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "2")
+    }
+    
+    @IBAction func transittimelabel13(_ sender: Any) {
+        CustomDialog.transitTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "3")
+    }
+    
+    @IBAction func transittimelabel1e(_ sender: Any) {
+        CustomDialog.transitTimeFieldDialog(
+            viewcontroller: self,
+            goorback: goorback1,
+            keytag: "e")
+    }
+    
+    @IBAction func transportlabel11(_ sender: Any) {
+        CustomDialog.transportPickerDialog(
+            viewcontroller: self,
+            label: transportlabel11,
+            goorback: goorback1,
+            keytag: "1")
+    }
+    
+    @IBAction func transportlabel12(_ sender: Any) {
+        CustomDialog.transportPickerDialog(
+            viewcontroller: self,
+            label: transportlabel13,
+            goorback: goorback1,
+            keytag: "2")
+    }
+    
+    @IBAction func transportlabel13(_ sender: Any) {
+        CustomDialog.transportPickerDialog(
+            viewcontroller: self,
+            label: transportlabel13,
+            goorback: goorback1,
+            keytag: "3")
+    }
+    
+    @IBAction func transportlabel1e(_ sender: Any) {
+        CustomDialog.transportPickerDialog(
+            viewcontroller: self,
+            label: transportlabel1e,
+            goorback: goorback1,
+            keytag: "e")
+    }
+
     //ステータスバーの色を白に変更
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
