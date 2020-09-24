@@ -10,22 +10,34 @@ import UIKit
 
 class TimetableViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+    var goorback: String?
+    var keytag: String?
+    var weekflag = true
+    
+    @IBOutlet weak var departstationlabel: UILabel!
+    @IBOutlet weak var lineforarrivestationlabel: UILabel!
+    @IBOutlet weak var weekbutton: UIButton!
+    
+    @IBAction func weekbutton(_ sender: Any) {
+        weekflag = DateAndTime.setWeekButton(
+            weekbutton: weekbutton,
+            weekdaycolor: UIColor(rgb: 0x3700B3),
+            weekendcolor: UIColor(rgb: 0xFF0000),
+            weekflag: weekflag)
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let departstation = FileAndData.getDepartStation(
+            goorback: goorback!, keytag: keytag!)
+        let arrivestation = FileAndData.getArriveStation(
+            goorback: goorback!, keytag: keytag!)
+        let linename = FileAndData.getLinename(
+            goorback: goorback!, keytag: keytag!)
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        departstationlabel.text = departstation
+        lineforarrivestationlabel.text = "(" + linename + " for " + arrivestation + ")"
     }
-    */
-
 }
 

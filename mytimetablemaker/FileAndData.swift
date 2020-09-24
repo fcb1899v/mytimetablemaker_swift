@@ -34,47 +34,98 @@ class FileAndData: NSObject {
         return color
     }
     
-    class func getArriveStation(goorback: String, keytag: String) -> String {
-
-        let changeline = 2
-        var depdefault0 = "Office"
-        let intkeytag = Int(keytag) ?? changeline + 2
-        let keytag0 = String(intkeytag - 1)
-        let deptag = String(2 * intkeytag - 2)
-        var depkey = goorback + "station" + deptag
-        var depdefault = "Arr. St.1-" + keytag0
-        if (goorback == "back2" || goorback == "go2") {
-            depdefault = "Arr. 2-" + keytag0
-        }
-        if ( goorback == "go1" || goorback == "go2") {
-            depdefault0 = "Home"
-            if (keytag == "1") {
-                depkey = goorback + "statione"
-                depdefault = depdefault0
-            }
-        }
-        return getUserDefaultValue(key: depkey, defaultvalue: depdefault)!
-    }
-
     class func getDepartStation(goorback: String, keytag: String) -> String {
 
-        let changeline = 2
-        var destinationdefault = "Home"
-        var intkeytag = Int(keytag) ?? 4
-        if ( goorback == "go1" || goorback == "go2") {
-            destinationdefault = "Office"
-            if (keytag == "0") {intkeytag = changeline + 2}
-            if (keytag == "e") {intkeytag = 1}
-        }
-        let arrtag = String(2 * intkeytag - 1)
-        let arrkey = goorback + "station" + arrtag
-        var arrdefault = "Dep. St.1-" + keytag
+        let key = goorback + "departstation" + keytag
+        var defaultvalue = "Dep. St.1-" + keytag
         if (goorback == "back2" || goorback == "go2") {
-            arrdefault = "Dep. 2-" + keytag
+            defaultvalue = "Dep. St.2-" + keytag
         }
-        if (keytag == "e") { arrdefault = destinationdefault }
-        return getUserDefaultValue(key: arrkey, defaultvalue: arrdefault)!
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
 
+    }
+
+    class func getArriveStation(goorback: String, keytag: String) -> String {
+
+        let key = goorback + "arrivestation" + keytag
+        var defaultvalue = "Arr. St.1-" + keytag
+        if (goorback == "back2" || goorback == "go2") {
+            defaultvalue = "Arr. St.2-" + keytag
+        }
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+    }
+    
+    class func getTransitDepartStation(goorback: String, keytag: String) -> String {
+
+        //乗換回数の取得
+        let changelinekey = goorback + "changeline"
+        let changeline = FileAndData.getUserDefaultValue(
+            key: changelinekey, defaultvalue: "Zero")
+        var intchangeline = 0
+        switch (changeline) {
+            case "Once": intchangeline = 1
+            case "Twice": intchangeline = 2
+            default : intchangeline = 0
+        }
+        
+        let intkeytag = Int(keytag) ?? intchangeline + 2
+        var keytag0 = String(intkeytag - 1)
+        if (intkeytag > intchangeline + 2) {
+            keytag0 = String(intchangeline + 1)
+        }
+
+        var key = goorback + "arrivestation" + keytag0
+        var defaultvalue = "Arr. St.1-" + keytag0
+        if (goorback == "back2" || goorback == "go2") {
+            defaultvalue = "Arr. 2-" + keytag0
+        }
+        
+        if (keytag0 == "0") {
+            if ( goorback == "go1" || goorback == "go2") {
+                key = "departurepoint"
+                defaultvalue = "Home"
+            } else {
+                key = "destination"
+                defaultvalue = "Office"
+            }
+        }
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+    }
+    
+    class func getTransitArriveStation(goorback: String, keytag: String) -> String {
+
+        let changelinekey = goorback + "changeline"
+        let changeline = FileAndData.getUserDefaultValue(
+            key: changelinekey, defaultvalue: "Zero")
+        var intchangeline = 0
+        switch (changeline) {
+            case "Once": intchangeline = 1
+            case "Twice": intchangeline = 2
+            default : intchangeline = 0
+        }
+
+        let intkeytag = Int(keytag) ?? intchangeline + 2
+        var keytag0 = keytag
+        if (intkeytag > intchangeline + 1) {
+            keytag0 = "e"
+        }
+
+        var key = goorback + "departstation" + keytag0
+        var defaultvalue = "Dep. St.1-" + keytag0
+        if (goorback == "back2" || goorback == "go2") {
+            defaultvalue = "Dep. 2-" + keytag0
+        }
+
+        if (keytag0 == "e") {
+            if ( goorback == "back1" || goorback == "back2") {
+                key = "departurepoint"
+                defaultvalue = "Home"
+            } else {
+                key = "destination"
+                defaultvalue = "Office"
+            }
+        }
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
     
     class func getDestination(goorback: String) -> String {
@@ -118,8 +169,6 @@ class FileAndData: NSObject {
 
     }
 
-    
-    
     class func getDisplayBool(goorback2: String) -> Bool {
         let key = goorback2 + "display"
         var displaybool = false
@@ -127,6 +176,31 @@ class FileAndData: NSObject {
             displaybool = UserDefaults.standard.bool(forKey: key)
         }
         return displaybool
+    }
+    
+    class func changeDisplayLine(changeline1: String, changeline2: String, stackview12: UIStackView, stackview13: UIStackView, stackview22: UIStackView, stackview23: UIStackView) {
+        switch (changeline1) {
+            case "Once":
+                stackview12.isHidden = false
+                stackview13.isHidden = true
+            case "Twice":
+                stackview12.isHidden = false
+                stackview13.isHidden = false
+            default:
+                stackview12.isHidden = true
+                stackview13.isHidden = true
+        }
+        switch (changeline2) {
+            case "Once":
+                stackview22.isHidden = false
+                stackview23.isHidden = true
+            case "Twice":
+                stackview22.isHidden = false
+                stackview23.isHidden = false
+            default:
+                stackview22.isHidden = true
+                stackview23.isHidden = true
+        }
     }
     
 }

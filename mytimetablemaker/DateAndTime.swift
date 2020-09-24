@@ -33,4 +33,17 @@ class DateAndTime: NSObject {
         return flag
     }
 
+    class func setWeekButton(weekbutton: UIButton, weekdaycolor: UIColor, weekendcolor: UIColor, weekflag: Bool) -> Bool{
+        if (weekflag == true) {
+            weekbutton.setTitle("WEEKDAY", for: UIControl.State.normal)
+            weekbutton.setTitleColor(weekdaycolor, for: UIControl.State.normal)
+            return false
+        } else {
+            weekbutton.setTitle("WEEKEND", for: UIControl.State.normal)
+            weekbutton.setTitleColor(weekendcolor, for: UIControl.State.normal)
+            return true
+        }
+    }
+
+    
 }
