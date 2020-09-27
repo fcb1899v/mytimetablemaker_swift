@@ -14,15 +14,12 @@ class VariousSettingsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         //VariousSettingsのタイトルを取得
         self.title = FileAndData.getVariousSettingsTitle(goorback: goorback!)
      }
 
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-
         view.tintColor = UIColor(rgb: 0x03DAC5)
-        
         let header = view as! UITableViewHeaderFooterView
         // テキスト色を変更する
         header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
