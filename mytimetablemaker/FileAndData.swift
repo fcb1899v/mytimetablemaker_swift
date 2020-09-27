@@ -101,8 +101,8 @@ class FileAndData: NSObject {
         var key = goorback + "arrivestation" + keytag0
         var defaultvalue = getArriveStationDefaultvalue(goorback: goorback, keytag: keytag0)
         if (keytag0 == "0") {
-            key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
-            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
+            key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
         }
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
@@ -125,8 +125,8 @@ class FileAndData: NSObject {
         var key = goorback + "departstation" + keytag0
         var defaultvalue = getDepartStationDefaultvalue(goorback: goorback, keytag: keytag0)
         if (keytag0 == "e") {
-            key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
-            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
+            key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
         }
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
