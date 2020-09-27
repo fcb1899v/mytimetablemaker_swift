@@ -27,6 +27,14 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var back2changeline: UITableViewCell!
     @IBOutlet weak var go2changeline: UITableViewCell!
     
+    @IBOutlet weak var back1settings: UIButton!
+    @IBOutlet weak var go1settings: UIButton!
+    @IBOutlet weak var back2settings: UIButton!
+    @IBOutlet weak var go2settings: UIButton!
+    
+    
+    @IBOutlet var settingstableview: UITableView!
+    
     var back2switchflag = true
     var go2switchflag = true
 
@@ -40,6 +48,15 @@ class SettingsTableViewController: UITableViewController {
         go2switchflag = UserDefaults.standard.bool(forKey: "go2switch")
         back2switch.setOn(back2switchflag, animated: false)
         go2switch.setOn(go2switchflag, animated: false)
+        if (back2switchflag == false) {
+            back2changeline.isHidden = true
+            back2settings.isHidden = true
+        }
+        if (go2switchflag == false) {
+            go2changeline.isHidden = true
+            go2settings.isHidden = true
+        }
+        settingstableview.tableFooterView = UIView()
     }
     
     @IBAction func back1changelinetable(_ sender: Any) {
@@ -78,6 +95,7 @@ class SettingsTableViewController: UITableViewController {
         back2switchflag = (sender as AnyObject).isOn
         UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "back2switch")
         back2changeline.isHidden = !(sender as AnyObject).isOn
+        back2settings.isHidden = !(sender as AnyObject).isOn
         print("back2 : " + String(back2switchflag))
     }
     
@@ -85,6 +103,7 @@ class SettingsTableViewController: UITableViewController {
         go2switchflag = (sender as AnyObject).isOn
         UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "go2switch")
         go2changeline.isHidden = !(sender as AnyObject).isOn
+        go2settings.isHidden = !(sender as AnyObject).isOn
         print("go2 : " + String(go2switchflag))
     }
     
@@ -99,10 +118,12 @@ class SettingsTableViewController: UITableViewController {
         // NavigationControllerから遷移先のTableViewControllerを取得
         let vc = nc.topViewController as! VariousSettingsTableViewController
         //
-        if (identifier == "seguevsgo1") { vc.goorback = "go1" }
-        else if (identifier == "seguevsback2") { vc.goorback = "back2" }
-        else if (identifier == "seguevsgo2") { vc.goorback = "go2" }
-        else { vc.goorback = "back1" }
+        switch (identifier) {
+            case "seguevsgo1": vc.goorback = "go1"
+            case "seguevsback1": vc.goorback = "back1"
+            case "seguevsgo2": vc.goorback = "go2"
+            default : vc.goorback = "back1"
+        }
     }
 
     //TableViewのHeaderの書式変更
@@ -113,5 +134,4 @@ class SettingsTableViewController: UITableViewController {
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
     }
-
 }

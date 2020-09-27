@@ -257,7 +257,6 @@ class CustomDialog: NSObject {
         alert.addAction(setMinutesFieldRegistorAction(textfield: (alert.textFields?.first)!, key: key, unit: " [min]"))
         //キャンセルボタン：アラートから抜ける
         alert.addAction(setCancelAction())
-        //alert.addAction(segueTimetableAction(viewcontroller: viewcontroller, textfield: (alert.textFields?.first)!, key: key, segueid: segueid))
         alert.addAction(storyboardTimetableAction(viewcontroller: viewcontroller, textfield: (alert.textFields?.first)!, key: key, stackview: stackview, goorbackflag: goorbackflag))
         viewcontroller.present(alert, animated: true, completion: nil)
     }
@@ -298,17 +297,6 @@ class CustomDialog: NSObject {
         }
     }
 
-    class func segueTimetableAction(viewcontroller: UIViewController, textfield: UITextField, key: String, segueid: String) -> UIAlertAction {
-            return UIAlertAction(title: "Setting your timetable", style: .default) {
-                (action: UIAlertAction) in
-                UserDefaults.standard.set(textfield.text, forKey: key)
-                //アラートが消えるのと画面遷移が重ならないように0.5秒後に画面遷移するようにしてる
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    // 0.5秒後に実行したい処理
-                    viewcontroller.performSegue(withIdentifier: segueid, sender: nil)
-                }
-           }
-    }
 
     //乗換回数を設定するダイアログ
     class func changeLinePickerDialog(viewcontroller: UIViewController, taplabel: UILabel, setlabel: UILabel, goorback: String) {
@@ -321,6 +309,68 @@ class CustomDialog: NSObject {
         picker.addAction(setChoiceRegistorAction(title: "Twice", label: setlabel, key: key))
         picker.addAction(setCancelAction())
         viewcontroller.present(picker, animated: true, completion: nil)
+    }
+    
+    //時刻を追加する関数
+    class func addTimeFromTimetable(label: UILabel, addtext: String, timekey: String) -> String {
+        let splitunit = " "
+        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "") ?? ""
+        let temptext = (currenttext + splitunit + addtext)
+            .trimmingCharacters(in: .whitespaces)
+        let textarray = Array(Set(temptext
+            .components(separatedBy: CharacterSet(charactersIn: splitunit))
+            .map{(Int($0) ?? 60)}
+            .filter({$0 < 60})
+            .filter({$0 > -1})
+            ))
+            .sorted()
+            .map{(String($0))}
+        let edittext = textarray.joined(separator: splitunit)
+        UserDefaults.standard.set(edittext, forKey: timekey)
+        return edittext
+    }
+    
+    //時刻表の時刻を設定するTextFieldの設定
+    class func getTimeFieldAlert(title: String, message: String) -> UIAlertController{
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addTextField(configurationHandler: {
+            (textfield: UITextField!) in
+            textfield.textAlignment = NSTextAlignment.center
+            textfield.placeholder = "Enter 0~99 [min]"
+            textfield.keyboardType = .phonePad})
+        return alert
+    }
+
+    //時刻表の時刻登録ボタン：UserDefaultにデータ保存
+    class func setTimeFieldRegistorAction(textfield: UITextField, label: UILabel, timekey: String) -> UIAlertAction {
+        return UIAlertAction(title: "Register", style: .default) {
+            (action: UIAlertAction) in
+            let edittext = addTimeFromTimetable(label: label, addtext: textfield.text ?? "", timekey: timekey)
+            label.text = edittext
+        }
+    }
+
+    //時刻表の時刻を登録・削除するダイアログ
+    class func setTimeFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, weekflag: Bool, keytag: String, timekeytag: String) {
+        
+        let key = goorback + "linename" + keytag
+        var defaultvalue = "Line 1-" + keytag
+        if (goorback == "back2" || goorback == "go2") { defaultvalue = "Line 2-" + keytag }
+        let linename = FileAndData.getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        var weektag = "weekday"
+        if (weekflag == false) {weektag = "weekend"}
+        
+        let title = "Setting your timetable [min]"
+        let message = "on " + linename
+        let timekey = goorback + "line" + keytag + weektag + timekeytag
+
+        //TextFieldのアラートを表示
+        let alert = getTimeFieldAlert(title: title, message: message)
+        //登録ボタンの表示：入力したTextを保存・表示する
+        alert.addAction(setTimeFieldRegistorAction(textfield: (alert.textFields?.first)!, label: label, timekey: timekey))
+        //キャンセルボタン：アラートから抜ける
+        alert.addAction(setCancelAction())
+        viewcontroller.present(alert, animated: true, completion: nil)
     }
 }
 

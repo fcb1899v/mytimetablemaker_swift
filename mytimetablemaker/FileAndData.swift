@@ -22,41 +22,93 @@ class FileAndData: NSObject {
         return varioussettingstitle
     }
     
+    //UserDefaultsに保存された文字列を取得する関数
     class func getUserDefaultValue(key: String, defaultvalue: String) -> String? {
         return UserDefaults.standard.string(forKey: key) ?? defaultvalue
     }
 
+    //UserDefaultsに保存された色データを取得する関数
     class func getUserDefaultColor(key: String, defaultvalue: Int) -> UIColor? {
-        var color = UIColor(rgb: defaultvalue)
-        if (UserDefaults.standard.string(forKey: key) != nil) {
-            color = UIColor(rgb: UserDefaults.standard.integer(forKey: key))
-        }
-        return color
+        return (UserDefaults.standard.string(forKey: key) != nil) ?
+            UIColor(rgb: UserDefaults.standard.integer(forKey: key)):
+            UIColor(rgb: defaultvalue)
     }
     
+    //UserDefaultsに保存された目的地を取得する関数
+    class func getDeparturePoint(goorback: String) -> String {
+        let key = (goorback == "back1" || goorback == "back2") ?
+            "destination":
+            "departurepoint"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ?
+            "Office":
+            "Home"
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+    }
+
+    //UserDefaultsに保存された出発地を取得する関数
+    class func getDestination(goorback: String) -> String {
+        let key = (goorback == "back1" || goorback == "back2") ?
+            "departurepoint":
+            "destination"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ?
+            "Home":
+            "Office"
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+    }
+
+    //発車駅名の初期値を取得する関数
+    class func getDepartStationDefaultvalue(goorback: String, keytag: String) -> String {    
+        return (goorback == "back2" || goorback == "go2") ?
+            "Dep. St.2-" + keytag:
+            "Dep. St.1-" + keytag
+    }
+
+    //UserDefaultsに保存された発車駅名を取得する関数
     class func getDepartStation(goorback: String, keytag: String) -> String {
-
-        let key = goorback + "departstation" + keytag
-        var defaultvalue = "Dep. St.1-" + keytag
-        if (goorback == "back2" || goorback == "go2") {
-            defaultvalue = "Dep. St.2-" + keytag
-        }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-
+        return getUserDefaultValue(
+            key: goorback + "departstation" + keytag, 
+            defaultvalue: getDepartStationDefaultvalue(goorback: goorback, keytag: keytag))!
     }
 
-    class func getArriveStation(goorback: String, keytag: String) -> String {
+    //降車駅名の初期値を取得する関数
+    class func getArriveStationDefaultvalue(goorback: String, keytag: String) -> String {    
+        return (goorback == "back2" || goorback == "go2") ?
+            "Arr. St.2-" + keytag:
+            "Arr. St.1-" + keytag
+    }
 
-        let key = goorback + "arrivestation" + keytag
-        var defaultvalue = "Arr. St.1-" + keytag
-        if (goorback == "back2" || goorback == "go2") {
-            defaultvalue = "Arr. St.2-" + keytag
+    //UserDefaultsに保存された降車駅名を取得する関数
+    class func getArriveStation(goorback: String, keytag: String) -> String {
+        return getUserDefaultValue(
+            key: goorback + "arrivestation" + keytag, 
+            defaultvalue: getArriveStationDefaultvalue(goorback: goorback, keytag: keytag))!
+    }
+    
+    //UserDefaultsに保存された乗換出発駅を取得する関数
+    class func getTransitDepartStation(goorback: String, keytag: String) -> String {
+        //乗換回数の取得
+        let changelinekey = goorback + "changeline"
+        let changeline = FileAndData.getUserDefaultValue(key: changelinekey, defaultvalue: "Zero")
+        var intchangeline = 0
+        switch (changeline) {
+            case "Once": intchangeline = 1
+            case "Twice": intchangeline = 2
+            default : intchangeline = 0
+        }
+        //乗換回数に応じた表示の変更        
+        let intkeytag = Int(keytag) ?? intchangeline + 2
+        let keytag0 = (intkeytag > intchangeline + 2) ? String(intchangeline + 1): String(intkeytag - 1)
+        var key = goorback + "arrivestation" + keytag0
+        var defaultvalue = getArriveStationDefaultvalue(goorback: goorback, keytag: keytag0)
+        if (keytag0 == "0") {
+            key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
         }
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
     
-    class func getTransitDepartStation(goorback: String, keytag: String) -> String {
-
+    //UserDefaultsに保存された乗換到着駅を取得する関数
+    class func getTransitArriveStation(goorback: String, keytag: String) -> String {
         //乗換回数の取得
         let changelinekey = goorback + "changeline"
         let changeline = FileAndData.getUserDefaultValue(
@@ -67,140 +119,67 @@ class FileAndData: NSObject {
             case "Twice": intchangeline = 2
             default : intchangeline = 0
         }
-        
+        //乗換回数に応じた表示の変更        
         let intkeytag = Int(keytag) ?? intchangeline + 2
-        var keytag0 = String(intkeytag - 1)
-        if (intkeytag > intchangeline + 2) {
-            keytag0 = String(intchangeline + 1)
-        }
-
-        var key = goorback + "arrivestation" + keytag0
-        var defaultvalue = "Arr. St.1-" + keytag0
-        if (goorback == "back2" || goorback == "go2") {
-            defaultvalue = "Arr. 2-" + keytag0
-        }
-        
-        if (keytag0 == "0") {
-            if ( goorback == "go1" || goorback == "go2") {
-                key = "departurepoint"
-                defaultvalue = "Home"
-            } else {
-                key = "destination"
-                defaultvalue = "Office"
-            }
-        }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-    }
-    
-    class func getTransitArriveStation(goorback: String, keytag: String) -> String {
-
-        let changelinekey = goorback + "changeline"
-        let changeline = FileAndData.getUserDefaultValue(
-            key: changelinekey, defaultvalue: "Zero")
-        var intchangeline = 0
-        switch (changeline) {
-            case "Once": intchangeline = 1
-            case "Twice": intchangeline = 2
-            default : intchangeline = 0
-        }
-
-        let intkeytag = Int(keytag) ?? intchangeline + 2
-        var keytag0 = keytag
-        if (intkeytag > intchangeline + 1) {
-            keytag0 = "e"
-        }
-
+        let keytag0 = (intkeytag > intchangeline + 1) ? "e": keytag
         var key = goorback + "departstation" + keytag0
-        var defaultvalue = "Dep. St.1-" + keytag0
-        if (goorback == "back2" || goorback == "go2") {
-            defaultvalue = "Dep. 2-" + keytag0
-        }
-
+        var defaultvalue = getDepartStationDefaultvalue(goorback: goorback, keytag: keytag0)
         if (keytag0 == "e") {
-            if ( goorback == "back1" || goorback == "back2") {
-                key = "departurepoint"
-                defaultvalue = "Home"
-            } else {
-                key = "destination"
-                defaultvalue = "Office"
-            }
+            key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
         }
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
     
-    class func getDestination(goorback: String) -> String {
-
-        var key = "destination"
-        var defaultvalue = "Office"
-        if (goorback == "back1" || goorback == "back2") {
-            key = "departurepoint"
-            defaultvalue = "Home"
-        }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-
+    //路線名の初期値を取得する関数
+    class func getLinenameDefaultvalue(goorback: String, keytag: String) -> String {
+        return (goorback == "back2" || goorback == "go2") ?
+            "Line 2-" + keytag:
+            "Line 1-" + keytag
     }
 
-    class func getDeparturePoint(goorback: String) -> String {
-
-        var key = "departurepoint"
-        var defaultvalue = "Home"
-        if (goorback == "back1" || goorback == "back2") {
-            key = "destination"
-            defaultvalue = "Office"
-        }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-        
-    }
-    
+    //UserDefaultsに保存された路線名を取得する関数
     class func getLinename(goorback: String, keytag: String) -> String {
-        
-        let key = goorback + "linename" + keytag
-        var defaultvalue = "Line 1-" + keytag
-        if (goorback == "back2" || goorback == "go2") {
-            defaultvalue = "Line 2-" + keytag
-        }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        return getUserDefaultValue(
+            key: goorback + "linename" + keytag, 
+            defaultvalue: getLinenameDefaultvalue(goorback: goorback, keytag: keytag))!
     }
     
-    class func getLineColor(goorback: String, keytag: String) -> UIColor {
-        
-        let key = goorback + "linecolor" + keytag
-        return getUserDefaultColor(key: key, defaultvalue: 0x03DAC5)!
-
+    //UserDefaultsに保存された路線カラーを取得する関数
+    class func getLineColor(goorback: String, keytag: String, defaultcolor: Int) -> UIColor {
+        return getUserDefaultColor(
+            key: goorback + "linecolor" + keytag, 
+            defaultvalue: defaultcolor)!
     }
 
+    //ルート2の表示・非表示のフラグを取得する関数
     class func getDisplayBool(goorback2: String) -> Bool {
         let key = goorback2 + "display"
-        var displaybool = false
-        if (UserDefaults.standard.string(forKey: key) != nil) {
-            displaybool = UserDefaults.standard.bool(forKey: key)
-        }
-        return displaybool
+        return (UserDefaults.standard.string(forKey: key) != nil) ?
+            UserDefaults.standard.bool(forKey: key):
+            false
     }
     
-    class func changeDisplayLine(changeline1: String, changeline2: String, stackview12: UIStackView, stackview13: UIStackView, stackview22: UIStackView, stackview23: UIStackView) {
-        switch (changeline1) {
+    //乗換回数に応じて表示を変更する関数
+    class func changeDisplayLine(changeline: String, stackview2: UIStackView, stackview3: UIStackView) {
+        switch (changeline) {
             case "Once":
-                stackview12.isHidden = false
-                stackview13.isHidden = true
+                stackview2.isHidden = false
+                stackview3.isHidden = true
             case "Twice":
-                stackview12.isHidden = false
-                stackview13.isHidden = false
+                stackview2.isHidden = false
+                stackview3.isHidden = false
             default:
-                stackview12.isHidden = true
-                stackview13.isHidden = true
-        }
-        switch (changeline2) {
-            case "Once":
-                stackview22.isHidden = false
-                stackview23.isHidden = true
-            case "Twice":
-                stackview22.isHidden = false
-                stackview23.isHidden = false
-            default:
-                stackview22.isHidden = true
-                stackview23.isHidden = true
+                stackview2.isHidden = true
+                stackview3.isHidden = true
         }
     }
     
+    //時刻表の時刻の表示を取得する関数
+    class func getTimetableTime(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> String {
+        let weektag = (!weekflag) ? "weekend": "weekday"
+        let timekey = goorback + "line" + keytag + weektag + timekeytag
+        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")!
+    }
+
 }
