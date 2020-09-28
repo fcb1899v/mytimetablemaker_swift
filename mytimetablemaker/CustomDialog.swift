@@ -85,8 +85,7 @@ class CustomDialog: NSObject {
     class func departurepointTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String) {
         let title = "Setting your departure place"
         let message = ""
-        var key = "departurepoint"
-        if (goorback == "back1" || goorback == "back2") { key = "destination" }
+        let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
 
     }
@@ -95,8 +94,7 @@ class CustomDialog: NSObject {
     class func destinationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String) {
         let title = "Setting your destination"
         let message = ""
-        var key = "destination"
-        if (goorback == "back1" || goorback == "back2") { key = "departurepoint" }
+        let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
     }
 
@@ -245,8 +243,7 @@ class CustomDialog: NSObject {
     //乗車時間を設定するダイアログ
     class func rideTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String, stackview: UIStackView, goorbackflag: Bool) {
         let linekey = goorback + "linename" + keytag
-        var defaultvalue = "Line 1-" + keytag
-        if (goorback == "back2" || goorback == "go2") { defaultvalue = "Line 2-" + keytag }
+        let defaultvalue = (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
         let linename = FileAndData.getUserDefaultValue(key: linekey, defaultvalue: defaultvalue)!
         let title = "Setting your ride time [min]"
         let message = "on " + linename
@@ -266,37 +263,21 @@ class CustomDialog: NSObject {
         return UIAlertAction(title: "Setting your timetable", style: .default) {
             (action: UIAlertAction) in
             UserDefaults.standard.set(textfield.text, forKey: key)
-
             let storyboard = viewcontroller.storyboard!
             let vc = storyboard.instantiateViewController(withIdentifier: "timetableview") as! TimetableViewController
-            
-            if (goorbackflag == true) {
-                if (stackview.tag == 12) {
-                    vc.goorback = "back1"
-                    vc.keytag = "2"
-                } else if (stackview.tag == 13) {
-                    vc.goorback = "back1"
-                    vc.keytag = "3"
-                } else {
-                    vc.goorback = "back1"
-                    vc.keytag = "1"
-                }
+            if (goorbackflag) {
+                vc.goorback = (11...13 ~= stackview.tag) ? "back1": "back2"
             } else {
-                if (stackview.tag == 12) {
-                    vc.goorback = "go1"
-                    vc.keytag = "2"
-                } else if (stackview.tag == 13) {
-                    vc.goorback = "go1"
-                    vc.keytag = "3"
-                } else {
-                    vc.goorback = "go1"
-                    vc.keytag = "1"
-                }
+                vc.goorback = (11...13 ~= stackview.tag) ? "go1": "go2"
+            }
+            switch (stackview.tag) {
+                case 12, 22: vc.keytag = "2"
+                case 13, 23: vc.keytag = "3"
+                default: vc.keytag = "1"
             }
             viewcontroller.present(vc, animated: true)
         }
     }
-
 
     //乗換回数を設定するダイアログ
     class func changeLinePickerDialog(viewcontroller: UIViewController, taplabel: UILabel, setlabel: UILabel, goorback: String) {
@@ -321,8 +302,7 @@ class CustomDialog: NSObject {
             .components(separatedBy: CharacterSet(charactersIn: splitunit))
             .map{(Int($0) ?? 60)}
             .filter({$0 < 60})
-            .filter({$0 > -1})
-            ))
+            .filter({$0 > -1})))
             .sorted()
             .map{(String($0))}
         let edittext = textarray.joined(separator: splitunit)
@@ -352,18 +332,13 @@ class CustomDialog: NSObject {
 
     //時刻表の時刻を登録・削除するダイアログ
     class func setTimeFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, weekflag: Bool, keytag: String, timekeytag: String) {
-        
         let key = goorback + "linename" + keytag
-        var defaultvalue = "Line 1-" + keytag
-        if (goorback == "back2" || goorback == "go2") { defaultvalue = "Line 2-" + keytag }
+        let defaultvalue = (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
         let linename = FileAndData.getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-        var weektag = "weekday"
-        if (weekflag == false) {weektag = "weekend"}
-        
+        let weektag = (weekflag) ? "weekday": "weekend"
         let title = "Setting your timetable [min]"
         let message = "on " + linename
         let timekey = goorback + "line" + keytag + weektag + timekeytag
-
         //TextFieldのアラートを表示
         let alert = getTimeFieldAlert(title: title, message: message)
         //登録ボタンの表示：入力したTextを保存・表示する
