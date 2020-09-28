@@ -87,7 +87,6 @@ class CustomDialog: NSObject {
         let message = ""
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
-
     }
 
     //目的地を設定するダイアログ

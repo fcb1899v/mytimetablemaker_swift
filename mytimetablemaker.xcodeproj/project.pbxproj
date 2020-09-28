@@ -11,6 +11,7 @@
 		020066EF250AF4C5003806ED /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020066EE250AF4C5003806ED /* CustomDialog.swift */; };
 		02061D362503589200B93F04 /* TimetableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02061D352503589200B93F04 /* TimetableViewController.swift */; };
 		0236F16925031113008AEFF2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0236F16825031113008AEFF2 /* MainViewController.swift */; };
+		02473D6A25222C380069A622 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D6925222C380069A622 /* Timetable.swift */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
 		02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4C2501333000B28F13 /* Main.storyboard */; };
@@ -48,6 +49,7 @@
 		020066EE250AF4C5003806ED /* CustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialog.swift; sourceTree = "<group>"; };
 		02061D352503589200B93F04 /* TimetableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableViewController.swift; sourceTree = "<group>"; };
 		0236F16825031113008AEFF2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		02473D6925222C380069A622 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02DD3B482501333000B28F13 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				020066EE250AF4C5003806ED /* CustomDialog.swift */,
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
 				02061D352503589200B93F04 /* TimetableViewController.swift */,
+				02473D6925222C380069A622 /* Timetable.swift */,
 				02EABE4D2504CC9800628B40 /* ViewExtention.swift */,
 				02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */,
 				02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */,
@@ -294,6 +297,7 @@
 				02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */,
 				0236F16925031113008AEFF2 /* MainViewController.swift in Sources */,
 				02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */,
+				02473D6A25222C380069A622 /* Timetable.swift in Sources */,
 				02061D362503589200B93F04 /* TimetableViewController.swift in Sources */,
 				02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */,
 				020066EF250AF4C5003806ED /* CustomDialog.swift in Sources */,

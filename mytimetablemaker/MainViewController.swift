@@ -165,6 +165,11 @@ class MainViewController: UIViewController {
             self.linetimetable23.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "3", defaultcolor: 0x03DAC5)
             
+            let changeline1 = FileAndData.getUserDefaultValue(
+                key: self.goorback1 + "changeline", defaultvalue: "Zero")!
+            let changeline2 = FileAndData.getUserDefaultValue(
+                key: self.goorback2 + "changeline", defaultvalue: "Zero")!
+            
             if (self.timeflag) {
                 //現在日付の表示
                 DateAndTime.getCurrentDate(datebutton: self.datebutton)
@@ -183,29 +188,14 @@ class MainViewController: UIViewController {
                         !UserDefaults.standard.bool(forKey: "go2switch")
                 }
                 //乗換回数に応じた表示
-                if (self.goorbackflag) {
-                    FileAndData.changeDisplayLine(
-                        changeline: FileAndData.getUserDefaultValue(
-                            key: "back1changeline", defaultvalue: "Zero")!,
-                        stackview2: self.linestackview12,
-                        stackview3: self.linestackview13)
-                    FileAndData.changeDisplayLine(
-                        changeline: FileAndData.getUserDefaultValue(
-                            key: "back2changeline", defaultvalue: "Zero")!,
-                        stackview2: self.linestackview22,
-                        stackview3: self.linestackview23)
-                } else {
-                    FileAndData.changeDisplayLine(
-                        changeline: FileAndData.getUserDefaultValue(
-                            key: "go1changeline", defaultvalue: "Zero")!,
-                        stackview2: self.linestackview12,
-                        stackview3: self.linestackview13)
-                    FileAndData.changeDisplayLine(
-                        changeline: FileAndData.getUserDefaultValue(
-                            key: "go2changeline", defaultvalue: "Zero")!,
-                        stackview2: self.linestackview22,
-                        stackview3: self.linestackview23)
-                }
+                FileAndData.changeDisplayLine(
+                    changeline: changeline1,
+                    stackview2: self.linestackview12,
+                    stackview3: self.linestackview13)
+                FileAndData.changeDisplayLine(
+                    changeline: changeline2,
+                    stackview2: self.linestackview22,
+                    stackview3: self.linestackview23)
             }
         })
     }

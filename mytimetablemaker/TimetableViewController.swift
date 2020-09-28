@@ -25,24 +25,17 @@ class TimetableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let departstation = FileAndData.getDepartStation(
-            goorback: goorback!, keytag: keytag!)
-        let arrivestation = FileAndData.getArriveStation(
-            goorback: goorback!, keytag: keytag!)
-        let linename = FileAndData.getLinename(
-            goorback: goorback!, keytag: keytag!)
-
-        departstationlabel.text = departstation
-        lineforarrivestationlabel.text = "(" + linename + " for " + arrivestation + ")"
-
+        departstationlabel.text = FileAndData.getDepartStation(goorback: goorback!, keytag: keytag!)
+        lineforarrivestationlabel.text = Timetable.getTimetableTitle(goorback: goorback!, keytag: keytag!)
+        
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {
             (timer) in
-            self.timetable04h.text = FileAndData.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "04")
+            self.timetable04h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "04")
         })
     }
 
     @IBAction func weekbutton(_ sender: Any) {
-        weekflag = DateAndTime.setWeekButton(
+        weekflag = Timetable.setWeekButton(
             weekbutton: weekbutton,
             weekdaycolor: UIColor(rgb: 0x3700B3),
             weekendcolor: UIColor(rgb: 0xFF0000),

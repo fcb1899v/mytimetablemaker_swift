@@ -27,6 +27,11 @@ class FileAndData: NSObject {
         return UserDefaults.standard.string(forKey: key) ?? defaultvalue
     }
 
+    //UserDefaultsに保存された文字列を取得する関数
+    class func getUserDefaultInt(key: String, defaultvalue: Int) -> Int? {
+        return UserDefaults.standard.integer(forKey: key) ?? defaultvalue
+    }
+
     //UserDefaultsに保存された色データを取得する関数
     class func getUserDefaultColor(key: String, defaultvalue: Int) -> UIColor? {
         return (UserDefaults.standard.string(forKey: key) != nil) ?
@@ -36,31 +41,21 @@ class FileAndData: NSObject {
     
     //UserDefaultsに保存された目的地を取得する関数
     class func getDeparturePoint(goorback: String) -> String {
-        let key = (goorback == "back1" || goorback == "back2") ?
-            "destination":
-            "departurepoint"
-        let defaultvalue = (goorback == "back1" || goorback == "back2") ?
-            "Office":
-            "Home"
+        let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
 
     //UserDefaultsに保存された出発地を取得する関数
     class func getDestination(goorback: String) -> String {
-        let key = (goorback == "back1" || goorback == "back2") ?
-            "departurepoint":
-            "destination"
-        let defaultvalue = (goorback == "back1" || goorback == "back2") ?
-            "Home":
-            "Office"
+        let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
 
     //発車駅名の初期値を取得する関数
     class func getDepartStationDefaultvalue(goorback: String, keytag: String) -> String {    
-        return (goorback == "back2" || goorback == "go2") ?
-            "Dep. St.2-" + keytag:
-            "Dep. St.1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ? "Dep. St.2-" + keytag: "Dep. St.1-" + keytag
     }
 
     //UserDefaultsに保存された発車駅名を取得する関数
@@ -72,9 +67,7 @@ class FileAndData: NSObject {
 
     //降車駅名の初期値を取得する関数
     class func getArriveStationDefaultvalue(goorback: String, keytag: String) -> String {    
-        return (goorback == "back2" || goorback == "go2") ?
-            "Arr. St.2-" + keytag:
-            "Arr. St.1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ? "Arr. St.2-" + keytag: "Arr. St.1-" + keytag
     }
 
     //UserDefaultsに保存された降車駅名を取得する関数
@@ -133,9 +126,7 @@ class FileAndData: NSObject {
     
     //路線名の初期値を取得する関数
     class func getLinenameDefaultvalue(goorback: String, keytag: String) -> String {
-        return (goorback == "back2" || goorback == "go2") ?
-            "Line 2-" + keytag:
-            "Line 1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
     }
 
     //UserDefaultsに保存された路線名を取得する関数
@@ -174,12 +165,4 @@ class FileAndData: NSObject {
                 stackview3.isHidden = true
         }
     }
-    
-    //時刻表の時刻の表示を取得する関数
-    class func getTimetableTime(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> String {
-        let weektag = (!weekflag) ? "weekend": "weekday"
-        let timekey = goorback + "line" + keytag + weektag + timekeytag
-        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")!
-    }
-
 }
