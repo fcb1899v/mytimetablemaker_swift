@@ -169,33 +169,22 @@ class MainViewController: UIViewController {
                 key: self.goorback1 + "changeline", defaultvalue: "Zero")!
             let changeline2 = FileAndData.getUserDefaultValue(
                 key: self.goorback2 + "changeline", defaultvalue: "Zero")!
+
+            //帰宅・外出ルートの表示・非表示
+            self.display2stackview.isHidden =
+                !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
+            self.centerlineview.isHidden =
+                !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
+
+            //乗換回数に応じた表示
+            FileAndData.changeDisplayLine(changeline: changeline1, stackview2: self.linestackview12, stackview3: self.linestackview13)
+            FileAndData.changeDisplayLine(changeline: changeline2, stackview2: self.linestackview22, stackview3: self.linestackview23)
             
             if (self.timeflag) {
                 //現在日付の表示
                 DateAndTime.getCurrentDate(datebutton: self.datebutton)
                 //現在時刻の表示
                 DateAndTime.getCurrentTime(timebutton: self.timebutton)
-                //帰宅・外出ルートの表示・非表示
-                if (self.goorbackflag) {
-                    self.display2stackview.isHidden =
-                        !UserDefaults.standard.bool(forKey: "back2switch")
-                    self.centerlineview.isHidden =
-                        !UserDefaults.standard.bool(forKey: "back2switch")
-                } else {
-                    self.display2stackview.isHidden =
-                        !UserDefaults.standard.bool(forKey: "go2switch")
-                    self.centerlineview.isHidden =
-                        !UserDefaults.standard.bool(forKey: "go2switch")
-                }
-                //乗換回数に応じた表示
-                FileAndData.changeDisplayLine(
-                    changeline: changeline1,
-                    stackview2: self.linestackview12,
-                    stackview3: self.linestackview13)
-                FileAndData.changeDisplayLine(
-                    changeline: changeline2,
-                    stackview2: self.linestackview22,
-                    stackview3: self.linestackview23)
             }
         })
     }
@@ -625,45 +614,5 @@ class MainViewController: UIViewController {
     //ステータスバーの色を白に変更
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
-    }
-    
-    //画面遷移時の値渡し
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let identifier = segue.identifier else {
-            // identifierが取れなかったら処理やめる
-            return
-        }
-        
-        if (segue.identifier != "seguesettings") {
-            // segueから遷移先のNavigationControllerを取得
-            let nct = segue.destination as! UINavigationController
-            // NavigationControllerから遷移先のTableViewControllerを取得
-            let vct = nct.topViewController as! TimetableViewController
-
-            //
-            if (goorbackflag == true) {
-                if (identifier == "seguetimetable12") {
-                    vct.goorback = "back1"
-                    vct.keytag = "2"
-                } else if (identifier == "seguetimetable13") {
-                    vct.goorback = "back1"
-                    vct.keytag = "3"
-                } else {
-                    vct.goorback = "back1"
-                    vct.keytag = "1"
-                }
-            } else {
-                if (identifier == "seguetimetable12") {
-                    vct.goorback = "go1"
-                    vct.keytag = "2"
-                } else if (identifier == "seguetimetable13") {
-                    vct.goorback = "go1"
-                    vct.keytag = "3"
-                } else {
-                    vct.goorback = "go1"
-                    vct.keytag = "1"
-                }
-            }
-        }
     }
 }
