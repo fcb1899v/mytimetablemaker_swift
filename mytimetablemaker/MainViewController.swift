@@ -86,6 +86,26 @@ class MainViewController: UIViewController {
     @IBOutlet weak var linestackview22: UIStackView!
     @IBOutlet weak var linestackview23: UIStackView!
     
+    @IBOutlet weak var countdown1: UILabel!
+    @IBOutlet weak var timelabel10: UILabel!
+    @IBOutlet weak var timelabel11: UILabel!
+    @IBOutlet weak var timelabel12: UILabel!
+    @IBOutlet weak var timelabel13: UILabel!
+    @IBOutlet weak var timelabel14: UILabel!
+    @IBOutlet weak var timelabel15: UILabel!
+    @IBOutlet weak var timelabel16: UILabel!
+    @IBOutlet weak var timelabel1e: UILabel!
+    
+    @IBOutlet weak var countdown2: UILabel!
+    @IBOutlet weak var timelabel20: UILabel!
+    @IBOutlet weak var timelabel21: UILabel!
+    @IBOutlet weak var timelabel22: UILabel!
+    @IBOutlet weak var timelabel23: UILabel!
+    @IBOutlet weak var timelabel24: UILabel!
+    @IBOutlet weak var timelabel25: UILabel!
+    @IBOutlet weak var timelabel26: UILabel!
+    @IBOutlet weak var timelabel2e: UILabel!
+    
     //Main文
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,6 +113,18 @@ class MainViewController: UIViewController {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: {
             (timer) in
 
+            if (self.timeflag) {
+                //現在日付の表示
+                DateAndTime.setCurrentDate(datebutton: self.datebutton)
+                //現在時刻の表示
+                DateAndTime.setCurrentTime(timebutton: self.timebutton)
+            }
+            
+            let currenttime = DateAndTime.getCurrentHHmmssFromTimeButton(
+                timebutton: self.timebutton, timeflag: self.timeflag)
+            
+            let weekflag = DateAndTime.getWeekFlag(datebutton: self.datebutton)
+            
             self.stationlabel10.text = FileAndData.getDeparturePoint(
                 goorback: self.goorback1)
             self.stationlabel11.text = FileAndData.getDepartStation(
@@ -165,81 +197,129 @@ class MainViewController: UIViewController {
             self.linetimetable23.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "3", defaultcolor: 0x03DAC5)
             
-            let changeline1 = FileAndData.getUserDefaultValue(
-                key: self.goorback1 + "changeline", defaultvalue: "Zero")!
-            let changeline2 = FileAndData.getUserDefaultValue(
-                key: self.goorback2 + "changeline", defaultvalue: "Zero")!
+            let changeline1 = FileAndData.getIntChangeLine(goorback: self.goorback1)
+            let changeline2 = FileAndData.getIntChangeLine(goorback: self.goorback2)
+
+            //時刻表
+            let timetable1 = Timetable.getTimetableArray(
+                goorback: self.goorback1, changeline: changeline1, weekflag: weekflag)
+            let timetable2 = Timetable.getTimetableArray(
+                goorback: self.goorback2, changeline: changeline2, weekflag: weekflag)
+
+            //乗車時間
+            let ridetime1 = DateAndTime.getRideTimeArray(
+                goorback: self.goorback1, changeline: changeline1)
+            let ridetime2 = DateAndTime.getRideTimeArray(
+                goorback: self.goorback2, changeline: changeline2)
+
+            //乗換時間
+            let transittime1 = DateAndTime.getTransitTimeArray(
+                goorback: self.goorback1, changeline: changeline1)
+            let transittime2 = DateAndTime.getTransitTimeArray(
+                goorback: self.goorback2, changeline: changeline2)
+            
+            //＜各時刻の計算＞
+            //乗車可能時刻[0]・各発車時刻[1]・各到着時刻[2]
+            let time1 = DateAndTime.getTimeArray(currenttime: currenttime, changeline: changeline1, transittime: transittime1, ridetime: ridetime1, timetable: timetable1)
+            let time2 = DateAndTime.getTimeArray(currenttime: currenttime, changeline: changeline2, transittime: transittime2, ridetime: ridetime2, timetable: timetable2)
+
+            //出発時刻
+            let departtime1 = DateAndTime.getMinusHHMM(time1: time1[0][1], time2: transittime1[0])
+            let departtime2 = DateAndTime.getMinusHHMM(time1: time2[0][1], time2: transittime2[0])
+            
+            //到着時刻
+            let hometime1 = DateAndTime.getPlusHHMM(time1: time1[changeline1][2], time2: transittime1[changeline1 + 1])
+            let hometime2 = DateAndTime.getPlusHHMM(time1: time2[changeline2][2], time2: transittime2[changeline2 + 1])
 
             //帰宅・外出ルートの表示・非表示
-            self.display2stackview.isHidden =
-                !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
-            self.centerlineview.isHidden =
-                !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
+            self.display2stackview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
+            self.centerlineview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
 
+            if (DateAndTime.getStringTime(time: time1[0][1]) == "27:00"){
+                self.timelabel10.text = "--:--"
+                self.timelabel11.text = "--:--"
+                self.timelabel12.text = "--:--"
+                self.timelabel13.text = "--:--"
+                self.timelabel14.text = "--:--"
+                self.timelabel15.text = "--:--"
+                self.timelabel16.text = "--:--"
+                self.timelabel1e.text = "--:--"
+            } else {
+                self.timelabel10.text = DateAndTime.getStringTime(time: departtime1)
+                self.timelabel11.text = DateAndTime.getStringTime(time: time1[0][1])
+                self.timelabel12.text = DateAndTime.getStringTime(time: time1[0][2])
+                self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
+                self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
+                self.timelabel15.text = DateAndTime.getStringTime(time: time1[2][1])
+                self.timelabel16.text = DateAndTime.getStringTime(time: time1[2][2])
+                self.timelabel1e.text = DateAndTime.getStringTime(time: hometime1)
+            }
+
+            if (DateAndTime.getStringTime(time: time2[0][1]) == "27:00"){
+                self.timelabel20.text = "--:--"
+                self.timelabel21.text = "--:--"
+                self.timelabel22.text = "--:--"
+                self.timelabel23.text = "--:--"
+                self.timelabel24.text = "--:--"
+                self.timelabel25.text = "--:--"
+                self.timelabel26.text = "--:--"
+                self.timelabel2e.text = "--:--"
+            } else {
+                self.timelabel20.text = DateAndTime.getStringTime(time: departtime2)
+                self.timelabel21.text = DateAndTime.getStringTime(time: time2[0][1])
+                self.timelabel22.text = DateAndTime.getStringTime(time: time2[0][2])
+                self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
+                self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
+                self.timelabel25.text = DateAndTime.getStringTime(time: time2[2][1])
+                self.timelabel26.text = DateAndTime.getStringTime(time: time2[2][2])
+                self.timelabel2e.text = DateAndTime.getStringTime(time: hometime2)
+            }
+            
             //乗換回数に応じた表示
             FileAndData.changeDisplayLine(changeline: changeline1, stackview2: self.linestackview12, stackview3: self.linestackview13)
             FileAndData.changeDisplayLine(changeline: changeline2, stackview2: self.linestackview22, stackview3: self.linestackview23)
-            
-            if (self.timeflag) {
-                //現在日付の表示
-                DateAndTime.getCurrentDate(datebutton: self.datebutton)
-                //現在時刻の表示
-                DateAndTime.getCurrentTime(timebutton: self.timebutton)
-            }
         })
     }
     
     //帰宅ルートの表示ボタン
     @IBAction func backbutton(_ sender: Any) {
-        goorbackflag = DateAndTime.setButtonCondition(
-            flag: true,
-            button1: backbutton,
-            button2: gobutton,
-            color1: UIColor(rgb: 0x3700B3),
-            color2: UIColor(rgb: 0x8E8E93))
+        DateAndTime.setButtonEnabled(flag: false, button: backbutton, color: 0x3700B3)
+        DateAndTime.setButtonEnabled(flag: true, button: gobutton, color: 0x8E8E93)
+        goorbackflag = true
         goorback1 = "back1"
         goorback2 = "back2"
     }
 
     //外出ルートの表示ボタン
     @IBAction func gobutton(_ sender: Any) {
-        goorbackflag = DateAndTime.setButtonCondition(
-            flag: false,
-            button1: backbutton,
-            button2: gobutton,
-            color1: UIColor(rgb: 0x8E8E93),
-            color2: UIColor(rgb: 0x3700B3))
+        DateAndTime.setButtonEnabled(flag: true, button: backbutton, color: 0x8E8E93)
+        DateAndTime.setButtonEnabled(flag: false, button: gobutton, color: 0x3700B3)
+        goorbackflag = false
         goorback1 = "go1"
         goorback2 = "go2"
     }
     
     //現在時刻の再開ボタン
     @IBAction func startbutton(_ sender: Any) {
-        timeflag = DateAndTime.setButtonCondition(
-            flag: true,
-            button1: startbutton,
-            button2: stopbutton,
-            color1: UIColor(rgb: 0x03DAC5),
-            color2: UIColor(rgb: 0x8E8E93))
+        DateAndTime.setButtonEnabled(flag: false, button: startbutton, color: 0x03DAC5)
+        DateAndTime.setButtonEnabled(flag: true, button: stopbutton, color: 0x8E8E93)
+        timeflag = true
         datebutton.isEnabled = false
         timebutton.isEnabled = false
     }
 
     //現在時刻の停止ボタン
     @IBAction func stopbutton(_ sender: Any) {
-        timeflag = DateAndTime.setButtonCondition(
-            flag: false,
-            button1: startbutton,
-            button2: stopbutton,
-            color1: UIColor(rgb: 0x8E8E93),
-            color2: UIColor(rgb: 0x03DAC5))
+        DateAndTime.setButtonEnabled(flag: true, button: startbutton, color: 0x8E8E93)
+        DateAndTime.setButtonEnabled(flag: false, button: stopbutton, color: 0x03DAC5)
+        timeflag = false
         datebutton.isEnabled = true
         timebutton.isEnabled = true
     }
     
     //日時の変更ボタン
     @IBAction func datebutton(_ sender: Any) {
-        if timeflag == false {
+        if (!timeflag) {
             CustomDialog.setDatePickerDialog(
                 viewcontroller: self,
                 datepickermode: .date,
@@ -250,7 +330,7 @@ class MainViewController: UIViewController {
     
     //時刻の変更ボタン
     @IBAction func timebutton(_ sender: Any) {
-        if timeflag == false {
+        if (!timeflag) {
             CustomDialog.setDatePickerDialog(
                 viewcontroller: self,
                 datepickermode: .time,

@@ -77,18 +77,20 @@ class FileAndData: NSObject {
             defaultvalue: getArriveStationDefaultvalue(goorback: goorback, keytag: keytag))!
     }
     
-    //UserDefaultsに保存された乗換出発駅を取得する関数
-    class func getTransitDepartStation(goorback: String, keytag: String) -> String {
-        //乗換回数の取得
+    //乗換回数の取得
+    class func getIntChangeLine(goorback: String) -> Int {
         let changelinekey = goorback + "changeline"
         let changeline = FileAndData.getUserDefaultValue(key: changelinekey, defaultvalue: "Zero")
-        var intchangeline = 0
         switch (changeline) {
-            case "Once": intchangeline = 1
-            case "Twice": intchangeline = 2
-            default : intchangeline = 0
+            case "Once": return 1
+            case "Twice": return 2
+            default : return 0
         }
-        //乗換回数に応じた表示の変更        
+    }
+    
+    //UserDefaultsに保存された乗換出発駅を取得する関数
+    class func getTransitDepartStation(goorback: String, keytag: String) -> String {
+        let intchangeline = getIntChangeLine(goorback: goorback)
         let intkeytag = Int(keytag) ?? intchangeline + 2
         let keytag0 = (intkeytag > intchangeline + 2) ? String(intchangeline + 1): String(intkeytag - 1)
         var key = goorback + "arrivestation" + keytag0
@@ -102,17 +104,7 @@ class FileAndData: NSObject {
     
     //UserDefaultsに保存された乗換到着駅を取得する関数
     class func getTransitArriveStation(goorback: String, keytag: String) -> String {
-        //乗換回数の取得
-        let changelinekey = goorback + "changeline"
-        let changeline = FileAndData.getUserDefaultValue(
-            key: changelinekey, defaultvalue: "Zero")
-        var intchangeline = 0
-        switch (changeline) {
-            case "Once": intchangeline = 1
-            case "Twice": intchangeline = 2
-            default : intchangeline = 0
-        }
-        //乗換回数に応じた表示の変更        
+        let intchangeline = getIntChangeLine(goorback: goorback)
         let intkeytag = Int(keytag) ?? intchangeline + 2
         let keytag0 = (intkeytag > intchangeline + 1) ? "e": keytag
         var key = goorback + "departstation" + keytag0
@@ -152,12 +144,12 @@ class FileAndData: NSObject {
     }
     
     //乗換回数に応じて表示を変更する関数
-    class func changeDisplayLine(changeline: String, stackview2: UIStackView, stackview3: UIStackView) {
+    class func changeDisplayLine(changeline: Int, stackview2: UIStackView, stackview3: UIStackView) {
         switch (changeline) {
-            case "Once":
+            case 1:
                 stackview2.isHidden = false
                 stackview3.isHidden = true
-            case "Twice":
+            case 2:
                 stackview2.isHidden = false
                 stackview3.isHidden = false
             default:

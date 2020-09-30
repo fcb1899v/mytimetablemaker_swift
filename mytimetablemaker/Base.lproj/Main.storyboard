@@ -243,9 +243,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Khw-Pc-zA3">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="2IO-8u-qN6" appends="YES" id="cJh-J8-3EZ"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -292,9 +296,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ayP-Iv-XQz">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="S2F-Mx-Wim" appends="YES" id="QYR-l7-5zm"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -341,9 +349,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZCu-k6-UuU">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="EG7-Sf-EUh" appends="YES" id="ftx-7L-hOr"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -390,9 +402,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LNS-I8-Es1">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="eUI-xv-abk" appends="YES" id="kt6-6H-tbO"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -439,9 +455,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bSR-Ni-Gjf">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="sMl-78-Jwc" appends="YES" id="Qj9-gu-Dfs"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -488,9 +508,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="stA-c4-my3">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="tdc-RV-TIp" appends="YES" id="Uoo-fr-kAT"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -537,9 +561,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7b0-nl-Mhz">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="iLG-3h-HBJ" appends="YES" id="USM-Rm-8Bx"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -586,9 +614,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pBG-FK-gGm">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="VOt-gl-AGx" appends="YES" id="tt8-Dx-ik3"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -635,9 +667,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Xg-HJ-gIY">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="P00-ac-ls6" appends="YES" id="X2D-5A-pl9"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -684,9 +720,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zsa-Vv-4k4">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="leQ-KH-G91" appends="YES" id="Rts-mw-kRa"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -733,9 +773,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="De8-v0-G7y">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="ipd-wy-6g0" appends="YES" id="pkW-ee-Dup"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -782,9 +826,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zFc-uu-sCx">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="TN4-uu-goO" appends="YES" id="B6R-lA-Fk3"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -831,9 +879,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FPj-mu-Pi3">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="Z5q-1y-cVf" appends="YES" id="jfV-N5-92G"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -880,9 +932,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6N8-rV-XNC">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="STo-Ca-i4q" appends="YES" id="mod-33-Mpa"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -929,9 +985,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bev-wm-LcJ">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="2QU-LA-8s9" appends="YES" id="LVs-76-cGt"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -978,9 +1038,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="78e-mu-K2s">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="77c-Lt-oYo" appends="YES" id="6m1-bx-S9w"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1027,9 +1091,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R0n-ek-XcL">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="bVA-sp-WXh" appends="YES" id="462-ez-Ugc"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1076,9 +1144,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZQv-aH-ZJW">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="H0W-24-boD" appends="YES" id="pMy-at-LuK"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1125,9 +1197,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uiU-Pc-rDu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="Rc5-AA-Oya" appends="YES" id="x9I-2w-B3n"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1174,9 +1250,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VzH-lY-gU3">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="nMw-Oa-RtH" appends="YES" id="6vJ-3V-zm6"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1223,9 +1303,13 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="5" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q2s-2h-mbr">
                                                                 <rect key="frame" x="0.0" y="0.0" width="364" height="20"/>
+                                                                <gestureRecognizers/>
                                                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
                                                                 <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                 <nil key="highlightedColor"/>
+                                                                <connections>
+                                                                    <outletCollection property="gestureRecognizers" destination="1OX-Dx-Ejf" appends="YES" id="Ssy-pt-qFq"/>
+                                                                </connections>
                                                             </label>
                                                         </subviews>
                                                         <userDefinedRuntimeAttributes>
@@ -1285,6 +1369,27 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                         <outlet property="departstationlabel" destination="CQp-QX-bCa" id="R8l-gt-Pja"/>
                         <outlet property="lineforarrivestationlabel" destination="cEL-vo-h0k" id="2A7-KT-bvM"/>
                         <outlet property="timetable04h" destination="FMm-jo-wyl" id="PcC-pp-Nkf"/>
+                        <outlet property="timetable05h" destination="Khw-Pc-zA3" id="vYr-N0-YbR"/>
+                        <outlet property="timetable06h" destination="ayP-Iv-XQz" id="FYR-gn-s2A"/>
+                        <outlet property="timetable07h" destination="ZCu-k6-UuU" id="X7n-kV-ezP"/>
+                        <outlet property="timetable08h" destination="LNS-I8-Es1" id="dvm-b0-0cy"/>
+                        <outlet property="timetable09h" destination="bSR-Ni-Gjf" id="zcd-xm-Wn9"/>
+                        <outlet property="timetable10h" destination="stA-c4-my3" id="flz-QW-qKo"/>
+                        <outlet property="timetable11h" destination="7b0-nl-Mhz" id="x1z-0k-NmS"/>
+                        <outlet property="timetable12h" destination="pBG-FK-gGm" id="bZR-JH-faM"/>
+                        <outlet property="timetable13h" destination="1Xg-HJ-gIY" id="MVr-Pb-9Le"/>
+                        <outlet property="timetable14h" destination="Zsa-Vv-4k4" id="vi0-YR-rry"/>
+                        <outlet property="timetable15h" destination="De8-v0-G7y" id="R4a-rj-WFn"/>
+                        <outlet property="timetable16h" destination="zFc-uu-sCx" id="QO3-wm-pPK"/>
+                        <outlet property="timetable17h" destination="FPj-mu-Pi3" id="YoC-hN-8Jf"/>
+                        <outlet property="timetable18h" destination="6N8-rV-XNC" id="9eS-Kn-2kh"/>
+                        <outlet property="timetable19h" destination="bev-wm-LcJ" id="Jbw-No-S5E"/>
+                        <outlet property="timetable20h" destination="78e-mu-K2s" id="rVG-Qj-uoj"/>
+                        <outlet property="timetable21h" destination="R0n-ek-XcL" id="mjR-Pm-DUy"/>
+                        <outlet property="timetable22h" destination="ZQv-aH-ZJW" id="i0K-Rp-6cc"/>
+                        <outlet property="timetable23h" destination="uiU-Pc-rDu" id="n3y-Xy-bVw"/>
+                        <outlet property="timetable24h" destination="VzH-lY-gU3" id="oQm-y0-Zz2"/>
+                        <outlet property="timetable25h" destination="Q2s-2h-mbr" id="bmD-Wt-Z2g"/>
                         <outlet property="weekbutton" destination="yyf-jD-7ZB" id="mmd-Ux-5lm"/>
                     </connections>
                 </viewController>
@@ -1292,6 +1397,111 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                 <tapGestureRecognizer id="wwX-kX-XGs" userLabel="timetable04h_TGR">
                     <connections>
                         <action selector="timetable04h:" destination="Y2A-ny-eMq" id="PIc-26-54V"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="2IO-8u-qN6" userLabel="timetable05h_TGR">
+                    <connections>
+                        <action selector="timetable05h:" destination="Y2A-ny-eMq" id="2Ob-OJ-7gF"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="S2F-Mx-Wim" userLabel="timetable06h_TGR">
+                    <connections>
+                        <action selector="timetable06h:" destination="Y2A-ny-eMq" id="Q6Y-rG-iAM"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="EG7-Sf-EUh" userLabel="timetable07h_TGR">
+                    <connections>
+                        <action selector="timetable07h:" destination="Y2A-ny-eMq" id="HOo-6d-acD"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="eUI-xv-abk" userLabel="timetable08h_TGR">
+                    <connections>
+                        <action selector="timetable08h:" destination="Y2A-ny-eMq" id="AfY-or-u0o"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="sMl-78-Jwc" userLabel="timetable09h_TGR">
+                    <connections>
+                        <action selector="timetable09h:" destination="Y2A-ny-eMq" id="web-Bo-fGu"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="tdc-RV-TIp" userLabel="timetable10h_TGR">
+                    <connections>
+                        <action selector="timetable10h:" destination="Y2A-ny-eMq" id="fBW-Ac-7l9"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="iLG-3h-HBJ" userLabel="timetable11h_TGR">
+                    <connections>
+                        <action selector="timetable11h:" destination="Y2A-ny-eMq" id="gMo-8H-7AV"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="VOt-gl-AGx" userLabel="timetable12h_TGR">
+                    <connections>
+                        <action selector="timetable12h:" destination="Y2A-ny-eMq" id="UAF-js-Wbf"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="P00-ac-ls6" userLabel="timetable13h_TGR">
+                    <connections>
+                        <action selector="timetable13h:" destination="Y2A-ny-eMq" id="kzO-qb-a29"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="leQ-KH-G91" userLabel="timetable14h_TGR">
+                    <connections>
+                        <action selector="timetable14h:" destination="Y2A-ny-eMq" id="IWr-0x-R6X"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="ipd-wy-6g0" userLabel="timetable15h_TGR">
+                    <connections>
+                        <action selector="timetable15h:" destination="Y2A-ny-eMq" id="xRF-lU-YsW"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="TN4-uu-goO" userLabel="timetable16h_TGR">
+                    <connections>
+                        <action selector="timetable16h:" destination="Y2A-ny-eMq" id="ZOR-aa-XxH"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="Z5q-1y-cVf" userLabel="timetable17h_TGR">
+                    <connections>
+                        <action selector="timetable17h:" destination="Y2A-ny-eMq" id="uDD-Ly-Jhv"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="STo-Ca-i4q" userLabel="timetable18h_TGR">
+                    <connections>
+                        <action selector="timetable18h:" destination="Y2A-ny-eMq" id="ZZm-t2-E0w"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="2QU-LA-8s9" userLabel="timetable19h_TGR">
+                    <connections>
+                        <action selector="timetable19h:" destination="Y2A-ny-eMq" id="2Ow-cS-0Ke"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="77c-Lt-oYo" userLabel="timetable20h_TGR">
+                    <connections>
+                        <action selector="timetable20h:" destination="Y2A-ny-eMq" id="fts-eE-2gx"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="bVA-sp-WXh" userLabel="timetable21h_TGR">
+                    <connections>
+                        <action selector="timetable21h:" destination="Y2A-ny-eMq" id="WqW-yo-KEY"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="H0W-24-boD" userLabel="timetable22h_TGR">
+                    <connections>
+                        <action selector="timetable22h:" destination="Y2A-ny-eMq" id="4qM-f7-eG8"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="Rc5-AA-Oya" userLabel="timetable23h_TGR">
+                    <connections>
+                        <action selector="timetable23h:" destination="Y2A-ny-eMq" id="fZd-oj-E6m"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="nMw-Oa-RtH" userLabel="timetable24h_TGR">
+                    <connections>
+                        <action selector="timetable24h:" destination="Y2A-ny-eMq" id="lZx-fj-dTL"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="1OX-Dx-Ejf" userLabel="timetable25h_TGR">
+                    <connections>
+                        <action selector="timetable25h:" destination="Y2A-ny-eMq" id="ddK-qv-Oid"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>
@@ -2863,6 +3073,8 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                     <connections>
                         <outlet property="backbutton" destination="Wqo-2Z-Bie" id="2n7-ph-NaO"/>
                         <outlet property="centerlineview" destination="Kjz-xg-23P" id="InR-Id-Jgm"/>
+                        <outlet property="countdown1" destination="Zxy-t9-zeb" id="A93-2P-6o3"/>
+                        <outlet property="countdown2" destination="Dfc-wi-dQB" id="0Fi-aN-Fyy"/>
                         <outlet property="datebutton" destination="lxF-dN-33f" id="KH3-Q8-dVa"/>
                         <outlet property="display2stackview" destination="vvD-UK-26w" id="VcD-Db-wdS"/>
                         <outlet property="gobutton" destination="fFS-kP-bdB" id="uiD-lF-yAL"/>
@@ -2901,6 +3113,22 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                         <outlet property="stationlabel2e" destination="hmf-mz-72t" id="1vf-fD-jnn"/>
                         <outlet property="stopbutton" destination="aRJ-2S-QaL" id="w9A-92-RX6"/>
                         <outlet property="timebutton" destination="Afc-1O-jPC" id="hUL-mi-ECW"/>
+                        <outlet property="timelabel10" destination="KKJ-Gi-Qui" id="oXo-yG-KdF"/>
+                        <outlet property="timelabel11" destination="B6M-X0-WZ0" id="Cou-d4-gGK"/>
+                        <outlet property="timelabel12" destination="rfd-7R-2IR" id="4sE-xO-Lar"/>
+                        <outlet property="timelabel13" destination="tRz-74-mlw" id="Nb5-B6-QDp"/>
+                        <outlet property="timelabel14" destination="hmF-5a-afu" id="eQr-D7-6J0"/>
+                        <outlet property="timelabel15" destination="gIA-d4-pil" id="ZoV-ka-mWX"/>
+                        <outlet property="timelabel16" destination="3i7-9R-pXY" id="FwA-vi-ijB"/>
+                        <outlet property="timelabel1e" destination="T0j-Y7-Nsl" id="S2k-8X-p8z"/>
+                        <outlet property="timelabel20" destination="3pk-4D-2tb" id="onk-CE-dO9"/>
+                        <outlet property="timelabel21" destination="0zA-JY-LNB" id="fLP-MT-fPo"/>
+                        <outlet property="timelabel22" destination="IB2-da-3KM" id="gM6-h0-xle"/>
+                        <outlet property="timelabel23" destination="63W-ZC-6uM" id="9YE-n3-B6z"/>
+                        <outlet property="timelabel24" destination="xgH-9l-3Mq" id="pHg-Xe-YrN"/>
+                        <outlet property="timelabel25" destination="WMW-HD-79q" id="Mra-xg-WEI"/>
+                        <outlet property="timelabel26" destination="dP1-2a-D60" id="ZNV-OJ-ZGM"/>
+                        <outlet property="timelabel2e" destination="lDE-29-WAj" id="eAL-Ue-2UH"/>
                         <outlet property="transittimelabel11" destination="H6g-Y3-6Xs" id="GkE-dA-ofW"/>
                         <outlet property="transittimelabel12" destination="RMr-bH-4TG" id="pxe-x6-mWz"/>
                         <outlet property="transittimelabel13" destination="ziA-cl-c8p" id="hHb-L1-GbI"/>
@@ -3173,6 +3401,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <size key="shadowOffset" width="0.0" height="0.0"/>
                                                     <connections>
                                                         <outletCollection property="gestureRecognizers" destination="WKm-97-nWf" appends="YES" id="ZLe-PC-U8K"/>
                                                     </connections>
@@ -3181,7 +3410,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                     <rect key="frame" x="338.5" y="12" width="55.5" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" systemColor="systemGrayColor"/>
+                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -3209,7 +3438,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                     <rect key="frame" x="338.5" y="12" width="55.5" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" systemColor="systemGrayColor"/>
+                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -3237,7 +3466,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                     <rect key="frame" x="338.5" y="12" width="55.5" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" systemColor="systemGrayColor"/>
+                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
@@ -3265,7 +3494,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                     <rect key="frame" x="338.5" y="12" width="55.5" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" systemColor="systemGrayColor"/>
+                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>

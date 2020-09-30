@@ -88,6 +88,81 @@ class DateAndTime: NSObject {
     }
 
     //＜時刻の表示＞
+    //現在日付を表示する関数
+    class func setCurrentDate(datebutton: UIButton) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E, MMM d, yyyy"
+        datebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
+    }
+
+    //現在時刻を表示する関数
+    class func setCurrentTime(timebutton: UIButton) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        timebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
+    }
+    
+    //表示されている時刻を取得する関数
+    class func getCurrentHHmmssFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
+        return getCurrentHHFromTimeButton(timebutton: timebutton, timeflag: timeflag) * 10000 +
+            getCurrentmmFromTimeButton(timebutton: timebutton, timeflag: timeflag) * 100 +
+            getCurrentssFromTimeButton(timebutton: timebutton, timeflag: timeflag)
+    }
+
+    //表示されている「時」を取得する関数
+    class func getCurrentHHFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
+        if (timeflag) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "HH"
+            return Int(formatter.string(from: Date())) ?? 0
+        } else {
+            let time = timebutton.title(for: UIControl.State.normal)
+            return Int(time!.prefix(2)) ?? 0
+        }
+    }
+
+    //表示されている「分」を取得する関数
+    class func getCurrentmmFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
+        if (timeflag) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "mm"
+            return Int(formatter.string(from: Date())) ?? 0
+        } else {
+            let time = timebutton.title(for: UIControl.State.normal)
+            return Int(time!.suffix(2)) ?? 0
+        }
+    }
+
+    //表示されている「秒」を取得する関数
+    class func getCurrentssFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
+        if (timeflag) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "ss"
+            return Int(formatter.string(from: Date())) ?? 0
+        } else {
+            return  0
+        }
+    }
+
+    //表示されている日付を取得する関数
+    class func getDateFromDateButton(datebutton: UIButton) -> Date {
+        let stringdate = datebutton.title(for: UIControl.State.normal)
+        let formatter: DateFormatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.dateFormat = "E, MMM d, yyyy"
+        return formatter.date(from: stringdate!)!
+    }
+    
+    //平日と土日を表すフラグを取得する関数
+    class func getWeekFlag(datebutton: UIButton) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        switch (formatter.string(from: getDateFromDateButton(datebutton: datebutton))) {
+            case "Sat", "Sun", "土", "日": return false
+            default: return true
+        }
+    }
+
     //1桁のときに0を追加する関数
     class func addZeroTime(time: Int) -> String {
         return (0...9 ~= time) ? "0" + String(time): String(time)
@@ -100,11 +175,25 @@ class DateAndTime: NSObject {
         return stringtimehh + ":" + stringtimemm
     }
     
+    //ボタンの表示変更
+    class func setButtonEnabled(flag: Bool, button: UIButton, color: Int) {
+        button.isEnabled = flag
+        button.setTitleColor(UIColor(rgb: color), for: UIControl.State.normal)
+    }
+
+    //ボタンの表示変更
+    class func changeButtonEnabled(flag: Bool, button: UIButton, color1: Int, color2: Int) {
+        button.isEnabled = flag
+        let color = (flag) ? color1: color2
+        button.setTitleColor(UIColor(rgb: color), for: UIControl.State.normal)
+    }
+
+    
     //乗換時間の配列を取得する関数
     class func getTransitTimeArray(goorback: String, changeline: Int) -> [Int]{
         var transittimearray: [Int] = []
         for i in 0...changeline + 1 {
-           let key = (i == changeline + 1) ? goorback + "transittimee": goorback + "transittime" + String(i)
+           let key = (i == changeline + 1) ? goorback + "transittimee": goorback + "transittime" + String(i + 1)
             transittimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!)
         }
         return transittimearray
@@ -114,42 +203,41 @@ class DateAndTime: NSObject {
     class func getRideTimeArray(goorback: String, changeline: Int) -> [Int]{
         var ridetimearray: [Int] = []
         for i in 0...changeline {
-           let key = goorback + "ridetime" + String(i)
+           let key = goorback + "ridetime" + String(i + 1)
            ridetimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!)
         }
         return ridetimearray
     }
     
     //ルート内の各路線の乗車可能時刻[0]・発車時刻[1]・到着時刻[2]を取得する関数
-    class func getTimeArray(currenttime: Int, changeline: Int, walktime: [Int], ridetime: [Int], timelist: [[Int]]) -> [[Int]] {
+    class func getTimeArray(currenttime: Int, changeline: Int, transittime: [Int], ridetime: [Int], timetable: [[Int]]) -> [[Int]] {
         var timearrays: [[Int]] = [[]]
         //路線1の乗車可能時刻・発車時刻・到着時刻を取得
-        timearrays[0][0] = getPlusHHMM(time1: currenttime, time2: walktime[0])
-        timearrays[0][1] = getNextStartTime(possibletime: timearrays[0][0] , timelist: timelist[0])
-        timearrays[0][2] = getPlusHHMM(time1: timearrays[0][1] , time2: ridetime[0])
+        timearrays[0].append(getPlusHHMM(time1: currenttime, time2: transittime[0]))
+        timearrays[0].append(getNextStartTime(possibletime: timearrays[0][0] , timetable: timetable[0]))
+        timearrays[0].append(getPlusHHMM(time1: timearrays[0][1] , time2: ridetime[0]))
         //路線1以降の乗車可能時刻・発車時刻・到着時刻を取得
         if (changeline > 0) {
             for i in 1...changeline {
-                timearrays[i][0] = getPlusHHMM(time1: timearrays[i - 1][2] , time2: walktime[i])
-                timearrays[i][1] = getNextStartTime(possibletime: timearrays[i][0] , timelist: timelist[i])
-                timearrays[i][2] = getPlusHHMM(time1: timearrays[i][1] , time2: ridetime[i])
+                timearrays.append([])
+                timearrays[i].append(getPlusHHMM(time1: timearrays[i - 1][2] , time2: transittime[i]))
+                timearrays[i].append(getNextStartTime(possibletime: timearrays[i][0] , timetable: timetable[i]))
+                timearrays[i].append(getPlusHHMM(time1: timearrays[i][1] , time2: ridetime[i]))
             }
         }
         return timearrays
     }
 
     //発車時刻を取得する関数
-    class func getNextStartTime(possibletime: Int, timelist: [Int]) -> Int {
+    class func getNextStartTime(possibletime: Int, timetable: [Int]) -> Int {
         var nextstarttime: Int
-        var i = 0
-        repeat {
-            if (i >= timelist.count) {
-                nextstarttime = timelist[0]
+        for i in 0..<timetable.count {
+            nextstarttime = timetable[i]
+            if (possibletime < nextstarttime) {
                 return nextstarttime
             }
-            nextstarttime = timelist[i]
-            i += 1
-        } while (possibletime > nextstarttime)
+        }
+        nextstarttime = 2700
         return nextstarttime
     }
 
@@ -188,28 +276,5 @@ class DateAndTime: NSObject {
             }
         }
         return countdowncolor
-    }
-
-    class func getCurrentDate(datebutton: UIButton) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "E, MMM d, yyyy"
-        datebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
-    }
-
-    class func getCurrentTime(timebutton: UIButton) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        timebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
-    }
-    
-    class func setButtonEnabled(button: UIButton, flag: Bool, color: UIColor) {
-        button.isEnabled = flag
-        button.setTitleColor(color, for: UIControl.State.normal)
-    }
-    
-    class func setButtonCondition(flag: Bool, button1: UIButton, button2: UIButton, color1: UIColor, color2: UIColor) -> Bool{
-        setButtonEnabled(button: button1, flag: !flag, color: color1)
-        setButtonEnabled(button: button2, flag: flag, color: color2)
-        return flag
     }
 }

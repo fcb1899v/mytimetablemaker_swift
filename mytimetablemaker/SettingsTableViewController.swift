@@ -40,23 +40,27 @@ class SettingsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        back1changelinelabel.text = FileAndData.getUserDefaultValue(key: "back1changeline", defaultvalue: "Not set")
-        go1changelinelabel.text = FileAndData.getUserDefaultValue(key: "go1changeline", defaultvalue: "Not set")
-        back2changelinelabel.text = FileAndData.getUserDefaultValue(key: "back2changeline", defaultvalue: "Not set")
-        go2changelinelabel.text = FileAndData.getUserDefaultValue(key: "go2changeline", defaultvalue: "Not set")
+        
         back2switchflag = UserDefaults.standard.bool(forKey: "back2switch")
         go2switchflag = UserDefaults.standard.bool(forKey: "go2switch")
+        
         back2switch.setOn(back2switchflag, animated: false)
         go2switch.setOn(go2switchflag, animated: false)
-        if (back2switchflag == false) {
-            back2changeline.isHidden = true
-            back2settings.isHidden = true
-        }
-        if (go2switchflag == false) {
-            go2changeline.isHidden = true
-            go2settings.isHidden = true
-        }
-        settingstableview.tableFooterView = UIView()
+        
+        back1changelinelabel.text = FileAndData.getUserDefaultValue(
+            key: "back1changeline", defaultvalue: "Not set")
+        go1changelinelabel.text = FileAndData.getUserDefaultValue(
+            key: "go1changeline", defaultvalue: "Not set")
+        back2changelinelabel.text = (back2switchflag) ? FileAndData.getUserDefaultValue(
+            key: "back2changeline", defaultvalue: "Not set"): "Not use"
+        go2changelinelabel.text = (go2switchflag) ? FileAndData.getUserDefaultValue(
+            key: "go2changeline", defaultvalue: "Not set"): "Not use"
+        
+        back2changelinetable.textColor = (back2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+        go2changelinetable.textColor = (go2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+        back2changelinelabel.textColor = (back2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+        go2changelinelabel.textColor = (go2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+
     }
     
     @IBAction func back1changelinetable(_ sender: Any) {
@@ -76,35 +80,41 @@ class SettingsTableViewController: UITableViewController {
     }
     
     @IBAction func back2changelinetable(_ sender: Any) {
-        CustomDialog.changeLinePickerDialog(
-            viewcontroller: self,
-            taplabel: back2changelinetable,
-            setlabel: back2changelinelabel,
-            goorback: "back2")
+        if (back2switchflag) {
+            CustomDialog.changeLinePickerDialog(
+                viewcontroller: self,
+                taplabel: back2changelinetable,
+                setlabel: back2changelinelabel,
+                goorback: "back2")
+        }
     }
     
     @IBAction func go2changelinetable(_ sender: Any) {
-        CustomDialog.changeLinePickerDialog(
-            viewcontroller: self,
-            taplabel: go2changelinetable,
-            setlabel: go2changelinelabel,
-            goorback: "go2")
+        if (go2switchflag) {
+            CustomDialog.changeLinePickerDialog(
+                viewcontroller: self,
+                taplabel: go2changelinetable,
+                setlabel: go2changelinelabel,
+                goorback: "go2")
+        }
     }
 
     @IBAction func back2displayswitch(_ sender: Any) {
         back2switchflag = (sender as AnyObject).isOn
         UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "back2switch")
-        back2changeline.isHidden = !(sender as AnyObject).isOn
-        back2settings.isHidden = !(sender as AnyObject).isOn
-        print("back2 : " + String(back2switchflag))
+        back2changelinelabel.text = (back2switchflag) ? FileAndData.getUserDefaultValue(
+            key: "back2changeline", defaultvalue: "Not set"): "Not use"
+        back2changelinetable.textColor = (back2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+        back2changelinelabel.textColor = (back2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
     }
     
     @IBAction func go2displayswitch(_ sender: Any) {
         go2switchflag = (sender as AnyObject).isOn
         UserDefaults.standard.set((sender as AnyObject).isOn, forKey: "go2switch")
-        go2changeline.isHidden = !(sender as AnyObject).isOn
-        go2settings.isHidden = !(sender as AnyObject).isOn
-        print("go2 : " + String(go2switchflag))
+        go2changelinelabel.text = (go2switchflag) ? FileAndData.getUserDefaultValue(
+            key: "go2changeline", defaultvalue: "Not set"): "Not use"
+        go2changelinetable.textColor = (go2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
+        go2changelinelabel.textColor = (go2switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
     }
     
     //画面遷移時の値渡し

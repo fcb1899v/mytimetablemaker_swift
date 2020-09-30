@@ -10,7 +10,7 @@ import UIKit
 
 class Timetable: NSObject {
  
-    //
+    //時刻表のタイトルを取得する関数
     class func getTimetableTitle(goorback: String, keytag: String) -> String {
         let arrivestation = FileAndData.getArriveStation(
             goorback: goorback, keytag: keytag)
@@ -67,10 +67,10 @@ class Timetable: NSObject {
     }
     
     //時刻表の配列を取得する関数
-    class func getTimeTableArray(goorback: String, changeline: Int, weekflag: Bool) -> [[Int]]{
-        var timetablearray: [[Int]] = [[]]
+    class func getTimetableArray(goorback: String, changeline: Int, weekflag: Bool) -> [[Int]]{
+        var timetablearray: [[Int]] = []
         for i in 0...changeline {
-           timetablearray.append(Timetable.getTimetable(goorback: goorback, keytag: String(i), weekflag: weekflag))
+           timetablearray.append(Timetable.getTimetable(goorback: goorback, keytag: String(i + 1), weekflag: weekflag))
         }
         return timetablearray
     }
