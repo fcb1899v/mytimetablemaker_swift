@@ -13,10 +13,11 @@ class TimetableViewController: UIViewController {
     var timer = Timer()
     var goorback: String?
     var keytag: String?
-    var weekflag = true
+    var weekflag: Bool?
     
     @IBOutlet weak var departstationlabel: UILabel!
     @IBOutlet weak var lineforarrivestationlabel: UILabel!
+    @IBOutlet weak var weeklabel: UILabel!
     @IBOutlet weak var weekbutton: UIButton!
 
     @IBOutlet weak var timetable04h: UILabel!
@@ -45,43 +46,57 @@ class TimetableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        departstationlabel.text = FileAndData.getDepartStation(goorback: goorback!, keytag: keytag!)
-        lineforarrivestationlabel.text = Timetable.getTimetableTitle(goorback: goorback!, keytag: keytag!)
+        departstationlabel.text = FileAndData.getDepartStation(
+            goorback: goorback!,
+            keytag: keytag!)
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: {
+        lineforarrivestationlabel.text = Timetable.getTimetableTitle(
+            goorback: goorback!,
+            keytag: keytag!)
+        
+
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {
             (timer) in
-            
-            self.timetable04h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "04")
-            self.timetable05h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "05")
-            self.timetable06h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "06")
-            self.timetable07h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "07")
-            self.timetable08h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "08")
-            self.timetable09h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "09")
-            self.timetable10h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "10")
-            self.timetable11h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "11")
-            self.timetable12h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "12")
-            self.timetable13h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "13")
-            self.timetable14h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "14")
-            self.timetable15h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "15")
-            self.timetable16h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "16")
-            self.timetable17h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "17")
-            self.timetable18h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "18")
-            self.timetable19h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "19")
-            self.timetable20h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "20")
-            self.timetable21h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "21")
-            self.timetable22h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "22")
-            self.timetable23h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "23")
-            self.timetable24h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "24")
-            self.timetable25h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag, timekeytag: "25")
+
+            Timetable.setWeekButton(
+                weeklabel: self.weeklabel,
+                weekbutton: self.weekbutton,
+                weekdaycolor: 0x3700B3,
+                weekendcolor: 0xFF0000,
+                weekflag: self.weekflag!)
+
+            self.timetable04h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "04")
+            self.timetable05h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "05")
+            self.timetable06h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "06")
+            self.timetable07h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "07")
+            self.timetable08h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "08")
+            self.timetable09h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "09")
+            self.timetable10h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "10")
+            self.timetable11h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "11")
+            self.timetable12h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "12")
+            self.timetable13h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "13")
+            self.timetable14h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "14")
+            self.timetable15h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "15")
+            self.timetable16h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "16")
+            self.timetable17h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "17")
+            self.timetable18h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "18")
+            self.timetable19h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "19")
+            self.timetable20h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "20")
+            self.timetable21h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "21")
+            self.timetable22h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "22")
+            self.timetable23h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "23")
+            self.timetable24h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "24")
+            self.timetable25h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "25")
         })
     }
 
     @IBAction func weekbutton(_ sender: Any) {
-        weekflag = Timetable.setWeekButton(
+        weekflag = Timetable.getWeekButton(
+            weeklabel: weeklabel,
             weekbutton: weekbutton,
-            weekdaycolor: UIColor(rgb: 0x3700B3),
-            weekendcolor: UIColor(rgb: 0xFF0000),
-            weekflag: weekflag)
+            weekdaycolor: 0x3700B3,
+            weekendcolor: 0xFF0000,
+            weekflag: weekflag!)
     }
     
     @IBAction func timetable04h(_ sender: Any) {
@@ -89,7 +104,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable04h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "04")
     }
@@ -99,17 +114,17 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable05h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "05")
     }
-    
+
     @IBAction func timetable06h(_ sender: Any) {
         CustomDialog.setTimeFieldDialog(
             viewcontroller: self,
             label: timetable06h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "06")
     }
@@ -119,7 +134,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable07h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "07")
     }
@@ -129,7 +144,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable08h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "08")
     }
@@ -139,7 +154,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable09h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "09")
     }
@@ -149,7 +164,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable10h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "10")
     }
@@ -159,7 +174,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable11h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "11")
     }
@@ -169,7 +184,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable12h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "12")
     }
@@ -179,7 +194,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable13h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "13")
     }
@@ -189,7 +204,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable14h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "14")
     }
@@ -199,7 +214,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable15h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "15")
     }
@@ -209,7 +224,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable16h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "16")
     }
@@ -219,7 +234,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable17h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "17")
     }
@@ -229,7 +244,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable18h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "18")
     }
@@ -239,7 +254,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable19h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "19")
     }
@@ -249,7 +264,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable20h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "20")
     }
@@ -259,7 +274,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable21h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "21")
     }
@@ -269,7 +284,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable22h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "22")
     }
@@ -279,7 +294,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable23h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "23")
     }
@@ -289,7 +304,7 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable24h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "24")
     }
@@ -299,8 +314,8 @@ class TimetableViewController: UIViewController {
             viewcontroller: self,
             label: timetable25h,
             goorback: goorback!,
-            weekflag: weekflag,
+            weekflag: weekflag!,
             keytag: keytag!,
             timekeytag: "25")
-    }
+    }    
 }

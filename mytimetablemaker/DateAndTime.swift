@@ -91,7 +91,7 @@ class DateAndTime: NSObject {
     //現在日付を表示する関数
     class func setCurrentDate(datebutton: UIButton) {
         let formatter = DateFormatter()
-        formatter.dateFormat = "E, MMM d, yyyy"
+        formatter.dateFormat = "E, MMM d, yyyy".localized
         datebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
     }
 
@@ -149,15 +149,25 @@ class DateAndTime: NSObject {
         let stringdate = datebutton.title(for: UIControl.State.normal)
         let formatter: DateFormatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.dateFormat = "E, MMM d, yyyy"
+        formatter.dateFormat = "E, MMM d, yyyy".localized
         return formatter.date(from: stringdate!)!
     }
     
-    //平日と土日を表すフラグを取得する関数
-    class func getWeekFlag(datebutton: UIButton) -> Bool {
+    //表示されている日付から平日と土日を表すフラグを取得する関数
+    class func getWeekFlagFromDateButton(datebutton: UIButton) -> Bool {
         let formatter = DateFormatter()
         formatter.dateFormat = "E"
         switch (formatter.string(from: getDateFromDateButton(datebutton: datebutton))) {
+            case "Sat", "Sun", "土", "日": return false
+            default: return true
+        }
+    }
+
+    //平日と土日を表すフラグを取得する関数
+    class func getWeekFlag() -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        switch (formatter.string(from: Date())) {
             case "Sat", "Sun", "土", "日": return false
             default: return true
         }
@@ -199,12 +209,17 @@ class DateAndTime: NSObject {
         return transittimearray
     }
     
+    //乗車時間を取得する関数
+    class func getRideTime(goorback: String, changeline: Int, keytag: String) -> Int {
+        let key = goorback + "ridetime" + keytag
+        return FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!
+    }
+    
     //乗車時間の配列を取得する関数
     class func getRideTimeArray(goorback: String, changeline: Int) -> [Int]{
         var ridetimearray: [Int] = []
         for i in 0...changeline {
-           let key = goorback + "ridetime" + String(i + 1)
-           ridetimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!)
+            ridetimearray.append(getRideTime(goorback: goorback, changeline: changeline, keytag: String(i + 1)))
         }
         return ridetimearray
     }
@@ -213,7 +228,7 @@ class DateAndTime: NSObject {
     class func getTimeArray(currenttime: Int, changeline: Int, transittime: [Int], ridetime: [Int], timetable: [[Int]]) -> [[Int]] {
         var timearrays: [[Int]] = [[]]
         //路線1の乗車可能時刻・発車時刻・到着時刻を取得
-        timearrays[0].append(getPlusHHMM(time1: currenttime, time2: transittime[0]))
+        timearrays[0].append(getPlusHHMM(time1: currenttime/100, time2: transittime[0]))
         timearrays[0].append(getNextStartTime(possibletime: timearrays[0][0] , timetable: timetable[0]))
         timearrays[0].append(getPlusHHMM(time1: timearrays[0][1] , time2: ridetime[0]))
         //路線1以降の乗車可能時刻・発車時刻・到着時刻を取得
@@ -242,14 +257,14 @@ class DateAndTime: NSObject {
     }
 
     //カウントダウン時間（mm:ss）を取得する関数
-    class func getCountdownTime(currenthhmmss: Int, departtime: Int, flag: Bool) -> String {
+    class func getCountdownTime(currenthhmmss: Int, departtime: Int, timeflag: Bool) -> String {
         var countdowntime = "--:--"
-        if (flag) {
+        if (timeflag) {
             //カウントダウン（出発時刻と現在時刻の差）を計算
             var intcountdowntime =
                 getHHMMSStoMMSS(time: getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss))
             switch (intcountdowntime) {
-                case 0...9959: break
+                case 1...9959: break
                 case -59...0: intcountdowntime = 0
                 default: intcountdowntime = -100
             }
@@ -262,19 +277,19 @@ class DateAndTime: NSObject {
     }
 
     //カウントダウン表示の警告色を取得する関数
-    class func getCountDownColor(currenthhmmss: Int, departtime:Int, currenthhmm: Int, timeflag: Bool) -> Int{
+    class func getCountDownColor(currenthhmmss: Int, departtime:Int, timeflag: Bool) -> UIColor{
         var countdowncolor = 0x8E8E93
         if (timeflag) {
-            let countdownmm = getMinusHHMM(time1: departtime, time2: currenthhmm)
-            if (currenthhmmss % 2 == 0) {
-                switch (countdownmm) {
-                    case 11...99: countdowncolor = 0x03DAC5
-                    case 6...10: countdowncolor = 0xFFFF00
-                    case 0...5: countdowncolor = 0xFF0000
+            let intcountdown = getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss)
+            if (intcountdown % 2 == 0) {
+                switch (intcountdown) {
+                    case 1000...9999: countdowncolor = 0x03DAC5
+                    case 500...999: countdowncolor = 0xFFFF00
+                    case -59...499: countdowncolor = 0xFF0000
                     default: countdowncolor = 0x8E8E93
                 }
             }
         }
-        return countdowncolor
+        return UIColor(rgb: countdowncolor)
     }
 }

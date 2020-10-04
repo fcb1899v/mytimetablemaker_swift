@@ -12,7 +12,7 @@ class MainViewController: UIViewController {
 
     var timer = Timer()
     var timeflag = true
-    var weekflag = true
+    var weekflag = DateAndTime.getWeekFlag()
     var goorbackflag = true
     var goorback1 = "back1"
     var goorback2 = "back2"
@@ -26,6 +26,8 @@ class MainViewController: UIViewController {
         
     @IBOutlet weak var display2stackview: UIStackView!
     @IBOutlet weak var centerlineview: UIView!
+    
+    
     
     @IBOutlet weak var stationlabel10: UILabel!
     @IBOutlet weak var stationlabel11: UILabel!
@@ -123,7 +125,7 @@ class MainViewController: UIViewController {
             let currenttime = DateAndTime.getCurrentHHmmssFromTimeButton(
                 timebutton: self.timebutton, timeflag: self.timeflag)
             
-            let weekflag = DateAndTime.getWeekFlag(datebutton: self.datebutton)
+            let weekflag = DateAndTime.getWeekFlagFromDateButton(datebutton: self.datebutton)
             
             self.stationlabel10.text = FileAndData.getDeparturePoint(
                 goorback: self.goorback1)
@@ -230,28 +232,51 @@ class MainViewController: UIViewController {
             //到着時刻
             let hometime1 = DateAndTime.getPlusHHMM(time1: time1[changeline1][2], time2: transittime1[changeline1 + 1])
             let hometime2 = DateAndTime.getPlusHHMM(time1: time2[changeline2][2], time2: transittime2[changeline2 + 1])
-
+            
             //帰宅・外出ルートの表示・非表示
             self.display2stackview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
             self.centerlineview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
-
+            
             if (DateAndTime.getStringTime(time: time1[0][1]) == "27:00"){
                 self.timelabel10.text = "--:--"
                 self.timelabel11.text = "--:--"
                 self.timelabel12.text = "--:--"
+                self.timelabel1e.text = "--:--"
+                self.countdown1.text = "--:--"
+            } else if (changeline1 > 0 && DateAndTime.getStringTime(time: time1[1][1]) == "27:00") {
                 self.timelabel13.text = "--:--"
                 self.timelabel14.text = "--:--"
+            } else if (changeline1 > 1 && DateAndTime.getStringTime(time: time1[2][1]) == "27:00") {
                 self.timelabel15.text = "--:--"
                 self.timelabel16.text = "--:--"
-                self.timelabel1e.text = "--:--"
             } else {
+                //カウントダウン
+                self.countdown1.text = DateAndTime.getCountdownTime(
+                    currenthhmmss: currenttime,
+                    departtime: departtime1,
+                    timeflag: self.timeflag)
+                self.countdown1.textColor = DateAndTime.getCountDownColor(
+                    currenthhmmss: currenttime,
+                    departtime: departtime1,
+                    timeflag: self.timeflag)
+                //時刻の表示
                 self.timelabel10.text = DateAndTime.getStringTime(time: departtime1)
                 self.timelabel11.text = DateAndTime.getStringTime(time: time1[0][1])
                 self.timelabel12.text = DateAndTime.getStringTime(time: time1[0][2])
-                self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
-                self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
-                self.timelabel15.text = DateAndTime.getStringTime(time: time1[2][1])
-                self.timelabel16.text = DateAndTime.getStringTime(time: time1[2][2])
+                switch (changeline1) {
+                    case 2: do {
+                        self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
+                        self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
+                        self.timelabel15.text = DateAndTime.getStringTime(time: time1[2][1])
+                        self.timelabel16.text = DateAndTime.getStringTime(time: time1[2][2])
+                    }
+                    case 1: do {
+                        self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
+                        self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
+                    }
+                    default: do {
+                    }
+                }
                 self.timelabel1e.text = DateAndTime.getStringTime(time: hometime1)
             }
 
@@ -259,20 +284,44 @@ class MainViewController: UIViewController {
                 self.timelabel20.text = "--:--"
                 self.timelabel21.text = "--:--"
                 self.timelabel22.text = "--:--"
+                self.timelabel2e.text = "--:--"
+                self.countdown2.text = "--:--"
+            } else if (changeline2 > 0 && DateAndTime.getStringTime(time: time2[1][1]) == "27:00") {
                 self.timelabel23.text = "--:--"
                 self.timelabel24.text = "--:--"
+            } else if (changeline2 > 1 && DateAndTime.getStringTime(time: time2[2][1]) == "27:00") {
                 self.timelabel25.text = "--:--"
                 self.timelabel26.text = "--:--"
-                self.timelabel2e.text = "--:--"
             } else {
+                //カウントダウン
+                self.countdown2.text = DateAndTime.getCountdownTime(
+                    currenthhmmss: currenttime,
+                    departtime: departtime2,
+                    timeflag: self.timeflag)
+                //時刻の表示
+                self.countdown2.textColor = DateAndTime.getCountDownColor(
+                    currenthhmmss: currenttime,
+                    departtime: departtime2,
+                    timeflag: self.timeflag)
+
                 self.timelabel20.text = DateAndTime.getStringTime(time: departtime2)
                 self.timelabel21.text = DateAndTime.getStringTime(time: time2[0][1])
                 self.timelabel22.text = DateAndTime.getStringTime(time: time2[0][2])
-                self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
-                self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
-                self.timelabel25.text = DateAndTime.getStringTime(time: time2[2][1])
-                self.timelabel26.text = DateAndTime.getStringTime(time: time2[2][2])
                 self.timelabel2e.text = DateAndTime.getStringTime(time: hometime2)
+                switch (changeline2) {
+                    case 2: do {
+                        self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
+                        self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
+                        self.timelabel25.text = DateAndTime.getStringTime(time: time2[2][1])
+                        self.timelabel26.text = DateAndTime.getStringTime(time: time2[2][2])
+                    }
+                    case 1: do {
+                        self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
+                        self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
+                    }
+                    default: do {
+                    }
+                }
             }
             
             //乗換回数に応じた表示
@@ -520,55 +569,56 @@ class MainViewController: UIViewController {
     @IBAction func linetimetable11(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable11,
             goorback: goorback1,
             keytag: "1",
-            stackview: linetimetable11,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
+    
     
     @IBAction func linetimetable12(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable12,
             goorback: goorback1,
             keytag: "2",
-            stackview: linetimetable12,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
 
     @IBAction func linetimetable13(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable13,
             goorback: goorback1,
             keytag: "3",
-            stackview: linetimetable13,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
     
     @IBAction func linetimetable21(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable21,
             goorback: goorback2,
             keytag: "1",
-            stackview: linetimetable21,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
     
     @IBAction func linetimetable22(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable22,
             goorback: goorback2,
             keytag: "2",
-            stackview: linetimetable22,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
     
     @IBAction func linetimetable23(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
+            stackview: linetimetable23,
             goorback: goorback2,
             keytag: "3",
-            stackview: linetimetable23,
-            goorbackflag: goorbackflag)
+            weekflag: weekflag)
     }
 
     @IBAction func transportlabel11(_ sender: Any) {

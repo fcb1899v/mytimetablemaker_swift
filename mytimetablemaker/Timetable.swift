@@ -16,32 +16,45 @@ class Timetable: NSObject {
             goorback: goorback, keytag: keytag)
         let linename = FileAndData.getLinename(
             goorback: goorback, keytag: keytag)
-        return "(" + linename + " for " + arrivestation + ")"
+        return "(" + linename + " for ".localized + arrivestation + "houmen".localized + ")"
     }
     
-    //WEEKDAYとWEEKENDの切替ボタン
-    class func setWeekButton(weekbutton: UIButton, weekdaycolor: UIColor, weekendcolor: UIColor, weekflag: Bool) -> Bool{
+    //WEEKDAYとWEEKENDの表示を取得する
+    class func setWeekButton(weeklabel: UILabel, weekbutton: UIButton, weekdaycolor: Int, weekendcolor: Int, weekflag: Bool) {
         if (weekflag) {
-            weekbutton.setTitle("WEEKDAY", for: UIControl.State.normal)
-            weekbutton.setTitleColor(weekdaycolor, for: UIControl.State.normal)
-            return false
+            weeklabel.text = "Weekday".localized
+            weeklabel.textColor = UIColor(rgb: 0xFFFFFF)
+            weekbutton.setTitle("WEEKEND".localized, for: UIControl.State.normal)
+            weekbutton.setTitleColor(UIColor(rgb: weekendcolor), for: UIControl.State.normal)
         } else {
-            weekbutton.setTitle("WEEKEND", for: UIControl.State.normal)
-            weekbutton.setTitleColor(weekendcolor, for: UIControl.State.normal)
-            return true
+            weeklabel.text = "Weekend".localized
+            weeklabel.textColor = UIColor(rgb: weekendcolor)
+            weekbutton.setTitle("WEEKDAY".localized, for: UIControl.State.normal)
+            weekbutton.setTitleColor(UIColor(rgb: weekdaycolor), for: UIControl.State.normal)
         }
+    }
+
+    //WEEKDAYとWEEKENDの切替ボタン
+    class func getWeekButton(weeklabel: UILabel, weekbutton: UIButton, weekdaycolor: Int, weekendcolor: Int, weekflag: Bool) -> Bool{
+        setWeekButton(
+            weeklabel: weeklabel,
+            weekbutton: weekbutton,
+            weekdaycolor: weekdaycolor,
+            weekendcolor: weekendcolor,
+            weekflag: weekflag)
+        return !weekflag
     }
 
     //時刻表の時刻の表示を取得する関数
     class func getTimetableTime(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> String {
-        let weektag = (!weekflag) ? "weekend": "weekday"
+        let weektag = (weekflag) ? "weekday".localized: "weekend".localized
         let timekey = goorback + "line" + keytag + weektag + timekeytag
-        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")!
+        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "-")!
     }
 
     //内部ストレージに保存された各時台の時刻表データを取得する関数
     class func getTimetableHour(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> [Int] {
-        let weektag = (!weekflag) ? "weekend": "weekday"
+        let weektag = (!weekflag) ? "weekend".localized: "weekday".localized
         let timekey = goorback + "line" + keytag + weektag + timekeytag
         let splitunit = " "
         let timetext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")

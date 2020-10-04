@@ -12,14 +12,12 @@ class FileAndData: NSObject {
 
     //Various Settingsのタイトルを取得する関数
     class func getVariousSettingsTitle(goorback: String) -> String {
-        var varioussettingstitle = { "Various settings on " }()
-            switch goorback {
-                case "go1": varioussettingstitle += "outgoing route 1"
-                case "back2": varioussettingstitle += "route home 2"
-                case "go2": varioussettingstitle += "outgoing route 2"
-                default: varioussettingstitle += "route home 1"
+        switch (goorback) {
+            case "go1": return "Various settings on outgoing route 1".localized
+            case "back2": return "Various settings on route home 2".localized
+            case "go2": return "Various settings on outgoing route 2".localized
+            default: return "Various settings on route home 1".localized
         }
-        return varioussettingstitle
     }
     
     //UserDefaultsに保存された文字列を取得する関数
@@ -42,32 +40,36 @@ class FileAndData: NSObject {
     //UserDefaultsに保存された目的地を取得する関数
     class func getDeparturePoint(goorback: String) -> String {
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
-        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office".localized: "Home".localized
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
 
     //UserDefaultsに保存された出発地を取得する関数
     class func getDestination(goorback: String) -> String {
         let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
-        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home".localized: "Office".localized
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
 
     //発車駅名の初期値を取得する関数
     class func getDepartStationDefaultvalue(goorback: String, keytag: String) -> String {    
-        return (goorback == "back2" || goorback == "go2") ? "Dep. St.2-" + keytag: "Dep. St.1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ?
+            "Dep. St.".localized + "2-" + keytag:
+            "Dep. St.".localized + "1-" + keytag
     }
 
     //UserDefaultsに保存された発車駅名を取得する関数
     class func getDepartStation(goorback: String, keytag: String) -> String {
         return getUserDefaultValue(
-            key: goorback + "departstation" + keytag, 
+            key: goorback + "departstation" + keytag,
             defaultvalue: getDepartStationDefaultvalue(goorback: goorback, keytag: keytag))!
     }
 
     //降車駅名の初期値を取得する関数
     class func getArriveStationDefaultvalue(goorback: String, keytag: String) -> String {    
-        return (goorback == "back2" || goorback == "go2") ? "Arr. St.2-" + keytag: "Arr. St.1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ?
+            "Arr. St.".localized + "2-" + keytag:
+            "Arr. St.".localized + "1-" + keytag
     }
 
     //UserDefaultsに保存された降車駅名を取得する関数
@@ -76,49 +78,91 @@ class FileAndData: NSObject {
             key: goorback + "arrivestation" + keytag, 
             defaultvalue: getArriveStationDefaultvalue(goorback: goorback, keytag: keytag))!
     }
-    
+
     //乗換回数の取得
     class func getIntChangeLine(goorback: String) -> Int {
         let changelinekey = goorback + "changeline"
-        let changeline = FileAndData.getUserDefaultValue(key: changelinekey, defaultvalue: "Zero")
+        let changeline = FileAndData.getUserDefaultValue(key: changelinekey, defaultvalue: "Zero".localized)
         switch (changeline) {
-            case "Once": return 1
-            case "Twice": return 2
+            case "Once".localized: return 1
+            case "Twice".localized: return 2
             default : return 0
         }
     }
     
     //UserDefaultsに保存された乗換出発駅を取得する関数
     class func getTransitDepartStation(goorback: String, keytag: String) -> String {
+        let key = getTransitDepartStationKey(goorback: goorback, keytag: keytag)
+        let defaultvalue = getTransitDepartStationDefault(goorback: goorback, keytag: keytag)
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+    }
+    
+    //
+    class func getTransitDepartKeyTag0(goorback: String, keytag: String) -> String {
         let intchangeline = getIntChangeLine(goorback: goorback)
         let intkeytag = Int(keytag) ?? intchangeline + 2
-        let keytag0 = (intkeytag > intchangeline + 2) ? String(intchangeline + 1): String(intkeytag - 1)
+        return (intkeytag > intchangeline + 2) ? String(intchangeline + 1): String(intkeytag - 1)
+    }
+    
+    //
+    class func getTransitDepartStationKey(goorback: String, keytag: String) -> String {
+        let keytag0 = getTransitDepartKeyTag0(goorback: goorback, keytag: keytag)
         var key = goorback + "arrivestation" + keytag0
-        var defaultvalue = getArriveStationDefaultvalue(goorback: goorback, keytag: keytag0)
         if (keytag0 == "0") {
             key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
-            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office": "Home"
         }
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        return key
+    }
+    
+    //
+    class func getTransitDepartStationDefault(goorback: String, keytag: String) -> String {
+        let keytag0 = getTransitDepartKeyTag0(goorback: goorback, keytag: keytag)
+        var defaultvalue = getArriveStationDefaultvalue(goorback: goorback, keytag: keytag0)
+        if (keytag0 == "0") {
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office".localized: "Home".localized
+        }
+        return defaultvalue
     }
     
     //UserDefaultsに保存された乗換到着駅を取得する関数
     class func getTransitArriveStation(goorback: String, keytag: String) -> String {
-        let intchangeline = getIntChangeLine(goorback: goorback)
-        let intkeytag = Int(keytag) ?? intchangeline + 2
-        let keytag0 = (intkeytag > intchangeline + 1) ? "e": keytag
-        var key = goorback + "departstation" + keytag0
-        var defaultvalue = getDepartStationDefaultvalue(goorback: goorback, keytag: keytag0)
-        if (keytag0 == "e") {
-            key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
-            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home": "Office"
-        }
+        let key = getTransitArriveStationKey(goorback: goorback, keytag: keytag)
+        let defaultvalue = getTransitArriveStationDefault(goorback: goorback, keytag: keytag)
         return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
     }
+        
+    //
+    class func getTransitArriveKeyTag0(goorback: String, keytag: String) -> String {
+        let intchangeline = getIntChangeLine(goorback: goorback)
+        let intkeytag = Int(keytag) ?? intchangeline + 2
+        return (intkeytag > intchangeline + 1) ? "e": keytag
+    }
     
+    //
+    class func getTransitArriveStationKey(goorback: String, keytag: String) -> String {
+        let keytag0 = getTransitArriveKeyTag0(goorback: goorback, keytag: keytag)
+        var key = goorback + "departstation" + keytag0
+        if (keytag0 == "e") {
+            key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
+        }
+        return key
+    }
+    
+    //
+    class func getTransitArriveStationDefault(goorback: String, keytag: String) -> String {
+        let keytag0 = getTransitArriveKeyTag0(goorback: goorback, keytag: keytag)
+        var defaultvalue = getDepartStationDefaultvalue(goorback: goorback, keytag: keytag0)
+        if (keytag0 == "e") {
+            defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home".localized: "Office".localized
+        }
+        return defaultvalue
+    }
+
     //路線名の初期値を取得する関数
     class func getLinenameDefaultvalue(goorback: String, keytag: String) -> String {
-        return (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
+        return (goorback == "back2" || goorback == "go2") ?
+            "Line ".localized + "2-" + keytag:
+            "Line ".localized + "1-" + keytag
     }
 
     //UserDefaultsに保存された路線名を取得する関数

@@ -12,6 +12,8 @@
 		02061D362503589200B93F04 /* TimetableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02061D352503589200B93F04 /* TimetableViewController.swift */; };
 		0236F16925031113008AEFF2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0236F16825031113008AEFF2 /* MainViewController.swift */; };
 		02473D6A25222C380069A622 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D6925222C380069A622 /* Timetable.swift */; };
+		02473D722524EB480069A622 /* SettingPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D712524EB480069A622 /* SettingPreference.swift */; };
+		02473D9C2529B1B50069A622 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02473D9E2529B1B50069A622 /* Localizable.strings */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
 		02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4C2501333000B28F13 /* Main.storyboard */; };
@@ -50,6 +52,11 @@
 		02061D352503589200B93F04 /* TimetableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableViewController.swift; sourceTree = "<group>"; };
 		0236F16825031113008AEFF2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		02473D6925222C380069A622 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
+		02473D712524EB480069A622 /* SettingPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingPreference.swift; sourceTree = "<group>"; };
+		02473DA92529B2540069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		02473DAA2529B2540069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		02473DAE2529B32D0069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = ja; path = ja.lproj/Main.storyboard; sourceTree = "<group>"; };
+		02473DAF2529B3D10069A622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02DD3B482501333000B28F13 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -130,6 +137,8 @@
 				02473D6925222C380069A622 /* Timetable.swift */,
 				02EABE4D2504CC9800628B40 /* ViewExtention.swift */,
 				02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */,
+				02473D712524EB480069A622 /* SettingPreference.swift */,
+				02473D9E2529B1B50069A622 /* Localizable.strings */,
 				02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
 				02DD3B782501342D00B28F13 /* ic_clock2.png */,
@@ -244,6 +253,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 02DD3B3A2501333000B28F13;
 			productRefGroup = 02DD3B442501333000B28F13 /* Products */;
@@ -263,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */,
+				02473D9C2529B1B50069A622 /* Localizable.strings in Resources */,
 				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
 				02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */,
@@ -298,6 +309,7 @@
 				0236F16925031113008AEFF2 /* MainViewController.swift in Sources */,
 				02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */,
 				02473D6A25222C380069A622 /* Timetable.swift in Sources */,
+				02473D722524EB480069A622 /* SettingPreference.swift in Sources */,
 				02061D362503589200B93F04 /* TimetableViewController.swift in Sources */,
 				02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */,
 				020066EF250AF4C5003806ED /* CustomDialog.swift in Sources */,
@@ -337,10 +349,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		02473D9E2529B1B50069A622 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02473DAA2529B2540069A622 /* ja */,
+				02473DAF2529B3D10069A622 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		02DD3B4C2501333000B28F13 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				02DD3B4D2501333000B28F13 /* Base */,
+				02473DAE2529B32D0069A622 /* ja */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -349,6 +371,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				02DD3B522501333200B28F13 /* Base */,
+				02473DA92529B2540069A622 /* ja */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -360,6 +383,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -407,7 +431,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -421,6 +445,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -462,7 +487,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

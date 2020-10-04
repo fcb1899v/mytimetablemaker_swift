@@ -34,7 +34,7 @@ class CustomDialog: NSObject {
     class func setDateRegisterAction(datebutton: UIButton, datepicker: UIDatePicker, stringformat: String) -> UIAlertAction {
         let dateformatter = DateFormatter()
         dateformatter.dateFormat = stringformat
-        return UIAlertAction(title: "Register", style: .default){ (action) in
+        return UIAlertAction(title: "Register".localized, style: .default){ (action) in
              let datestring = dateformatter.string(from: datepicker.date)
              datebutton.setTitle(datestring,for: UIControl.State.normal)
         }
@@ -42,7 +42,7 @@ class CustomDialog: NSObject {
     
     //キャンセルボタン
     class func setCancelAction() -> UIAlertAction {
-        return UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        return UIAlertAction(title: "Cancel".localized, style: .cancel, handler: nil)
     }
 
     //駅名および路線名を設定するTextFieldの設定
@@ -52,7 +52,7 @@ class CustomDialog: NSObject {
             (textfield: UITextField!) in
             textfield.text = FileAndData.getUserDefaultValue(key: key, defaultvalue: "")
             textfield.textAlignment = NSTextAlignment.center
-            textfield.placeholder = "Maximum 20 Charactors"
+            textfield.placeholder = "Maximum 20 Charactors".localized
             textfield.keyboardType = .default})
         return alert
     }
@@ -67,23 +67,27 @@ class CustomDialog: NSObject {
  
     //乗車駅名を設定するダイアログ
     class func departStationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
-        let title = "Setting your station name "
-        let message = "of departure station " + keytag
+        let title = "Setting your station name ".localized
+        let message = (goorback == "back2" || goorback == "go2") ?
+            "of departure station ".localized + "2-" + keytag:
+            "of departure station ".localized + "1-" + keytag
         let key = goorback + "departstation" + keytag
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
     }
     
     //降車駅名を設定するダイアログ
     class func arriveStationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
-        let title = "Setting your station name "
-        let message = "of arrival station " + keytag
+        let title = "Setting your station name ".localized
+        let message = (goorback == "back2" || goorback == "go2") ?
+            "of arrival station ".localized + "2-" + keytag:
+            "of arrival station ".localized + "1-" + keytag
         let key = goorback + "arrivestation" + keytag
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
     }
 
     //出発地を設定するダイアログ
     class func departurepointTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String) {
-        let title = "Setting your departure place"
+        let title = "Setting your departure place".localized
         let message = ""
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
@@ -91,7 +95,7 @@ class CustomDialog: NSObject {
 
     //目的地を設定するダイアログ
     class func destinationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String) {
-        let title = "Setting your destination"
+        let title = "Setting your destination".localized
         let message = ""
         let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
         textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
@@ -99,7 +103,7 @@ class CustomDialog: NSObject {
 
     //登録ボタン：UserDefaultにデータ保存・ラベルにテキスト表示
     class func setTextFieldRegistorAction(label: UILabel, textfield: UITextField, key: String) -> UIAlertAction {
-        return UIAlertAction(title: "Register", style: .default) {
+        return UIAlertAction(title: "Register".localized, style: .default) {
             (action: UIAlertAction) in
             label.text = textfield.text!
             UserDefaults.standard.set(textfield.text, forKey: key)
@@ -108,7 +112,7 @@ class CustomDialog: NSObject {
     
     //登録ボタン：UserDefaultにデータ保存
     class func setMinutesFieldRegistorAction(textfield: UITextField, key: String, unit: String) -> UIAlertAction {
-        return UIAlertAction(title: "Register", style: .default) {
+        return UIAlertAction(title: "Register".localized, style: .default) {
             (action: UIAlertAction) in
             UserDefaults.standard.set(textfield.text, forKey: key)
         }
@@ -116,8 +120,10 @@ class CustomDialog: NSObject {
 
     //路線名を設定するダイアログ
     class func lineTextFieldDialog(viewcontroller: UIViewController, label: UILabel, stackview: UIStackView, goorback: String, keytag: String) {
-        let title = "Setting your line name"
-        let message = "of line " + keytag
+        let title = "Setting your line name".localized
+        let message = (goorback == "back2" || goorback == "go2") ?
+            "of ".localized + "line ".localized + "2-" + keytag:
+            "of ".localized + "line ".localized + "1-" + keytag
         let key = goorback + "linename" + keytag
         let alert = getTextFieldAlert(title: title, message: message, key: key)
         //登録ボタンの表示：入力したTextを保存・表示する
@@ -131,7 +137,7 @@ class CustomDialog: NSObject {
 
     //路線カラー設定ボタン：設定用ダイアログ表示・UserDefaultに路線データ保存・ラベルにテキスト表示
     class func setLineColorDialogAction(viewcontroller: UIViewController, textfield: UITextField, label: UILabel, stackview: UIStackView, goorback: String, keytag: String) -> UIAlertAction {
-        let title = "Setting your line color"
+        let title = "Setting your line color".localized
         let namekey = goorback + "linename" + keytag
         let colorkey = goorback + "linecolor" + keytag
         return UIAlertAction(title: title, style: .default) {
@@ -140,7 +146,7 @@ class CustomDialog: NSObject {
                 label.text = textfield.text!
                 UserDefaults.standard.set(textfield.text, forKey: namekey)
             }
-            colorPickerDialog(viewcontroller: viewcontroller, label: label, stackview: stackview, colorkey: colorkey, keytag: keytag)
+            colorPickerDialog(viewcontroller: viewcontroller, label: label, stackview: stackview, colorkey: colorkey, goorback: goorback, keytag: keytag)
         }
     }
   
@@ -153,9 +159,9 @@ class CustomDialog: NSObject {
                 UserDefaults.standard.set(color, forKey: colorkey)
         }
     }
-
+    
     //路線カラーを設定するダイアログ
-    class func colorPickerDialog(viewcontroller: UIViewController, label: UILabel, stackview: UIStackView, colorkey: String, keytag: String) {
+    class func colorPickerDialog(viewcontroller: UIViewController, label: UILabel, stackview: UIStackView, colorkey: String, goorback: String, keytag: String) {
 //        if #available(iOS 14.0, *) {
 //            let colorpicker = UIColorPickerViewController()
 //            colorpicker.supportsAlpha = false
@@ -164,40 +170,53 @@ class CustomDialog: NSObject {
 //            stackview.backgroundColor = colorpicker.selectedColor
 //            viewcontroller.present(colorpicker, animated: true, completion: nil)
 //        } else {
-            let title = "Setting your line color"
-            let message = "Line " + keytag
-            let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
-            picker.addAction(setColorRegistorAction(colortitle: "DEFAULT", color: 0x03DAC5, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "RED", color: 0xFF0000, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "ORANGE", color: 0xF68B1E, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "YELLOW", color: 0xFFD400, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "YELLOW GREEN", color: 0x99CC00, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "GREEN", color: 0x009933, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "BLUE GREEN", color: 0x00AC9A, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "LIGHT BLUE", color: 0x00BAE8, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "BLUE", color: 0x0000FF, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "NAVY BLUE", color: 0x003686, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "PURPLE", color: 0xA757A8, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "PINK", color: 0xE85298, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "DARK RED", color: 0xC9252F, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "BROWN", color: 0xBB6633, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "GOLD", color: 0xC5C544, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "SILVER", color: 0x89A1AD, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setColorRegistorAction(colortitle: "BLACK", color: 0x000000, label: label, stackview: stackview, colorkey: colorkey))
-            picker.addAction(setCancelAction())
-            viewcontroller.present(picker, animated: true, completion: nil)
 //        }
+        let title = "Setting your line color".localized
+        let namekey = goorback + "linename" + keytag
+        let defaultvalue = (goorback == "back2" || goorback == "go2") ?
+            "line ".localized + "2-" + keytag:
+            "line ".localized + "1-" + keytag
+        let message = "of ".localized + FileAndData.getUserDefaultValue(key: namekey, defaultvalue: defaultvalue)!
+        let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        let colorarray = [
+            ["DEFAULT".localized, 0x03DAC5],
+            ["RED".localized, 0xFF0000],
+            ["ORANGE".localized, 0xF68B1E],
+            ["YELLOW".localized, 0xFFD400],
+            ["YELLOW GREEN".localized, 0x99CC00],
+            ["GREEN".localized, 0x009933],
+            ["BLUE GREEN".localized, 0x00AC9A],
+            ["LIGHT BLUE".localized, 0x00BAE8],
+            ["BLUE".localized, 0x0000FF],
+            ["NAVY BLUE".localized, 0x003686],
+            ["PURPLE".localized, 0xA757A8],
+            ["PINK".localized, 0xE85298],
+            ["DARK RED".localized, 0xC9252F],
+            ["BROWN".localized, 0xBB6633],
+            ["GOLD".localized, 0xC5C544],
+            ["SILVER".localized, 0x89A1AD],
+            ["BLACK".localized, 0x000000]]
+        for i in 0..<colorarray.count {
+            picker.addAction(
+                setColorRegistorAction(
+                    colortitle: colorarray[i][0] as! String,
+                    color: colorarray[i][1] as! Int,
+                    label: label,
+                    stackview: stackview,
+                    colorkey: colorkey))
+        }
+        viewcontroller.present(picker, animated: true, completion: nil)
     }
 
     //移動手段を設定するダイアログ
     class func transportPickerDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
-        let title = "Setting your transportation"
-        let message = "from " + FileAndData.getTransitDepartStation(goorback: goorback, keytag: keytag)
+        let title = "Setting your transportation".localized
+        let message = "from ".localized + FileAndData.getTransitDepartStation(goorback: goorback, keytag: keytag) + "kara".localized
         let key = goorback + "transport" + keytag
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
-        picker.addAction(setChoiceRegistorAction(title: "Walking", label: label, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Bicycle", label: label, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Car", label: label, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Walking".localized, label: label, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Bicycle".localized, label: label, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Car".localized, label: label, key: key))
         picker.addAction(setCancelAction())
         viewcontroller.present(picker, animated: true, completion: nil)
     }
@@ -218,7 +237,7 @@ class CustomDialog: NSObject {
             (textfield: UITextField!) in
             textfield.text = FileAndData.getUserDefaultValue(key: key, defaultvalue: "")
             textfield.textAlignment = NSTextAlignment.center
-            textfield.placeholder = "Enter 0~99 [min]"
+            textfield.placeholder = "Enter 0~99 [min]".localized
             textfield.keyboardType = .phonePad})
         return alert
     }
@@ -227,66 +246,65 @@ class CustomDialog: NSObject {
     class func transitTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String) {
         let departstation = FileAndData.getTransitDepartStation(goorback: goorback, keytag: keytag)
         let arrivestation = FileAndData.getTransitArriveStation(goorback: goorback, keytag: keytag)
-        let title = "Setting your required time [min]"
-        let message = "from " + departstation + " to " + arrivestation
+        let title = "Setting your required time [min]".localized
+        let message = "from ".localized + departstation + " to ".localized + arrivestation
         let key = goorback + "transittime" + keytag
+        let unit = "[min]".localized
         //TextFieldのアラートを表示
         let alert = getMinutesFieldAlert(title: title, message: message, key: key)
         //登録ボタンの表示：入力したTextを保存・表示する
-        alert.addAction(setMinutesFieldRegistorAction(textfield: (alert.textFields?.first)!, key: key, unit: " [min]"))
+        alert.addAction(setMinutesFieldRegistorAction(textfield: (alert.textFields?.first)!, key: key, unit: unit))
         //キャンセルボタン：アラートから抜ける
         alert.addAction(setCancelAction())
         viewcontroller.present(alert, animated: true, completion: nil)
     }
 
     //乗車時間を設定するダイアログ
-    class func rideTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String, stackview: UIStackView, goorbackflag: Bool) {
+    class func rideTimeFieldDialog(viewcontroller: UIViewController, stackview: UIStackView, goorback: String, keytag: String, weekflag: Bool) {
         let linekey = goorback + "linename" + keytag
-        let defaultvalue = (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
+        let defaultvalue = (goorback == "back2" || goorback == "go2") ?
+            "Line ".localized + "2-" + keytag:
+            "Line ".localized + "1-" + keytag
         let linename = FileAndData.getUserDefaultValue(key: linekey, defaultvalue: defaultvalue)!
-        let title = "Setting your ride time [min]"
-        let message = "on " + linename
+        let title = "Setting your ride time".localized + " " + "[min]".localized
+        let message = "on ".localized + linename
         let key = goorback + "ridetime" + keytag
+        let unit = "[min]".localized
         //TextFieldのアラートを表示
         let alert = getMinutesFieldAlert(title: title, message: message, key: key)
+        let textfield = (alert.textFields?.first)!
         //登録ボタンの表示：入力したTextを保存・表示する
-        alert.addAction(setMinutesFieldRegistorAction(textfield: (alert.textFields?.first)!, key: key, unit: " [min]"))
+        alert.addAction(setMinutesFieldRegistorAction(textfield: textfield, key: key, unit: unit))
         //キャンセルボタン：アラートから抜ける
         alert.addAction(setCancelAction())
-        alert.addAction(storyboardTimetableAction(viewcontroller: viewcontroller, textfield: (alert.textFields?.first)!, key: key, stackview: stackview, goorbackflag: goorbackflag))
+        alert.addAction(storyboardTimetableAction(viewcontroller: viewcontroller, textfield: textfield, key: key, goorback: goorback, keytag: keytag, weekflag: weekflag))
         viewcontroller.present(alert, animated: true, completion: nil)
     }
 
     //時刻表画面に遷移するアクション
-    class func storyboardTimetableAction(viewcontroller: UIViewController, textfield: UITextField, key: String, stackview: UIStackView, goorbackflag: Bool) -> UIAlertAction{
-        return UIAlertAction(title: "Setting your timetable", style: .default) {
+    class func storyboardTimetableAction(viewcontroller: UIViewController, textfield: UITextField, key: String, goorback: String, keytag: String, weekflag: Bool) -> UIAlertAction{
+        let title = "Setting your timetable".localized
+        return UIAlertAction(title: title, style: .default) {
             (action: UIAlertAction) in
             UserDefaults.standard.set(textfield.text, forKey: key)
             let storyboard = viewcontroller.storyboard!
             let vc = storyboard.instantiateViewController(withIdentifier: "timetableview") as! TimetableViewController
-            if (goorbackflag) {
-                vc.goorback = (11...13 ~= stackview.tag) ? "back1": "back2"
-            } else {
-                vc.goorback = (11...13 ~= stackview.tag) ? "go1": "go2"
-            }
-            switch (stackview.tag) {
-                case 12, 22: vc.keytag = "2"
-                case 13, 23: vc.keytag = "3"
-                default: vc.keytag = "1"
-            }
+            vc.goorback = goorback
+            vc.keytag = keytag
+            vc.weekflag = weekflag
             viewcontroller.present(vc, animated: true)
         }
     }
-
+    
     //乗換回数を設定するダイアログ
     class func changeLinePickerDialog(viewcontroller: UIViewController, taplabel: UILabel, setlabel: UILabel, goorback: String) {
-        let title = "Setting your number of transfers"
+        let title = "Setting your number of transfers".localized
         let message = taplabel.text
         let key = goorback + "changeline"
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
-        picker.addAction(setChoiceRegistorAction(title: "Zero", label: setlabel, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Once", label: setlabel, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Twice", label: setlabel, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Zero".localized, label: setlabel, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Once".localized, label: setlabel, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Twice".localized, label: setlabel, key: key))
         picker.addAction(setCancelAction())
         viewcontroller.present(picker, animated: true, completion: nil)
     }
@@ -298,52 +316,185 @@ class CustomDialog: NSObject {
         let temptext = (currenttext + splitunit + addtext)
             .trimmingCharacters(in: .whitespaces)
         let textarray = Array(Set(temptext
-            .components(separatedBy: CharacterSet(charactersIn: splitunit))
-            .map{(Int($0) ?? 60)}
-            .filter({$0 < 60})
-            .filter({$0 > -1})))
+                .components(separatedBy: CharacterSet(charactersIn: splitunit))
+                .map{Int($0) ?? 60}
+                .filter{$0 < 60}
+                .filter{$0 > -1}
+            ))
             .sorted()
-            .map{(String($0))}
+            .map{String($0)}
         let edittext = textarray.joined(separator: splitunit)
         UserDefaults.standard.set(edittext, forKey: timekey)
         return edittext
     }
     
+    //時刻を削除する関数
+    class func deleteTimeFromTimetable(label: UILabel, deletetext: String, timekey: String) -> String {
+        let splitunit = " "
+        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "") ?? ""
+        let temparray = Array(Set(currenttext
+            .components(separatedBy: CharacterSet(charactersIn: splitunit))
+                .map{Int($0) ?? 60}
+                .filter{$0 < 60}
+                .filter{$0 > -1}
+            ))
+        let textarray = temparray
+            .sorted()
+            .map{String($0)}
+            .filter{$0 != deletetext}
+        let edittext = textarray.joined(separator: splitunit)
+        UserDefaults.standard.set(edittext, forKey: timekey)
+        return edittext
+    }
+
     //時刻表の時刻を設定するTextFieldの設定
     class func getTimeFieldAlert(title: String, message: String) -> UIAlertController{
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
         alert.addTextField(configurationHandler: {
             (textfield: UITextField!) in
             textfield.textAlignment = NSTextAlignment.center
-            textfield.placeholder = "Enter 0~99 [min]"
+            textfield.placeholder = "Enter 0~99 [min]".localized
             textfield.keyboardType = .phonePad})
         return alert
     }
 
     //時刻表の時刻登録ボタン：UserDefaultにデータ保存
-    class func setTimeFieldRegistorAction(textfield: UITextField, label: UILabel, timekey: String) -> UIAlertAction {
-        return UIAlertAction(title: "Register", style: .default) {
+    class func setTimeFieldRegistorAction(viewcontroller: UIViewController, textfield: UITextField, label: UILabel, timekey: String, goorback: String, weekflag: Bool, keytag: String, timekeytag: String) -> UIAlertAction {
+        return UIAlertAction(title: "Register".localized, style: .default) {
             (action: UIAlertAction) in
             let edittext = addTimeFromTimetable(label: label, addtext: textfield.text ?? "", timekey: timekey)
             label.text = edittext
+            setTimeFieldDialog(viewcontroller: viewcontroller, label: label, goorback: goorback, weekflag: weekflag, keytag: keytag, timekeytag: timekeytag)
         }
     }
 
+    //時刻表の時刻登録ボタン：UserDefaultにデータ保存
+    class func deleteTimeFieldRegistorAction(textfield: UITextField, label: UILabel, timekey: String) -> UIAlertAction {
+        return UIAlertAction(title: "Delete".localized, style: .destructive) {
+            (action: UIAlertAction) in
+            let edittext = deleteTimeFromTimetable(label: label, deletetext: textfield.text ?? "", timekey: timekey)
+            label.text = edittext
+        }
+    }
+    
     //時刻表の時刻を登録・削除するダイアログ
     class func setTimeFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, weekflag: Bool, keytag: String, timekeytag: String) {
         let key = goorback + "linename" + keytag
-        let defaultvalue = (goorback == "back2" || goorback == "go2") ? "Line 2-" + keytag: "Line 1-" + keytag
+        let defaultvalue = (goorback == "back2" || goorback == "go2") ?
+            "Line ".localized + "2-" + keytag:
+            "Line ".localized + "1-" + keytag
         let linename = FileAndData.getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
-        let weektag = (weekflag) ? "weekday": "weekend"
-        let title = "Setting your timetable [min]"
-        let message = "on " + linename
+        let weektag = (weekflag) ? "weekday".localized: "weekend".localized
+        let title = "Setting your timetable".localized + " " + "[min]".localized
+        let message = "on ".localized + linename
         let timekey = goorback + "line" + keytag + weektag + timekeytag
         //TextFieldのアラートを表示
         let alert = getTimeFieldAlert(title: title, message: message)
         //登録ボタンの表示：入力したTextを保存・表示する
-        alert.addAction(setTimeFieldRegistorAction(textfield: (alert.textFields?.first)!, label: label, timekey: timekey))
+        alert.addAction(setTimeFieldRegistorAction(viewcontroller: viewcontroller, textfield: (alert.textFields?.first)!, label: label, timekey: timekey, goorback: goorback, weekflag: weekflag, keytag: keytag, timekeytag: timekeytag))
+        //削除ボタンの表示：入力したTextを削除する
+        alert.addAction(deleteTimeFieldRegistorAction(textfield: (alert.textFields?.first)!, label: label, timekey: timekey))
         //キャンセルボタン：アラートから抜ける
         alert.addAction(setCancelAction())
+        viewcontroller.present(alert, animated: true, completion: nil)
+    }
+    
+    //設定画面用の路線名を設定するダイアログ
+    class func prefLineTextFieldDialog(viewcontroller: UIViewController, linenamelabel: UILabel, ridetimelabel: UILabel, goorback: String, keytag: String) {
+        let title = "Setting your line name".localized
+        let message = "of ".localized + "line ".localized + keytag
+        let key = goorback + "linename" + keytag
+        let alert = getTextFieldAlert(title: title, message: message, key: key)
+        //登録ボタンの表示：入力したTextを保存・表示する
+        alert.addAction(setTextFieldRegistorAction(label: linenamelabel, textfield: (alert.textFields?.first)!, key: key))
+        //キャンセルボタン：アラートから抜ける
+        alert.addAction(setCancelAction())
+        //路線カラーの設定
+        alert.addAction(prefLineColorDialogAction(viewcontroller: viewcontroller, textfield: (alert.textFields?.first)!, linenamelabel: linenamelabel, ridetimelabel: ridetimelabel, goorback: goorback, keytag: keytag))
+        viewcontroller.present(alert, animated: true, completion: nil)
+    }
+
+    //設定画面用の路線カラー設定ボタン：設定用ダイアログ表示・UserDefaultに路線データ保存・ラベルにテキスト表示
+    class func prefLineColorDialogAction(viewcontroller: UIViewController, textfield: UITextField, linenamelabel: UILabel, ridetimelabel: UILabel, goorback: String, keytag: String) -> UIAlertAction {
+        let title = "Setting your line color".localized
+        let linenamekey = goorback + "linename" + keytag
+        let colorkey = goorback + "linecolor" + keytag
+        return UIAlertAction(title: title, style: .default) {
+            (action: UIAlertAction) in
+            if (textfield.text != nil) {
+                linenamelabel.text = textfield.text!
+                UserDefaults.standard.set(textfield.text, forKey: linenamekey)
+            }
+            prefColorPickerDialog(viewcontroller: viewcontroller, linenamelabel: linenamelabel, ridetimelabel: ridetimelabel, colorkey: colorkey, goorback: goorback, keytag: keytag)
+        }
+    }
+
+    //設定画面用の路線カラー設定ボタン
+    class func prefColorRegistorAction(colortitle: String, color: Int, linenamelabel: UILabel, ridetimelabel: UILabel, colorkey: String) -> UIAlertAction {
+        return UIAlertAction(title: colortitle, style: .default) {
+            (action: UIAlertAction) in
+                linenamelabel.textColor = UIColor(rgb: color)
+                ridetimelabel.textColor = UIColor(rgb: color)
+                UserDefaults.standard.set(color, forKey: colorkey)
+        }
+    }
+
+    //設定画面用の路線カラーを設定するダイアログ
+    class func prefColorPickerDialog(viewcontroller: UIViewController, linenamelabel: UILabel, ridetimelabel: UILabel, colorkey: String, goorback: String, keytag: String) {
+        let linenamekey = goorback + "linename" + keytag
+        let defaultvalue = "line ".localized + keytag
+        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)!
+        let title = "Setting your line color".localized
+        let message = "of ".localized + linename
+        let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        let colorarray = [
+            ["DEFAULT".localized, 0x03DAC5],
+            ["RED".localized, 0xFF0000],
+            ["ORANGE".localized, 0xF68B1E],
+            ["YELLOW".localized, 0xFFD400],
+            ["YELLOW GREEN".localized, 0x99CC00],
+            ["GREEN".localized, 0x009933],
+            ["BLUE GREEN".localized, 0x00AC9A],
+            ["LIGHT BLUE".localized, 0x00BAE8],
+            ["BLUE".localized, 0x0000FF],
+            ["NAVY BLUE".localized, 0x003686],
+            ["PURPLE".localized, 0xA757A8],
+            ["PINK".localized, 0xE85298],
+            ["DARK RED".localized, 0xC9252F],
+            ["BROWN".localized, 0xBB6633],
+            ["GOLD".localized, 0xC5C544],
+            ["SILVER".localized, 0x89A1AD],
+            ["BLACK".localized, 0x000000]]
+        for i in 0..<colorarray.count {
+            picker.addAction(
+                prefColorRegistorAction(
+                    colortitle: colorarray[i][0] as! String,
+                    color: colorarray[i][1] as! Int,
+                    linenamelabel: linenamelabel,
+                    ridetimelabel: ridetimelabel,
+                    colorkey: colorkey))
+        }
+        viewcontroller.present(picker, animated: true, completion: nil)
+    }
+
+    //設定画面用の乗車時間を設定するダイアログ
+    class func prefRideTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String, weekflag: Bool) {
+        let linenamekey = goorback + "linename" + keytag
+        let defaultvalue = "Line ".localized + keytag
+        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)!
+        let title = "Setting your ride time".localized + " " + "[min]".localized
+        let message = "on ".localized + linename
+        let key = goorback + "ridetime" + keytag
+        let unit =  "[min]".localized
+        //TextFieldのアラートを表示
+        let alert = getMinutesFieldAlert(title: title, message: message, key: key)
+        let textfield = (alert.textFields?.first)!
+        //登録ボタンの表示：入力したTextを保存・表示する
+        alert.addAction(setMinutesFieldRegistorAction(textfield: textfield, key: key, unit: unit))
+        //キャンセルボタン：アラートから抜ける
+        alert.addAction(setCancelAction())
+        //時刻表遷移ボタン
+        alert.addAction(storyboardTimetableAction(viewcontroller: viewcontroller, textfield: textfield, key: key, goorback: goorback, keytag: keytag, weekflag: weekflag))
         viewcontroller.present(alert, animated: true, completion: nil)
     }
 }

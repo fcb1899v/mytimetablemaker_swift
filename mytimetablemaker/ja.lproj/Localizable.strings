@@ -1,0 +1,93 @@
+/* 
+  Localizable.strings
+  mytimetablemaker
+
+  Created by 中島正雄 on 2020/10/04.
+  Copyright © 2020 com.nakajimamasao. All rights reserved.
+*/
+
+"E, MMM d, yyyy" = "yyyy/M/d (E)";
+
+"Register" = "登録";
+"Cancel" = "キャンセル";
+"Delete" = "削除";
+"Maximum 20 Charactors" = "全角10文字以内";
+"Enter 0~99 [min]" = "0〜99[分]を入力";
+"[min]" = "[分]";
+"Not set" = "未設定";
+"Not use" = "未利用";
+
+"Weekday" = "平日";
+"Weekend" = "土日";
+"WEEKDAY" = "平日";
+"WEEKEND" = "土日";
+
+"Zero" = "なし";
+"Once" = "1回";
+"Twice" = "2回";
+
+"Walking" = "徒歩";
+"Bicycle" = "自転車";
+"Car" = "車";
+
+"DEFAULT" = "デフォルト";
+"RED" = "赤";
+"ORANGE" = "オレンジ";
+"YELLOW" = "黄";
+"YELLOW GREEN" = "黄緑";
+"GREEN" = "緑";
+"BLUE GREEN" = "青緑";
+"LIGHT BLUE" = "水色";
+"BLUE" = "青";
+"NAVY BLUE" = "紺";
+"PURPLE" = "紫";
+"PINK" = "ピンク";
+"DARK RED" = "えんじ";
+"BROWN" = "茶";
+"GOLD" = "ゴールド";
+"SILVER" = "シルバー";
+"BLACK" = "黒";
+
+
+"Office" = "オフィス";
+"Home" = "自宅";
+"Dep. St." = "発車駅";
+"Arr. St." = "降車駅";
+"Line " = "路線";
+"line " = "路線";
+"Departure place" = "出発地";
+"Destination" = "目的地";
+"Departure station " = "発車駅";
+"Arrival station " = "降車駅";
+
+"Various settings on route home 1" = "帰宅ルート1の設定";
+"Various settings on outgoing route 1" = "外出ルート1の設定";
+"Various settings on route home 2" = "帰宅ルート2の設定";
+"Various settings on outgoing route 2" = "外出ルート2の設定";
+"Setting your number of transfers" = "乗換回数の設定";
+"Setting your departure place" = "出発地の設定";
+"Setting your destination" = "目的地の設定";
+"Setting your station name " = "駅名の設定";
+"of departure station " = "発車駅";
+"of arrival station " = "降車駅";
+"Setting your line name" = "路線名の設定";
+"Setting your line color" = "路線カラーの設定";
+"Setting your transportation" = "移動手段の設定";
+"Setting your required time [min]" = "移動時間の設定 [min]";
+"Setting your ride time [min]" = "乗車時間の設定 [min]";
+"Setting your timetable" = "時刻表の設定";
+
+"of " = "";
+"from " = "";
+"From " = "";
+"kara" = "から";
+" to " = "から";
+"To " = "";
+"he" = "へ";
+"on " = "";
+" for " = "：";
+"houmen" = "方面";
+
+
+
+
