@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,7 @@
 		02473D6A25222C380069A622 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D6925222C380069A622 /* Timetable.swift */; };
 		02473D722524EB480069A622 /* SettingPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D712524EB480069A622 /* SettingPreference.swift */; };
 		02473D9C2529B1B50069A622 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02473D9E2529B1B50069A622 /* Localizable.strings */; };
+		02668A5C252E8A3700E2B2CD /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
 		02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4C2501333000B28F13 /* Main.storyboard */; };
@@ -27,6 +28,27 @@
 		02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */; };
 		02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4B2504C27B00628B40 /* FileAndData.swift */; };
 		02EABE4E2504CC9800628B40 /* ViewExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4D2504CC9800628B40 /* ViewExtention.swift */; };
+		02FB83B625331E99003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
+		02FB83B725331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
+		02FB83B825331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
+		02FB83BD25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */; };
+		02FB83BE25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */; };
+		02FB83BF25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */; };
+		02FB83C425331EBC003B21C7 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 02FB83C325331EBC003B21C7 /* Licenses */; };
+		02FB83C525331EBC003B21C7 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 02FB83C325331EBC003B21C7 /* Licenses */; };
+		02FB83C625331EBC003B21C7 /* Licenses in Resources */ = {isa = PBXBuildFile; fileRef = 02FB83C325331EBC003B21C7 /* Licenses */; };
+		02FB83CB25331EC6003B21C7 /* nanopb.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83CA25331EC6003B21C7 /* nanopb.xcframework */; };
+		02FB83CC25331EC6003B21C7 /* nanopb.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83CA25331EC6003B21C7 /* nanopb.xcframework */; };
+		02FB83CD25331EC6003B21C7 /* nanopb.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83CA25331EC6003B21C7 /* nanopb.xcframework */; };
+		02FB83D225331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */; };
+		02FB83D325331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */; };
+		02FB83D425331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */; };
+		02FB83D925331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */; };
+		02FB83DA25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */; };
+		02FB83DB25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */; };
+		02FB83DD25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
+		02FB83DE25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
+		02FB83DF25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +79,7 @@
 		02473DAA2529B2540069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02473DAE2529B32D0069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = ja; path = ja.lproj/Main.storyboard; sourceTree = "<group>"; };
 		02473DAF2529B3D10069A622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02DD3B482501333000B28F13 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -76,6 +99,13 @@
 		02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		02EABE4B2504C27B00628B40 /* FileAndData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAndData.swift; sourceTree = "<group>"; };
 		02EABE4D2504CC9800628B40 /* ViewExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtention.swift; sourceTree = "<group>"; };
+		02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppMeasurement.framework; sourceTree = "<group>"; };
+		02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleUtilities.xcframework; sourceTree = "<group>"; };
+		02FB83C325331EBC003B21C7 /* Licenses */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Licenses; sourceTree = "<group>"; };
+		02FB83CA25331EC6003B21C7 /* nanopb.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = nanopb.xcframework; sourceTree = "<group>"; };
+		02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PromisesObjC.xcframework; sourceTree = "<group>"; };
+		02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UserMessagingPlatform.framework; sourceTree = "<group>"; };
+		02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +113,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FB83DD25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */,
+				02FB83CB25331EC6003B21C7 /* nanopb.xcframework in Frameworks */,
+				02FB83B625331E99003B21C7 /* GoogleAppMeasurement.framework in Frameworks */,
+				02FB83D925331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */,
+				02FB83BD25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */,
+				02FB83D225331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +126,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FB83B725331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */,
+				02FB83DA25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */,
+				02668A5C252E8A3700E2B2CD /* GoogleMobileAds.framework in Frameworks */,
+				02FB83BE25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */,
+				02FB83CC25331EC6003B21C7 /* nanopb.xcframework in Frameworks */,
+				02FB83DE25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */,
+				02FB83D325331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +140,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FB83DF25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */,
+				02FB83CD25331EC6003B21C7 /* nanopb.xcframework in Frameworks */,
+				02FB83B825331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */,
+				02FB83DB25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */,
+				02FB83BF25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */,
+				02FB83D425331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +159,7 @@
 				02DD3B5C2501333200B28F13 /* mytimetablemakerTests */,
 				02DD3B672501333200B28F13 /* mytimetablemakerUITests */,
 				02DD3B442501333000B28F13 /* Products */,
+				38BE281975B6FC02ECCC6BDD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -165,6 +215,21 @@
 				02DD3B6A2501333200B28F13 /* Info.plist */,
 			);
 			path = mytimetablemakerUITests;
+			sourceTree = "<group>";
+		};
+		38BE281975B6FC02ECCC6BDD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */,
+				02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */,
+				02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */,
+				02FB83CA25331EC6003B21C7 /* nanopb.xcframework */,
+				02FB83C325331EBC003B21C7 /* Licenses */,
+				02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */,
+				02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */,
+				02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -276,6 +341,7 @@
 				02473D9C2529B1B50069A622 /* Localizable.strings in Resources */,
 				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
+				02FB83C425331EBC003B21C7 /* Licenses in Resources */,
 				02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */,
 				02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */,
 			);
@@ -285,6 +351,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FB83C525331EBC003B21C7 /* Licenses in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +359,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02FB83C625331EBC003B21C7 /* Licenses in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,6 +485,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -435,6 +504,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -479,6 +549,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -490,6 +561,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -503,6 +575,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemaker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -521,6 +597,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemaker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -540,6 +620,10 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemakerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -562,6 +646,10 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemakerTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.7;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -583,6 +671,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemakerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -603,6 +695,10 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = mytimetablemakerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

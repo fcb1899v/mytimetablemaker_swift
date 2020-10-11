@@ -1,18 +1,21 @@
 //
 //  AppDelegate.swift
 //  mytimetablemaker
-//
 //  Created by 中島正雄 on 2020/09/03.
 //  Copyright © 2020 com.nakajimamasao. All rights reserved.
 //
 
 import UIKit
+import GoogleMobileAds
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
 

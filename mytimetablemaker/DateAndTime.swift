@@ -182,7 +182,12 @@ class DateAndTime: NSObject {
     class func getStringTime(time: Int) -> String {
         let stringtimehh = addZeroTime(time: time / 100 + (time % 100) / 60)
         let stringtimemm = addZeroTime(time: time % 100 % 60)
-        return stringtimehh + ":" + stringtimemm
+        let stringtime = stringtimehh + ":" + stringtimemm
+        if (stringtime != "27:00") {
+            return stringtimehh + ":" + stringtimemm
+        } else {
+            return "--:--"
+        }
     }
     
     //ボタンの表示変更
@@ -204,7 +209,7 @@ class DateAndTime: NSObject {
         var transittimearray: [Int] = []
         for i in 0...changeline + 1 {
            let key = (i == changeline + 1) ? goorback + "transittimee": goorback + "transittime" + String(i + 1)
-            transittimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!)
+            transittimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0))
         }
         return transittimearray
     }
@@ -212,7 +217,7 @@ class DateAndTime: NSObject {
     //乗車時間を取得する関数
     class func getRideTime(goorback: String, changeline: Int, keytag: String) -> Int {
         let key = goorback + "ridetime" + keytag
-        return FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)!
+        return FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)
     }
     
     //乗車時間の配列を取得する関数
@@ -243,6 +248,28 @@ class DateAndTime: NSObject {
         return timearrays
     }
 
+    //ルート内の各路線の乗車可能時刻[0]・発車時刻[1]・到着時刻[2]を取得する関数
+    class func getDisplayTimeArray(currenttime: Int, changeline: Int, transittime: [Int], ridetime: [Int], timetable: [[Int]]) -> [String] {
+        let timearray = getTimeArray(currenttime: currenttime, changeline: changeline, transittime: transittime, ridetime: ridetime, timetable: timetable)
+        var displaytimearray: [String] = []
+
+        //乗車可能時刻・発車時刻・到着時刻を取得
+        displaytimearray.append(getStringTime(time: getMinusHHMM(time1: timearray[0][1],time2: transittime[0])))
+        displaytimearray.append(getStringTime(time: getPlusHHMM(time1: timearray[changeline][2], time2: transittime[changeline + 1])))
+        for i in 0...changeline {
+            displaytimearray.append(getStringTime(time: timearray[i][1]))
+            displaytimearray.append(getStringTime(time: timearray[i][2]))
+        }
+
+        return displaytimearray
+    }
+    
+    class func getDepartureTime(currenttime: Int, transittime: Int, timetable: [[Int]]) -> Int {
+        let possibletime = getPlusHHMM(time1: currenttime/100, time2: transittime)
+        let nextstarttime = getNextStartTime(possibletime: possibletime, timetable: timetable[0])
+        return getMinusHHMM(time1: nextstarttime, time2: transittime)
+    }
+
     //発車時刻を取得する関数
     class func getNextStartTime(possibletime: Int, timetable: [Int]) -> Int {
         var nextstarttime: Int
@@ -257,39 +284,35 @@ class DateAndTime: NSObject {
     }
 
     //カウントダウン時間（mm:ss）を取得する関数
-    class func getCountdownTime(currenthhmmss: Int, departtime: Int, timeflag: Bool) -> String {
-        var countdowntime = "--:--"
-        if (timeflag) {
-            //カウントダウン（出発時刻と現在時刻の差）を計算
-            var intcountdowntime =
-                getHHMMSStoMMSS(time: getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss))
-            switch (intcountdowntime) {
-                case 1...9959: break
-                case -59...0: intcountdowntime = 0
-                default: intcountdowntime = -100
-            }
-            let countdownmm: String = addZeroTime(time: intcountdowntime / 100)
-            let countdownss: String = addZeroTime(time: intcountdowntime % 100)
-            if (intcountdowntime == -100) { return "--:--" }
-            countdowntime = countdownmm + ":" + countdownss
+    class func getCountdownTime(currenthhmmss: Int, departtime: Int) -> String {
+        //カウントダウン（出発時刻と現在時刻の差）を計算
+        var intcountdowntime =
+            getHHMMSStoMMSS(time: getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss))
+        switch (intcountdowntime) {
+            case 1...9959: break
+            case -59...0: intcountdowntime = 0
+            default: intcountdowntime = -100
         }
-        return countdowntime
+        let countdownmm: String = addZeroTime(time: intcountdowntime / 100)
+        let countdownss: String = addZeroTime(time: intcountdowntime % 100)
+        if (intcountdowntime == -100) {
+            return "--:--"
+        } else {
+            return countdownmm + ":" + countdownss
+        }
     }
 
     //カウントダウン表示の警告色を取得する関数
-    class func getCountDownColor(currenthhmmss: Int, departtime:Int, timeflag: Bool) -> UIColor{
-        var countdowncolor = 0x8E8E93
-        if (timeflag) {
-            let intcountdown = getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss)
-            if (intcountdown % 2 == 0) {
-                switch (intcountdown) {
-                    case 1000...9999: countdowncolor = 0x03DAC5
-                    case 500...999: countdowncolor = 0xFFFF00
-                    case -59...499: countdowncolor = 0xFF0000
-                    default: countdowncolor = 0x8E8E93
-                }
+    class func getCountDownColor(currenthhmmss: Int, departtime:Int) -> UIColor{
+        let intcountdown = getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss)
+        if (intcountdown % 2 == 0) {
+            switch (intcountdown) {
+                case 1000...9999: return UIColor(rgb: 0x03DAC5)
+                case 500...999: return UIColor(rgb: 0xFFFF00)
+                case -59...499: return UIColor(rgb: 0xFF0000)
+                default: return UIColor(rgb: 0x8E8E93)
             }
         }
-        return UIColor(rgb: countdowncolor)
+        return UIColor(rgb: 0x8E8E93)
     }
 }

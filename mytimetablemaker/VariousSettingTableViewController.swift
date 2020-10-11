@@ -218,7 +218,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func departstationbutton1(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
+        CustomDialog.prefDepartStationTextFieldDialog(
             viewcontroller:self,
             label: departstationlabel1,
             goorback: goorback!,
@@ -226,7 +226,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func arrivalstationbutton1(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
+        CustomDialog.prefArriveStationTextFieldDialog(
             viewcontroller:self,
             label: arrivalstationlabel1,
             goorback: goorback!,
@@ -234,7 +234,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func departstationbutton2(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
+        CustomDialog.prefDepartStationTextFieldDialog(
             viewcontroller:self,
             label: departstationlabel2,
             goorback: goorback!,
@@ -242,7 +242,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func arrivalstationbutton2(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
+        CustomDialog.prefArriveStationTextFieldDialog(
             viewcontroller:self,
             label: arrivalstationlabel2,
             goorback: goorback!,
@@ -250,7 +250,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func departstationbutton3(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
+        CustomDialog.prefDepartStationTextFieldDialog(
             viewcontroller:self,
             label: departstationlabel3,
             goorback: goorback!,
@@ -258,7 +258,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func arrivalstationbutton3(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
+        CustomDialog.prefArriveStationTextFieldDialog(
             viewcontroller:self,
             label: arrivalstationlabel3,
             goorback: goorback!,
@@ -333,7 +333,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transportationbutton1(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
+        CustomDialog.prefTransportPickerDialog(
             viewcontroller: self,
             label: transportationlabel1,
             goorback: goorback!,
@@ -341,7 +341,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transportationbutton2(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
+        CustomDialog.prefTransportPickerDialog(
             viewcontroller: self,
             label: transportationlabel2,
             goorback: goorback!,
@@ -349,7 +349,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transportationbutton3(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
+        CustomDialog.prefTransportPickerDialog(
             viewcontroller: self,
             label: transportationlabel3,
             goorback: goorback!,
@@ -357,7 +357,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transportationbuttone(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
+        CustomDialog.prefTransportPickerDialog(
             viewcontroller: self,
             label: transportationlabele,
             goorback: goorback!,
@@ -365,7 +365,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transittimebutton1(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
+        CustomDialog.prefTransitTimeFieldDialog(
             viewcontroller: self,
             goorback: goorback!,
             keytag: "1")
@@ -375,7 +375,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transittimebutton2(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
+        CustomDialog.prefTransitTimeFieldDialog(
             viewcontroller: self,
             goorback: goorback!,
             keytag: "2")
@@ -385,7 +385,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transittimebutton3(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
+        CustomDialog.prefTransitTimeFieldDialog(
             viewcontroller: self,
             goorback: goorback!,
             keytag: "3")
@@ -395,7 +395,7 @@ class VariousSettingsTableViewController: UITableViewController {
     }
     
     @IBAction func transittimebuttone(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
+        CustomDialog.prefTransitTimeFieldDialog(
             viewcontroller: self,
             goorback: goorback!,
             keytag: "e")

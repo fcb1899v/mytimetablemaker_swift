@@ -49,7 +49,7 @@ class Timetable: NSObject {
     class func getTimetableTime(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> String {
         let weektag = (weekflag) ? "weekday".localized: "weekend".localized
         let timekey = goorback + "line" + keytag + weektag + timekeytag
-        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "-")!
+        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "-")
     }
 
     //内部ストレージに保存された各時台の時刻表データを取得する関数
@@ -60,7 +60,7 @@ class Timetable: NSObject {
         let timetext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")
         var timearray: [Int] = []
         if (timetext != "") {
-            let timeset1 = Set(timetext!.components(separatedBy: CharacterSet(charactersIn: splitunit)))
+            let timeset1 = Set(timetext.components(separatedBy: CharacterSet(charactersIn: splitunit)))
             let timeset2 = timeset1.map{(Int($0)! + Int(timekeytag)! * 100)}
             let timeset3 = timeset2.filter({$0 < 2560}).filter({$0 > -1})
             timearray = Array(timeset3).sorted()

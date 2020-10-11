@@ -21,13 +21,16 @@ class FileAndData: NSObject {
     }
     
     //UserDefaultsに保存された文字列を取得する関数
-    class func getUserDefaultValue(key: String, defaultvalue: String) -> String? {
+    class func getUserDefaultValue(key: String, defaultvalue: String) -> String {
         return UserDefaults.standard.string(forKey: key) ?? defaultvalue
     }
 
     //UserDefaultsに保存された文字列を取得する関数
-    class func getUserDefaultInt(key: String, defaultvalue: Int) -> Int? {
-        return UserDefaults.standard.integer(forKey: key) ?? defaultvalue
+    class func getUserDefaultInt(key: String, defaultvalue: Int) -> Int {
+        if (UserDefaults.standard.object(forKey: key) != nil) {
+            return UserDefaults.standard.integer(forKey: key)
+        }
+        return defaultvalue
     }
 
     //UserDefaultsに保存された色データを取得する関数
@@ -40,15 +43,15 @@ class FileAndData: NSObject {
     //UserDefaultsに保存された目的地を取得する関数
     class func getDeparturePoint(goorback: String) -> String {
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
-        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Office".localized: "Home".localized
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home".localized: "Office".localized
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)
     }
 
     //UserDefaultsに保存された出発地を取得する関数
     class func getDestination(goorback: String) -> String {
         let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
         let defaultvalue = (goorback == "back1" || goorback == "back2") ? "Home".localized: "Office".localized
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)
     }
 
     //発車駅名の初期値を取得する関数
@@ -62,7 +65,7 @@ class FileAndData: NSObject {
     class func getDepartStation(goorback: String, keytag: String) -> String {
         return getUserDefaultValue(
             key: goorback + "departstation" + keytag,
-            defaultvalue: getDepartStationDefaultvalue(goorback: goorback, keytag: keytag))!
+            defaultvalue: getDepartStationDefaultvalue(goorback: goorback, keytag: keytag))
     }
 
     //降車駅名の初期値を取得する関数
@@ -76,25 +79,32 @@ class FileAndData: NSObject {
     class func getArriveStation(goorback: String, keytag: String) -> String {
         return getUserDefaultValue(
             key: goorback + "arrivestation" + keytag, 
-            defaultvalue: getArriveStationDefaultvalue(goorback: goorback, keytag: keytag))!
+            defaultvalue: getArriveStationDefaultvalue(goorback: goorback, keytag: keytag))
     }
 
     //乗換回数の取得
+    class func getChangeLine(goorback: String) -> String {
+        let changelinekey = goorback + "changeline"
+        let intchangeline = FileAndData.getUserDefaultInt(key: changelinekey, defaultvalue: 0)
+        switch (intchangeline) {
+            case 0: return "Zero".localized
+            case 1: return "Once".localized
+            case 2: return "Twice".localized
+            default: return "Not set".localized
+        }
+    }
+    
+    //乗換回数の取得
     class func getIntChangeLine(goorback: String) -> Int {
         let changelinekey = goorback + "changeline"
-        let changeline = FileAndData.getUserDefaultValue(key: changelinekey, defaultvalue: "Zero".localized)
-        switch (changeline) {
-            case "Once".localized: return 1
-            case "Twice".localized: return 2
-            default : return 0
-        }
+        return FileAndData.getUserDefaultInt(key: changelinekey, defaultvalue: 0)
     }
     
     //UserDefaultsに保存された乗換出発駅を取得する関数
     class func getTransitDepartStation(goorback: String, keytag: String) -> String {
         let key = getTransitDepartStationKey(goorback: goorback, keytag: keytag)
         let defaultvalue = getTransitDepartStationDefault(goorback: goorback, keytag: keytag)
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)
     }
     
     //
@@ -128,7 +138,7 @@ class FileAndData: NSObject {
     class func getTransitArriveStation(goorback: String, keytag: String) -> String {
         let key = getTransitArriveStationKey(goorback: goorback, keytag: keytag)
         let defaultvalue = getTransitArriveStationDefault(goorback: goorback, keytag: keytag)
-        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        return getUserDefaultValue(key: key, defaultvalue: defaultvalue)
     }
         
     //
@@ -169,7 +179,7 @@ class FileAndData: NSObject {
     class func getLinename(goorback: String, keytag: String) -> String {
         return getUserDefaultValue(
             key: goorback + "linename" + keytag, 
-            defaultvalue: getLinenameDefaultvalue(goorback: goorback, keytag: keytag))!
+            defaultvalue: getLinenameDefaultvalue(goorback: goorback, keytag: keytag))
     }
     
     //UserDefaultsに保存された路線カラーを取得する関数

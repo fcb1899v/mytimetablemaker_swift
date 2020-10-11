@@ -25,9 +25,8 @@ class SettingPreference: NSObject {
     }
     
     //ルート2のフラグに応じた乗換回数設定の設定
-    class func setChangeLineSettingTitle(changelinetitle: UILabel, changelinelabel: UILabel, switchflag: Bool) {
-        changelinelabel.text = (switchflag) ? FileAndData.getUserDefaultValue(
-            key: "back2changeline", defaultvalue: "Not set".localized): "Not use".localized
+    class func setChangeLineSettingTitle(goorback: String, changelinetitle: UILabel, changelinelabel: UILabel, switchflag: Bool) {
+        changelinelabel.text = (switchflag) ? FileAndData.getChangeLine(goorback: goorback): "Not use".localized
         changelinelabel.textColor = (switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
         changelinetitle.textColor = (switchflag) ? UIColor(rgb: 0x000000): UIColor(rgb: 0x8E8E93)
     }
@@ -57,14 +56,14 @@ class SettingPreference: NSObject {
     
     //UserDefaultsに保存された出発地を取得する関数
     class func getPrefDepartPlace(goorback: String) -> String {
-        if (goorback == "back1" || goorback == "back1") {
-            return FileAndData.getUserDefaultValue(
-                key: "departurepoint",
-                defaultvalue: "Not set".localized)!
-        } else {
+        if (goorback == "back1" || goorback == "back2") {
             return FileAndData.getUserDefaultValue(
                 key: "destination",
-                defaultvalue: "Not set".localized)!
+                defaultvalue: "Not set".localized)
+        } else {
+            return FileAndData.getUserDefaultValue(
+                key: "departurepoint",
+                defaultvalue: "Not set".localized)
         }
     }
     
@@ -72,26 +71,26 @@ class SettingPreference: NSObject {
     class func getPrefDepartStation(goorback: String, keytag: String) -> String {
         return FileAndData.getUserDefaultValue(
             key: goorback + "departstation" + keytag,
-            defaultvalue: "Not set".localized)!
+            defaultvalue: "Not set".localized)
     }
 
     //UserDefaultsに保存された降車駅名を取得する関数
     class func getPrefArriveStation(goorback: String, keytag: String) -> String {
         return FileAndData.getUserDefaultValue(
             key: goorback + "arrivestation" + keytag,
-            defaultvalue: "Not set".localized)!
+            defaultvalue: "Not set".localized)
     }
 
     //UserDefaultsに保存された目的地を取得する関数
     class func getPrefDestination(goorback: String) -> String {
-        if (goorback == "back1" || goorback == "back1") {
-            return FileAndData.getUserDefaultValue(
-                key: "destination",
-                defaultvalue: "Not set".localized)!
-        } else {
+        if (goorback == "back1" || goorback == "back2") {
             return FileAndData.getUserDefaultValue(
                 key: "departurepoint",
-                defaultvalue: "Not set".localized)!
+                defaultvalue: "Not set".localized)
+        } else {
+            return FileAndData.getUserDefaultValue(
+                key: "destination",
+                defaultvalue: "Not set".localized)
         }
     }
 
@@ -99,7 +98,7 @@ class SettingPreference: NSObject {
     class func getLineName(goorback: String, keytag: String) -> String {
         return FileAndData.getUserDefaultValue(
             key: goorback + "linename" + keytag,
-            defaultvalue: "Not set".localized)!
+            defaultvalue: "Not set".localized)
     }
 
     //
@@ -114,14 +113,14 @@ class SettingPreference: NSObject {
         let ridetime = FileAndData.getUserDefaultInt(
             key: goorback + "ridetime" + keytag,
             defaultvalue: 0)
-        return (ridetime == 0) ? "Not set".localized: String(ridetime!) + "[min]".localized
+        return (ridetime == 0) ? "Not set".localized: String(ridetime) + "[min]".localized
     }
     
     //
     class func getTransportation(goorback: String, keytag: String) -> String {
         return FileAndData.getUserDefaultValue(
             key: goorback + "transport" + keytag,
-            defaultvalue: "Not set".localized)!
+            defaultvalue: "Not set".localized)
     }
     
     //
@@ -129,6 +128,6 @@ class SettingPreference: NSObject {
         let ridetime = FileAndData.getUserDefaultInt(
             key: goorback + "transittime" + keytag,
             defaultvalue: 0)
-        return (ridetime == 0) ? "Not set".localized: String(ridetime!) + "[min]".localized
+        return (ridetime == 0) ? "Not set".localized: String(ridetime) + "[min]".localized
     }
 }

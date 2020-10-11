@@ -46,12 +46,10 @@ class SettingsTableViewController: UITableViewController {
             goorback2: "go2",
             switch2: go2switch)
         
-        back1changelinelabel.text = FileAndData.getUserDefaultValue(
-            key: "back1changeline",
-            defaultvalue: "Not set".localized)
-        go1changelinelabel.text = FileAndData.getUserDefaultValue(
-            key: "go1changeline",
-            defaultvalue: "Not set".localized)
+        back1changelinelabel.text = FileAndData.getChangeLine(goorback: "back1")
+        go1changelinelabel.text = FileAndData.getChangeLine(goorback: "go1")
+        back2changelinelabel.text = FileAndData.getChangeLine(goorback: "back2")
+        go2changelinelabel.text = FileAndData.getChangeLine(goorback: "go2")
 
         SettingPreference.setGoOrBack2SettingsTitle(
             settingstitle: back2settings,
@@ -61,10 +59,12 @@ class SettingsTableViewController: UITableViewController {
             switchflag: go2switchflag)
 
         SettingPreference.setChangeLineSettingTitle(
+            goorback: "back2",
             changelinetitle: back2changelinetable,
             changelinelabel: back2changelinelabel,
             switchflag: back2switchflag)
         SettingPreference.setChangeLineSettingTitle(
+            goorback: "go2",
             changelinetitle: go2changelinetable,
             changelinelabel: go2changelinelabel,
             switchflag: go2switchflag)
@@ -111,6 +111,7 @@ class SettingsTableViewController: UITableViewController {
             goorback2: "back2",
             sender: sender as AnyObject)
         SettingPreference.setChangeLineSettingTitle(
+            goorback: "back2",
             changelinetitle: back2changelinetable,
             changelinelabel: back2changelinelabel,
             switchflag: back2switchflag)
@@ -124,6 +125,7 @@ class SettingsTableViewController: UITableViewController {
             goorback2: "go2",
             sender: sender as AnyObject)
         SettingPreference.setChangeLineSettingTitle(
+            goorback: "go2",
             changelinetitle: go2changelinetable,
             changelinelabel: go2changelinelabel,
             switchflag: go2switchflag)

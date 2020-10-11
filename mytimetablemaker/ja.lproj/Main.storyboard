@@ -2506,7 +2506,6 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                         <subviews>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N1c-ec-VkX">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="3" height="40"/>
-                                                                                <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="3" id="xhl-VN-SeO"/>
@@ -2514,21 +2513,20 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                             </view>
                                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_clock2.png" translatesAutoresizingMaskIntoConstraints="NO" id="WLW-XW-pmI">
                                                                                 <rect key="frame" x="3" y="0.0" width="28" height="40"/>
-                                                                                <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="tintColor" systemColor="systemGrayColor"/>
                                                                             </imageView>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCv-qO-dCX">
                                                                                 <rect key="frame" x="31" y="0.0" width="3" height="40"/>
-                                                                                <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" constant="3" id="dKr-84-Of0"/>
                                                                                 </constraints>
                                                                             </view>
                                                                         </subviews>
+                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                         <gestureRecognizers/>
                                                                         <connections>
-                                                                            <outletCollection property="gestureRecognizers" destination="iaC-DT-x5s" appends="YES" id="cHd-Jh-uv8"/>
+                                                                            <outletCollection property="gestureRecognizers" destination="29S-2f-7EV" appends="YES" id="b8G-Y4-aCk"/>
                                                                         </connections>
                                                                     </stackView>
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v0Z-la-34e">
@@ -2683,7 +2681,6 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                                 <subviews>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cn0-K5-qva">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="3" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="width" constant="3" id="IqO-vV-Tce"/>
@@ -2691,21 +2688,20 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                                     </view>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_clock2.png" translatesAutoresizingMaskIntoConstraints="NO" id="vC3-uK-KYW">
                                                                                         <rect key="frame" x="3" y="0.0" width="28" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                     </imageView>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t9B-tv-mfP">
                                                                                         <rect key="frame" x="31" y="0.0" width="3" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="width" constant="3" id="qCp-GA-iOt"/>
                                                                                         </constraints>
                                                                                     </view>
                                                                                 </subviews>
+                                                                                <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <gestureRecognizers/>
                                                                                 <connections>
-                                                                                    <outletCollection property="gestureRecognizers" destination="ZqN-d7-WMS" appends="YES" id="g1O-er-JTh"/>
+                                                                                    <outletCollection property="gestureRecognizers" destination="92S-qg-oQa" appends="YES" id="Wcu-3d-rWR"/>
                                                                                 </connections>
                                                                             </stackView>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ofQ-QB-axt">
@@ -2865,7 +2861,6 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                                 <subviews>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="35s-wi-iiL">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="3" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="width" constant="3" id="I9q-pg-npg"/>
@@ -2873,21 +2868,20 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                                                                     </view>
                                                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_clock2.png" translatesAutoresizingMaskIntoConstraints="NO" id="kZz-Xx-zcp">
                                                                                         <rect key="frame" x="3" y="0.0" width="28" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                     </imageView>
                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HN0-HE-CoC">
                                                                                         <rect key="frame" x="31" y="0.0" width="3" height="40"/>
-                                                                                        <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                         <color key="tintColor" systemColor="systemGrayColor"/>
                                                                                         <constraints>
                                                                                             <constraint firstAttribute="width" constant="3" id="iZ8-d2-g5u"/>
                                                                                         </constraints>
                                                                                     </view>
                                                                                 </subviews>
+                                                                                <color key="backgroundColor" red="0.01176470588" green="0.85490196080000003" blue="0.7725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                 <gestureRecognizers/>
                                                                                 <connections>
-                                                                                    <outletCollection property="gestureRecognizers" destination="Aeu-cT-gIt" appends="YES" id="oK3-0C-qYl"/>
+                                                                                    <outletCollection property="gestureRecognizers" destination="RdH-o2-86G" appends="YES" id="bs0-ZX-Roz"/>
                                                                                 </connections>
                                                                             </stackView>
                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jxn-Qz-Med">
@@ -3110,9 +3104,9 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                         <outlet property="linetimetable11" destination="xxA-4d-1we" id="9C2-v9-dyy"/>
                         <outlet property="linetimetable12" destination="BWb-Rd-ZMR" id="a7R-2K-wH7"/>
                         <outlet property="linetimetable13" destination="Gg1-aY-BMg" id="YAb-JS-oSr"/>
-                        <outlet property="linetimetable21" destination="S4W-Wu-9Sr" id="uXp-ga-Nd4"/>
-                        <outlet property="linetimetable22" destination="aG1-JP-HJX" id="glT-Hi-d1x"/>
-                        <outlet property="linetimetable23" destination="U5w-5m-ZCZ" id="DP6-xe-DQq"/>
+                        <outlet property="linetimetable21" destination="S4W-Wu-9Sr" id="o1K-bj-4ol"/>
+                        <outlet property="linetimetable22" destination="aG1-JP-HJX" id="oys-0B-Ri2"/>
+                        <outlet property="linetimetable23" destination="U5w-5m-ZCZ" id="0ta-v4-YSs"/>
                         <outlet property="startbutton" destination="U63-FQ-C4f" id="0eT-qc-jmU"/>
                         <outlet property="stationlabel10" destination="d5U-7E-1BT" id="v2z-l6-6gq"/>
                         <outlet property="stationlabel11" destination="PCI-bR-27a" id="aRT-eh-jjd"/>
@@ -3297,21 +3291,9 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                         <action selector="linetimetable13:" destination="EDe-AG-kFH" id="jkJ-zb-xON"/>
                     </connections>
                 </tapGestureRecognizer>
-                <tapGestureRecognizer id="iaC-DT-x5s" userLabel="linetimetable21_TGR">
-                    <connections>
-                        <action selector="linetimetable21:" destination="EDe-AG-kFH" id="nVG-4T-e7F"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <tapGestureRecognizer id="ZqN-d7-WMS" userLabel="linetimetable22_TGR">
-                    <connections>
-                        <action selector="linetimetable22:" destination="EDe-AG-kFH" id="cvs-QM-C9U"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <tapGestureRecognizer id="Aeu-cT-gIt" userLabel="linetimetable23_TGR">
-                    <connections>
-                        <action selector="linetimetable23:" destination="EDe-AG-kFH" id="wpM-2L-TpJ"/>
-                    </connections>
-                </tapGestureRecognizer>
+                <tapGestureRecognizer id="29S-2f-7EV" userLabel="linetimetable21_TGR"/>
+                <tapGestureRecognizer id="92S-qg-oQa" userLabel="linetimetable22_TGR"/>
+                <tapGestureRecognizer id="RdH-o2-86G" userLabel="linetimetable23_TGR"/>
                 <tapGestureRecognizer id="Lbn-yt-tqD" userLabel="transportlabel11_TGR">
                     <connections>
                         <action selector="transportlabel11:" destination="EDe-AG-kFH" id="kV8-lc-q5F"/>

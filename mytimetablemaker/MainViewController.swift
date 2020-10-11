@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
-class MainViewController: UIViewController {
+class MainViewController: UIViewController, GADBannerViewDelegate {
 
+    var bannerView: GADBannerView!
     var timer = Timer()
     var timeflag = true
     var weekflag = DateAndTime.getWeekFlag()
@@ -26,8 +28,6 @@ class MainViewController: UIViewController {
         
     @IBOutlet weak var display2stackview: UIStackView!
     @IBOutlet weak var centerlineview: UIView!
-    
-    
     
     @IBOutlet weak var stationlabel10: UILabel!
     @IBOutlet weak var stationlabel11: UILabel!
@@ -58,7 +58,7 @@ class MainViewController: UIViewController {
     @IBOutlet weak var linetimetable11: UIStackView!
     @IBOutlet weak var linetimetable12: UIStackView!
     @IBOutlet weak var linetimetable13: UIStackView!
-            
+    
     @IBOutlet weak var linetimetable21: UIStackView!
     @IBOutlet weak var linetimetable22: UIStackView!
     @IBOutlet weak var linetimetable23: UIStackView!
@@ -112,21 +112,55 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        bannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
+        addBannerViewToView(bannerView)
+        bannerView.adUnitID = "ca-app-pub-1585283309075901/1821605177"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        bannerView.delegate = self
+        
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: {
             (timer) in
 
+            self.countdown1.text = "--:--"
+            self.timelabel10.text = "--:--"
+            self.timelabel11.text = "--:--"
+            self.timelabel12.text = "--:--"
+            self.timelabel13.text = "--:--"
+            self.timelabel14.text = "--:--"
+            self.timelabel15.text = "--:--"
+            self.timelabel16.text = "--:--"
+            self.timelabel1e.text = "--:--"
+            self.countdown2.text = "--:--"
+            self.timelabel20.text = "--:--"
+            self.timelabel21.text = "--:--"
+            self.timelabel22.text = "--:--"
+            self.timelabel23.text = "--:--"
+            self.timelabel24.text = "--:--"
+            self.timelabel25.text = "--:--"
+            self.timelabel26.text = "--:--"
+            self.timelabel2e.text = "--:--"
+
             if (self.timeflag) {
                 //現在日付の表示
-                DateAndTime.setCurrentDate(datebutton: self.datebutton)
+                DateAndTime.setCurrentDate(
+                    datebutton: self.datebutton)
                 //現在時刻の表示
-                DateAndTime.setCurrentTime(timebutton: self.timebutton)
+                DateAndTime.setCurrentTime(
+                    timebutton: self.timebutton)
             }
             
             let currenttime = DateAndTime.getCurrentHHmmssFromTimeButton(
-                timebutton: self.timebutton, timeflag: self.timeflag)
+                timebutton: self.timebutton,
+                timeflag: self.timeflag)
+            let weekflag = DateAndTime.getWeekFlagFromDateButton(
+                datebutton: self.datebutton)
             
-            let weekflag = DateAndTime.getWeekFlagFromDateButton(datebutton: self.datebutton)
-            
+            let changeline1 = FileAndData.getIntChangeLine(
+                goorback: self.goorback1)
+            let changeline2 = FileAndData.getIntChangeLine(
+                goorback: self.goorback2)
+
             self.stationlabel10.text = FileAndData.getDeparturePoint(
                 goorback: self.goorback1)
             self.stationlabel11.text = FileAndData.getDepartStation(
@@ -143,6 +177,7 @@ class MainViewController: UIViewController {
                 goorback: self.goorback1, keytag: "3")
             self.stationlabel1e.text = FileAndData.getDestination(
                 goorback: self.goorback1)
+            
             self.stationlabel20.text = FileAndData.getDeparturePoint(
                 goorback: self.goorback2)
             self.stationlabel21.text = FileAndData.getDepartStation(
@@ -166,6 +201,7 @@ class MainViewController: UIViewController {
                 goorback: self.goorback1, keytag: "2")
             self.linelabel13.text = FileAndData.getLinename(
                 goorback: self.goorback1, keytag: "3")
+            
             self.linelabel21.text = FileAndData.getLinename(
                 goorback: self.goorback2, keytag: "1")
             self.linelabel22.text = FileAndData.getLinename(
@@ -179,6 +215,7 @@ class MainViewController: UIViewController {
                 goorback: self.goorback1, keytag: "2", defaultcolor: 0x03DAC5)
             self.linelabel13.textColor = FileAndData.getLineColor(
                 goorback: self.goorback1, keytag: "3", defaultcolor: 0x03DAC5)
+            
             self.linelabel21.textColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "1", defaultcolor: 0x03DAC5)
             self.linelabel22.textColor = FileAndData.getLineColor(
@@ -192,141 +229,163 @@ class MainViewController: UIViewController {
                 goorback: self.goorback1, keytag: "2", defaultcolor: 0x03DAC5)
             self.linetimetable13.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback1, keytag: "3", defaultcolor: 0x03DAC5)
+            
             self.linetimetable21.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "1", defaultcolor: 0x03DAC5)
             self.linetimetable22.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "2", defaultcolor: 0x03DAC5)
             self.linetimetable23.backgroundColor = FileAndData.getLineColor(
                 goorback: self.goorback2, keytag: "3", defaultcolor: 0x03DAC5)
-            
-            let changeline1 = FileAndData.getIntChangeLine(goorback: self.goorback1)
-            let changeline2 = FileAndData.getIntChangeLine(goorback: self.goorback2)
 
-            //時刻表
-            let timetable1 = Timetable.getTimetableArray(
-                goorback: self.goorback1, changeline: changeline1, weekflag: weekflag)
-            let timetable2 = Timetable.getTimetableArray(
-                goorback: self.goorback2, changeline: changeline2, weekflag: weekflag)
-
-            //乗車時間
-            let ridetime1 = DateAndTime.getRideTimeArray(
-                goorback: self.goorback1, changeline: changeline1)
-            let ridetime2 = DateAndTime.getRideTimeArray(
-                goorback: self.goorback2, changeline: changeline2)
-
-            //乗換時間
-            let transittime1 = DateAndTime.getTransitTimeArray(
-                goorback: self.goorback1, changeline: changeline1)
-            let transittime2 = DateAndTime.getTransitTimeArray(
-                goorback: self.goorback2, changeline: changeline2)
-            
-            //＜各時刻の計算＞
-            //乗車可能時刻[0]・各発車時刻[1]・各到着時刻[2]
-            let time1 = DateAndTime.getTimeArray(currenttime: currenttime, changeline: changeline1, transittime: transittime1, ridetime: ridetime1, timetable: timetable1)
-            let time2 = DateAndTime.getTimeArray(currenttime: currenttime, changeline: changeline2, transittime: transittime2, ridetime: ridetime2, timetable: timetable2)
-
-            //出発時刻
-            let departtime1 = DateAndTime.getMinusHHMM(time1: time1[0][1], time2: transittime1[0])
-            let departtime2 = DateAndTime.getMinusHHMM(time1: time2[0][1], time2: transittime2[0])
-            
-            //到着時刻
-            let hometime1 = DateAndTime.getPlusHHMM(time1: time1[changeline1][2], time2: transittime1[changeline1 + 1])
-            let hometime2 = DateAndTime.getPlusHHMM(time1: time2[changeline2][2], time2: transittime2[changeline2 + 1])
-            
-            //帰宅・外出ルートの表示・非表示
+            //帰宅・外出ルート2の表示・非表示
             self.display2stackview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
             self.centerlineview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
             
-            if (DateAndTime.getStringTime(time: time1[0][1]) == "27:00"){
+            //乗換回数に応じた表示
+            FileAndData.changeDisplayLine(
+                changeline: changeline1,
+                stackview2: self.linestackview12,
+                stackview3: self.linestackview13)
+            FileAndData.changeDisplayLine(
+                changeline: changeline2,
+                stackview2: self.linestackview22,
+                stackview3: self.linestackview23)
+            
+            //時刻表
+            let timetable1 = Timetable.getTimetableArray(
+                goorback: self.goorback1,
+                changeline: changeline1,
+                weekflag: weekflag)
+            let timetable2 = Timetable.getTimetableArray(
+                goorback: self.goorback2,
+                changeline: changeline2,
+                weekflag: weekflag)
+
+            //乗車時間
+            let ridetime1 = DateAndTime.getRideTimeArray(
+                goorback: self.goorback1,
+                changeline: changeline1)
+            let ridetime2 = DateAndTime.getRideTimeArray(
+                goorback: self.goorback2,
+                changeline: changeline2)
+
+            //乗換時間
+            let transittime1 = DateAndTime.getTransitTimeArray(
+                goorback: self.goorback1,
+                changeline: changeline1)
+            let transittime2 = DateAndTime.getTransitTimeArray(
+                goorback: self.goorback2,
+                changeline: changeline2)
+            
+            //＜各時刻の計算＞
+            //乗車可能時刻[0]・各発車時刻[1]・各到着時刻[2]
+            let time1 = DateAndTime.getDisplayTimeArray(
+                currenttime: currenttime,
+                changeline: changeline1,
+                transittime: transittime1,
+                ridetime: ridetime1,
+                timetable: timetable1)
+            let time2 = DateAndTime.getDisplayTimeArray(
+                currenttime: currenttime,
+                changeline: changeline2,
+                transittime: transittime2,
+                ridetime: ridetime2,
+                timetable: timetable2)
+            
+            //出発時刻
+            let departuretime1 = DateAndTime.getDepartureTime(
+                currenttime: currenttime,
+                transittime: transittime1[0],
+                timetable: timetable1)
+            let departuretime2 = DateAndTime.getDepartureTime(
+                currenttime: currenttime,
+                transittime: transittime2[0],
+                timetable: timetable2)
+
+            //時刻の表示
+            self.timelabel10.text = time1[0]
+            self.timelabel1e.text = time1[1]
+            self.timelabel11.text = time1[2]
+            self.timelabel12.text = time1[3]
+            if (self.timelabel11.text == "--:--") {
                 self.timelabel10.text = "--:--"
-                self.timelabel11.text = "--:--"
                 self.timelabel12.text = "--:--"
                 self.timelabel1e.text = "--:--"
-                self.countdown1.text = "--:--"
-            } else if (changeline1 > 0 && DateAndTime.getStringTime(time: time1[1][1]) == "27:00") {
-                self.timelabel13.text = "--:--"
-                self.timelabel14.text = "--:--"
-            } else if (changeline1 > 1 && DateAndTime.getStringTime(time: time1[2][1]) == "27:00") {
-                self.timelabel15.text = "--:--"
-                self.timelabel16.text = "--:--"
-            } else {
-                //カウントダウン
-                self.countdown1.text = DateAndTime.getCountdownTime(
-                    currenthhmmss: currenttime,
-                    departtime: departtime1,
-                    timeflag: self.timeflag)
-                self.countdown1.textColor = DateAndTime.getCountDownColor(
-                    currenthhmmss: currenttime,
-                    departtime: departtime1,
-                    timeflag: self.timeflag)
-                //時刻の表示
-                self.timelabel10.text = DateAndTime.getStringTime(time: departtime1)
-                self.timelabel11.text = DateAndTime.getStringTime(time: time1[0][1])
-                self.timelabel12.text = DateAndTime.getStringTime(time: time1[0][2])
-                switch (changeline1) {
-                    case 2: do {
-                        self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
-                        self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
-                        self.timelabel15.text = DateAndTime.getStringTime(time: time1[2][1])
-                        self.timelabel16.text = DateAndTime.getStringTime(time: time1[2][2])
-                    }
-                    case 1: do {
-                        self.timelabel13.text = DateAndTime.getStringTime(time: time1[1][1])
-                        self.timelabel14.text = DateAndTime.getStringTime(time: time1[1][2])
-                    }
-                    default: do {
-                    }
-                }
-                self.timelabel1e.text = DateAndTime.getStringTime(time: hometime1)
             }
 
-            if (DateAndTime.getStringTime(time: time2[0][1]) == "27:00"){
+            if (changeline1 > 0) {
+                self.timelabel13.text = time1[4]
+                self.timelabel14.text = time1[5]
+                if (self.timelabel13.text == "--:--") {
+                    self.timelabel14.text = "--:--"
+                    self.timelabel1e.text = "--:--"
+                }
+            }
+
+            if (changeline1 > 1) {
+                self.timelabel15.text = time1[6]
+                self.timelabel16.text = time1[7]
+                if (self.timelabel15.text == "--:--") {
+                    self.timelabel16.text = "--:--"
+                    self.timelabel1e.text = "--:--"
+                }
+            }
+
+            //カウントダウン1
+            if (time1[0] != "--:--"){
+                self.countdown1.text = DateAndTime.getCountdownTime(
+                    currenthhmmss: currenttime,
+                    departtime: departuretime1)
+                self.countdown1.textColor = DateAndTime.getCountDownColor(
+                    currenthhmmss: currenttime,
+                    departtime: departuretime1)
+            } else {
+                self.countdown1.text = "--:--"
+                self.countdown1.textColor = UIColor(rgb: 0x8E8E93)
+            }
+
+            self.timelabel20.text = time2[0]
+            self.timelabel2e.text = time2[1]
+            self.timelabel21.text = time2[2]
+            self.timelabel22.text = time2[3]
+
+            if (self.timelabel21.text == "--:--") {
                 self.timelabel20.text = "--:--"
-                self.timelabel21.text = "--:--"
                 self.timelabel22.text = "--:--"
                 self.timelabel2e.text = "--:--"
-                self.countdown2.text = "--:--"
-            } else if (changeline2 > 0 && DateAndTime.getStringTime(time: time2[1][1]) == "27:00") {
-                self.timelabel23.text = "--:--"
-                self.timelabel24.text = "--:--"
-            } else if (changeline2 > 1 && DateAndTime.getStringTime(time: time2[2][1]) == "27:00") {
-                self.timelabel25.text = "--:--"
-                self.timelabel26.text = "--:--"
-            } else {
-                //カウントダウン
+            }
+
+            if (changeline2 > 0) {
+                self.timelabel23.text = time2[4]
+                self.timelabel24.text = time2[5]
+                if (self.timelabel23.text == "--:--") {
+                    self.timelabel24.text = "--:--"
+                    self.timelabel2e.text = "--:--"
+                }
+            }
+
+            if (changeline2 > 1) {
+                self.timelabel15.text = time2[6]
+                self.timelabel16.text = time2[7]
+                if (self.timelabel15.text == "--:--") {
+                    self.timelabel16.text = "--:--"
+                    self.timelabel1e.text = "--:--"
+                }
+            }
+
+            //カウントダウン2
+            if (time2[0] !=  "--:--") {
                 self.countdown2.text = DateAndTime.getCountdownTime(
                     currenthhmmss: currenttime,
-                    departtime: departtime2,
-                    timeflag: self.timeflag)
+                    departtime: departuretime2)
                 //時刻の表示
                 self.countdown2.textColor = DateAndTime.getCountDownColor(
                     currenthhmmss: currenttime,
-                    departtime: departtime2,
-                    timeflag: self.timeflag)
-
-                self.timelabel20.text = DateAndTime.getStringTime(time: departtime2)
-                self.timelabel21.text = DateAndTime.getStringTime(time: time2[0][1])
-                self.timelabel22.text = DateAndTime.getStringTime(time: time2[0][2])
-                self.timelabel2e.text = DateAndTime.getStringTime(time: hometime2)
-                switch (changeline2) {
-                    case 2: do {
-                        self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
-                        self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
-                        self.timelabel25.text = DateAndTime.getStringTime(time: time2[2][1])
-                        self.timelabel26.text = DateAndTime.getStringTime(time: time2[2][2])
-                    }
-                    case 1: do {
-                        self.timelabel23.text = DateAndTime.getStringTime(time: time2[1][1])
-                        self.timelabel24.text = DateAndTime.getStringTime(time: time2[1][2])
-                    }
-                    default: do {
-                    }
-                }
+                    departtime: departuretime2)
+            } else {
+                self.countdown2.text = "--:--"
+                self.countdown2.textColor = UIColor(rgb: 0x8E8E93)
             }
-            
-            //乗換回数に応じた表示
-            FileAndData.changeDisplayLine(changeline: changeline1, stackview2: self.linestackview12, stackview3: self.linestackview13)
-            FileAndData.changeDisplayLine(changeline: changeline2, stackview2: self.linestackview22, stackview3: self.linestackview23)
         })
     }
     
@@ -611,7 +670,7 @@ class MainViewController: UIViewController {
             keytag: "2",
             weekflag: weekflag)
     }
-    
+
     @IBAction func linetimetable23(_ sender: Any) {
         CustomDialog.rideTimeFieldDialog(
             viewcontroller: self,
@@ -620,7 +679,7 @@ class MainViewController: UIViewController {
             keytag: "3",
             weekflag: weekflag)
     }
-
+    
     @IBAction func transportlabel11(_ sender: Any) {
         CustomDialog.transportPickerDialog(
             viewcontroller: self,
@@ -745,4 +804,26 @@ class MainViewController: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
+    
+    //ADMob広告の追加
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+            bannerView.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(bannerView)
+            view.addConstraints([
+                NSLayoutConstraint(item: bannerView,
+                                    attribute: .bottom,
+                                    relatedBy: .equal,
+                                    toItem: bottomLayoutGuide,
+                                    attribute: .top,
+                                    multiplier: 1,
+                                    constant: 0),
+                NSLayoutConstraint(item: bannerView,
+                                    attribute: .centerX,
+                                    relatedBy: .equal,
+                                    toItem: view,
+                                    attribute: .centerX,
+                                    multiplier: 1,
+                                    constant: 0)
+            ])
+        }
 }

@@ -106,7 +106,7 @@ class CustomDialog: NSObject {
         return UIAlertAction(title: "Register".localized, style: .default) {
             (action: UIAlertAction) in
             label.text = textfield.text!
-            UserDefaults.standard.set(textfield.text, forKey: key)
+            if (textfield.text != "") {UserDefaults.standard.set(textfield.text, forKey: key)}
         }
     }
     
@@ -114,7 +114,7 @@ class CustomDialog: NSObject {
     class func setMinutesFieldRegistorAction(textfield: UITextField, key: String, unit: String) -> UIAlertAction {
         return UIAlertAction(title: "Register".localized, style: .default) {
             (action: UIAlertAction) in
-            UserDefaults.standard.set(textfield.text, forKey: key)
+            if (textfield.text != "") {UserDefaults.standard.set(textfield.text, forKey: key)}
         }
     }
 
@@ -144,7 +144,7 @@ class CustomDialog: NSObject {
             (action: UIAlertAction) in
             if (textfield.text != nil) {
                 label.text = textfield.text!
-                UserDefaults.standard.set(textfield.text, forKey: namekey)
+                if (textfield.text != "") {UserDefaults.standard.set(textfield.text, forKey: namekey)}
             }
             colorPickerDialog(viewcontroller: viewcontroller, label: label, stackview: stackview, colorkey: colorkey, goorback: goorback, keytag: keytag)
         }
@@ -176,7 +176,7 @@ class CustomDialog: NSObject {
         let defaultvalue = (goorback == "back2" || goorback == "go2") ?
             "line ".localized + "2-" + keytag:
             "line ".localized + "1-" + keytag
-        let message = "of ".localized + FileAndData.getUserDefaultValue(key: namekey, defaultvalue: defaultvalue)!
+        let message = "of ".localized + FileAndData.getUserDefaultValue(key: namekey, defaultvalue: defaultvalue)
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
         let colorarray = [
             ["DEFAULT".localized, 0x03DAC5],
@@ -196,6 +196,7 @@ class CustomDialog: NSObject {
             ["GOLD".localized, 0xC5C544],
             ["SILVER".localized, 0x89A1AD],
             ["BLACK".localized, 0x000000]]
+        picker.addAction(setCancelAction())
         for i in 0..<colorarray.count {
             picker.addAction(
                 setColorRegistorAction(
@@ -265,7 +266,7 @@ class CustomDialog: NSObject {
         let defaultvalue = (goorback == "back2" || goorback == "go2") ?
             "Line ".localized + "2-" + keytag:
             "Line ".localized + "1-" + keytag
-        let linename = FileAndData.getUserDefaultValue(key: linekey, defaultvalue: defaultvalue)!
+        let linename = FileAndData.getUserDefaultValue(key: linekey, defaultvalue: defaultvalue)
         let title = "Setting your ride time".localized + " " + "[min]".localized
         let message = "on ".localized + linename
         let key = goorback + "ridetime" + keytag
@@ -286,7 +287,7 @@ class CustomDialog: NSObject {
         let title = "Setting your timetable".localized
         return UIAlertAction(title: title, style: .default) {
             (action: UIAlertAction) in
-            UserDefaults.standard.set(textfield.text, forKey: key)
+            if (textfield.text != "") {UserDefaults.standard.set(textfield.text, forKey: key)}
             let storyboard = viewcontroller.storyboard!
             let vc = storyboard.instantiateViewController(withIdentifier: "timetableview") as! TimetableViewController
             vc.goorback = goorback
@@ -302,17 +303,33 @@ class CustomDialog: NSObject {
         let message = taplabel.text
         let key = goorback + "changeline"
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
-        picker.addAction(setChoiceRegistorAction(title: "Zero".localized, label: setlabel, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Once".localized, label: setlabel, key: key))
-        picker.addAction(setChoiceRegistorAction(title: "Twice".localized, label: setlabel, key: key))
+        picker.addAction(setChoiceChangeLineAction(title: "Zero".localized, label: setlabel, key: key))
+        picker.addAction(setChoiceChangeLineAction(title: "Once".localized, label: setlabel, key: key))
+        picker.addAction(setChoiceChangeLineAction(title: "Twice".localized, label: setlabel, key: key))
         picker.addAction(setCancelAction())
         viewcontroller.present(picker, animated: true, completion: nil)
     }
     
+    //選択設定ボタン
+    class func setChoiceChangeLineAction(title: String, label: UILabel, key: String) -> UIAlertAction {
+        return UIAlertAction(title: title, style: .default) {
+            (action: UIAlertAction) in
+            label.text = title
+            var changeline = 0
+            switch (title) {
+                case "Zero".localized: changeline = 0
+                case "Once".localized: changeline = 1
+                case "Twice".localized: changeline = 2
+                default: changeline = 0
+            }
+            UserDefaults.standard.set(changeline, forKey: key)
+        }
+    }
+ 
     //時刻を追加する関数
     class func addTimeFromTimetable(label: UILabel, addtext: String, timekey: String) -> String {
         let splitunit = " "
-        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "") ?? ""
+        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")
         let temptext = (currenttext + splitunit + addtext)
             .trimmingCharacters(in: .whitespaces)
         let textarray = Array(Set(temptext
@@ -331,7 +348,7 @@ class CustomDialog: NSObject {
     //時刻を削除する関数
     class func deleteTimeFromTimetable(label: UILabel, deletetext: String, timekey: String) -> String {
         let splitunit = " "
-        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "") ?? ""
+        let currenttext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")
         let temparray = Array(Set(currenttext
             .components(separatedBy: CharacterSet(charactersIn: splitunit))
                 .map{Int($0) ?? 60}
@@ -383,7 +400,7 @@ class CustomDialog: NSObject {
         let defaultvalue = (goorback == "back2" || goorback == "go2") ?
             "Line ".localized + "2-" + keytag:
             "Line ".localized + "1-" + keytag
-        let linename = FileAndData.getUserDefaultValue(key: key, defaultvalue: defaultvalue)!
+        let linename = FileAndData.getUserDefaultValue(key: key, defaultvalue: defaultvalue)
         let weektag = (weekflag) ? "weekday".localized: "weekend".localized
         let title = "Setting your timetable".localized + " " + "[min]".localized
         let message = "on ".localized + linename
@@ -399,10 +416,27 @@ class CustomDialog: NSObject {
         viewcontroller.present(alert, animated: true, completion: nil)
     }
     
-    //設定画面用の路線名を設定するダイアログ
+    //＜設定画面＞
+    //設定画面の乗車駅名を設定するダイアログ
+    class func prefDepartStationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
+        let title = "Setting your station name ".localized
+        let message = "of departure station ".localized + keytag
+        let key = goorback + "departstation" + keytag
+        textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
+    }
+    
+    //設定画面の降車駅名を設定するダイアログ
+    class func prefArriveStationTextFieldDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
+        let title = "Setting your station name ".localized
+        let message = "of arrival station ".localized + keytag
+        let key = goorback + "arrivestation" + keytag
+        textFieldDialog(viewcontroller: viewcontroller, label: label, title: title, message: message, key: key)
+    }
+
+    //設定画面の路線名を設定するダイアログ
     class func prefLineTextFieldDialog(viewcontroller: UIViewController, linenamelabel: UILabel, ridetimelabel: UILabel, goorback: String, keytag: String) {
         let title = "Setting your line name".localized
-        let message = "of ".localized + "line ".localized + keytag
+        let message = "line ".localized + keytag
         let key = goorback + "linename" + keytag
         let alert = getTextFieldAlert(title: title, message: message, key: key)
         //登録ボタンの表示：入力したTextを保存・表示する
@@ -414,22 +448,22 @@ class CustomDialog: NSObject {
         viewcontroller.present(alert, animated: true, completion: nil)
     }
 
-    //設定画面用の路線カラー設定ボタン：設定用ダイアログ表示・UserDefaultに路線データ保存・ラベルにテキスト表示
+    //設定画面の路線カラー設定ボタン：設定用ダイアログ表示・UserDefaultに路線データ保存・ラベルにテキスト表示
     class func prefLineColorDialogAction(viewcontroller: UIViewController, textfield: UITextField, linenamelabel: UILabel, ridetimelabel: UILabel, goorback: String, keytag: String) -> UIAlertAction {
         let title = "Setting your line color".localized
-        let linenamekey = goorback + "linename" + keytag
+        let namekey = goorback + "linename" + keytag
         let colorkey = goorback + "linecolor" + keytag
         return UIAlertAction(title: title, style: .default) {
             (action: UIAlertAction) in
             if (textfield.text != nil) {
                 linenamelabel.text = textfield.text!
-                UserDefaults.standard.set(textfield.text, forKey: linenamekey)
+                if (textfield.text != "") {UserDefaults.standard.set(textfield.text, forKey: namekey)}
             }
             prefColorPickerDialog(viewcontroller: viewcontroller, linenamelabel: linenamelabel, ridetimelabel: ridetimelabel, colorkey: colorkey, goorback: goorback, keytag: keytag)
         }
     }
 
-    //設定画面用の路線カラー設定ボタン
+    //設定画面の路線カラー設定ボタン
     class func prefColorRegistorAction(colortitle: String, color: Int, linenamelabel: UILabel, ridetimelabel: UILabel, colorkey: String) -> UIAlertAction {
         return UIAlertAction(title: colortitle, style: .default) {
             (action: UIAlertAction) in
@@ -439,11 +473,11 @@ class CustomDialog: NSObject {
         }
     }
 
-    //設定画面用の路線カラーを設定するダイアログ
+    //設定画面の路線カラーを設定するダイアログ
     class func prefColorPickerDialog(viewcontroller: UIViewController, linenamelabel: UILabel, ridetimelabel: UILabel, colorkey: String, goorback: String, keytag: String) {
         let linenamekey = goorback + "linename" + keytag
         let defaultvalue = "line ".localized + keytag
-        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)!
+        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)
         let title = "Setting your line color".localized
         let message = "of ".localized + linename
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
@@ -465,6 +499,7 @@ class CustomDialog: NSObject {
             ["GOLD".localized, 0xC5C544],
             ["SILVER".localized, 0x89A1AD],
             ["BLACK".localized, 0x000000]]
+        picker.addAction(setCancelAction())
         for i in 0..<colorarray.count {
             picker.addAction(
                 prefColorRegistorAction(
@@ -477,11 +512,11 @@ class CustomDialog: NSObject {
         viewcontroller.present(picker, animated: true, completion: nil)
     }
 
-    //設定画面用の乗車時間を設定するダイアログ
+    //設定画面の乗車時間を設定するダイアログ
     class func prefRideTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String, weekflag: Bool) {
         let linenamekey = goorback + "linename" + keytag
-        let defaultvalue = "Line ".localized + keytag
-        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)!
+        let defaultvalue = "line ".localized + keytag
+        let linename = FileAndData.getUserDefaultValue(key: linenamekey, defaultvalue: defaultvalue)
         let title = "Setting your ride time".localized + " " + "[min]".localized
         let message = "on ".localized + linename
         let key = goorback + "ridetime" + keytag
@@ -497,5 +532,34 @@ class CustomDialog: NSObject {
         alert.addAction(storyboardTimetableAction(viewcontroller: viewcontroller, textfield: textfield, key: key, goorback: goorback, keytag: keytag, weekflag: weekflag))
         viewcontroller.present(alert, animated: true, completion: nil)
     }
+    
+    //設定画面の移動手段を設定するダイアログ
+    class func prefTransportPickerDialog(viewcontroller: UIViewController, label: UILabel, goorback: String, keytag: String) {
+        let title = "Setting your transportation".localized
+        let message = ""
+        let key = goorback + "transport" + keytag
+        let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        picker.addAction(setChoiceRegistorAction(title: "Walking".localized, label: label, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Bicycle".localized, label: label, key: key))
+        picker.addAction(setChoiceRegistorAction(title: "Car".localized, label: label, key: key))
+        picker.addAction(setCancelAction())
+        viewcontroller.present(picker, animated: true, completion: nil)
+    }
+    
+    //設定画面の乗換時間を設定するダイアログ
+    class func prefTransitTimeFieldDialog(viewcontroller: UIViewController, goorback: String, keytag: String) {
+        let title = "Setting your required time [min]".localized
+        let message = ""
+        let key = goorback + "transittime" + keytag
+        let unit = "[min]".localized
+        //TextFieldのアラートを表示
+        let alert = getMinutesFieldAlert(title: title, message: message, key: key)
+        //登録ボタンの表示：入力したTextを保存・表示する
+        alert.addAction(setMinutesFieldRegistorAction(textfield: (alert.textFields?.first)!, key: key, unit: unit))
+        //キャンセルボタン：アラートから抜ける
+        alert.addAction(setCancelAction())
+        viewcontroller.present(alert, animated: true, completion: nil)
+    }
+
 }
 
