@@ -14,7 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+        sleep(1)
         GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
@@ -34,5 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+    
 }
 

@@ -9,15 +9,29 @@
 import UIKit
 import GoogleMobileAds
 
+protocol Calculation {
+    var goorback: String { get }
+    var weekflag: Bool { get }
+}
+
+protocol Display {
+    var viewcontroller: UIViewController { get }
+    var goorback: String { get }
+}
+
 class MainViewController: UIViewController, GADBannerViewDelegate {
 
     var bannerView: GADBannerView!
     var timer = Timer()
     var timeflag = true
-    var weekflag = DateAndTime.getWeekFlag()
+    var weekflag = Date().weekFlag
     var goorbackflag = true
     var goorback1 = "back1"
     var goorback2 = "back2"
+    let walk = Transportation.walking.rawValue.localized
+    let primary = DefaultColor.primary.rawValue
+    let accent = DefaultColor.accent.rawValue
+    let gray = DefaultColor.gray.rawValue
 
     @IBOutlet weak var datebutton: UIButton!
     @IBOutlet weak var timebutton: UIButton!
@@ -111,7 +125,7 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
     //Main文
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         bannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
         addBannerViewToView(bannerView)
         bannerView.adUnitID = "ca-app-pub-1585283309075901/1821605177"
@@ -122,277 +136,152 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: {
             (timer) in
 
-            self.countdown1.text = "--:--"
-            self.timelabel10.text = "--:--"
-            self.timelabel11.text = "--:--"
-            self.timelabel12.text = "--:--"
-            self.timelabel13.text = "--:--"
-            self.timelabel14.text = "--:--"
-            self.timelabel15.text = "--:--"
-            self.timelabel16.text = "--:--"
-            self.timelabel1e.text = "--:--"
-            self.countdown2.text = "--:--"
-            self.timelabel20.text = "--:--"
-            self.timelabel21.text = "--:--"
-            self.timelabel22.text = "--:--"
-            self.timelabel23.text = "--:--"
-            self.timelabel24.text = "--:--"
-            self.timelabel25.text = "--:--"
-            self.timelabel26.text = "--:--"
-            self.timelabel2e.text = "--:--"
+            //定数の定義
+            let office = "Office".localized
+            let home = "Home".localized
+            let depsta = "Dep. St.".localized
+            let arrsta = "Arr. St.".localized
+            let line = "Line ".localized
+            let none = "--:--"
+            let accent = self.accent
+            let walk = self.walk
+            let goorback1 = self.goorback1
+            let goorback2 = self.goorback2
+            let datebutton = self.datebutton!
+            let timebutton = self.timebutton!
+            let timeflag = self.timeflag
+            
+            let dateandtime = DateAndTime(datebutton, timebutton, timeflag)
+            let currenttime = dateandtime.currentHHmmssFromTimeButton
+            let weekflag = dateandtime.dateFromDateButton.weekFlag
+            let changeline1 = goorback1.changeLineInt
+            let changeline2 = goorback2.changeLineInt
+            let calctime1 = CalcTime(goorback1, weekflag, changeline1)
+            let calctime2 = CalcTime(goorback2, weekflag, changeline2)
 
-            if (self.timeflag) {
-                //現在日付の表示
-                DateAndTime.setCurrentDate(
-                    datebutton: self.datebutton)
-                //現在時刻の表示
-                DateAndTime.setCurrentTime(
-                    timebutton: self.timebutton)
-            }
-            
-            let currenttime = DateAndTime.getCurrentHHmmssFromTimeButton(
-                timebutton: self.timebutton,
-                timeflag: self.timeflag)
-            let weekflag = DateAndTime.getWeekFlagFromDateButton(
-                datebutton: self.datebutton)
-            
-            let changeline1 = FileAndData.getIntChangeLine(
-                goorback: self.goorback1)
-            let changeline2 = FileAndData.getIntChangeLine(
-                goorback: self.goorback2)
+            //現在日付・時刻の表示
+            dateandtime.setCurrentDate()
+            dateandtime.setCurrentTime()
 
-            self.stationlabel10.text = FileAndData.getDeparturePoint(
-                goorback: self.goorback1)
-            self.stationlabel11.text = FileAndData.getDepartStation(
-                goorback: self.goorback1, keytag: "1")
-            self.stationlabel12.text = FileAndData.getArriveStation(
-                goorback: self.goorback1, keytag: "1")
-            self.stationlabel13.text = FileAndData.getDepartStation(
-                goorback: self.goorback1, keytag: "2")
-            self.stationlabel14.text = FileAndData.getArriveStation(
-                goorback: self.goorback1, keytag: "2")
-            self.stationlabel15.text = FileAndData.getDepartStation(
-                goorback: self.goorback1, keytag: "3")
-            self.stationlabel16.text = FileAndData.getArriveStation(
-                goorback: self.goorback1, keytag: "3")
-            self.stationlabel1e.text = FileAndData.getDestination(
-                goorback: self.goorback1)
+            //
+            self.stationlabel10.text = goorback1.departurePoint(office, home)
+            self.stationlabel11.text = goorback1.departStation("1", "\(depsta)1")
+            self.stationlabel12.text = goorback1.arriveStation("1", "\(arrsta)1")
+            self.stationlabel13.text = goorback1.departStation("2", "\(depsta)2")
+            self.stationlabel14.text = goorback1.arriveStation("2", "\(arrsta)2")
+            self.stationlabel15.text = goorback1.departStation("3", "\(depsta)3")
+            self.stationlabel16.text = goorback1.arriveStation("3", "\(arrsta)3")
+            self.stationlabel1e.text = goorback1.destination(home, office)
             
-            self.stationlabel20.text = FileAndData.getDeparturePoint(
-                goorback: self.goorback2)
-            self.stationlabel21.text = FileAndData.getDepartStation(
-                goorback: self.goorback2, keytag: "1")
-            self.stationlabel22.text = FileAndData.getArriveStation(
-                goorback: self.goorback2, keytag: "1")
-            self.stationlabel23.text = FileAndData.getDepartStation(
-                goorback: self.goorback2, keytag: "2")
-            self.stationlabel24.text = FileAndData.getArriveStation(
-                goorback: self.goorback2, keytag: "2")
-            self.stationlabel25.text = FileAndData.getDepartStation(
-                goorback: self.goorback2, keytag: "3")
-            self.stationlabel26.text = FileAndData.getArriveStation(
-                goorback: self.goorback2, keytag: "3")
-            self.stationlabel2e.text = FileAndData.getDestination(
-                goorback: self.goorback2)
+            self.stationlabel20.text = goorback2.departurePoint(office, home)
+            self.stationlabel21.text = goorback2.departStation("1", "\(depsta)1")
+            self.stationlabel22.text = goorback2.arriveStation("1", "\(arrsta)1")
+            self.stationlabel23.text = goorback2.departStation("2", "\(depsta)2")
+            self.stationlabel24.text = goorback2.arriveStation("2", "\(arrsta)2")
+            self.stationlabel25.text = goorback2.departStation("3", "\(depsta)3")
+            self.stationlabel26.text = goorback2.arriveStation("3", "\(arrsta)3")
+            self.stationlabel2e.text = goorback2.destination(home, office)
             
-            self.linelabel11.text = FileAndData.getLinename(
-                goorback: self.goorback1, keytag: "1")
-            self.linelabel12.text = FileAndData.getLinename(
-                goorback: self.goorback1, keytag: "2")
-            self.linelabel13.text = FileAndData.getLinename(
-                goorback: self.goorback1, keytag: "3")
+            self.linelabel11.text = goorback1.lineName("1", "\(line)1")
+            self.linelabel12.text = goorback1.lineName("2", "\(line)2")
+            self.linelabel13.text = goorback1.lineName("3", "\(line)3")
             
-            self.linelabel21.text = FileAndData.getLinename(
-                goorback: self.goorback2, keytag: "1")
-            self.linelabel22.text = FileAndData.getLinename(
-                goorback: self.goorback2, keytag: "2")
-            self.linelabel23.text = FileAndData.getLinename(
-                goorback: self.goorback2, keytag: "3")
+            self.linelabel21.text = goorback2.lineName("1", "\(line)1")
+            self.linelabel22.text = goorback2.lineName("2", "\(line)2")
+            self.linelabel23.text = goorback2.lineName("3", "\(line)3")
 
-            self.linelabel11.textColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "1", defaultcolor: 0x03DAC5)
-            self.linelabel12.textColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "2", defaultcolor: 0x03DAC5)
-            self.linelabel13.textColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "3", defaultcolor: 0x03DAC5)
+            self.linelabel11.textColor = goorback1.lineColor("1", accent)
+            self.linelabel12.textColor = goorback1.lineColor("2", accent)
+            self.linelabel13.textColor = goorback1.lineColor("3", accent)
             
-            self.linelabel21.textColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "1", defaultcolor: 0x03DAC5)
-            self.linelabel22.textColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "2", defaultcolor: 0x03DAC5)
-            self.linelabel23.textColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "3", defaultcolor: 0x03DAC5)
-
-            self.linetimetable11.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "1", defaultcolor: 0x03DAC5)
-            self.linetimetable12.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "2", defaultcolor: 0x03DAC5)
-            self.linetimetable13.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback1, keytag: "3", defaultcolor: 0x03DAC5)
+            self.linelabel21.textColor = goorback2.lineColor("1", accent)
+            self.linelabel22.textColor = goorback2.lineColor("2", accent)
+            self.linelabel23.textColor = goorback2.lineColor("3", accent)
             
-            self.linetimetable21.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "1", defaultcolor: 0x03DAC5)
-            self.linetimetable22.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "2", defaultcolor: 0x03DAC5)
-            self.linetimetable23.backgroundColor = FileAndData.getLineColor(
-                goorback: self.goorback2, keytag: "3", defaultcolor: 0x03DAC5)
+            self.linetimetable11.backgroundColor = goorback1.lineColor("1", accent)
+            self.linetimetable12.backgroundColor = goorback1.lineColor("2", accent)
+            self.linetimetable13.backgroundColor = goorback1.lineColor("3", accent)
+            
+            self.linetimetable21.backgroundColor = goorback2.lineColor("1", accent)
+            self.linetimetable22.backgroundColor = goorback2.lineColor("2", accent)
+            self.linetimetable23.backgroundColor = goorback2.lineColor("3", accent)
 
+            self.transportlabel11.text = goorback1.transportation("1", walk)
+            self.transportlabel12.text = goorback1.transportation("2", walk)
+            self.transportlabel13.text = goorback1.transportation("3", walk)
+            self.transportlabel1e.text = goorback1.transportation("e", walk)
+
+            self.transportlabel21.text = goorback2.transportation("1", walk)
+            self.transportlabel22.text = goorback2.transportation("2", walk)
+            self.transportlabel23.text = goorback2.transportation("3", walk)
+            self.transportlabel2e.text = goorback2.transportation("e", walk)
+            
             //帰宅・外出ルート2の表示・非表示
-            self.display2stackview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
-            self.centerlineview.isHidden = !UserDefaults.standard.bool(forKey: self.goorback2 + "switch")
-            
-            //乗換回数に応じた表示
-            FileAndData.changeDisplayLine(
-                changeline: changeline1,
-                stackview2: self.linestackview12,
-                stackview3: self.linestackview13)
-            FileAndData.changeDisplayLine(
-                changeline: changeline2,
-                stackview2: self.linestackview22,
-                stackview3: self.linestackview23)
-            
-            //時刻表
-            let timetable1 = Timetable.getTimetableArray(
-                goorback: self.goorback1,
-                changeline: changeline1,
-                weekflag: weekflag)
-            let timetable2 = Timetable.getTimetableArray(
-                goorback: self.goorback2,
-                changeline: changeline2,
-                weekflag: weekflag)
-
-            //乗車時間
-            let ridetime1 = DateAndTime.getRideTimeArray(
-                goorback: self.goorback1,
-                changeline: changeline1)
-            let ridetime2 = DateAndTime.getRideTimeArray(
-                goorback: self.goorback2,
-                changeline: changeline2)
-
-            //乗換時間
-            let transittime1 = DateAndTime.getTransitTimeArray(
-                goorback: self.goorback1,
-                changeline: changeline1)
-            let transittime2 = DateAndTime.getTransitTimeArray(
-                goorback: self.goorback2,
-                changeline: changeline2)
+            self.display2stackview.isHidden = !(goorback2.switchFlag)
+            self.centerlineview.isHidden = !(goorback2.switchFlag)
+            self.linestackview12.isHidden = changeline1.viewHidden(1)
+            self.linestackview13.isHidden = changeline1.viewHidden(2)
+            self.linestackview22.isHidden = changeline2.viewHidden(1)
+            self.linestackview23.isHidden = changeline2.viewHidden(2)
             
             //＜各時刻の計算＞
-            //乗車可能時刻[0]・各発車時刻[1]・各到着時刻[2]
-            let time1 = DateAndTime.getDisplayTimeArray(
-                currenttime: currenttime,
-                changeline: changeline1,
-                transittime: transittime1,
-                ridetime: ridetime1,
-                timetable: timetable1)
-            let time2 = DateAndTime.getDisplayTimeArray(
-                currenttime: currenttime,
-                changeline: changeline2,
-                transittime: transittime2,
-                ridetime: ridetime2,
-                timetable: timetable2)
+            //乗車可能時刻[0]・各発車時刻[1]・各到着時刻[2]と出発時刻
+            let time1 = calctime1.displayTimeArray(currenttime)
+            let time2 = calctime2.displayTimeArray(currenttime)
+            let departuretime1 = calctime1.departureTime(currenttime)
+            let departuretime2 = calctime2.departureTime(currenttime)
+
+            //時刻1の表示
+            self.timelabel11.text = (time1[0] == none) ? none: time1[2]
+            self.timelabel12.text = (self.timelabel11.text == none) ? none: time1[3]
+            self.timelabel10.text = (self.timelabel12.text == none) ? none: time1[0]
+            self.timelabel1e.text = (self.timelabel12.text == none) ? none: time1[1]
             
-            //出発時刻
-            let departuretime1 = DateAndTime.getDepartureTime(
-                currenttime: currenttime,
-                transittime: transittime1[0],
-                timetable: timetable1)
-            let departuretime2 = DateAndTime.getDepartureTime(
-                currenttime: currenttime,
-                transittime: transittime2[0],
-                timetable: timetable2)
-
-            //時刻の表示
-            self.timelabel10.text = time1[0]
-            self.timelabel1e.text = time1[1]
-            self.timelabel11.text = time1[2]
-            self.timelabel12.text = time1[3]
-            if (self.timelabel11.text == "--:--") {
-                self.timelabel10.text = "--:--"
-                self.timelabel12.text = "--:--"
-                self.timelabel1e.text = "--:--"
-            }
-
             if (changeline1 > 0) {
-                self.timelabel13.text = time1[4]
-                self.timelabel14.text = time1[5]
-                if (self.timelabel13.text == "--:--") {
-                    self.timelabel14.text = "--:--"
-                    self.timelabel1e.text = "--:--"
-                }
+                self.timelabel13.text = (self.timelabel12.text == none) ? none: time1[4]
+                self.timelabel14.text = (self.timelabel13.text == none) ? none: time1[5]
+                self.timelabel1e.text = (self.timelabel14.text == none) ? none: time1[1]
             }
 
             if (changeline1 > 1) {
-                self.timelabel15.text = time1[6]
-                self.timelabel16.text = time1[7]
-                if (self.timelabel15.text == "--:--") {
-                    self.timelabel16.text = "--:--"
-                    self.timelabel1e.text = "--:--"
-                }
+                self.timelabel15.text = (self.timelabel14.text == none) ? none: time1[6]
+                self.timelabel16.text = (self.timelabel15.text == none) ? none: time1[7]
+                self.timelabel1e.text = (self.timelabel16.text == none) ? none: time1[1]
             }
-
+            
             //カウントダウン1
-            if (time1[0] != "--:--"){
-                self.countdown1.text = DateAndTime.getCountdownTime(
-                    currenthhmmss: currenttime,
-                    departtime: departuretime1)
-                self.countdown1.textColor = DateAndTime.getCountDownColor(
-                    currenthhmmss: currenttime,
-                    departtime: departuretime1)
-            } else {
-                self.countdown1.text = "--:--"
-                self.countdown1.textColor = UIColor(rgb: 0x8E8E93)
-            }
+            self.countdown1.text = currenttime.countdownTime(departuretime1)
+            self.countdown1.textColor = currenttime.countdownColor(departuretime1)
 
-            self.timelabel20.text = time2[0]
-            self.timelabel2e.text = time2[1]
-            self.timelabel21.text = time2[2]
-            self.timelabel22.text = time2[3]
-
-            if (self.timelabel21.text == "--:--") {
-                self.timelabel20.text = "--:--"
-                self.timelabel22.text = "--:--"
-                self.timelabel2e.text = "--:--"
-            }
+            //時刻2の表示
+            self.timelabel21.text = (time2[0] == none) ? none: time2[2]
+            self.timelabel22.text = (self.timelabel21.text == none) ? none: time2[3]
+            self.timelabel20.text = (self.timelabel22.text == none) ? none: time2[0]
+            self.timelabel2e.text = (self.timelabel22.text == none) ? none: time2[1]
 
             if (changeline2 > 0) {
-                self.timelabel23.text = time2[4]
-                self.timelabel24.text = time2[5]
-                if (self.timelabel23.text == "--:--") {
-                    self.timelabel24.text = "--:--"
-                    self.timelabel2e.text = "--:--"
-                }
+                self.timelabel23.text = (self.timelabel22.text == none) ? none: time2[4]
+                self.timelabel24.text = (self.timelabel23.text == none) ? none: time2[5]
+                self.timelabel2e.text = (self.timelabel24.text == none) ? none: time2[1]
             }
 
             if (changeline2 > 1) {
-                self.timelabel15.text = time2[6]
-                self.timelabel16.text = time2[7]
-                if (self.timelabel15.text == "--:--") {
-                    self.timelabel16.text = "--:--"
-                    self.timelabel1e.text = "--:--"
-                }
+                self.timelabel25.text = (self.timelabel24.text == none) ? none: time2[6]
+                self.timelabel26.text = (self.timelabel25.text == none) ? none: time2[7]
+                self.timelabel2e.text = (self.timelabel26.text == none) ? none: time2[1]
             }
-
             //カウントダウン2
-            if (time2[0] !=  "--:--") {
-                self.countdown2.text = DateAndTime.getCountdownTime(
-                    currenthhmmss: currenttime,
-                    departtime: departuretime2)
-                //時刻の表示
-                self.countdown2.textColor = DateAndTime.getCountDownColor(
-                    currenthhmmss: currenttime,
-                    departtime: departuretime2)
-            } else {
-                self.countdown2.text = "--:--"
-                self.countdown2.textColor = UIColor(rgb: 0x8E8E93)
-            }
-        })
+            self.countdown2.text = currenttime.countdownTime(departuretime2)
+            self.countdown2.textColor = currenttime.countdownColor(departuretime2)
+       })
     }
     
     //帰宅ルートの表示ボタン
     @IBAction func backbutton(_ sender: Any) {
-        DateAndTime.setButtonEnabled(flag: false, button: backbutton, color: 0x3700B3)
-        DateAndTime.setButtonEnabled(flag: true, button: gobutton, color: 0x8E8E93)
+        backbutton.isEnabled = false
+        gobutton.isEnabled = true
+        backbutton.setButtonColor(self.primary)
+        gobutton.setButtonColor(self.gray)
         goorbackflag = true
         goorback1 = "back1"
         goorback2 = "back2"
@@ -400,8 +289,10 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
 
     //外出ルートの表示ボタン
     @IBAction func gobutton(_ sender: Any) {
-        DateAndTime.setButtonEnabled(flag: true, button: backbutton, color: 0x8E8E93)
-        DateAndTime.setButtonEnabled(flag: false, button: gobutton, color: 0x3700B3)
+        backbutton.isEnabled = true
+        gobutton.isEnabled = false
+        backbutton.setButtonColor(self.gray)
+        gobutton.setButtonColor(self.primary)
         goorbackflag = false
         goorback1 = "go1"
         goorback2 = "go2"
@@ -409,8 +300,10 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
     
     //現在時刻の再開ボタン
     @IBAction func startbutton(_ sender: Any) {
-        DateAndTime.setButtonEnabled(flag: false, button: startbutton, color: 0x03DAC5)
-        DateAndTime.setButtonEnabled(flag: true, button: stopbutton, color: 0x8E8E93)
+        startbutton.isEnabled = false
+        stopbutton.isEnabled = true
+        startbutton.setButtonColor(self.accent)
+        stopbutton.setButtonColor(self.gray)
         timeflag = true
         datebutton.isEnabled = false
         timebutton.isEnabled = false
@@ -418,8 +311,10 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
 
     //現在時刻の停止ボタン
     @IBAction func stopbutton(_ sender: Any) {
-        DateAndTime.setButtonEnabled(flag: true, button: startbutton, color: 0x8E8E93)
-        DateAndTime.setButtonEnabled(flag: false, button: stopbutton, color: 0x03DAC5)
+        startbutton.isEnabled = true
+        stopbutton.isEnabled = false
+        startbutton.setButtonColor(self.gray)
+        stopbutton.setButtonColor(self.accent)
         timeflag = false
         datebutton.isEnabled = true
         timebutton.isEnabled = true
@@ -427,377 +322,189 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
     
     //日時の変更ボタン
     @IBAction func datebutton(_ sender: Any) {
-        if (!timeflag) {
-            CustomDialog.setDatePickerDialog(
-                viewcontroller: self,
-                datepickermode: .date,
-                datebutton: datebutton,
-                stringformat: "E, MMM d, yyyy")
-        }
+        DateAndTime(self.datebutton!, self.timebutton!, self.timeflag).datePickerDialog(self)
     }
     
     //時刻の変更ボタン
     @IBAction func timebutton(_ sender: Any) {
-        if (!timeflag) {
-            CustomDialog.setDatePickerDialog(
-                viewcontroller: self,
-                datepickermode: .time,
-                datebutton: timebutton,
-                stringformat: "HH:mm")
-        }
+        DateAndTime(self.datebutton!, self.timebutton!, self.timeflag).timePickerDialog(self)
     }
 
     @IBAction func stationlabel10(_ sender: Any) {
-        CustomDialog.departurepointTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel10,
-            goorback: goorback1)
+        MainViewDialog(self, goorback1).departurePointTextFieldDialog(stationlabel10)
     }
     
     @IBAction func stationlabel11(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel11,
-            goorback: goorback1,
-            keytag: "1")
+        MainViewDialog(self, goorback1).departStationTextFieldDialog(stationlabel11, "1")
     }
     
     @IBAction func stationlabel12(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel12,
-            goorback: goorback1,
-            keytag: "1")
+        MainViewDialog(self, goorback1).arriveStationTextFieldDialog(stationlabel12, "1")
     }
     
     @IBAction func stationlabel13(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel13,
-            goorback: goorback1,
-            keytag: "2")
+        MainViewDialog(self, goorback1).departStationTextFieldDialog(stationlabel13, "2")
     }
     
     @IBAction func stationlabel14(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel14,
-            goorback: goorback1,
-            keytag: "2")
+        MainViewDialog(self, goorback1).arriveStationTextFieldDialog(stationlabel14, "2")
     }
     
     @IBAction func stationlabel15(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel15,
-            goorback: goorback1,
-            keytag: "3")
+        MainViewDialog(self, goorback1).departStationTextFieldDialog(stationlabel15, "3")
     }
     
     @IBAction func stationlabel16(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel16,
-            goorback: goorback1,
-            keytag: "3")
+        MainViewDialog(self, goorback1).arriveStationTextFieldDialog(stationlabel16, "3")
     }
     
     @IBAction func stationlabel1e(_ sender: Any) {
-        CustomDialog.destinationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel1e,
-            goorback: goorback1)
+        MainViewDialog(self, goorback1).destinationTextFieldDialog(stationlabel1e)
     }
     
     @IBAction func stationlabel20(_ sender: Any) {
-        CustomDialog.departurepointTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel20,
-            goorback: goorback2)
+        MainViewDialog(self, goorback2).departurePointTextFieldDialog(stationlabel20)
     }
     
     @IBAction func stationlabel21(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel21,
-            goorback: goorback2,
-            keytag: "1")
+        MainViewDialog(self, goorback2).departStationTextFieldDialog(stationlabel21, "1")
     }
     
     @IBAction func stationlabel22(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel22,
-            goorback: goorback2,
-            keytag: "1")
+        MainViewDialog(self, goorback2).arriveStationTextFieldDialog(stationlabel22, "1")
     }
     
     @IBAction func stationlabel23(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel23,
-            goorback: goorback2,
-            keytag: "2")
+        MainViewDialog(self, goorback2).departStationTextFieldDialog(stationlabel23, "2")
     }
     
     @IBAction func stationlabel24(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel24,
-            goorback: goorback2,
-            keytag: "2")
+        MainViewDialog(self, goorback2).arriveStationTextFieldDialog(stationlabel24, "2")
     }
     
     @IBAction func stationlabel25(_ sender: Any) {
-        CustomDialog.departStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel25,
-            goorback: goorback2,
-            keytag: "3")
+        MainViewDialog(self, goorback2).departStationTextFieldDialog(stationlabel25, "3")
     }
     
     @IBAction func stationlabel26(_ sender: Any) {
-        CustomDialog.arriveStationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel26,
-            goorback: goorback2,
-            keytag: "3")
+        MainViewDialog(self, goorback2).arriveStationTextFieldDialog(stationlabel26, "3")
     }
     
     @IBAction func stationlabel2e(_ sender: Any) {
-        CustomDialog.destinationTextFieldDialog(
-            viewcontroller: self,
-            label: stationlabel2e,
-            goorback: goorback2)
+        MainViewDialog(self, goorback2).destinationTextFieldDialog(stationlabel2e)
     }
     
     @IBAction func linelabel11(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel11,
-            stackview: linetimetable11,
-            goorback: goorback1,
-            keytag: "1")
+        MainViewDialog(self, goorback1).lineTextFieldDialog(linelabel11, linetimetable11, "1")
     }
     
     @IBAction func linelabel12(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel12,
-            stackview: linetimetable12,
-            goorback: goorback1,
-            keytag: "2")
+        MainViewDialog(self, goorback1).lineTextFieldDialog(linelabel12, linetimetable12, "2")
     }
     
     @IBAction func linelabel13(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel13,
-            stackview: linetimetable13,
-            goorback: goorback1,
-            keytag: "3")
+        MainViewDialog(self, goorback1).lineTextFieldDialog(linelabel13, linetimetable13, "3")
     }
     
     @IBAction func linelabel21(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel21,
-            stackview: linetimetable21,
-            goorback: goorback2,
-            keytag: "1")
-    }
+        MainViewDialog(self, goorback2).lineTextFieldDialog(linelabel21, linetimetable21, "1")
+   }
     
     @IBAction func linelabel22(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel22,
-            stackview: linetimetable22,
-            goorback: goorback2,
-            keytag: "2")
+        MainViewDialog(self, goorback2).lineTextFieldDialog(linelabel22, linetimetable22, "2")
     }
     
     @IBAction func linelabel23(_ sender: Any) {
-        CustomDialog.lineTextFieldDialog(
-            viewcontroller: self,
-            label: linelabel23,
-            stackview: linetimetable23,
-            goorback: goorback2,
-            keytag: "3")
+        MainViewDialog(self, goorback2).lineTextFieldDialog(linelabel23, linetimetable23, "3")
     }
     
     @IBAction func linetimetable11(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable11,
-            goorback: goorback1,
-            keytag: "1",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback1).rideTimeFieldDialog(linetimetable11, "1", weekflag)
     }
     
     
     @IBAction func linetimetable12(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable12,
-            goorback: goorback1,
-            keytag: "2",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback1).rideTimeFieldDialog(linetimetable12, "2", weekflag)
     }
 
     @IBAction func linetimetable13(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable13,
-            goorback: goorback1,
-            keytag: "3",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback1).rideTimeFieldDialog(linetimetable13, "3", weekflag)
     }
     
     @IBAction func linetimetable21(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable21,
-            goorback: goorback2,
-            keytag: "1",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback2).rideTimeFieldDialog(linetimetable21, "1", weekflag)
     }
     
     @IBAction func linetimetable22(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable22,
-            goorback: goorback2,
-            keytag: "2",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback2).rideTimeFieldDialog(linetimetable22, "2", weekflag)
     }
 
     @IBAction func linetimetable23(_ sender: Any) {
-        CustomDialog.rideTimeFieldDialog(
-            viewcontroller: self,
-            stackview: linetimetable23,
-            goorback: goorback2,
-            keytag: "3",
-            weekflag: weekflag)
+        MainViewDialog(self, goorback2).rideTimeFieldDialog(linetimetable23, "3", weekflag)
     }
     
     @IBAction func transportlabel11(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel11,
-            goorback: goorback1,
-            keytag: "1")
+        MainViewDialog(self, goorback1).transportPickerDialog(transportlabel11, "1")
     }
     
     @IBAction func transportlabel12(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel13,
-            goorback: goorback1,
-            keytag: "2")
+        MainViewDialog(self, goorback1).transportPickerDialog(transportlabel12, "2")
     }
     
     @IBAction func transportlabel13(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel13,
-            goorback: goorback1,
-            keytag: "3")
+        MainViewDialog(self, goorback1).transportPickerDialog(transportlabel13, "3")
     }
     
     @IBAction func transportlabel1e(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel1e,
-            goorback: goorback1,
-            keytag: "e")
+        MainViewDialog(self, goorback1).transportPickerDialog(transportlabel1e, "e")
     }
 
     @IBAction func transportlabel21(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel21,
-            goorback: goorback2,
-            keytag: "1")
+        MainViewDialog(self, goorback2).transportPickerDialog(transportlabel21, "1")
     }
     
     @IBAction func transportlabel22(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel22,
-            goorback: goorback2,
-            keytag: "2")
+        MainViewDialog(self, goorback2).transportPickerDialog(transportlabel22, "2")
     }
     
     @IBAction func transportlabel23(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel23,
-            goorback: goorback2,
-            keytag: "3")
+        MainViewDialog(self, goorback2).transportPickerDialog(transportlabel23, "3")
     }
     
     @IBAction func transportlabel2e(_ sender: Any) {
-        CustomDialog.transportPickerDialog(
-            viewcontroller: self,
-            label: transportlabel2e,
-            goorback: goorback2,
-            keytag: "e")
+        MainViewDialog(self, goorback2).transportPickerDialog(transportlabel2e, "e")
     }
     
     @IBAction func transittimelabel11(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback1,
-            keytag: "1")
+        MainViewDialog(self, goorback1).transitTimeFieldDialog("1")
     }
     
     @IBAction func transittomelabel12(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback1,
-            keytag: "2")
+        MainViewDialog(self, goorback1).transitTimeFieldDialog("2")
     }
     
     @IBAction func transittimelabel13(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback1,
-            keytag: "3")
+        MainViewDialog(self, goorback1).transitTimeFieldDialog("3")
     }
     
     @IBAction func transittimelabel1e(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback1,
-            keytag: "e")
+        MainViewDialog(self, goorback1).transitTimeFieldDialog("e")
     }
     
     @IBAction func transittimelabel21(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback2,
-            keytag: "1")
+        MainViewDialog(self, goorback2).transitTimeFieldDialog("1")
     }
     
     @IBAction func transittimelabel22(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback2,
-            keytag: "2")
+        MainViewDialog(self, goorback2).transitTimeFieldDialog("2")
     }
     
     @IBAction func transittimelabel23(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback2,
-            keytag: "3")
+        MainViewDialog(self, goorback2).transitTimeFieldDialog("3")
     }
     
     @IBAction func transittimelabel2e(_ sender: Any) {
-        CustomDialog.transitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback2,
-            keytag: "e")
+        MainViewDialog(self, goorback2).transitTimeFieldDialog("e")
     }
     
     //ステータスバーの色を白に変更
@@ -810,20 +517,13 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
             bannerView.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(bannerView)
             view.addConstraints([
-                NSLayoutConstraint(item: bannerView,
-                                    attribute: .bottom,
-                                    relatedBy: .equal,
-                                    toItem: bottomLayoutGuide,
-                                    attribute: .top,
-                                    multiplier: 1,
-                                    constant: 0),
-                NSLayoutConstraint(item: bannerView,
-                                    attribute: .centerX,
-                                    relatedBy: .equal,
-                                    toItem: view,
-                                    attribute: .centerX,
-                                    multiplier: 1,
-                                    constant: 0)
+                NSLayoutConstraint(item: bannerView, attribute: .bottom, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: bannerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
             ])
         }
+    
+    override func didReceiveMemoryWarning() {
+            super.didReceiveMemoryWarning()
+            // Dispose of any resources that can be recreated.
+    }
 }

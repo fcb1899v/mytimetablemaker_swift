@@ -6,30 +6,25 @@
   Copyright © 2020 com.nakajimamasao. All rights reserved.
 */
 
-"E, MMM d, yyyy" = "E, MMM d, yyyy";
 
+//Action
 "Register" = "Register";
 "Cancel" = "Cancel";
+"Add" = "Add";
 "Delete" = "Delete";
-"Maximum 20 Charactors" = "Maximum 20 Charactors";
-"Enter 0~99 [min]" = "Enter 0~99 [min]";
-"[min]" = "[min]";
-"Not set" = "Not set";
-"Not use" = "Not use";
+"Copy" = "Copy";
 
-"Weekday" = "Weekday";
-"Weekend" = "Weekend";
-"WEEKDAY" = "WEEKDAY";
-"WEEKEND" = "WEEKEND";
-
+//TransitTime
 "Zero" = "Zero";
 "Once" = "Once";
 "Twice" = "Twice";
 
+//Transportation
 "Walking" = "Walking";
 "Bicycle" = "Bicycle";
 "Car" = "Car";
 
+//CustomColor
 "DEFAULT" = "DEFAULT";
 "RED" = "RED";
 "ORANGE" = "ORANGE";
@@ -48,8 +43,41 @@
 "SILVER" = "SILVER";
 "BLACK" = "BLACK";
 
+//Unit
+"[min]" = " [min]";
+"Not set" = "Not set";
+"Not use" = "Not use";
+"E, MMM d, yyyy" = "E, MMM d, yyyy";
+"maxchar" = "20";
+
+//Hint
+"Maximum 20 Charactors" = "Maximum 20 Charactors";
+"Enter 0~99 [min]" = "Enter 0~99 [min]";
+"Enter 0~59 [min]" = "Enter 0~59 [min]";
+
+//DialogTitle
+"Setting your number of transfers" = "Setting your number of transfers";
+"Setting your departure place" = "Setting your departure place";
+"Setting your station name" = "Setting your station name";
+"Setting your destination" = "Setting your destination";
+"Setting your line name" = "Setting your line name";
+"Setting your line color" = "Setting your line color";
+"Setting your ride time [min]" = "Setting your ride time [min]";
+"Setting your transportation" = "Setting your transportation";
+"Setting your transit time [min]" = "Setting your transit time [min]";
+"Setting your timetable" = "Setting your timetable";
+"Add and delete your time [min]" = "Add and delete your time [min]";
+"Copying your time" = "Copying your time";
+
+//VariousSettingsTitle
+"Various settings on route home 1" = "Various settings on route home 1";
+"Various settings on outgoing route 1" = "Various settings on outgoing route 1";
+"Various settings on route home 2" = "Various settings on route home 2";
+"Various settings on outgoing route 2" = "Various settings on outgoing route 2";
+
+//その他
 "Office" = "Office";
-"Home" = "Office";
+"Home" = "Home";
 "Dep. St." = "Dep. St.";
 "Arr. St." = "Arr. St.";
 "Line " = "Line ";
@@ -62,24 +90,13 @@
 "departure station" = "departure station";
 "arrival station" = "arrival station";
 "Arrival station" = "Arrival station";
-
-"Various settings on route home 1" = "Various settings on route home 1";
-"Various settings on outgoing route 1" = "Various settings on outgoing route 1";
-"Various settings on route home 2" = "Various settings on route home 2";
-"Various settings on outgoing route 2" = "Various settings on outgoing route 2";
-"Setting your number of transfers" = "Setting your number of transfers";
-"Setting your departure place" = "Setting your departure place";
-"Setting your destination" = "Setting your destination";
-"Setting your station name " = "Setting your station name ";
 "of departure station " = "of departure station ";
 "of arrival station " = "of arrival station ";
-"Setting your line name" = "Setting your line name";
-"Setting your line color" = "Setting your line color";
-"Setting your transportation" = "Setting your transportation";
-"Setting your required time [min]" = "Setting your required time [min]";
-"Setting your ride time [min]" = "Setting your ride time [min]";
-"Setting your timetable" = "Setting your timetable";
-
+"Other route of line 1" = "Other route of line 1";
+"Other route of line 2" = "Other route of line 2";
+"Other route of line 3" = "Other route of line 3";
+"Weekday" = "Weekday";
+"Weekend" = "Weekend";
 "of " = "of ";
 "from " = "from ";
 "From " = "From ";
@@ -90,248 +107,5 @@
 "on " = "on ";
 " for " = " for ";
 "houmen" = "";
-
-
-
-
-
-//"switchback"="Back"
-//"switchgo"="Go"
-//"timestart"="Start"
-//"timestop"="Stop"
-//"currentdate"="MON 00/00/0000"
-//"currenttime"="00:00:00"
-//
-////メインフラグメント
-//"testtext"="0000"
-//"nexttime"="00:00"
-//"linename0"="Walking"
-//"office"="Office"
-//"stationname1"="Depart Sta.1"
-//"stationname2"="Depart Sta.2"
-//"stationname3"="Depart Sta.3"
-//"stationname4"="Depart Sta.4"
-//"stationname11"="Arrive Sta.1"
-//"stationname12"="Arrive Sta.2"
-//"stationname13"="Arrive Sta.3"
-//"stationname14"="Arrive Sta.4"
-//"home"="Home"
-//"linename1"="Line 1"
-//"linename2"="Line 2"
-//"linename3"="Line 3"
-//"linename4"="Line 4"
-//
-////時刻表
-//"timetabletitle"="Timetable"
-//"timetable"="XXX station\n(YYY line for ZZZ station)"
-//"weekday"="Weekdays"
-//"weekend"="Weekend"
-//"hourunit"="Hour"
-//"hour04"="4"
-//"hour05"="5"
-//"hour06"="6"
-//"hour07"="7"
-//"hour08"="8"
-//"hour09"="9"
-//"hour10"="10"
-//"hour11"="11"
-//"hour12"="12"
-//"hour13"="13"
-//"hour14"="14"
-//"hour15"="15"
-//"hour16"="16"
-//"hour17"="17"
-//"hour18"="18"
-//"hour19"="19"
-//"hour20"="20"
-//"hour21"="21"
-//"hour22"="22"
-//"hour23"="23"
-//"hour24"="24"
-//"hour25"="25"
-//"inputtime"="Add and delete departure time"
-//"inputtimehint"="　Enter 0~59 ［min］"
-//"add"="Add"
-//"register"="Register"
-//"delete"="Delete"
-//"cancel"="Cancel"
-//"backto"="Back"
-//"notset"="Not set"
-//
-//
-////設定画面
-//"settingtitle"="Setup"
-//"root2displaytitle"="Display route 2"
-//"back2display"="Display route home 2"
-//"go2display"="Display outing route 2"
-//"linechangesettingtitle"="Set up the number of transfers"
-//"back1changelinesettingtitle"="Number of transfers on route home 1 "
-//"back2changelinesettingtitle"="Number of transfers on route home 2"
-//"go1changelinesettingtitle"="Number of transfers on outing route 1"
-//"go2changelinesettingtitle"="Number of transfers on outing route 2"
-//"varioussettingtitle"="Various setup"
-//"back1varioussettingtitle"="Various setup of route home 1"
-//"back2varioussettingtitle"="Various setup of route home 2"
-//"go1varioussettingtitle"="Various setup of outing route1"
-//"go2varioussettingtitle"="Various setup of outing route2"
-//"information"="About"
-//"termofuse"="Term of use"
-//"privacypolicy"="Privacy policy"
-//"settingmethod"="How to setup"
-//"linkcollection"="Links for setting up timetable"
-//"version"="Version"
-//
-////各種設定
-//
-////駅名の設定
-//"character10hint"="Maximum 20 Characters"
-//"departurepointsetting"="Name of departure place"
-//"back1stationsettingtitle"="Station name on route home 1"
-//"back2stationsettingtitle"="Station name on route home 2"
-//"go1stationsettingtitle"="Station name on outing route 1"
-//"go2stationsettingtitle"="Station name on outing route 2"
-//"departstation1setting"="Station name of departure station 1"
-//"arrivestation1setting"="Station name of arrival station 1"
-//"departstation2setting"="Station name of departure station 2"
-//"arrivestation2setting"="Station name of arrival station 2"
-//"departstation3setting"="Station name of departure station 3"
-//"arrivestation3setting"="Station name of arrival station 3"
-//"destinationsetting"="Name of destination"
-//"departurepoint"="departure place"
-//"departstation"="departure station"
-//"arrivestation"="arrival station"
-//"departsta"="Depart Sta."
-//"arrivesta"="Arrive Sta."
-//"destination"="destination"
-//"koron"="for"
-//"houmen"=""
-//
-////路線名の設定
-//"back1linenamesettingtitle"="Set up the line name on route home 1"
-//"back2linenamesettingtitle"="Set up the line name on route home 2"
-//"go1linenamesettingtitle"="Set up the line name on outing route 1"
-//"go2linenamesettingtitle"="Set up the line name on outing route 1"
-//"nameofline1setting"="Name of line 1"
-//"nemeofline2setting"="Name of line 2"
-//"nemeofline3setting"="Name of line 3"
-//"line"="Line"
-//"line1"="line 1"
-//"line2"="line 2"
-//"line3"="line 3"
-//"line4"="line 4"
-//
-////路線カラーの設定
-//"linecolorsetting"="line color setting"
-//"back1linecolorsettingtitle"="Set up the line color on route home 1"
-//"back2linecolorsettingtitle"="Set up the line color on route home 2"
-//"go1linecolorsettingtitle"="Set up the line color on outing route 1"
-//"go2linecolorsettingtitle"="Set up the line color on outing route 2"
-//"colorofline1setting"="Color of line 1"
-//"colorofline2setting"="Color of line 2"
-//"colorofline3setting"="Color of line 3"
-//"coloraccent"="#03DAC5"
-//
-////移動手段の設定
-//"back1movemethodsettingtitle"="Set up the transportation on route home 1"
-//"back2movemethodsettingtitle"="Set up the transportation on route home 2"
-//"go1movemethodsettingtitle"="Set up the transportation on outing route 1"
-//"go2movemethodsettingtitle"="Set up the transportation on outing route 2"
-//"movemethod1setting"="Transportation from departure place"
-//"movemethod2setting"="Transportation from arrival station 1"
-//"movemethod3setting"="Transportation from arrival station 2"
-//"movemethod4setting"="Transportation from arrival station 3"
-//"walking"="Walking"
-//"bicycle"="Bicycle"
-//"car"="Car"
-//"movecolor"="#808080"
-//
-////乗車時間の設定
-//"minite2hint"="　Enter 0~99 ［min］"
-//"back1ridetimesettingtitle"="Set up the riding time on route home 1"
-//"back2ridetimesettingtitle"="Set up the riding time on route home 2"
-//"go1ridetimesettingtitle"="Set up the riding time on outing route 1"
-//"go2ridetimesettingtitle"="Set up the riding time on outing route 2"
-//"ride1timesetting"="Riding time of line 1　[min]"
-//"ride2timesetting"="Riding time of line 2　[min]"
-//"ride3timesetting"="Riding time of line 3　[min]"
-//"minuteunit"="minites"
-//
-////その他所要時間の設定
-//"back1requiredtimesettingtitle"="Set up the other required time on route home 1"
-//"back2requiredtimesettingtitle"="Set up the other required time on route home 2"
-//"go1requiredtimesettingtitle"="Set up the other required time on outing route 1"
-//"go2requiredtimesettingtitle"="Set up the other required time on outing route 2"
-//"walk1requiredtimesetting"="Required time from departure place to departure station 1　[min]"
-//"walk2requiredtimesetting"="Required time from arrival station 1 to departure station 2　[min]"
-//"walk3requiredtimesetting"="Required time from arrival station 2 to departure station 3　[min]"
-//"walk4requiredtimesetting"="Required time from arrival station 3 to departure station 4　[min]"
-//"walkerequiredtimesetting"="Required time from arrival station 3 to destination　[min]"
-//"departurestation1"="departure station 1"
-//"departurestation2"="departure station 2"
-//"departurestation3"="departure station 3"
-//"arrivalstation1"="arrival station 1"
-//"arrivalstation2"="arrival station 2"
-//"arrivalstation3"="arrival station 3"
-//
-////時刻表の設定
-//"back1timetablesettingtitle"="Set up the timetable on route home 1"
-//"back2timetablesettingtitle"="Set up the timetable on route home 2"
-//"go1timetablesettingtitle"="Set up the timetable on outing route 1"
-//"go2timetablesettingtitle"="Set up the timetable on outing route 2"
-//"line1timetableweekdaysetting"="Set up the weekday timetable for line 1"
-//"line1timetableweekendsetting"="Set up the weekend timetable for line 1"
-//"line2timetableweekdaysetting"="Set up the weekday timetable for line 2"
-//"line2timetableweekendsetting"="Set up the weekend timetable for line 2"
-//"line3timetableweekdaysetting"="Set up the weekday timetable for line 3"
-//"line3timetableweekendsetting"="Set up the weekend timetable for line 3"
-//"timetablesetting"="Set up timetable"
-//
-//
-////時刻表設定画面
-//"back1line1timetablesettingtitle"="Timetable (Weekday : Line 1 on route home 1)"
-//"back1line2timetablesettingtitle"="Timetable (Weekday : Line 2 on route home 1)"
-//"back1line3timetablesettingtitle"="Timetable (Weekday : Line 3 on route home 1)"
-//"back2line1timetablesettingtitle"="Timetable (Weekday : Line 1 on route home 2)"
-//"back2line2timetablesettingtitle"="Timetable (Weekday : Line 2 on route home 2)"
-//"back2line3timetablesettingtitle"="Timetable (Weekday : Line 3 on route home 2)"
-//"go1line1timetablesettingtitle"="Timetable (Weekday : Line 1 on outing route 1)"
-//"go1line2timetablesettingtitle"="Timetable (Weekday : Line 2 on outing route 1)"
-//"go1line3timetablesettingtitle"="Timetable (Weekday : Line 3 on outing route 1)"
-//"go2line1timetablesettingtitle"="Timetable (Weekday : Line 1 on outing route 2)"
-//"go2line2timetablesettingtitle"="Timetable (Weekday : Line 2 on outing route 2)"
-//"go2line3timetablesettingtitle"="Timetable (Weekday : Line 3 on outing route 2)"
-//"back1line1timetableweekendtitle"="Timetable (Weekend : Line 1 on route home 1)"
-//"back1line2timetableweekendtitle"="Timetable (Weekend : Line 2 on route home 1)"
-//"back1line3timetableweekendtitle"="Timetable (Weekend : Line 3 on route home 1)"
-//"back2line1timetableweekendtitle"="Timetable (Weekend : Line 1 on route home 2)"
-//"back2line2timetableweekendtitle"="Timetable (Weekend : Line 2 on route home 2)"
-//"back2line3timetableweekendtitle"="Timetable (Weekend : Line 3 on route home 2)"
-//"go1line1timetableweekendtitle"="Timetable (Weekend : Line 1 on outing route 1)"
-//"go1line2timetableweekendtitle"="Timetable (Weekend : Line 2 on outing route 1)"
-//"go1line3timetableweekendtitle"="Timetable (Weekend : Line 3 on outing route 1)"
-//"go2line1timetableweekendtitle"="Timetable (Weekend : Line 1 on outing route 2)"
-//"go2line2timetableweekendtitle"="Timetable (Weekend : Line 2 on outing route 2)"
-//"go2line3timetableweekendtitle"="Timetable (Weekend : Line 3 on outing route 2)"
-//"h04setting"="Setting times at 4"
-//"h05setting"="Setting times at 5"
-//"h06setting"="Setting times at 6"
-//"h07setting"="Setting times at 7"
-//"h08setting"="Setting times at 8"
-//"h09setting"="Setting times at 9"
-//"h10setting"="Setting times at 10"
-//"h11setting"="Setting times at 11"
-//"h12setting"="Setting times at 12"
-//"h13setting"="Setting times at 13"
-//"h14setting"="Setting times at 14"
-//"h15setting"="Setting times at 15"
-//"h16setting"="Setting times at 16"
-//"h17setting"="Setting times at 17"
-//"h18setting"="Setting times at 18"
-//"h19setting"="Setting times at 19"
-//"h20setting"="Setting times at 20"
-//"h21setting"="Setting times at 21"
-//"h22setting"="Setting times at 22"
-//"h23setting"="Setting times at 23"
-//"h24setting"="Setting times at 24"
-//"h25setting"="Setting times at 25"
-//"timetablehint"="Enter 0～59 [min] separated by a space"
+"Hour" = ":00-";
+"terms" = "Terms and privacy policy";

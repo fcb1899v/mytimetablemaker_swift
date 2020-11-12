@@ -11,7 +11,7 @@ import UIKit
 class VariousSettingsTableViewController: UITableViewController {
 
     var goorback: String?
-    var weekflag = DateAndTime.getWeekFlag()
+    var weekflag = Date().weekFlag
     
     @IBOutlet weak var departplacelabel: UILabel!
     @IBOutlet weak var departstationlabel1: UILabel!
@@ -56,358 +56,219 @@ class VariousSettingsTableViewController: UITableViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let changeline = goorback!.changeLineInt
+        let notset = Unit.notset.rawValue.localized
+        let notuse = Unit.notuse.rawValue.localized
+        let black = DefaultColor.black.rawValue
+        let gray = DefaultColor.gray.rawValue
+        let uigray = DefaultColor.gray.UI
+
         //VariousSettingsのタイトルを取得
-        self.title = FileAndData.getVariousSettingsTitle(goorback: goorback!)
-        let changeline = FileAndData.getIntChangeLine(goorback: goorback!)
-    
-        departplacelabel.text = SettingPreference.getPrefDepartPlace(
-            goorback: goorback!)
-        departstationlabel1.text = SettingPreference.getPrefDepartStation(
-            goorback: goorback!,
-            keytag: "1")
-        arrivalstationlabel1.text = SettingPreference.getPrefArriveStation(
-            goorback: goorback!,
-            keytag: "1")
-        departstationlabel2.text = SettingPreference.getPrefDepartStation(
-            goorback: goorback!,
-            keytag: "2")
-        arrivalstationlabel2.text = SettingPreference.getPrefArriveStation(
-            goorback: goorback!,
-            keytag: "2")
-        departstationlabel3.text = SettingPreference.getPrefDepartStation(
-            goorback: goorback!,
-            keytag: "3")
-        arrivalstationlabel3.text = SettingPreference.getPrefArriveStation(
-            goorback: goorback!,
-            keytag: "3")
-        destinationlabel.text = SettingPreference.getPrefDestination(
-            goorback: goorback!)
+        self.title = goorback!.variousSettingsTitle
 
-        linenamelabel1.text = SettingPreference.getLineName(
-            goorback: goorback!,
-            keytag: "1")
-        linenamelabel2.text = SettingPreference.getLineName(
-            goorback: goorback!,
-            keytag: "2")
-        linenamelabel3.text = SettingPreference.getLineName(
-            goorback: goorback!,
-            keytag: "3")
-        ridetimelabel1.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "1")
-        ridetimelabel2.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "2")
-        ridetimelabel3.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "3")
+        departplacelabel.text = goorback!.departurePoint(notset, notset)
+        departstationlabel1.text = goorback!.departStation("1", notset)
+        arrivalstationlabel1.text = goorback!.arriveStation("1", notset)
+        departstationlabel2.text = goorback!.departStation("2", notset)
+        arrivalstationlabel2.text = goorback!.arriveStation("2", notset)
+        departstationlabel3.text = goorback!.departStation("3", notset)
+        arrivalstationlabel3.text = goorback!.arriveStation("3", notset)
+        destinationlabel.text = goorback!.destination(notset, notset)
 
-        linenamelabel1.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "1")
-        linenamelabel2.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "2")
-        linenamelabel3.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "3")
-        ridetimelabel1.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "1")
-        ridetimelabel2.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "2")
-        ridetimelabel3.textColor = SettingPreference.getLineColor(
-            goorback: goorback!,
-            keytag: "3")
+        linenamelabel1.text = goorback!.lineName("1", notset)
+        linenamelabel2.text = goorback!.lineName("2", notset)
+        linenamelabel3.text = goorback!.lineName("3", notset)
+        ridetimelabel1.text = goorback!.rideTimeString("1")
+        ridetimelabel2.text = goorback!.rideTimeString("2")
+        ridetimelabel3.text = goorback!.rideTimeString("3")
 
-        transportationlabel1.text = SettingPreference.getTransportation(
-            goorback: goorback!,
-            keytag: "1")
-        transportationlabel2.text = SettingPreference.getTransportation(
-            goorback: goorback!,
-            keytag: "2")
-        transportationlabel3.text = SettingPreference.getTransportation(
-            goorback: goorback!,
-            keytag: "3")
-        transportationlabele.text = SettingPreference.getTransportation(
-            goorback: goorback!,
-            keytag: "e")
-        transittimelabel1.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "1")
-        transittimelabel2.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "2")
-        transittimelabel3.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "3")
-        transittimelabele.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "e")
+        linenamelabel1.textColor = goorback!.lineColor("1", black)
+        linenamelabel2.textColor = goorback!.lineColor("2", black)
+        linenamelabel3.textColor = goorback!.lineColor("3", black)
+        ridetimelabel1.textColor = goorback!.lineColor("1", black)
+        ridetimelabel2.textColor = goorback!.lineColor("2", black)
+        ridetimelabel3.textColor = goorback!.lineColor("3", black)
+
+        transportationlabel1.text = goorback!.transportation("1", "Walking".localized)
+        transportationlabel2.text = goorback!.transportation("2", "Walking".localized)
+        transportationlabel3.text = goorback!.transportation("3", "Walking".localized)
+        transportationlabele.text = goorback!.transportation("e", "Walking".localized)
+        transittimelabel1.text = goorback!.transitTimeString("1")
+        transittimelabel2.text = goorback!.transitTimeString("2")
+        transittimelabel3.text = goorback!.transitTimeString("3")
+        transittimelabele.text = goorback!.transitTimeString("e")
         
-        SettingPreference.setPreferenceCondition(
-            label: departstationlabel2,
-            button: departstationbutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: arrivalstationlabel2,
-            button: arrivalstationbutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: departstationlabel3,
-            button: departstationbutton3,
-            changeline: changeline,
-            keytag: "3")
-        SettingPreference.setPreferenceCondition(
-            label: arrivalstationlabel3,
-            button: arrivalstationbutton3,
-            changeline: changeline,
-            keytag: "3")
+        if (changeline < 1) {
+            departstationlabel2.text = notuse
+            arrivalstationlabel2.text = notuse
+            linenamelabel2.text = notuse
+            ridetimelabel2.text = notuse
+            transportationlabel2.text = notuse
+            transittimelabel2.text = notuse
+            departstationlabel2.textColor = uigray
+            arrivalstationlabel2.textColor = uigray
+            linenamelabel2.textColor = uigray
+            ridetimelabel2.textColor = uigray
+            transportationlabel2.textColor = uigray
+            transittimelabel2.textColor = uigray
+            departstationbutton2.setButtonColor(gray)
+            arrivalstationbutton2.setButtonColor(gray)
+            linenamebutton2.setButtonColor(gray)
+            ridetimebutton2.setButtonColor(gray)
+            transportationbutton2.setButtonColor(gray)
+            transittimebutton2.setButtonColor(gray)
+        }
         
-        SettingPreference.setPreferenceCondition(
-            label: linenamelabel2,
-            button: linenamebutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: ridetimelabel2,
-            button: ridetimebutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: linenamelabel3,
-            button: linenamebutton3,
-            changeline: changeline,
-            keytag: "3")
-        SettingPreference.setPreferenceCondition(
-            label: ridetimelabel3,
-            button: ridetimebutton3,
-            changeline: changeline,
-            keytag: "3")
-        
-        SettingPreference.setPreferenceCondition(
-            label: transportationlabel2,
-            button: transportationbutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: transittimelabel2,
-            button: transittimebutton2,
-            changeline: changeline,
-            keytag: "2")
-        SettingPreference.setPreferenceCondition(
-            label: transportationlabel3,
-            button: transportationbutton3,
-            changeline: changeline,
-            keytag: "3")
-        SettingPreference.setPreferenceCondition(
-            label: transittimelabel3,
-            button: transittimebutton3,
-            changeline: changeline,
-            keytag: "3")
+        if (changeline < 2) {
+            departstationlabel3.text = notuse
+            arrivalstationlabel3.text = notuse
+            linenamelabel3.text = notuse
+            ridetimelabel3.text = notuse
+            transportationlabel3.text = notuse
+            transittimelabel3.text = notuse
+            departstationlabel3.textColor = uigray
+            arrivalstationlabel3.textColor = uigray
+            linenamelabel3.textColor = uigray
+            ridetimelabel3.textColor = uigray
+            transportationlabel3.textColor = uigray
+            transittimelabel3.textColor = uigray
+            departstationbutton3.setButtonColor(gray)
+            arrivalstationbutton3.setButtonColor(gray)
+            linenamebutton3.setButtonColor(gray)
+            ridetimebutton3.setButtonColor(gray)
+            transportationbutton3.setButtonColor(gray)
+            transittimebutton3.setButtonColor(gray)
+        }
+
+        departstationbutton2.isEnabled = changeline.buttonEnabled(1)
+        departstationbutton3.isEnabled = changeline.buttonEnabled(2)
+        arrivalstationbutton2.isEnabled = changeline.buttonEnabled(1)
+        arrivalstationbutton3.isEnabled = changeline.buttonEnabled(2)
+        linenamebutton2.isEnabled = changeline.buttonEnabled(1)
+        linenamebutton3.isEnabled = changeline.buttonEnabled(2)
+        ridetimebutton2.isEnabled = changeline.buttonEnabled(1)
+        ridetimebutton3.isEnabled = changeline.buttonEnabled(2)
+        transportationbutton2.isEnabled = changeline.buttonEnabled(1)
+        transportationbutton3.isEnabled = changeline.buttonEnabled(2)
+        transittimebutton2.isEnabled = changeline.buttonEnabled(1)
+        transittimebutton3.isEnabled = changeline.buttonEnabled(2)
      }
     
     @IBAction func departplacebutton(_ sender: Any) {
-        CustomDialog.departurepointTextFieldDialog(
-            viewcontroller: self,
-            label: departplacelabel,
-            goorback: goorback!)
+        SettingDialog(self, goorback!)
+            .prefDeparturePointTextFieldDialog(departplacelabel)
     }
     
     @IBAction func departstationbutton1(_ sender: Any) {
-        CustomDialog.prefDepartStationTextFieldDialog(
-            viewcontroller:self,
-            label: departstationlabel1,
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefDepartStationTextFieldDialog(departstationlabel1, "1")
     }
     
     @IBAction func arrivalstationbutton1(_ sender: Any) {
-        CustomDialog.prefArriveStationTextFieldDialog(
-            viewcontroller:self,
-            label: arrivalstationlabel1,
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefArriveStationTextFieldDialog(arrivalstationlabel1, "1")
     }
     
     @IBAction func departstationbutton2(_ sender: Any) {
-        CustomDialog.prefDepartStationTextFieldDialog(
-            viewcontroller:self,
-            label: departstationlabel2,
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefDepartStationTextFieldDialog(departstationlabel2, "2")
     }
     
     @IBAction func arrivalstationbutton2(_ sender: Any) {
-        CustomDialog.prefArriveStationTextFieldDialog(
-            viewcontroller:self,
-            label: arrivalstationlabel2,
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefArriveStationTextFieldDialog(arrivalstationlabel2, "2")
     }
     
     @IBAction func departstationbutton3(_ sender: Any) {
-        CustomDialog.prefDepartStationTextFieldDialog(
-            viewcontroller:self,
-            label: departstationlabel3,
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefDepartStationTextFieldDialog(departstationlabel3, "3")
     }
     
     @IBAction func arrivalstationbutton3(_ sender: Any) {
-        CustomDialog.prefArriveStationTextFieldDialog(
-            viewcontroller:self,
-            label: arrivalstationlabel3,
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefArriveStationTextFieldDialog(arrivalstationlabel3, "3")
     }
     
     @IBAction func destinationbutton(_ sender: Any) {
-        CustomDialog.destinationTextFieldDialog(
-            viewcontroller: self,
-            label: destinationlabel,
-            goorback: goorback!)
+        SettingDialog(self, goorback!)
+            .prefDestinationTextFieldDialog(destinationlabel)
     }
     
     @IBAction func linenamebutton1(_ sender: Any) {
-        CustomDialog.prefLineTextFieldDialog(
-            viewcontroller: self,
-            linenamelabel: linenamelabel1,
-            ridetimelabel: ridetimelabel1,
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefLineTextFieldDialog(linenamelabel1, ridetimelabel1, "1")
     }
     
     @IBAction func linenamebutton2(_ sender: Any) {
-        CustomDialog.prefLineTextFieldDialog(
-            viewcontroller: self,
-            linenamelabel: linenamelabel2,
-            ridetimelabel: ridetimelabel2,
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefLineTextFieldDialog(linenamelabel2, ridetimelabel2, "2")
     }
     
     @IBAction func linenamebutton3(_ sender: Any) {
-        CustomDialog.prefLineTextFieldDialog(
-            viewcontroller: self,
-            linenamelabel: linenamelabel3,
-            ridetimelabel: ridetimelabel3,
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefLineTextFieldDialog(linenamelabel3, ridetimelabel3, "3")
     }
     
     @IBAction func ridetimebutton1(_ sender: Any) {
-        CustomDialog.prefRideTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "1",
-            weekflag: weekflag)
-        ridetimelabel1.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefRideTimeFieldDialog(ridetimelabel1, "1", weekflag)
     }
     
     @IBAction func ridetimebutton2(_ sender: Any) {
-        CustomDialog.prefRideTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "2",
-            weekflag: weekflag)
-        ridetimelabel2.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefRideTimeFieldDialog(ridetimelabel2, "2", weekflag)
     }
     
     @IBAction func ridetimebutton3(_ sender: Any) {
-        CustomDialog.prefRideTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "3",
-            weekflag: weekflag)
-        ridetimelabel3.text = SettingPreference.getStringRideTime(
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefRideTimeFieldDialog(ridetimelabel3, "3", weekflag)
     }
     
     @IBAction func transportationbutton1(_ sender: Any) {
-        CustomDialog.prefTransportPickerDialog(
-            viewcontroller: self,
-            label: transportationlabel1,
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefTransportPickerDialog(transportationlabel1, "1")
     }
     
     @IBAction func transportationbutton2(_ sender: Any) {
-        CustomDialog.prefTransportPickerDialog(
-            viewcontroller: self,
-            label: transportationlabel2,
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefTransportPickerDialog(transportationlabel2, "2")
     }
     
     @IBAction func transportationbutton3(_ sender: Any) {
-        CustomDialog.prefTransportPickerDialog(
-            viewcontroller: self,
-            label: transportationlabel3,
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefTransportPickerDialog(transportationlabel3, "3")
     }
     
     @IBAction func transportationbuttone(_ sender: Any) {
-        CustomDialog.prefTransportPickerDialog(
-            viewcontroller: self,
-            label: transportationlabele,
-            goorback: goorback!,
-            keytag: "e")
+        SettingDialog(self, goorback!)
+            .prefTransportPickerDialog(transportationlabele, "e")
     }
     
     @IBAction func transittimebutton1(_ sender: Any) {
-        CustomDialog.prefTransitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "1")
-        transittimelabel1.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "1")
+        SettingDialog(self, goorback!)
+            .prefTransitTimeFieldDialog(transittimelabel1, "1")
     }
     
     @IBAction func transittimebutton2(_ sender: Any) {
-        CustomDialog.prefTransitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "2")
-        transittimelabel2.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "2")
+        SettingDialog(self, goorback!)
+            .prefTransitTimeFieldDialog(transittimelabel2, "2")
     }
     
     @IBAction func transittimebutton3(_ sender: Any) {
-        CustomDialog.prefTransitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "3")
-        transittimelabel3.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "3")
+        SettingDialog(self, goorback!)
+            .prefTransitTimeFieldDialog(transittimelabel3, "3")
     }
     
     @IBAction func transittimebuttone(_ sender: Any) {
-        CustomDialog.prefTransitTimeFieldDialog(
-            viewcontroller: self,
-            goorback: goorback!,
-            keytag: "e")
-        transittimelabele.text = SettingPreference.getStringTransitTime(
-            goorback: goorback!,
-            keytag: "e")
+        SettingDialog(self, goorback!)
+            .prefTransitTimeFieldDialog(transittimelabele, "e")
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        view.tintColor = UIColor(rgb: 0x03DAC5)
+        view.tintColor = DefaultColor.accent.UI
         let header = view as! UITableViewHeaderFooterView
         // テキスト色を変更する
-        header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
+        header.textLabel?.textColor = DefaultColor.white.UI
     }
 }

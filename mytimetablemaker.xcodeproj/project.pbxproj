@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		020066EB2506FA6E003806ED /* DateAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020066EA2506FA6E003806ED /* DateAndTime.swift */; };
-		020066EF250AF4C5003806ED /* CustomDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020066EE250AF4C5003806ED /* CustomDialog.swift */; };
+		020066EF250AF4C5003806ED /* MainViewDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 020066EE250AF4C5003806ED /* MainViewDialog.swift */; };
 		02061D362503589200B93F04 /* TimetableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02061D352503589200B93F04 /* TimetableViewController.swift */; };
+		0209F0502556A11000D14C0A /* TimetableDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0209F04F2556A11000D14C0A /* TimetableDialog.swift */; };
+		021677B4254506D500461F3A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 021677B3254506D500461F3A /* MapKit.framework */; };
+		022CDA6F254318120018CEC0 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 022CDA6E254318120018CEC0 /* splash.png */; };
 		0236F16925031113008AEFF2 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0236F16825031113008AEFF2 /* MainViewController.swift */; };
-		02473D6A25222C380069A622 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D6925222C380069A622 /* Timetable.swift */; };
-		02473D722524EB480069A622 /* SettingPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D712524EB480069A622 /* SettingPreference.swift */; };
+		02473D6A25222C380069A622 /* CalcTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02473D6925222C380069A622 /* CalcTime.swift */; };
 		02473D9C2529B1B50069A622 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02473D9E2529B1B50069A622 /* Localizable.strings */; };
+		0254B31425569E2800577244 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0254B31325569E2800577244 /* Timetable.swift */; };
 		02668A5C252E8A3700E2B2CD /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
@@ -26,8 +29,11 @@
 		02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B782501342D00B28F13 /* ic_clock2.png */; };
 		02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */; };
 		02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */; };
-		02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4B2504C27B00628B40 /* FileAndData.swift */; };
-		02EABE4E2504CC9800628B40 /* ViewExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4D2504CC9800628B40 /* ViewExtention.swift */; };
+		02EABE4E2504CC9800628B40 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4D2504CC9800628B40 /* ViewExtension.swift */; };
+		02EAEEBC2556AB4500DA86BD /* SettingDIalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EAEEBB2556AB4500DA86BD /* SettingDIalog.swift */; };
+		02ED0836254C430F0030E2A7 /* DataExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02ED0835254C430F0030E2A7 /* DataExtension.swift */; };
+		02F14B82254C2E7600AFDBE0 /* CalcExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F14B81254C2E7600AFDBE0 /* CalcExtension.swift */; };
+		02F6EC9D2558231800921E02 /* EnumSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F6EC9C2558231800921E02 /* EnumSetting.swift */; };
 		02FB83B625331E99003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
 		02FB83B725331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
 		02FB83B825331E9A003B21C7 /* GoogleAppMeasurement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */; };
@@ -47,8 +53,10 @@
 		02FB83DA25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */; };
 		02FB83DB25331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */; };
 		02FB83DD25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
-		02FB83DE25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
 		02FB83DF25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */; };
+		02FB8435253DD845003B21C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02FB8439253DD845003B21C7 /* InfoPlist.strings */; };
+		02FB8436253DD845003B21C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02FB8439253DD845003B21C7 /* InfoPlist.strings */; };
+		02FB8437253DD845003B21C7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02FB8439253DD845003B21C7 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,15 +78,18 @@
 
 /* Begin PBXFileReference section */
 		020066EA2506FA6E003806ED /* DateAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateAndTime.swift; sourceTree = "<group>"; };
-		020066EE250AF4C5003806ED /* CustomDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDialog.swift; sourceTree = "<group>"; };
+		020066EE250AF4C5003806ED /* MainViewDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewDialog.swift; sourceTree = "<group>"; };
 		02061D352503589200B93F04 /* TimetableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableViewController.swift; sourceTree = "<group>"; };
+		0209F04F2556A11000D14C0A /* TimetableDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableDialog.swift; sourceTree = "<group>"; };
+		021677B3254506D500461F3A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		022CDA6E254318120018CEC0 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splash.png; sourceTree = "<group>"; };
 		0236F16825031113008AEFF2 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		02473D6925222C380069A622 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
-		02473D712524EB480069A622 /* SettingPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingPreference.swift; sourceTree = "<group>"; };
+		02473D6925222C380069A622 /* CalcTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcTime.swift; sourceTree = "<group>"; };
 		02473DA92529B2540069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		02473DAA2529B2540069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02473DAE2529B32D0069A622 /* ja */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = ja; path = ja.lproj/Main.storyboard; sourceTree = "<group>"; };
 		02473DAF2529B3D10069A622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		0254B31325569E2800577244 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
 		02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -97,8 +108,11 @@
 		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../AndroidStudioProjects/Timetable/app/src/main/res/drawable/ic_clock2.png; sourceTree = "<group>"; };
 		02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingTableViewController.swift; sourceTree = "<group>"; };
 		02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
-		02EABE4B2504C27B00628B40 /* FileAndData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAndData.swift; sourceTree = "<group>"; };
-		02EABE4D2504CC9800628B40 /* ViewExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtention.swift; sourceTree = "<group>"; };
+		02EABE4D2504CC9800628B40 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		02EAEEBB2556AB4500DA86BD /* SettingDIalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingDIalog.swift; sourceTree = "<group>"; };
+		02ED0835254C430F0030E2A7 /* DataExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtension.swift; sourceTree = "<group>"; };
+		02F14B81254C2E7600AFDBE0 /* CalcExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcExtension.swift; sourceTree = "<group>"; };
+		02F6EC9C2558231800921E02 /* EnumSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumSetting.swift; sourceTree = "<group>"; };
 		02FB83B525331E99003B21C7 /* GoogleAppMeasurement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleAppMeasurement.framework; sourceTree = "<group>"; };
 		02FB83BC25331EB3003B21C7 /* GoogleUtilities.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleUtilities.xcframework; sourceTree = "<group>"; };
 		02FB83C325331EBC003B21C7 /* Licenses */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Licenses; sourceTree = "<group>"; };
@@ -106,6 +120,7 @@
 		02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PromisesObjC.xcframework; sourceTree = "<group>"; };
 		02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UserMessagingPlatform.framework; sourceTree = "<group>"; };
 		02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
+		02FB8438253DD845003B21C7 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +132,7 @@
 				02FB83CB25331EC6003B21C7 /* nanopb.xcframework in Frameworks */,
 				02FB83B625331E99003B21C7 /* GoogleAppMeasurement.framework in Frameworks */,
 				02FB83D925331ED6003B21C7 /* UserMessagingPlatform.framework in Frameworks */,
+				021677B4254506D500461F3A /* MapKit.framework in Frameworks */,
 				02FB83BD25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */,
 				02FB83D225331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */,
 			);
@@ -131,7 +147,6 @@
 				02668A5C252E8A3700E2B2CD /* GoogleMobileAds.framework in Frameworks */,
 				02FB83BE25331EB3003B21C7 /* GoogleUtilities.xcframework in Frameworks */,
 				02FB83CC25331EC6003B21C7 /* nanopb.xcframework in Frameworks */,
-				02FB83DE25331F18003B21C7 /* GoogleMobileAds.framework in Frameworks */,
 				02FB83D325331ECE003B21C7 /* PromisesObjC.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -179,22 +194,28 @@
 				02DD3B462501333000B28F13 /* AppDelegate.swift */,
 				02DD3B482501333000B28F13 /* SceneDelegate.swift */,
 				0236F16825031113008AEFF2 /* MainViewController.swift */,
-				02EABE4B2504C27B00628B40 /* FileAndData.swift */,
-				020066EA2506FA6E003806ED /* DateAndTime.swift */,
-				020066EE250AF4C5003806ED /* CustomDialog.swift */,
-				02DD3B4C2501333000B28F13 /* Main.storyboard */,
-				02061D352503589200B93F04 /* TimetableViewController.swift */,
-				02473D6925222C380069A622 /* Timetable.swift */,
-				02EABE4D2504CC9800628B40 /* ViewExtention.swift */,
 				02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */,
-				02473D712524EB480069A622 /* SettingPreference.swift */,
-				02473D9E2529B1B50069A622 /* Localizable.strings */,
 				02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */,
+				02061D352503589200B93F04 /* TimetableViewController.swift */,
+				02F6EC9C2558231800921E02 /* EnumSetting.swift */,
+				02473D6925222C380069A622 /* CalcTime.swift */,
+				020066EA2506FA6E003806ED /* DateAndTime.swift */,
+				0254B31325569E2800577244 /* Timetable.swift */,
+				02F14B81254C2E7600AFDBE0 /* CalcExtension.swift */,
+				02ED0835254C430F0030E2A7 /* DataExtension.swift */,
+				02EABE4D2504CC9800628B40 /* ViewExtension.swift */,
+				020066EE250AF4C5003806ED /* MainViewDialog.swift */,
+				02EAEEBB2556AB4500DA86BD /* SettingDIalog.swift */,
+				0209F04F2556A11000D14C0A /* TimetableDialog.swift */,
+				02DD3B512501333200B28F13 /* LaunchScreen.storyboard */,
+				02DD3B4C2501333000B28F13 /* Main.storyboard */,
+				02473D9E2529B1B50069A622 /* Localizable.strings */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
 				02DD3B782501342D00B28F13 /* ic_clock2.png */,
 				02DD3B772501342D00B28F13 /* ic_settings1.png */,
-				02DD3B512501333200B28F13 /* LaunchScreen.storyboard */,
 				02DD3B542501333200B28F13 /* Info.plist */,
+				022CDA6E254318120018CEC0 /* splash.png */,
+				02FB8439253DD845003B21C7 /* InfoPlist.strings */,
 			);
 			path = mytimetablemaker;
 			sourceTree = "<group>";
@@ -220,6 +241,7 @@
 		38BE281975B6FC02ECCC6BDD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				021677B3254506D500461F3A /* MapKit.framework */,
 				02FB83DC25331F18003B21C7 /* GoogleMobileAds.framework */,
 				02FB83D825331ED6003B21C7 /* UserMessagingPlatform.framework */,
 				02FB83D125331ECE003B21C7 /* PromisesObjC.xcframework */,
@@ -295,7 +317,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1170;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1210;
 				ORGANIZATIONNAME = com.nakajimamasao;
 				TargetAttributes = {
 					02DD3B422501333000B28F13 = {
@@ -338,11 +360,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */,
+				02FB8435253DD845003B21C7 /* InfoPlist.strings in Resources */,
 				02473D9C2529B1B50069A622 /* Localizable.strings in Resources */,
 				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
 				02FB83C425331EBC003B21C7 /* Licenses in Resources */,
 				02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */,
+				022CDA6F254318120018CEC0 /* splash.png in Resources */,
 				02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02FB83C525331EBC003B21C7 /* Licenses in Resources */,
+				02FB8436253DD845003B21C7 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				02FB83C625331EBC003B21C7 /* Licenses in Resources */,
+				02FB8437253DD845003B21C7 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,15 +399,19 @@
 				020066EB2506FA6E003806ED /* DateAndTime.swift in Sources */,
 				02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */,
 				02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */,
-				02EABE4C2504C27B00628B40 /* FileAndData.swift in Sources */,
 				0236F16925031113008AEFF2 /* MainViewController.swift in Sources */,
 				02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */,
-				02473D6A25222C380069A622 /* Timetable.swift in Sources */,
-				02473D722524EB480069A622 /* SettingPreference.swift in Sources */,
+				02473D6A25222C380069A622 /* CalcTime.swift in Sources */,
 				02061D362503589200B93F04 /* TimetableViewController.swift in Sources */,
+				02F14B82254C2E7600AFDBE0 /* CalcExtension.swift in Sources */,
 				02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */,
-				020066EF250AF4C5003806ED /* CustomDialog.swift in Sources */,
-				02EABE4E2504CC9800628B40 /* ViewExtention.swift in Sources */,
+				02ED0836254C430F0030E2A7 /* DataExtension.swift in Sources */,
+				0254B31425569E2800577244 /* Timetable.swift in Sources */,
+				020066EF250AF4C5003806ED /* MainViewDialog.swift in Sources */,
+				02EAEEBC2556AB4500DA86BD /* SettingDIalog.swift in Sources */,
+				0209F0502556A11000D14C0A /* TimetableDialog.swift in Sources */,
+				02EABE4E2504CC9800628B40 /* ViewExtension.swift in Sources */,
+				02F6EC9D2558231800921E02 /* EnumSetting.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +474,14 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		02FB8439253DD845003B21C7 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02FB8438253DD845003B21C7 /* ja */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -481,6 +519,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development: chelseav3@hotmail.com (XDR52238D5)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -545,6 +584,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -573,7 +613,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -584,8 +626,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = Personal.mytimetablemaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -595,7 +639,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = P3MMV68RR4;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -606,8 +652,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = Personal.mytimetablemaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

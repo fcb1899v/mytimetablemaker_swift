@@ -7,14 +7,20 @@
 //
 
 import UIKit
+import Combine
 
-class TimetableViewController: UIViewController {
+class TimetableViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     var timer = Timer()
     var goorback: String?
     var keytag: String?
     var weekflag: Bool?
     
+    let primary = DefaultColor.primary.rawValue
+    let white = DefaultColor.white.rawValue
+    let red = DefaultColor.red.rawValue
+    
+    @IBOutlet weak var settingtimetabletitle: UILabel!
     @IBOutlet weak var departstationlabel: UILabel!
     @IBOutlet weak var lineforarrivestationlabel: UILabel!
     @IBOutlet weak var weeklabel: UILabel!
@@ -43,279 +49,211 @@ class TimetableViewController: UIViewController {
     @IBOutlet weak var timetable24h: UILabel!
     @IBOutlet weak var timetable25h: UILabel!
 
+    @IBOutlet weak var pictureview: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        departstationlabel.text = FileAndData.getDepartStation(
-            goorback: goorback!,
-            keytag: keytag!)
+        let weekflag = self.weekflag!
+        let timetable = Timetable(self.goorback!, weekflag, self.keytag!)
+
+        settingtimetabletitle.text = "Setting your timetable".localized
+        departstationlabel.text = timetable.timetableDepartStation
+        lineforarrivestationlabel.text = timetable.timetableTitle
         
-        lineforarrivestationlabel.text = Timetable.getTimetableTitle(
-            goorback: goorback!,
-            keytag: keytag!)
-        
+        self.weeklabel.text = timetable.weekLabelText
+        self.weeklabel.textColor = timetable.weekLabelColor(self.white, self.red)
+        timetable.weekButtonTitle(self.weekbutton)
+        timetable.weekButtonColor(self.weekbutton, self.red, self.primary)
 
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: {
-            (timer) in
-
-            Timetable.setWeekButton(
-                weeklabel: self.weeklabel,
-                weekbutton: self.weekbutton,
-                weekdaycolor: 0x3700B3,
-                weekendcolor: 0xFF0000,
-                weekflag: self.weekflag!)
-
-            self.timetable04h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "04")
-            self.timetable05h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "05")
-            self.timetable06h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "06")
-            self.timetable07h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "07")
-            self.timetable08h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "08")
-            self.timetable09h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "09")
-            self.timetable10h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "10")
-            self.timetable11h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "11")
-            self.timetable12h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "12")
-            self.timetable13h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "13")
-            self.timetable14h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "14")
-            self.timetable15h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "15")
-            self.timetable16h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "16")
-            self.timetable17h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "17")
-            self.timetable18h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "18")
-            self.timetable19h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "19")
-            self.timetable20h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "20")
-            self.timetable21h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "21")
-            self.timetable22h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "22")
-            self.timetable23h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "23")
-            self.timetable24h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "24")
-            self.timetable25h.text = Timetable.getTimetableTime(goorback: self.goorback!, keytag: self.keytag!, weekflag: self.weekflag!, timekeytag: "25")
-        })
+        self.timetable04h.text = timetable.timetableTime(4)
+        self.timetable05h.text = timetable.timetableTime(5)
+        self.timetable06h.text = timetable.timetableTime(6)
+        self.timetable07h.text = timetable.timetableTime(7)
+        self.timetable08h.text = timetable.timetableTime(8)
+        self.timetable09h.text = timetable.timetableTime(9)
+        self.timetable10h.text = timetable.timetableTime(10)
+        self.timetable11h.text = timetable.timetableTime(11)
+        self.timetable12h.text = timetable.timetableTime(12)
+        self.timetable13h.text = timetable.timetableTime(13)
+        self.timetable14h.text = timetable.timetableTime(14)
+        self.timetable15h.text = timetable.timetableTime(15)
+        self.timetable16h.text = timetable.timetableTime(16)
+        self.timetable17h.text = timetable.timetableTime(17)
+        self.timetable18h.text = timetable.timetableTime(18)
+        self.timetable19h.text = timetable.timetableTime(19)
+        self.timetable20h.text = timetable.timetableTime(20)
+        self.timetable21h.text = timetable.timetableTime(21)
+        self.timetable22h.text = timetable.timetableTime(22)
+        self.timetable23h.text = timetable.timetableTime(23)
+        self.timetable24h.text = timetable.timetableTime(24)
+        self.timetable25h.text = timetable.timetableTime(25)
     }
 
     @IBAction func weekbutton(_ sender: Any) {
-        weekflag = Timetable.getWeekButton(
-            weeklabel: weeklabel,
-            weekbutton: weekbutton,
-            weekdaycolor: 0x3700B3,
-            weekendcolor: 0xFF0000,
-            weekflag: weekflag!)
+        
+        let weekflag = !self.weekflag!
+        let timetable = Timetable(self.goorback!, weekflag, self.keytag!)
+
+        self.weeklabel.text = timetable.weekLabelText
+        self.weeklabel.textColor = timetable.weekLabelColor(self.white, self.red)
+        timetable.weekButtonTitle(self.weekbutton)
+        timetable.weekButtonColor(self.weekbutton, self.red, self.primary)
+        
+        self.timetable04h.text = timetable.timetableTime(4)
+        self.timetable05h.text = timetable.timetableTime(5)
+        self.timetable06h.text = timetable.timetableTime(6)
+        self.timetable07h.text = timetable.timetableTime(7)
+        self.timetable08h.text = timetable.timetableTime(8)
+        self.timetable09h.text = timetable.timetableTime(9)
+        self.timetable10h.text = timetable.timetableTime(10)
+        self.timetable11h.text = timetable.timetableTime(11)
+        self.timetable12h.text = timetable.timetableTime(12)
+        self.timetable13h.text = timetable.timetableTime(13)
+        self.timetable14h.text = timetable.timetableTime(14)
+        self.timetable15h.text = timetable.timetableTime(15)
+        self.timetable16h.text = timetable.timetableTime(16)
+        self.timetable17h.text = timetable.timetableTime(17)
+        self.timetable18h.text = timetable.timetableTime(18)
+        self.timetable19h.text = timetable.timetableTime(19)
+        self.timetable20h.text = timetable.timetableTime(20)
+        self.timetable21h.text = timetable.timetableTime(21)
+        self.timetable22h.text = timetable.timetableTime(22)
+        self.timetable23h.text = timetable.timetableTime(23)
+        self.timetable24h.text = timetable.timetableTime(24)
+        self.timetable25h.text = timetable.timetableTime(25)
     }
     
     @IBAction func timetable04h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable04h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "04")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 4)
     }
     
     @IBAction func timetable05h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable05h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "05")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 5)
     }
 
     @IBAction func timetable06h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable06h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "06")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 6)
     }
     
     @IBAction func timetable07h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable07h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "07")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 7)
     }
     
     @IBAction func timetable08h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable08h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "08")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 8)
     }
     
     @IBAction func timetable09h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable09h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "09")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 9)
     }
     
     @IBAction func timetable10h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable10h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "10")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 10)
     }
     
     @IBAction func timetable11h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable11h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "11")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 11)
     }
     
     @IBAction func timetable12h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable12h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "12")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 12)
     }
     
     @IBAction func timetable13h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable13h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "13")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 13)
     }
     
     @IBAction func timetable14h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable14h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "14")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 14)
     }
     
     @IBAction func timetable15h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable15h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "15")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 15)
     }
     
     @IBAction func timetable16h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable16h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "16")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 16)
     }
     
     @IBAction func timetable17h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable17h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "17")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 17)
     }
     
     @IBAction func timetable18h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable18h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "18")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 18)
     }
     
     @IBAction func timetable19h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable19h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "19")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 19)
     }
     
     @IBAction func timetable20h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable20h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "20")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 20)
     }
     
     @IBAction func timetable21h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable21h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "21")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 21)
     }
     
     @IBAction func timetable22h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable22h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "22")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 22)
     }
     
     @IBAction func timetable23h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable23h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "23")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 23)
     }
     
     @IBAction func timetable24h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable24h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "24")
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 24)
     }
     
     @IBAction func timetable25h(_ sender: Any) {
-        CustomDialog.setTimeFieldDialog(
-            viewcontroller: self,
-            label: timetable25h,
-            goorback: goorback!,
-            weekflag: weekflag!,
-            keytag: keytag!,
-            timekeytag: "25")
-    }    
+        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 25)
+    }
+    
+    @IBAction func selectpicture(_ sender: Any) {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        present(picker, animated: true)
+        self.present(picker, animated: true, completion: nil)
+    }
+    
+    // 画像が選択された時に呼ばれる
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])  {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            //imageViewにカメラロールから選んだ画像を表示する
+            pictureview.image = selectedImage
+        }
+        //画像をImageViewに表示したらアルバムを閉じる
+        self.dismiss(animated: true)
+    }
+    // 画像選択がキャンセルされた時に呼ばれる
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
 }

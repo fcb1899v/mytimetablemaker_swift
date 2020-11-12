@@ -2,89 +2,106 @@
 //  Timetable.swift
 //  mytimetablemaker
 //
-//  Created by 中島正雄 on 2020/09/27.
+//  Created by 中島正雄 on 2020/11/07.
 //  Copyright © 2020 com.nakajimamasao. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
-class Timetable: NSObject {
- 
-    //時刻表のタイトルを取得する関数
-    class func getTimetableTitle(goorback: String, keytag: String) -> String {
-        let arrivestation = FileAndData.getArriveStation(
-            goorback: goorback, keytag: keytag)
-        let linename = FileAndData.getLinename(
-            goorback: goorback, keytag: keytag)
-        return "(" + linename + " for ".localized + arrivestation + "houmen".localized + ")"
+struct Timetable: Calculation{
+    var goorback: String
+    var weekflag: Bool
+    var keytag: String
+    init(_ goorback: String, _ weekflag: Bool, _ keytag: String){
+        self.goorback = goorback
+        self.weekflag = weekflag
+        self.keytag = keytag
+    }
+}
+
+extension Timetable {
+
+    //時刻表のタイトルを取得
+    var timetableTitle: String {
+        let arrivestation = timetableArriveStation
+        let linename = timetableLineName
+        return "(\(linename)\(" for ".localized)\(arrivestation)\("houmen".localized))"
+    }
+
+    //UserDefaultsに保存された発車駅名を取得
+    var timetableDepartStation: String {
+        return "\(goorback)departstation\(keytag)"
+            .userDefaultValue("\("Dep. St.".localized)\(keytag)")
+    }
+
+    //UserDefaultsに保存された降車駅名を取得
+    var timetableArriveStation: String {
+        return "\(goorback)arrivestation\(keytag)"
+            .userDefaultValue("Arr. St.".localized + keytag)
     }
     
-    //WEEKDAYとWEEKENDの表示を取得する
-    class func setWeekButton(weeklabel: UILabel, weekbutton: UIButton, weekdaycolor: Int, weekendcolor: Int, weekflag: Bool) {
-        if (weekflag) {
-            weeklabel.text = "Weekday".localized
-            weeklabel.textColor = UIColor(rgb: 0xFFFFFF)
-            weekbutton.setTitle("WEEKEND".localized, for: UIControl.State.normal)
-            weekbutton.setTitleColor(UIColor(rgb: weekendcolor), for: UIControl.State.normal)
-        } else {
-            weeklabel.text = "Weekend".localized
-            weeklabel.textColor = UIColor(rgb: weekendcolor)
-            weekbutton.setTitle("WEEKDAY".localized, for: UIControl.State.normal)
-            weekbutton.setTitleColor(UIColor(rgb: weekdaycolor), for: UIControl.State.normal)
-        }
+    //UserDefaultsに保存された路線名を取得
+    var timetableLineName: String {
+        return "\(goorback)linename\(keytag)"
+            .userDefaultValue("Line ".localized + keytag)
     }
 
-    //WEEKDAYとWEEKENDの切替ボタン
-    class func getWeekButton(weeklabel: UILabel, weekbutton: UIButton, weekdaycolor: Int, weekendcolor: Int, weekflag: Bool) -> Bool{
-        setWeekButton(
-            weeklabel: weeklabel,
-            weekbutton: weekbutton,
-            weekdaycolor: weekdaycolor,
-            weekendcolor: weekendcolor,
-            weekflag: weekflag)
-        return !weekflag
+    //
+    var weekLabelText: String {
+        return (weekflag) ? "Weekday".localized: "Weekend".localized
     }
 
-    //時刻表の時刻の表示を取得する関数
-    class func getTimetableTime(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> String {
-        let weektag = (weekflag) ? "weekday".localized: "weekend".localized
-        let timekey = goorback + "line" + keytag + weektag + timekeytag
-        return FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "-")
+    //
+    func weekLabelColor(_ daycolor: Int, _ endcolor: Int) -> UIColor {
+        return (weekflag) ? UIColor(daycolor): UIColor(endcolor)
     }
 
-    //内部ストレージに保存された各時台の時刻表データを取得する関数
-    class func getTimetableHour(goorback: String, keytag: String, weekflag: Bool, timekeytag: String) -> [Int] {
-        let weektag = (!weekflag) ? "weekend".localized: "weekday".localized
-        let timekey = goorback + "line" + keytag + weektag + timekeytag
-        let splitunit = " "
-        let timetext = FileAndData.getUserDefaultValue(key: timekey, defaultvalue: "")
-        var timearray: [Int] = []
-        if (timetext != "") {
-            let timeset1 = Set(timetext.components(separatedBy: CharacterSet(charactersIn: splitunit)))
-            let timeset2 = timeset1.map{(Int($0)! + Int(timekeytag)! * 100)}
-            let timeset3 = timeset2.filter({$0 < 2560}).filter({$0 > -1})
-            timearray = Array(timeset3).sorted()
-        }
-        return timearray
+    //
+    func weekButtonTitle(_ weekbutton: UIButton) {
+        return weekbutton.setTitle((weekflag) ? "Weekday".localized.uppercased(): "Weekday".localized.uppercased(), for: UIControl.State.normal)
     }
 
-    //内部ストレージに保存された全時台の時刻表データを取得する関数
-    class func getTimetable(goorback: String, keytag: String, weekflag: Bool) -> [Int] {
-        var timetable: [Int] = []
-        for hour in 4...25 {
-            let timekeytag = DateAndTime.addZeroTime(time: hour)
-            timetable.append(contentsOf: getTimetableHour(
-                                goorback: goorback, keytag: keytag, weekflag: weekflag, timekeytag: timekeytag))
-        }
-        return timetable
+    //
+    func weekButtonColor(_ weekbutton: UIButton, _ daycolor: Int, _ endcolor: Int) {
+        return weekbutton.setTitleColor((weekflag) ? UIColor(daycolor): UIColor(endcolor), for: UIControl.State.normal)
+    }
+
+    //UserDefaultに保存された時刻表の時刻の表示を取得
+    func timetableTime(_ hour: Int) -> String {
+        let weektag = (weekflag) ? "weekday": "weekend"
+        return "\(goorback)line\(keytag)\(weektag)\(String(hour))".userDefaultValue("")
+    }
+}
+
+//＜時刻表の表示＞
+extension String {
+    
+    //時刻の整理整頓
+    func timeSorting(charactersin: String) -> [String] {
+        return Array(Set(self
+                .components(separatedBy: CharacterSet(charactersIn: charactersin))
+                .map{Int($0) ?? 60}
+                .filter{$0 < 60}
+                .filter{$0 > -1}
+            ))
+            .sorted()
+            .map{String($0)}
     }
     
-    //時刻表の配列を取得する関数
-    class func getTimetableArray(goorback: String, changeline: Int, weekflag: Bool) -> [[Int]]{
-        var timetablearray: [[Int]] = []
-        for i in 0...changeline {
-           timetablearray.append(Timetable.getTimetable(goorback: goorback, keytag: String(i + 1), weekflag: weekflag))
-        }
-        return timetablearray
+    //
+    func timeGetting(charactersin: String, hour: Int) -> [Int] {
+        return Array(Set(self
+                .components(separatedBy: CharacterSet(charactersIn: charactersin))
+                .map{(Int($0)! + hour * 100)}
+                .filter{$0 < 2560}
+                .filter{$0 > -1}
+            ))
+            .sorted()
+    }
+    
+    //goorbackを別ルートに変更
+    var otherroute: String {
+        return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1")
     }
 }

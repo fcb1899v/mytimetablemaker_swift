@@ -8,18 +8,22 @@
 
 import UIKit
 
-class SettingsTableViewController: UITableViewController {
+class SettingsTableViewController: UITableViewController, UITextViewDelegate {
 
+    var back2switchflag = true
+    var go2switchflag = true
+    let black = DefaultColor.black.rawValue
+    let gray = DefaultColor.gray.rawValue
+    
     @IBOutlet weak var back2switch: UISwitch!
     @IBOutlet weak var go2switch: UISwitch!
-        @IBOutlet weak var back1changelinelabel: UILabel!
+    @IBOutlet weak var back1changelinelabel: UILabel!
     @IBOutlet weak var go1changelinelabel: UILabel!
     @IBOutlet weak var back2changelinelabel: UILabel!
     @IBOutlet weak var go2changelinelabel: UILabel!
     
     @IBOutlet weak var back2changelinetable: UILabel!
     @IBOutlet weak var go2changelinetable: UILabel!
-    
     
     @IBOutlet weak var back1changelinetable: UILabel!
     @IBOutlet weak var go1changelinetable: UILabel!
@@ -32,108 +36,99 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var go2settings: UIButton!
 
     @IBOutlet var settingstableview: UITableView!
+    @IBOutlet weak var versiontext: UILabel!
     
-    var back2switchflag = true
-    var go2switchflag = true
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        back2switchflag = SettingPreference.getSwitch2Flag(
-            goorback2: "back2",
-            switch2: back2switch)
-        go2switchflag = SettingPreference.getSwitch2Flag(
-            goorback2: "go2",
-            switch2: go2switch)
-        
-        back1changelinelabel.text = FileAndData.getChangeLine(goorback: "back1")
-        go1changelinelabel.text = FileAndData.getChangeLine(goorback: "go1")
-        back2changelinelabel.text = FileAndData.getChangeLine(goorback: "back2")
-        go2changelinelabel.text = FileAndData.getChangeLine(goorback: "go2")
+        let black = self.black
+        let gray = self.gray
 
-        SettingPreference.setGoOrBack2SettingsTitle(
-            settingstitle: back2settings,
-            switchflag: back2switchflag)
-        SettingPreference.setGoOrBack2SettingsTitle(
-            settingstitle: go2settings,
-            switchflag: go2switchflag)
+        //ルート２スイッチの表示
+        back2switchflag = "back2".switchFlag
+        back2switch.setOn(back2switchflag, animated: false)
+        back2settings.isEnabled = back2switchflag
+        go2switchflag = "go2".switchFlag
+        go2switch.setOn(go2switchflag, animated: false)
+        go2settings.isEnabled = go2switchflag
+        //乗換回数のボタンの表示
+        back2settings.changeButtonColor(back2switchflag, black, gray)
+        go2settings.changeButtonColor(go2switchflag, black, gray)
+        back2changelinetable.textColor = back2switchflag.changeLabelColor(black, gray)
+        go2changelinetable.textColor = go2switchflag.changeLabelColor(black, gray)
+        //乗換回数のラベルの表示
+        back1changelinelabel.text = "back1".changeLine
+        go1changelinelabel.text = "go1".changeLine
+        back2changelinelabel.text = "back2".switchChangeLine(back2switchflag)
+        go2changelinelabel.text = "go2".switchChangeLine(go2switchflag)
+        back2changelinelabel.textColor = back2switchflag.changeLabelColor(black, gray)
+        go2changelinelabel.textColor = go2switchflag.changeLabelColor(black, gray)
+        //バージョン番号の表示
+        versiontext.text = Bundle.main.object(
+            forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+    }
 
-        SettingPreference.setChangeLineSettingTitle(
-            goorback: "back2",
-            changelinetitle: back2changelinetable,
-            changelinelabel: back2changelinelabel,
-            switchflag: back2switchflag)
-        SettingPreference.setChangeLineSettingTitle(
-            goorback: "go2",
-            changelinetitle: go2changelinetable,
-            changelinelabel: go2changelinelabel,
-            switchflag: go2switchflag)
+    @IBAction func terms(_ sender: UIButton) {
+        let url = URL(string: "https://landingpage-mytimetablemaker.web.app/privacypolicy.html")!
+        if( UIApplication.shared.canOpenURL(url) ) {
+          UIApplication.shared.open(url)
+        }
     }
     
     @IBAction func back1changelinetable(_ sender: Any) {
-            CustomDialog.changeLinePickerDialog(
-                viewcontroller: self,
-                taplabel: back1changelinetable,
-                setlabel: back1changelinelabel,
-                goorback: "back1")
+        SettingDialog(self, "back1")
+            .changeLinePickerDialog(back1changelinetable, back1changelinelabel)
     }
     
     @IBAction func go1changelinetable(_ sender: Any) {
-            CustomDialog.changeLinePickerDialog(
-                viewcontroller: self,
-                taplabel: go1changelinetable,
-                setlabel: go1changelinelabel,
-                goorback: "go1")
+        SettingDialog(self, "go1")
+            .changeLinePickerDialog(go1changelinetable, go1changelinelabel)
     }
     
     @IBAction func back2changelinetable(_ sender: Any) {
         if (back2switchflag) {
-            CustomDialog.changeLinePickerDialog(
-                viewcontroller: self,
-                taplabel: back2changelinetable,
-                setlabel: back2changelinelabel,
-                goorback: "back2")
+            SettingDialog(self, "back2")
+                .changeLinePickerDialog(back2changelinetable, back2changelinelabel)
         }
     }
     
     @IBAction func go2changelinetable(_ sender: Any) {
         if (go2switchflag) {
-            CustomDialog.changeLinePickerDialog(
-                viewcontroller: self,
-                taplabel: go2changelinetable,
-                setlabel: go2changelinelabel,
-                goorback: "go2")
+            SettingDialog(self, "go2")
+                .changeLinePickerDialog(go2changelinetable, go2changelinelabel)
         }
     }
     
     @IBAction func back2displayswitch(_ sender: Any) {
-        back2switchflag = SettingPreference.setSwitch2Flag(
-            goorback2: "back2",
-            sender: sender as AnyObject)
-        SettingPreference.setChangeLineSettingTitle(
-            goorback: "back2",
-            changelinetitle: back2changelinetable,
-            changelinelabel: back2changelinelabel,
-            switchflag: back2switchflag)
-        SettingPreference.setGoOrBack2SettingsTitle(
-            settingstitle: back2settings,
-            switchflag: back2switchflag)
+        //ルート２スイッチの表示およびデータの保存
+        let currentflag = (sender as AnyObject).isOn!
+        UserDefaults.standard.set(currentflag, forKey: "back2switch")
+        (sender as AnyObject).setOn(currentflag, animated: false)
+        //乗換回数のボタンおよびラベルの表示
+        back2settings.changeButtonColor(currentflag, self.black, self.gray)
+        back2changelinetable.textColor = currentflag.changeLabelColor(self.black, self.gray)
+        back2changelinelabel.text = "back2".switchChangeLine(currentflag)
+        back2changelinelabel.textColor = currentflag.changeLabelColor(self.black, self.gray)
+        //詳細設定のボタンの表示
+        back2settings.isEnabled = currentflag
+        back2settings.changeButtonColor(currentflag, self.black, self.gray)
     }
     
     @IBAction func go2displayswitch(_ sender: Any) {
-        go2switchflag = SettingPreference.setSwitch2Flag(
-            goorback2: "go2",
-            sender: sender as AnyObject)
-        SettingPreference.setChangeLineSettingTitle(
-            goorback: "go2",
-            changelinetitle: go2changelinetable,
-            changelinelabel: go2changelinelabel,
-            switchflag: go2switchflag)
-        SettingPreference.setGoOrBack2SettingsTitle(
-            settingstitle: go2settings,
-            switchflag: go2switchflag)
+        //ルート２スイッチの表示およびデータの保存
+        let currentflag = (sender as AnyObject).isOn!
+        UserDefaults.standard.set(currentflag, forKey: "go2switch")
+        (sender as AnyObject).setOn(currentflag, animated: false)
+        //乗換回数のボタンおよびラベルの表示
+        go2settings.changeButtonColor(currentflag, self.black, self.gray)
+        go2changelinetable.textColor = currentflag.changeLabelColor(self.black, self.gray)
+        go2changelinelabel.text = "go2".switchChangeLine(currentflag)
+        go2changelinelabel.textColor = currentflag.changeLabelColor(self.black, self.gray)
+        //詳細設定のボタンの表示
+        go2settings.isEnabled = currentflag
+        go2settings.changeButtonColor(currentflag , self.black, self.gray)
     }
-    
+        
     //画面遷移時の値渡し
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else {
@@ -145,20 +140,15 @@ class SettingsTableViewController: UITableViewController {
         // NavigationControllerから遷移先のTableViewControllerを取得
         let vc = nc.topViewController as! VariousSettingsTableViewController
         //
-        switch (identifier) {
-            case "seguevsgo1": vc.goorback = "go1"
-            case "seguevsback2": vc.goorback = "back2"
-            case "seguevsgo2": vc.goorback = "go2"
-            default : vc.goorback = "back1"
-        }
+        vc.goorback = identifier.seguegoorback
     }
 
     //TableViewのHeaderの書式変更
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         //背景色の変更
-        view.tintColor = UIColor(rgb: 0x03DAC5)
+        view.tintColor = DefaultColor.accent.UI
         // テキスト色を変更する
         let header = view as! UITableViewHeaderFooterView
-        header.textLabel?.textColor = UIColor(rgb: 0xFFFFFF)
+        header.textLabel?.textColor = DefaultColor.white.UI
     }
 }

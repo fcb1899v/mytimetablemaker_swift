@@ -41,19 +41,19 @@ extension UIView {
 }
 
 extension UIColor {
-    convenience init(rgb: Int) {
+    convenience init(_ rgb: Int) {
         let r = CGFloat((rgb & 0xFF0000) >> 16) / 255.0
         let g = CGFloat((rgb & 0x00FF00) >>  8) / 255.0
         let b = CGFloat( rgb & 0x0000FF       ) / 255.0
         self.init(red: r, green: g, blue: b, alpha: 1.0)
     }
-    convenience init(rgba: Int) {
-        let r: CGFloat = CGFloat((rgba & 0xFF000000) >> 24) / 255.0
-        let g: CGFloat = CGFloat((rgba & 0x00FF0000) >> 16) / 255.0
-        let b: CGFloat = CGFloat((rgba & 0x0000FF00) >>  8) / 255.0
-        let a: CGFloat = CGFloat( rgba & 0x000000FF       ) / 255.0
-        self.init(red: r, green: g, blue: b, alpha: a)
-    }
+//    convenience init(rgba: Int) {
+//        let r: CGFloat = CGFloat((rgba & 0xFF000000) >> 24) / 255.0
+//        let g: CGFloat = CGFloat((rgba & 0x00FF0000) >> 16) / 255.0
+//        let b: CGFloat = CGFloat((rgba & 0x0000FF00) >>  8) / 255.0
+//        let a: CGFloat = CGFloat( rgba & 0x000000FF       ) / 255.0
+//        self.init(red: r, green: g, blue: b, alpha: a)
+//    }
 }
 
 extension MainViewController : UIColorPickerViewControllerDelegate {
@@ -65,14 +65,29 @@ extension MainViewController : UIColorPickerViewControllerDelegate {
     }
 }
 
-extension String
-{
-    // 多言語対応
-    // 対象言語の「Localizable.strings」ファイルがない場合は、(Base)が使用されます。
-    // 指定の文字列が「Localizable.strings」にない場合は、commentが採用されます。
-    // 本実装では元の文字列が選択されます。
-    var localized: String
-    {
-        return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
+extension UIButton {
+    //
+    func setButtonColor(_ color: Int) {
+        self.setTitleColor(UIColor(color), for: UIControl.State.normal)
+    }
+    //
+    func changeButtonColor(_ flag: Bool, _ truecolor: Int, _ falsecolor: Int) {
+        (flag) ? self.setButtonColor(truecolor): self.setButtonColor(falsecolor)
+    }
+}
+
+extension Bool {
+    //
+    func changeLabelColor(_ truecolor: Int, _ falsecolor: Int) -> UIColor {
+        return (self) ? UIColor(truecolor): UIColor(falsecolor)
+    }
+}
+
+extension String {
+    var containsValidIntCharacter: Bool {
+        guard self != "" else { return true }
+        let hexSet = CharacterSet(charactersIn: "1234567890")
+        let newSet = CharacterSet(charactersIn: self)
+        return hexSet.isSuperset(of: newSet)
     }
 }

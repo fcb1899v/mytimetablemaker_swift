@@ -8,311 +8,137 @@
 
 import UIKit
 
-class DateAndTime: NSObject {
+struct DateAndTime {
+    var datebutton: UIButton
+    var timebutton: UIButton
+    var timeflag: Bool
+    init(_ datebutton: UIButton, _ timebutton: UIButton, _ timeflag: Bool) {
+        self.datebutton = datebutton
+        self.timebutton = timebutton
+        self.timeflag = timeflag
+    }
+    let customdate = Unit.customdate.rawValue.localized
+    let customHHmmss = Unit.customHHmmss.rawValue
+    let customHHmm = Unit.customHHmm.rawValue
+    let register = Action.register.rawValue.localized
+    let cancel = Action.cancel.rawValue.localized
+}
+
+extension DateAndTime {
     
-   //＜時刻の変換＞
-    //Int型時刻HHMMをMMに変換する関数
-    class func getHHMMtoMM(time: Int) -> Int {
-        return time / 100 * 60 + time % 100
+    //現在日付を表示
+    func setCurrentDate() {
+        if (self.timeflag) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = customdate
+            datebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
+        }
     }
 
-    //Int型時刻MMをHHMMに変換する関数
-    class func getMMtoHHMM(time: Int) -> Int {
-        return time / 60 * 100 + time % 60
-    }
-
-    //Int型時刻MMSSをSSに変換する関数
-    class func  getMMSStoSS(time: Int) -> Int {
-        return time / 100 * 60 + time % 100
-    }
-
-    //Int型時刻SSをMMSSに変換する関数
-    class func getSStoMMSS(time: Int) -> Int {
-        return time / 60 * 100 + time % 60
-    }
-
-    //Int型時刻HHMMSSをSSに変換する関数
-    class func getHHMMSStoSS(time: Int) -> Int {
-        return time / 10000 * 3600 + (time % 10000) / 100 * 60 + time % 100
-    }
-
-    //Int型時刻SSをHHMMSSに変換する関数
-    class func getSStoHHMMSS(time: Int) -> Int {
-        return time / 3600 * 10000 + (time % 3600) / 60 * 100 + time % 60
-    }
-
-    //Int型時刻HHMMSSをMMSSに変換する関数
-    class func getHHMMSStoMMSS(time: Int) -> Int {
-        return (time / 10000 * 60 + (time % 10000) / 100) * 100 + time % 100
-    }
-
-    //Int型時刻MMSSをHHMMSSに変換する関数
-    class func getMMSStoHHMMSS(time: Int) -> Int {
-        return (time / 100 / 60) * 10000 + (time / 100 % 60) * 100 + time % 100
-    }
-
-    //＜時刻の足し算＞
-    //Int型時刻HHMMの足し算をする関数
-    class func getPlusHHMM(time1: Int, time2: Int) -> Int {
-        return getMMtoHHMM(time: getHHMMtoMM(time: time1) + getHHMMtoMM(time: time2))
-    }
-
-    //Int型時刻HHMMSSの足し算をする関数
-    class func getPlusHHMMSS(time1: Int, time2: Int) -> Int {
-        return getSStoHHMMSS(time: getHHMMSStoSS(time: time1) + getHHMMSStoSS(time: time2))
-    }
-
-    //Int型時刻MMSSの足し算をする関数
-    class func getPlusMMSS(time1: Int, time2: Int) -> Int {
-        return getSStoMMSS(time: getMMSStoSS(time: time1) + getMMSStoSS(time: time2))
-    }
-
-    //＜時刻の引き算＞
-    //Int型時刻HHMMの引き算をする関数
-    class func getMinusHHMM(time1: Int, time2: Int) -> Int {
-        return (getHHMMtoMM(time: time1) < getHHMMtoMM(time: time2)) ?
-            getMMtoHHMM(time: getHHMMtoMM(time: time1 + 2400) - getHHMMtoMM(time: time2)):
-            getMMtoHHMM(time: getHHMMtoMM(time: time1) - getHHMMtoMM(time: time2))
-    }
-
-    //Int型時刻HHMMSSの引き算をする関数
-    class func getMinusHHMMSS(time1: Int, time2: Int) -> Int {
-        return (getHHMMSStoSS(time: time1) < getHHMMSStoSS(time: time2)) ?
-            getSStoHHMMSS(time: getHHMMSStoSS(time: time1 + 240000) - getHHMMSStoSS(time: time2)):
-            getSStoHHMMSS(time: getHHMMSStoSS(time: time1) - getHHMMSStoSS(time: time2))
-    }
-
-    //Int型時刻HHMMの引き算をする関数
-    class func getMinusMMSS(time1: Int, time2: Int) -> Int {
-        return getSStoMMSS(time: getMMSStoSS(time: time1) - getMMSStoSS(time: time2))
-    }
-
-    //＜時刻の表示＞
-    //現在日付を表示する関数
-    class func setCurrentDate(datebutton: UIButton) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "E, MMM d, yyyy".localized
-        datebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
-    }
-
-    //現在時刻を表示する関数
-    class func setCurrentTime(timebutton: UIButton) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm:ss"
-        timebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
+    //現在時刻を表示
+    func setCurrentTime() {
+        if (self.timeflag) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = customHHmmss
+            timebutton.setTitle(formatter.string(from: Date()), for: UIControl.State.normal)
+        }
     }
     
     //表示されている時刻を取得する関数
-    class func getCurrentHHmmssFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
-        return getCurrentHHFromTimeButton(timebutton: timebutton, timeflag: timeflag) * 10000 +
-            getCurrentmmFromTimeButton(timebutton: timebutton, timeflag: timeflag) * 100 +
-            getCurrentssFromTimeButton(timebutton: timebutton, timeflag: timeflag)
-    }
+    var currentHHmmssFromTimeButton: Int {
+        let formatter = DateFormatter()
+        //表示されている「時」を取得
+        formatter.dateFormat = "HH"
+        let timeHH = timebutton.title(for: UIControl.State.normal)
+        let HH =  (timeflag) ? Int(formatter.string(from: Date())) ?? 0: Int(timeHH!.prefix(2)) ?? 0
+        //表示されている「分」を取得
+        formatter.dateFormat = "mm"
+        let timemm = timebutton.title(for: UIControl.State.normal)
+        let mm =  (timeflag) ? Int(formatter.string(from: Date())) ?? 0: Int(timemm!.suffix(2)) ?? 0
+        //表示されている「秒」を取得
+        formatter.dateFormat = "ss"
+        let ss = (timeflag) ? Int(formatter.string(from: Date())) ?? 0: 0
 
-    //表示されている「時」を取得する関数
-    class func getCurrentHHFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
-        if (timeflag) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH"
-            return Int(formatter.string(from: Date())) ?? 0
-        } else {
-            let time = timebutton.title(for: UIControl.State.normal)
-            return Int(time!.prefix(2)) ?? 0
-        }
-    }
-
-    //表示されている「分」を取得する関数
-    class func getCurrentmmFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
-        if (timeflag) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "mm"
-            return Int(formatter.string(from: Date())) ?? 0
-        } else {
-            let time = timebutton.title(for: UIControl.State.normal)
-            return Int(time!.suffix(2)) ?? 0
-        }
-    }
-
-    //表示されている「秒」を取得する関数
-    class func getCurrentssFromTimeButton(timebutton: UIButton, timeflag: Bool) -> Int {
-        if (timeflag) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "ss"
-            return Int(formatter.string(from: Date())) ?? 0
-        } else {
-            return  0
-        }
+        return HH * 10000 + mm * 100 + ss
     }
 
     //表示されている日付を取得する関数
-    class func getDateFromDateButton(datebutton: UIButton) -> Date {
+    var dateFromDateButton: Date {
         let stringdate = datebutton.title(for: UIControl.State.normal)
         let formatter: DateFormatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
-        formatter.dateFormat = "E, MMM d, yyyy".localized
+        formatter.dateFormat = customdate
         return formatter.date(from: stringdate!)!
     }
     
-    //表示されている日付から平日と土日を表すフラグを取得する関数
-    class func getWeekFlagFromDateButton(datebutton: UIButton) -> Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "E"
-        switch (formatter.string(from: getDateFromDateButton(datebutton: datebutton))) {
-            case "Sat", "Sun", "土", "日": return false
-            default: return true
+    //日時を設定するアラートを設定
+    func datePicker(_ datepickermode: UIDatePicker.Mode) -> UIDatePicker{
+        let datepicker = UIDatePicker()
+        datepicker.date = Date()
+        datepicker.datePickerMode = datepickermode
+        datepicker.timeZone = NSTimeZone.local
+        datepicker.locale = Locale.current
+        return datepicker
+    }
+
+    //日時を設定するダイアログを表示
+    func datePickerDialog(_ viewcontroller: UIViewController) {
+        let datepicker = datePicker(.date)
+        let alert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
+        alert.view.addSubview(datepicker)
+        alert.addAction(setDateRegisterAction(datepicker, customdate))
+        alert.addAction(setCancelAction())
+        if (!timeflag) {
+            viewcontroller.present(alert, animated: true, completion: nil)
         }
     }
 
+    //日時を設定するダイアログを表示
+    func timePickerDialog(_ viewcontroller: UIViewController) {
+        let datepicker = datePicker(.time)
+        let alert = UIAlertController(title: "", message: nil, preferredStyle: .actionSheet)
+        alert.view.addSubview(datepicker)
+        alert.addAction(setTimeRegisterAction(datepicker, customHHmm))
+        alert.addAction(setCancelAction())
+        if (!timeflag) {
+            viewcontroller.present(alert, animated: true, completion: nil)
+        }
+    }
+
+    //日時設定・表示ボタン
+    func setDateRegisterAction(_ datepicker: UIDatePicker, _ stringformat: String) -> UIAlertAction {
+        let dateformatter = DateFormatter()
+        dateformatter.dateFormat = stringformat
+        return UIAlertAction(title: register, style: .default){ (action) in
+             let datestring = dateformatter.string(from: datepicker.date)
+             datebutton.setTitle(datestring,for: UIControl.State.normal)
+        }
+    }
+
+    //日時設定・表示ボタン
+    func setTimeRegisterAction(_ datepicker: UIDatePicker, _ stringformat: String) -> UIAlertAction {
+        let dateformatter = DateFormatter()
+        dateformatter.dateFormat = stringformat
+        return UIAlertAction(title: register, style: .default){ (action) in
+             let datestring = dateformatter.string(from: datepicker.date)
+             timebutton.setTitle(datestring,for: UIControl.State.normal)
+        }
+    }
+
+    //キャンセルボタン
+    func setCancelAction() -> UIAlertAction {
+        return UIAlertAction(title: cancel, style: .cancel, handler: nil)
+    }
+}
+
+extension Date {
     //平日と土日を表すフラグを取得する関数
-    class func getWeekFlag() -> Bool {
+    var weekFlag: Bool {
         let formatter = DateFormatter()
         formatter.dateFormat = "E"
-        switch (formatter.string(from: Date())) {
+        switch (formatter.string(from: self)) {
             case "Sat", "Sun", "土", "日": return false
             default: return true
         }
-    }
-
-    //1桁のときに0を追加する関数
-    class func addZeroTime(time: Int) -> String {
-        return (0...9 ~= time) ? "0" + String(time): String(time)
-    }
-
-    //Int型時刻HHMMから表示時刻に変換する関数
-    class func getStringTime(time: Int) -> String {
-        let stringtimehh = addZeroTime(time: time / 100 + (time % 100) / 60)
-        let stringtimemm = addZeroTime(time: time % 100 % 60)
-        let stringtime = stringtimehh + ":" + stringtimemm
-        if (stringtime != "27:00") {
-            return stringtimehh + ":" + stringtimemm
-        } else {
-            return "--:--"
-        }
-    }
-    
-    //ボタンの表示変更
-    class func setButtonEnabled(flag: Bool, button: UIButton, color: Int) {
-        button.isEnabled = flag
-        button.setTitleColor(UIColor(rgb: color), for: UIControl.State.normal)
-    }
-
-    //ボタンの表示変更
-    class func changeButtonEnabled(flag: Bool, button: UIButton, color1: Int, color2: Int) {
-        button.isEnabled = flag
-        let color = (flag) ? color1: color2
-        button.setTitleColor(UIColor(rgb: color), for: UIControl.State.normal)
-    }
-
-    
-    //乗換時間の配列を取得する関数
-    class func getTransitTimeArray(goorback: String, changeline: Int) -> [Int]{
-        var transittimearray: [Int] = []
-        for i in 0...changeline + 1 {
-           let key = (i == changeline + 1) ? goorback + "transittimee": goorback + "transittime" + String(i + 1)
-            transittimearray.append(FileAndData.getUserDefaultInt(key: key, defaultvalue: 0))
-        }
-        return transittimearray
-    }
-    
-    //乗車時間を取得する関数
-    class func getRideTime(goorback: String, changeline: Int, keytag: String) -> Int {
-        let key = goorback + "ridetime" + keytag
-        return FileAndData.getUserDefaultInt(key: key, defaultvalue: 0)
-    }
-    
-    //乗車時間の配列を取得する関数
-    class func getRideTimeArray(goorback: String, changeline: Int) -> [Int]{
-        var ridetimearray: [Int] = []
-        for i in 0...changeline {
-            ridetimearray.append(getRideTime(goorback: goorback, changeline: changeline, keytag: String(i + 1)))
-        }
-        return ridetimearray
-    }
-    
-    //ルート内の各路線の乗車可能時刻[0]・発車時刻[1]・到着時刻[2]を取得する関数
-    class func getTimeArray(currenttime: Int, changeline: Int, transittime: [Int], ridetime: [Int], timetable: [[Int]]) -> [[Int]] {
-        var timearrays: [[Int]] = [[]]
-        //路線1の乗車可能時刻・発車時刻・到着時刻を取得
-        timearrays[0].append(getPlusHHMM(time1: currenttime/100, time2: transittime[0]))
-        timearrays[0].append(getNextStartTime(possibletime: timearrays[0][0] , timetable: timetable[0]))
-        timearrays[0].append(getPlusHHMM(time1: timearrays[0][1] , time2: ridetime[0]))
-        //路線1以降の乗車可能時刻・発車時刻・到着時刻を取得
-        if (changeline > 0) {
-            for i in 1...changeline {
-                timearrays.append([])
-                timearrays[i].append(getPlusHHMM(time1: timearrays[i - 1][2] , time2: transittime[i]))
-                timearrays[i].append(getNextStartTime(possibletime: timearrays[i][0] , timetable: timetable[i]))
-                timearrays[i].append(getPlusHHMM(time1: timearrays[i][1] , time2: ridetime[i]))
-            }
-        }
-        return timearrays
-    }
-
-    //ルート内の各路線の乗車可能時刻[0]・発車時刻[1]・到着時刻[2]を取得する関数
-    class func getDisplayTimeArray(currenttime: Int, changeline: Int, transittime: [Int], ridetime: [Int], timetable: [[Int]]) -> [String] {
-        let timearray = getTimeArray(currenttime: currenttime, changeline: changeline, transittime: transittime, ridetime: ridetime, timetable: timetable)
-        var displaytimearray: [String] = []
-
-        //乗車可能時刻・発車時刻・到着時刻を取得
-        displaytimearray.append(getStringTime(time: getMinusHHMM(time1: timearray[0][1],time2: transittime[0])))
-        displaytimearray.append(getStringTime(time: getPlusHHMM(time1: timearray[changeline][2], time2: transittime[changeline + 1])))
-        for i in 0...changeline {
-            displaytimearray.append(getStringTime(time: timearray[i][1]))
-            displaytimearray.append(getStringTime(time: timearray[i][2]))
-        }
-
-        return displaytimearray
-    }
-    
-    class func getDepartureTime(currenttime: Int, transittime: Int, timetable: [[Int]]) -> Int {
-        let possibletime = getPlusHHMM(time1: currenttime/100, time2: transittime)
-        let nextstarttime = getNextStartTime(possibletime: possibletime, timetable: timetable[0])
-        return getMinusHHMM(time1: nextstarttime, time2: transittime)
-    }
-
-    //発車時刻を取得する関数
-    class func getNextStartTime(possibletime: Int, timetable: [Int]) -> Int {
-        var nextstarttime: Int
-        for i in 0..<timetable.count {
-            nextstarttime = timetable[i]
-            if (possibletime < nextstarttime) {
-                return nextstarttime
-            }
-        }
-        nextstarttime = 2700
-        return nextstarttime
-    }
-
-    //カウントダウン時間（mm:ss）を取得する関数
-    class func getCountdownTime(currenthhmmss: Int, departtime: Int) -> String {
-        //カウントダウン（出発時刻と現在時刻の差）を計算
-        var intcountdowntime =
-            getHHMMSStoMMSS(time: getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss))
-        switch (intcountdowntime) {
-            case 1...9959: break
-            case -59...0: intcountdowntime = 0
-            default: intcountdowntime = -100
-        }
-        let countdownmm: String = addZeroTime(time: intcountdowntime / 100)
-        let countdownss: String = addZeroTime(time: intcountdowntime % 100)
-        if (intcountdowntime == -100) {
-            return "--:--"
-        } else {
-            return countdownmm + ":" + countdownss
-        }
-    }
-
-    //カウントダウン表示の警告色を取得する関数
-    class func getCountDownColor(currenthhmmss: Int, departtime:Int) -> UIColor{
-        let intcountdown = getMinusHHMMSS(time1: departtime * 100, time2: currenthhmmss)
-        if (intcountdown % 2 == 0) {
-            switch (intcountdown) {
-                case 1000...9999: return UIColor(rgb: 0x03DAC5)
-                case 500...999: return UIColor(rgb: 0xFFFF00)
-                case -59...499: return UIColor(rgb: 0xFF0000)
-                default: return UIColor(rgb: 0x8E8E93)
-            }
-        }
-        return UIColor(rgb: 0x8E8E93)
     }
 }
