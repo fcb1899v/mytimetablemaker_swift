@@ -22,6 +22,10 @@ struct Timetable: Calculation{
 
 extension Timetable {
 
+    var weektag: String {
+        return (self.weekflag) ? "weekday": "weekend"
+    }
+
     //時刻表のタイトルを取得
     var timetableTitle: String {
         let arrivestation = timetableArriveStation
@@ -49,7 +53,7 @@ extension Timetable {
 
     //
     var weekLabelText: String {
-        return (weekflag) ? "Weekday".localized: "Weekend".localized
+        return (self.weekflag) ? "Weekday".localized: "Weekend".localized
     }
 
     //
@@ -59,7 +63,8 @@ extension Timetable {
 
     //
     func weekButtonTitle(_ weekbutton: UIButton) {
-        return weekbutton.setTitle((weekflag) ? "Weekday".localized.uppercased(): "Weekday".localized.uppercased(), for: UIControl.State.normal)
+        let buttontext = (self.weekflag) ? "Weekend".localized: "Weekday".localized
+        return weekbutton.setTitle(buttontext.uppercased(), for: UIControl.State.normal)
     }
 
     //
@@ -69,7 +74,6 @@ extension Timetable {
 
     //UserDefaultに保存された時刻表の時刻の表示を取得
     func timetableTime(_ hour: Int) -> String {
-        let weektag = (weekflag) ? "weekday": "weekend"
         return "\(goorback)line\(keytag)\(weektag)\(String(hour))".userDefaultValue("")
     }
 }

@@ -15,6 +15,9 @@ enum Action: String {
     case add = "Add"
     case delete = "Delete"
     case copy = "Copy"
+    case ok = "OK"
+    case yes = "Yes"
+    case No = "No"
 }
 
 //TransitTime
@@ -118,6 +121,7 @@ enum DialogTitle: String {
     case timetable   = "Setting your timetable"
     case adddeletime = "Add and delete your time [min]"
     case copytime    = "Copying your time"
+    case allcopytime = "Copying all the time"
 }
 
 //Hint

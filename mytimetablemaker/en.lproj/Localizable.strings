@@ -6,13 +6,15 @@
   Copyright © 2020 com.nakajimamasao. All rights reserved.
 */
 
-
 //Action
 "Register" = "Register";
 "Cancel" = "Cancel";
 "Add" = "Add";
 "Delete" = "Delete";
 "Copy" = "Copy";
+"OK" = "OK";
+"Yes" = "Yes";
+"No" = "No";
 
 //TransitTime
 "Zero" = "Zero";
@@ -68,6 +70,8 @@
 "Setting your timetable" = "Setting your timetable";
 "Add and delete your time [min]" = "Add and delete your time [min]";
 "Copying your time" = "Copying your time";
+"Copying all the time" = "Copying all the time?";
+
 
 //VariousSettingsTitle
 "Various settings on route home 1" = "Various settings on route home 1";

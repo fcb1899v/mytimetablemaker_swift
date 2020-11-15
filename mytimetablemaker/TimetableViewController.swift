@@ -50,190 +50,183 @@ class TimetableViewController: UIViewController, UIImagePickerControllerDelegate
     @IBOutlet weak var timetable25h: UILabel!
 
     @IBOutlet weak var pictureview: UIImageView!
-    
+
+    var timetablearray: [UILabel] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let weekflag = self.weekflag!
-        let timetable = Timetable(self.goorback!, weekflag, self.keytag!)
+
+        let timetable = Timetable(self.goorback!, self.weekflag!, self.keytag!)
 
         settingtimetabletitle.text = "Setting your timetable".localized
         departstationlabel.text = timetable.timetableDepartStation
         lineforarrivestationlabel.text = timetable.timetableTitle
-        
+
         self.weeklabel.text = timetable.weekLabelText
         self.weeklabel.textColor = timetable.weekLabelColor(self.white, self.red)
         timetable.weekButtonTitle(self.weekbutton)
         timetable.weekButtonColor(self.weekbutton, self.red, self.primary)
 
-        self.timetable04h.text = timetable.timetableTime(4)
-        self.timetable05h.text = timetable.timetableTime(5)
-        self.timetable06h.text = timetable.timetableTime(6)
-        self.timetable07h.text = timetable.timetableTime(7)
-        self.timetable08h.text = timetable.timetableTime(8)
-        self.timetable09h.text = timetable.timetableTime(9)
-        self.timetable10h.text = timetable.timetableTime(10)
-        self.timetable11h.text = timetable.timetableTime(11)
-        self.timetable12h.text = timetable.timetableTime(12)
-        self.timetable13h.text = timetable.timetableTime(13)
-        self.timetable14h.text = timetable.timetableTime(14)
-        self.timetable15h.text = timetable.timetableTime(15)
-        self.timetable16h.text = timetable.timetableTime(16)
-        self.timetable17h.text = timetable.timetableTime(17)
-        self.timetable18h.text = timetable.timetableTime(18)
-        self.timetable19h.text = timetable.timetableTime(19)
-        self.timetable20h.text = timetable.timetableTime(20)
-        self.timetable21h.text = timetable.timetableTime(21)
-        self.timetable22h.text = timetable.timetableTime(22)
-        self.timetable23h.text = timetable.timetableTime(23)
-        self.timetable24h.text = timetable.timetableTime(24)
-        self.timetable25h.text = timetable.timetableTime(25)
+        timetablearray = [
+            self.timetable04h, self.timetable05h, self.timetable06h, self.timetable07h,
+            self.timetable08h, self.timetable09h, self.timetable10h, self.timetable11h,
+            self.timetable12h, self.timetable13h, self.timetable14h, self.timetable15h,
+            self.timetable16h, self.timetable17h, self.timetable18h, self.timetable19h,
+            self.timetable20h, self.timetable21h, self.timetable22h, self.timetable23h,
+            self.timetable24h, self.timetable25h
+        ]
+        for hour in 4...25 {
+            timetablearray[hour - 4].text = timetable.timetableTime(hour)
+        }
     }
 
     @IBAction func weekbutton(_ sender: Any) {
-        
-        let weekflag = !self.weekflag!
+
+        let weekflag = (self.weeklabel.text == "Weekend".localized) ? true: false
         let timetable = Timetable(self.goorback!, weekflag, self.keytag!)
 
         self.weeklabel.text = timetable.weekLabelText
         self.weeklabel.textColor = timetable.weekLabelColor(self.white, self.red)
         timetable.weekButtonTitle(self.weekbutton)
         timetable.weekButtonColor(self.weekbutton, self.red, self.primary)
-        
-        self.timetable04h.text = timetable.timetableTime(4)
-        self.timetable05h.text = timetable.timetableTime(5)
-        self.timetable06h.text = timetable.timetableTime(6)
-        self.timetable07h.text = timetable.timetableTime(7)
-        self.timetable08h.text = timetable.timetableTime(8)
-        self.timetable09h.text = timetable.timetableTime(9)
-        self.timetable10h.text = timetable.timetableTime(10)
-        self.timetable11h.text = timetable.timetableTime(11)
-        self.timetable12h.text = timetable.timetableTime(12)
-        self.timetable13h.text = timetable.timetableTime(13)
-        self.timetable14h.text = timetable.timetableTime(14)
-        self.timetable15h.text = timetable.timetableTime(15)
-        self.timetable16h.text = timetable.timetableTime(16)
-        self.timetable17h.text = timetable.timetableTime(17)
-        self.timetable18h.text = timetable.timetableTime(18)
-        self.timetable19h.text = timetable.timetableTime(19)
-        self.timetable20h.text = timetable.timetableTime(20)
-        self.timetable21h.text = timetable.timetableTime(21)
-        self.timetable22h.text = timetable.timetableTime(22)
-        self.timetable23h.text = timetable.timetableTime(23)
-        self.timetable24h.text = timetable.timetableTime(24)
-        self.timetable25h.text = timetable.timetableTime(25)
+
+        for hour in 4...25 {
+            timetablearray[hour - 4].text = timetable.timetableTime(hour)
+        }
     }
     
     @IBAction func timetable04h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 4)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable04h, 4, timetablearray)
     }
     
     @IBAction func timetable05h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 5)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable05h, 5, timetablearray)
     }
 
     @IBAction func timetable06h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 6)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable06h, 6, timetablearray)
     }
     
     @IBAction func timetable07h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 7)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable07h, 7, timetablearray)
     }
-    
+
     @IBAction func timetable08h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 8)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable08h, 8, timetablearray)
     }
-    
+
     @IBAction func timetable09h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 9)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable09h, 9, timetablearray)
     }
-    
+
     @IBAction func timetable10h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 10)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable10h, 10, timetablearray)
     }
-    
+
     @IBAction func timetable11h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 11)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable11h, 11, timetablearray)
     }
-    
+
     @IBAction func timetable12h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 12)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable12h, 12, timetablearray)
     }
-    
+
     @IBAction func timetable13h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 13)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable13h, 13, timetablearray)
     }
-    
+
     @IBAction func timetable14h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 14)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable14h, 14, timetablearray)
     }
-    
+
     @IBAction func timetable15h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 15)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable15h, 15, timetablearray)
     }
-    
+
     @IBAction func timetable16h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 16)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable16h, 16, timetablearray)
     }
-    
+
     @IBAction func timetable17h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 17)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable17h, 17, timetablearray)
     }
-    
+
     @IBAction func timetable18h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 18)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable18h, 18, timetablearray)
     }
-    
+
     @IBAction func timetable19h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 19)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable19h, 19, timetablearray)
     }
-    
+
     @IBAction func timetable20h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 20)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable20h, 20, timetablearray)
     }
-    
+
     @IBAction func timetable21h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 21)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable21h, 21, timetablearray)
     }
-    
+
     @IBAction func timetable22h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 22)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable22h, 22, timetablearray)
     }
-    
+
     @IBAction func timetable23h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 23)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable23h, 23, timetablearray)
     }
-    
+
     @IBAction func timetable24h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 24)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable24h, 24, timetablearray)
     }
-    
+
     @IBAction func timetable25h(_ sender: Any) {
-        TimetableDialog(self.goorback!, self.weekflag!, self.keytag!)
-        .setTimeFieldDialog(self, timetable04h, 25)
+        let weekflag = (self.weeklabel.text == "Weekday".localized) ? true: false
+        TimetableDialog(self.goorback!, weekflag, self.keytag!)
+        .setTimeFieldDialog(self, timetable25h, 25, timetablearray)
     }
-    
+
     @IBAction func selectpicture(_ sender: Any) {
         let picker = UIImagePickerController()
         picker.sourceType = .photoLibrary

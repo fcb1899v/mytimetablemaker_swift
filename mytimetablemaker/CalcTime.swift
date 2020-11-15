@@ -107,13 +107,13 @@ extension CalcTime {
         return timearrays
     }
     
-    //ルート内の各路線の乗車可能時刻[0]・発車時刻[1]・到着時刻[2]を取得
+    //
     func displayTimeArray(_ currenttime: Int) -> [String] {
         let timearray = timeArray(currenttime)
         var displaytimearray: [String] = []
         //乗車可能時刻・発車時刻・到着時刻を取得
-        displaytimearray.append(timearray[0][1].minusHHMM(transitTimeArray[0]).stringTime)
         displaytimearray.append(timearray[changeline][2].plusHHMM(transitTimeArray[changeline + 1]).stringTime)
+        displaytimearray.append(timearray[0][1].minusHHMM(transitTimeArray[0]).stringTime)
         for i in 0...changeline {
             displaytimearray.append(timearray[i][1].stringTime)
             displaytimearray.append(timearray[i][2].stringTime)

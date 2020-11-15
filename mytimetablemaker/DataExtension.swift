@@ -83,8 +83,8 @@ extension String{
         return "\(self)linecolor\(keytag)".userDefaultColor(colordefault)
     }
     //UserDefaultsに保存された移動手段を取得 : "Walking".localized
-    func transportation(_ keytag: String, _ transportdefault: String) -> String {
-        return "\(self)transport\(keytag)".userDefaultValue(transportdefault)
+    func transportation(_ keytag: String, _ transportdefalut: String) -> String {
+        return "\(self)transport\(keytag)".userDefaultValue(transportdefalut)
     }
     //UserDefaultsに保存された乗換出発駅を取得する関数
     func transitDepartStation(_ keytag: String) -> String {
@@ -172,9 +172,6 @@ extension Int {
         }
     }
     //
-    func buttonEnabled(_ number: Int) -> Bool {
-        return (self < number) ? false: true
-    }
     func viewHidden(_ number: Int) -> Bool {
         return (self < number) ? true: false
     }

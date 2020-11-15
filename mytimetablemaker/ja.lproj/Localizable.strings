@@ -12,6 +12,10 @@
 "Add" = "追加";
 "Delete" = "削除";
 "Copy" = "コピー";
+"OK" = "OK";
+"Yes" = "はい";
+"No" = "いいえ";
+
 
 //TransitTime
 "Zero" = "なし";
@@ -62,6 +66,8 @@
 "Setting your timetable" = "時刻表設定";
 "Add and delete your time [min]" = "時刻の追加と削除 [分]";
 "Copying your time" = "時刻のコピー";
+"Copying all the time" = "全時刻をコピーしますか？";
+
 
 //Hint
 "Maximum 20 Charactors" = "全角10文字以内";

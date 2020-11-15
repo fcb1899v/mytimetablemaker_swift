@@ -27,11 +27,22 @@ struct TimetableDialog: Calculation{
 }
 
 extension TimetableDialog {
-    
+
+    var weektag: String {
+        return (self.weekflag) ? "weekday": "weekend"
+    }
+
+    var reverseweektag: String {
+        return !(self.weekflag) ? "weekday": "weekend"
+    }
+
+    func timetableKey(_ hour: Int) -> String {
+        return "\(goorback)line\(keytag)\(weektag)\(String(hour))"
+    }
+
     //UserDefaultに保存された時刻表の時刻の表示を取得
     func timetableTime(_ hour: Int) -> String {
-        let weektag = (weekflag) ? "weekday": "weekend"
-        return "\(goorback)line\(keytag)\(weektag)\(String(hour))".userDefaultValue("")
+        return timetableKey(hour).userDefaultValue("")
     }
     
     //時刻を追加
@@ -66,32 +77,30 @@ extension TimetableDialog {
     }
 
     //時刻表の時刻登録ボタン：UserDefaultにデータ保存
-    func addTimeFieldRegisterAction(_ viewcontroller: UIViewController, _ textfield: UITextField, _ label: UILabel, _ key: String, _ hour: Int) -> UIAlertAction {
+    func addTimeFieldRegisterAction(_ viewcontroller: UIViewController, _ textfield: UITextField, _ label: UILabel, _ key: String, _ hour: Int, _ labelarray: [UILabel]) -> UIAlertAction {
         return UIAlertAction(title: add, style: .default) {
             (action: UIAlertAction) in
             let edittext = addTimeFromTimetable(label, textfield.text ?? "", key)
-            if (edittext != "") {
-                label.text = edittext
-            }
-            setTimeFieldDialog(viewcontroller, label, hour)
+            label.text = edittext
+            setTimeFieldDialog(viewcontroller, label, hour, labelarray)
         }
     }
 
     //時刻表の時刻登録ボタン：UserDefaultにデータ保存
-    func deleteTimeFieldRegisterAction(_ viewcontroller: UIViewController, _ textfield: UITextField, _ label: UILabel, _ key: String, _ hour: Int) -> UIAlertAction {
+    func deleteTimeFieldRegisterAction(_ viewcontroller: UIViewController, _ textfield: UITextField, _ label: UILabel, _ key: String, _ hour: Int, _ labelarray: [UILabel]) -> UIAlertAction {
         return UIAlertAction(title: delete, style: .destructive) {
             (action: UIAlertAction) in
             let edittext = deleteTimeFromTimetable(label, textfield.text ?? "", key)
             label.text = edittext
-            setTimeFieldDialog(viewcontroller, label, hour)
+            setTimeFieldDialog(viewcontroller, label, hour, labelarray)
         }
     }
 
     //時刻表の時刻登録ボタン：UserDefaultにデータ保存
-    func setCopyTimeAction(_ viewcontroller: UIViewController, _ label: UILabel, _ key: String, _ hour: Int) -> UIAlertAction {
+    func setCopyTimeAction(_ viewcontroller: UIViewController, _ label: UILabel, _ key: String, _ hour: Int, _ labelarray: [UILabel]) -> UIAlertAction {
         return UIAlertAction(title: copy, style: .default) {
             (action: UIAlertAction) in
-            choiceCopyTimeDialog(viewcontroller, label, key, hour)
+            choiceCopyTimeDialog(viewcontroller, label, key, hour, labelarray)
         }
     }
     
@@ -114,8 +123,6 @@ extension TimetableDialog {
     
     //
     func choiceCopyTimeKey(_ hour: Int) -> [String] {
-        let weektag = (weekflag) ? "weekday": "weekend"
-        let reverseweektag = (!weekflag) ? "weekday": "weekend"
         return [
             "\(goorback)line\(keytag)\(weektag)\(String(hour - 1))",
             "\(goorback)line\(keytag)\(weektag)\(String(hour + 1))",
@@ -127,7 +134,7 @@ extension TimetableDialog {
     }
     
     //
-    func choiceCopyTimeDialog (_ viewcontroller: UIViewController, _ label: UILabel, _ key: String, _ hour: Int) {
+    func choiceCopyTimeDialog (_ viewcontroller: UIViewController, _ label: UILabel, _ key: String, _ hour: Int, _ labelarray: [UILabel]) {
         let title = DialogTitle.copytime.rawValue.localized
         let message = ""
         let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
@@ -141,7 +148,7 @@ extension TimetableDialog {
             picker.addAction(setChoiceCopyTimeAction(label, key, choicetitle[1], choicekey[1]))
         }
         for i in 2...5 {
-            picker.addAction(setChoiceCopyTimeAction(label, key, choicetitle[i], choicekey[i]))
+            picker.addAction(setChoiceCopyTimeAction2(viewcontroller, label, key, choicetitle[i], choicekey[i], labelarray, i))
         }
         picker.addAction(setCancelAction())
         viewcontroller.present(picker, animated: true, completion: nil)
@@ -151,26 +158,53 @@ extension TimetableDialog {
     func setChoiceCopyTimeAction(_ label: UILabel, _ key: String, _ choicetitle: String, _ choicekey: String) -> UIAlertAction {
             return UIAlertAction(title: choicetitle, style: .default) {
                 (action: UIAlertAction) in
-                if (choicekey.userDefaultValue("") != "") {
-                    label.text = choicekey.userDefaultValue("")
-                    UserDefaults.standard.set(label.text, forKey: key)
-                }
+                label.text = choicekey.userDefaultValue("")
+                UserDefaults.standard.set(label.text, forKey: key)
             }
     }
-    
+
+    //
+    func setChoiceCopyTimeAction2(_ viewcontroller: UIViewController, _ label: UILabel, _ key: String, _ choicetitle: String, _ choicekey: String, _ labelarray: [UILabel], _ i: Int) -> UIAlertAction {
+            return UIAlertAction(title: choicetitle, style: .default) {
+                (action: UIAlertAction) in
+                label.text = choicekey.userDefaultValue("")
+                UserDefaults.standard.set(label.text, forKey: key)
+                setAllCopyDialog(viewcontroller, labelarray, i)
+            }
+    }
+
+    func setAllCopyDialog(_ viewcontroller: UIViewController, _ labelarray: [UILabel], _ i: Int) {
+        let title = DialogTitle.allcopytime.rawValue.localized
+        let message = ""
+        let picker = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        picker.addAction(allCopyAction(labelarray, i))
+        picker.addAction(setCancelAction())
+        viewcontroller.present(picker, animated: true, completion: nil)
+    }
+
+    func allCopyAction(_ labelarray: [UILabel], _ i: Int) -> UIAlertAction {
+        return UIAlertAction(title: Action.yes.rawValue.localized, style: .default) {
+            (action: UIAlertAction) in
+            for hour in 4...25 {
+                let copytime = choiceCopyTimeKey(hour)[i].userDefaultValue("")
+                UserDefaults.standard.set(copytime, forKey: timetableKey(hour))
+                labelarray[hour - 4].text = copytime
+            }
+        }
+    }
+
     //時刻表の時刻を登録・削除するダイアログ
-    func setTimeFieldDialog(_ viewcontroller: UIViewController, _ label: UILabel, _ hour: Int) {
+    func setTimeFieldDialog(_ viewcontroller: UIViewController, _ label: UILabel, _ hour: Int, _ labelarray: [UILabel]) {
         let title = DialogTitle.adddeletime.rawValue.localized
         let message = "\(goorback.lineName(keytag, "Line ".localized + keytag)) (\(String(hour))\("Hour".localized))"
-        let weektag = (weekflag) ? "weekday": "weekend"
-        let key = "\(goorback)line\(keytag)\(weektag)\(String(hour))"
+        let key = timetableKey(hour)
         //TextFieldのアラートを表示
         let alert = getTimeFieldAlert(title, message)
         //登録ボタンの表示：入力したTextを保存・表示する
-        alert.addAction(addTimeFieldRegisterAction(viewcontroller, (alert.textFields?.first)!, label, key, hour))
+        alert.addAction(addTimeFieldRegisterAction(viewcontroller, (alert.textFields?.first)!, label, key, hour, labelarray))
         //削除ボタンの表示：入力したTextを削除する
-        alert.addAction(deleteTimeFieldRegisterAction(viewcontroller, (alert.textFields?.first)!, label, key, hour))
-        alert.addAction(setCopyTimeAction(viewcontroller, label, key, hour))
+        alert.addAction(deleteTimeFieldRegisterAction(viewcontroller, (alert.textFields?.first)!, label, key, hour, labelarray))
+        alert.addAction(setCopyTimeAction(viewcontroller, label, key, hour, labelarray))
         //キャンセルボタン：アラートから抜ける
         alert.addAction(setCancelAction())
         viewcontroller.present(alert, animated: true, completion: nil)

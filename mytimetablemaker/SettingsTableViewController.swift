@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import GoogleMobileAds
 
-class SettingsTableViewController: UITableViewController, UITextViewDelegate {
+class SettingsTableViewController: UITableViewController, UITextViewDelegate, GADBannerViewDelegate {
 
+    var bannerView: GADBannerView!
     var back2switchflag = true
     var go2switchflag = true
     let black = DefaultColor.black.rawValue
@@ -40,9 +42,13 @@ class SettingsTableViewController: UITableViewController, UITextViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let black = self.black
-        let gray = self.gray
+
+        bannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
+        addBannerViewToView(bannerView)
+        bannerView.adUnitID = "ca-app-pub-1585283309075901/1821605177"
+        bannerView.rootViewController = self
+        bannerView.load(GADRequest())
+        bannerView.delegate = self
 
         //ルート２スイッチの表示
         back2switchflag = "back2".switchFlag
@@ -52,20 +58,19 @@ class SettingsTableViewController: UITableViewController, UITextViewDelegate {
         go2switch.setOn(go2switchflag, animated: false)
         go2settings.isEnabled = go2switchflag
         //乗換回数のボタンの表示
-        back2settings.changeButtonColor(back2switchflag, black, gray)
-        go2settings.changeButtonColor(go2switchflag, black, gray)
-        back2changelinetable.textColor = back2switchflag.changeLabelColor(black, gray)
-        go2changelinetable.textColor = go2switchflag.changeLabelColor(black, gray)
+        back2settings.changeButtonColor(back2switchflag, self.black, self.gray)
+        go2settings.changeButtonColor(go2switchflag, self.black, self.gray)
+        back2changelinetable.textColor = back2switchflag.changeLabelColor(self.black, self.gray)
+        go2changelinetable.textColor = go2switchflag.changeLabelColor(self.black, self.gray)
         //乗換回数のラベルの表示
         back1changelinelabel.text = "back1".changeLine
         go1changelinelabel.text = "go1".changeLine
         back2changelinelabel.text = "back2".switchChangeLine(back2switchflag)
         go2changelinelabel.text = "go2".switchChangeLine(go2switchflag)
-        back2changelinelabel.textColor = back2switchflag.changeLabelColor(black, gray)
-        go2changelinelabel.textColor = go2switchflag.changeLabelColor(black, gray)
+        back2changelinelabel.textColor = back2switchflag.changeLabelColor(self.black, self.gray)
+        go2changelinelabel.textColor = go2switchflag.changeLabelColor(self.black, self.gray)
         //バージョン番号の表示
-        versiontext.text = Bundle.main.object(
-            forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        versiontext.text = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
     }
 
     @IBAction func terms(_ sender: UIButton) {
@@ -150,5 +155,15 @@ class SettingsTableViewController: UITableViewController, UITextViewDelegate {
         // テキスト色を変更する
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = DefaultColor.white.UI
+    }
+
+    //ADMob広告の追加
+    func addBannerViewToView(_ bannerView: GADBannerView) {
+        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bannerView)
+        view.addConstraints([
+            NSLayoutConstraint(item: bannerView, attribute: .bottom, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: bannerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
+        ])
     }
 }

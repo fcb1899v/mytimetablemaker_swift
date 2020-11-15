@@ -121,7 +121,20 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
     @IBOutlet weak var timelabel25: UILabel!
     @IBOutlet weak var timelabel26: UILabel!
     @IBOutlet weak var timelabel2e: UILabel!
-    
+
+    var departstationlabelarray1: [UILabel] = []
+    var departstationlabelarray2: [UILabel] = []
+    var arrivalstationlabelarray1: [UILabel] = []
+    var arrivalstationlabelarray2: [UILabel] = []
+    var linenamelabelarray1: [UILabel] = []
+    var linenamelabelarray2: [UILabel] = []
+    var linetimetablearray1: [UIStackView] = []
+    var linetimetablearray2: [UIStackView] = []
+    var transportationlabelarray1: [UILabel] = []
+    var transportationlabelarray2: [UILabel] = []
+    var timelabelarray1: [UILabel] = []
+    var timelabelarray2: [UILabel] = []
+
     //Main文
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -163,59 +176,42 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
             dateandtime.setCurrentDate()
             dateandtime.setCurrentTime()
 
-            //
+            //表示ラベルの配列化
+            self.departstationlabelarray1 = [self.stationlabel11, self.stationlabel13, self.stationlabel15]
+            self.departstationlabelarray2 = [self.stationlabel21, self.stationlabel23, self.stationlabel25]
+            self.arrivalstationlabelarray1 = [self.stationlabel12, self.stationlabel14, self.stationlabel16]
+            self.arrivalstationlabelarray2 = [self.stationlabel22, self.stationlabel24, self.stationlabel26]
+            self.linenamelabelarray1 = [self.linelabel11, self.linelabel12, self.linelabel13]
+            self.linenamelabelarray2 = [self.linelabel21, self.linelabel22, self.linelabel23]
+            self.linetimetablearray1 = [self.linetimetable11, self.linetimetable12, self.linetimetable13]
+            self.linetimetablearray2 = [self.linetimetable21, self.linetimetable22, self.linetimetable23]
+            self.transportationlabelarray1 = [self.transportlabel1e, self.transportlabel11, self.transportlabel12, self.transportlabel13]
+            self.transportationlabelarray2 = [self.transportlabel2e, self.transportlabel21, self.transportlabel22, self.transportlabel23]
+            self.timelabelarray1 = [self.timelabel1e, self.timelabel10, self.timelabel11, self.timelabel12, self.timelabel13, self.timelabel14, self.timelabel15, self.timelabel16]
+            self.timelabelarray2 = [self.timelabel2e, self.timelabel20, self.timelabel21, self.timelabel22, self.timelabel23, self.timelabel24, self.timelabel25, self.timelabel26]
+
+            //各種表示
             self.stationlabel10.text = goorback1.departurePoint(office, home)
-            self.stationlabel11.text = goorback1.departStation("1", "\(depsta)1")
-            self.stationlabel12.text = goorback1.arriveStation("1", "\(arrsta)1")
-            self.stationlabel13.text = goorback1.departStation("2", "\(depsta)2")
-            self.stationlabel14.text = goorback1.arriveStation("2", "\(arrsta)2")
-            self.stationlabel15.text = goorback1.departStation("3", "\(depsta)3")
-            self.stationlabel16.text = goorback1.arriveStation("3", "\(arrsta)3")
-            self.stationlabel1e.text = goorback1.destination(home, office)
-            
             self.stationlabel20.text = goorback2.departurePoint(office, home)
-            self.stationlabel21.text = goorback2.departStation("1", "\(depsta)1")
-            self.stationlabel22.text = goorback2.arriveStation("1", "\(arrsta)1")
-            self.stationlabel23.text = goorback2.departStation("2", "\(depsta)2")
-            self.stationlabel24.text = goorback2.arriveStation("2", "\(arrsta)2")
-            self.stationlabel25.text = goorback2.departStation("3", "\(depsta)3")
-            self.stationlabel26.text = goorback2.arriveStation("3", "\(arrsta)3")
+            self.stationlabel1e.text = goorback1.destination(home, office)
             self.stationlabel2e.text = goorback2.destination(home, office)
-            
-            self.linelabel11.text = goorback1.lineName("1", "\(line)1")
-            self.linelabel12.text = goorback1.lineName("2", "\(line)2")
-            self.linelabel13.text = goorback1.lineName("3", "\(line)3")
-            
-            self.linelabel21.text = goorback2.lineName("1", "\(line)1")
-            self.linelabel22.text = goorback2.lineName("2", "\(line)2")
-            self.linelabel23.text = goorback2.lineName("3", "\(line)3")
+            self.transportationlabelarray1[0].text = goorback1.transportation("e", walk)
+            self.transportationlabelarray2[0].text = goorback2.transportation("e", walk)
+            for i in 0...2 {
+                self.departstationlabelarray1[i].text = goorback1.departStation("\(i + 1)", "\(depsta)\(i + 1)")
+                self.departstationlabelarray2[i].text = goorback2.departStation("\(i + 1)", "\(depsta)\(i + 1)")
+                self.arrivalstationlabelarray1[i].text = goorback1.arriveStation("\(i + 1)", "\(arrsta)\(i + 1)")
+                self.arrivalstationlabelarray2[i].text = goorback2.arriveStation("\(i + 1)", "\(arrsta)\(i + 1)")
+                self.transportationlabelarray1[i + 1].text = goorback1.transportation("\(i + 1)", walk)
+                self.transportationlabelarray2[i + 1].text = goorback2.transportation("\(i + 1)", walk)
+                self.linenamelabelarray1[i].text = goorback1.lineName("\(i + 1)", "\(line)\(i + 1)")
+                self.linenamelabelarray2[i].text = goorback2.lineName("\(i + 1)", "\(line)\(i + 1)")
+                self.linenamelabelarray1[i].textColor = goorback1.lineColor("\(i + 1)", accent)
+                self.linenamelabelarray2[i].textColor = goorback2.lineColor("\(i + 1)", accent)
+                self.linetimetablearray1[i].backgroundColor = goorback1.lineColor("\(i + 1)", accent)
+                self.linetimetablearray2[i].backgroundColor = goorback2.lineColor("\(i + 1)", accent)
+            }
 
-            self.linelabel11.textColor = goorback1.lineColor("1", accent)
-            self.linelabel12.textColor = goorback1.lineColor("2", accent)
-            self.linelabel13.textColor = goorback1.lineColor("3", accent)
-            
-            self.linelabel21.textColor = goorback2.lineColor("1", accent)
-            self.linelabel22.textColor = goorback2.lineColor("2", accent)
-            self.linelabel23.textColor = goorback2.lineColor("3", accent)
-            
-            self.linetimetable11.backgroundColor = goorback1.lineColor("1", accent)
-            self.linetimetable12.backgroundColor = goorback1.lineColor("2", accent)
-            self.linetimetable13.backgroundColor = goorback1.lineColor("3", accent)
-            
-            self.linetimetable21.backgroundColor = goorback2.lineColor("1", accent)
-            self.linetimetable22.backgroundColor = goorback2.lineColor("2", accent)
-            self.linetimetable23.backgroundColor = goorback2.lineColor("3", accent)
-
-            self.transportlabel11.text = goorback1.transportation("1", walk)
-            self.transportlabel12.text = goorback1.transportation("2", walk)
-            self.transportlabel13.text = goorback1.transportation("3", walk)
-            self.transportlabel1e.text = goorback1.transportation("e", walk)
-
-            self.transportlabel21.text = goorback2.transportation("1", walk)
-            self.transportlabel22.text = goorback2.transportation("2", walk)
-            self.transportlabel23.text = goorback2.transportation("3", walk)
-            self.transportlabel2e.text = goorback2.transportation("e", walk)
-            
             //帰宅・外出ルート2の表示・非表示
             self.display2stackview.isHidden = !(goorback2.switchFlag)
             self.centerlineview.isHidden = !(goorback2.switchFlag)
@@ -232,44 +228,35 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
             let departuretime2 = calctime2.departureTime(currenttime)
 
             //時刻1の表示
-            self.timelabel11.text = (time1[0] == none) ? none: time1[2]
-            self.timelabel12.text = (self.timelabel11.text == none) ? none: time1[3]
-            self.timelabel10.text = (self.timelabel12.text == none) ? none: time1[0]
-            self.timelabel1e.text = (self.timelabel12.text == none) ? none: time1[1]
-            
-            if (changeline1 > 0) {
-                self.timelabel13.text = (self.timelabel12.text == none) ? none: time1[4]
-                self.timelabel14.text = (self.timelabel13.text == none) ? none: time1[5]
-                self.timelabel1e.text = (self.timelabel14.text == none) ? none: time1[1]
+            self.timelabelarray1[1].text = (time1[1] == none) ? none: time1[1]
+            for i in 0...2 {
+                if (changeline1 >= i) {
+                    self.timelabelarray1[2 * i + 2].text =
+                        (self.timelabelarray1[2 * i + 1].text == none) ? none: time1[2 * i + 2]
+                    self.timelabelarray1[2 * i + 3].text =
+                        (self.timelabelarray1[2 * i + 2].text == none) ? none: time1[2 * i + 3]
+                    self.timelabelarray1[0].text =
+                        (self.timelabelarray1[2 * i + 3].text == none) ? none: time1[0]
+                }
             }
-
-            if (changeline1 > 1) {
-                self.timelabel15.text = (self.timelabel14.text == none) ? none: time1[6]
-                self.timelabel16.text = (self.timelabel15.text == none) ? none: time1[7]
-                self.timelabel1e.text = (self.timelabel16.text == none) ? none: time1[1]
-            }
-            
+            self.timelabelarray1[1].text = (self.timelabelarray1[3].text == none) ? none: time1[1]
             //カウントダウン1
             self.countdown1.text = currenttime.countdownTime(departuretime1)
             self.countdown1.textColor = currenttime.countdownColor(departuretime1)
 
             //時刻2の表示
-            self.timelabel21.text = (time2[0] == none) ? none: time2[2]
-            self.timelabel22.text = (self.timelabel21.text == none) ? none: time2[3]
-            self.timelabel20.text = (self.timelabel22.text == none) ? none: time2[0]
-            self.timelabel2e.text = (self.timelabel22.text == none) ? none: time2[1]
-
-            if (changeline2 > 0) {
-                self.timelabel23.text = (self.timelabel22.text == none) ? none: time2[4]
-                self.timelabel24.text = (self.timelabel23.text == none) ? none: time2[5]
-                self.timelabel2e.text = (self.timelabel24.text == none) ? none: time2[1]
+            self.timelabelarray2[1].text = (time2[1] == none) ? none: time2[1]
+            for i in 0...2 {
+                if (changeline2 >= i) {
+                    self.timelabelarray2[2 * i + 2].text =
+                        (self.timelabelarray2[2 * i + 1].text == none) ? none: time2[2 * i + 2]
+                    self.timelabelarray2[2 * i + 3].text =
+                        (self.timelabelarray2[2 * i + 2].text == none) ? none: time2[2 * i + 3]
+                    self.timelabelarray2[0].text =
+                        (self.timelabelarray2[2 * i + 3].text == none) ? none: time2[0]
+                }
             }
-
-            if (changeline2 > 1) {
-                self.timelabel25.text = (self.timelabel24.text == none) ? none: time2[6]
-                self.timelabel26.text = (self.timelabel25.text == none) ? none: time2[7]
-                self.timelabel2e.text = (self.timelabel26.text == none) ? none: time2[1]
-            }
+            self.timelabelarray2[1].text = (self.timelabelarray2[3].text == none) ? none: time2[1]
             //カウントダウン2
             self.countdown2.text = currenttime.countdownTime(departuretime2)
             self.countdown2.textColor = currenttime.countdownColor(departuretime2)

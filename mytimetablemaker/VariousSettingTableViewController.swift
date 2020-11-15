@@ -12,6 +12,12 @@ class VariousSettingsTableViewController: UITableViewController {
 
     var goorback: String?
     var weekflag = Date().weekFlag
+
+    let notset = Unit.notset.rawValue.localized
+    let notuse = Unit.notuse.rawValue.localized
+    let black = DefaultColor.black.rawValue
+    let gray = DefaultColor.gray.rawValue
+    let uigray = DefaultColor.gray.UI
     
     @IBOutlet weak var departplacelabel: UILabel!
     @IBOutlet weak var departstationlabel1: UILabel!
@@ -53,106 +59,88 @@ class VariousSettingsTableViewController: UITableViewController {
     @IBOutlet weak var transportationbutton3: UIButton!
     @IBOutlet weak var transittimebutton2: UIButton!
     @IBOutlet weak var transittimebutton3: UIButton!
-        
+
+    var departstationlabelarray: [UILabel] = []
+    var arrivalstationlabelarray: [UILabel] = []
+    var linenamelabelarray: [UILabel] = []
+    var ridetimelabelarray: [UILabel] = []
+    var transportationlabelarray: [UILabel] = []
+    var transittimelabelarray: [UILabel] = []
+
+    var departstationbuttonarray: [UIButton] = []
+    var arrivalstationbuttonarray: [UIButton] = []
+    var linenamebuttonarray: [UIButton] = []
+    var ridetimebuttonarray: [UIButton] = []
+    var transportationbuttonarray: [UIButton] = []
+    var transittimebuttonarray: [UIButton] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let changeline = goorback!.changeLineInt
-        let notset = Unit.notset.rawValue.localized
-        let notuse = Unit.notuse.rawValue.localized
-        let black = DefaultColor.black.rawValue
-        let gray = DefaultColor.gray.rawValue
-        let uigray = DefaultColor.gray.UI
+
+        departstationlabelarray = [departstationlabel1, departstationlabel2, departstationlabel3]
+        arrivalstationlabelarray = [arrivalstationlabel1, arrivalstationlabel2, arrivalstationlabel3]
+        linenamelabelarray = [linenamelabel1, linenamelabel2, linenamelabel3]
+        ridetimelabelarray = [ridetimelabel1, ridetimelabel2, ridetimelabel3]
+        transportationlabelarray = [transportationlabele, transportationlabel1, transportationlabel2, transportationlabel3]
+        transittimelabelarray = [transittimelabele, transittimelabel1, transittimelabel2, transittimelabel3]
+
+        departstationbuttonarray = [departstationbutton2, departstationbutton3]
+        arrivalstationbuttonarray = [arrivalstationbutton2, arrivalstationbutton3]
+        linenamebuttonarray = [linenamebutton2, linenamebutton3]
+        ridetimebuttonarray = [ridetimebutton2, ridetimebutton3]
+        transportationbuttonarray = [transportationbutton2, transportationbutton3]
+        transittimebuttonarray = [transittimebutton2, transittimebutton3]
 
         //VariousSettingsのタイトルを取得
         self.title = goorback!.variousSettingsTitle
 
+        //VariousSettingsの各種表示
         departplacelabel.text = goorback!.departurePoint(notset, notset)
-        departstationlabel1.text = goorback!.departStation("1", notset)
-        arrivalstationlabel1.text = goorback!.arriveStation("1", notset)
-        departstationlabel2.text = goorback!.departStation("2", notset)
-        arrivalstationlabel2.text = goorback!.arriveStation("2", notset)
-        departstationlabel3.text = goorback!.departStation("3", notset)
-        arrivalstationlabel3.text = goorback!.arriveStation("3", notset)
         destinationlabel.text = goorback!.destination(notset, notset)
-
-        linenamelabel1.text = goorback!.lineName("1", notset)
-        linenamelabel2.text = goorback!.lineName("2", notset)
-        linenamelabel3.text = goorback!.lineName("3", notset)
-        ridetimelabel1.text = goorback!.rideTimeString("1")
-        ridetimelabel2.text = goorback!.rideTimeString("2")
-        ridetimelabel3.text = goorback!.rideTimeString("3")
-
-        linenamelabel1.textColor = goorback!.lineColor("1", black)
-        linenamelabel2.textColor = goorback!.lineColor("2", black)
-        linenamelabel3.textColor = goorback!.lineColor("3", black)
-        ridetimelabel1.textColor = goorback!.lineColor("1", black)
-        ridetimelabel2.textColor = goorback!.lineColor("2", black)
-        ridetimelabel3.textColor = goorback!.lineColor("3", black)
-
-        transportationlabel1.text = goorback!.transportation("1", "Walking".localized)
-        transportationlabel2.text = goorback!.transportation("2", "Walking".localized)
-        transportationlabel3.text = goorback!.transportation("3", "Walking".localized)
-        transportationlabele.text = goorback!.transportation("e", "Walking".localized)
-        transittimelabel1.text = goorback!.transitTimeString("1")
-        transittimelabel2.text = goorback!.transitTimeString("2")
-        transittimelabel3.text = goorback!.transitTimeString("3")
-        transittimelabele.text = goorback!.transitTimeString("e")
-        
-        if (changeline < 1) {
-            departstationlabel2.text = notuse
-            arrivalstationlabel2.text = notuse
-            linenamelabel2.text = notuse
-            ridetimelabel2.text = notuse
-            transportationlabel2.text = notuse
-            transittimelabel2.text = notuse
-            departstationlabel2.textColor = uigray
-            arrivalstationlabel2.textColor = uigray
-            linenamelabel2.textColor = uigray
-            ridetimelabel2.textColor = uigray
-            transportationlabel2.textColor = uigray
-            transittimelabel2.textColor = uigray
-            departstationbutton2.setButtonColor(gray)
-            arrivalstationbutton2.setButtonColor(gray)
-            linenamebutton2.setButtonColor(gray)
-            ridetimebutton2.setButtonColor(gray)
-            transportationbutton2.setButtonColor(gray)
-            transittimebutton2.setButtonColor(gray)
+        for i in 0...2 {
+            departstationlabelarray[i].text = goorback!.departStation("\(i + 1)", notset)
+            arrivalstationlabelarray[i].text = goorback!.arriveStation("\(i + 1)", notset)
+            linenamelabelarray[i].text = goorback!.lineName("\(i + 1)", notset)
+            ridetimelabelarray[i].text = goorback!.rideTimeString("\(i + 1)")
+            linenamelabelarray[i].textColor = goorback!.lineColor("\(i + 1)", black)
+            ridetimelabelarray[i].textColor = goorback!.lineColor("\(i + 1)", black)
+            transportationlabelarray[i + 1].text = goorback!.transportation("\(i + 1)", notset)
+            transittimelabelarray[i + 1].text = goorback!.transitTimeString("\(i + 1)")
         }
-        
-        if (changeline < 2) {
-            departstationlabel3.text = notuse
-            arrivalstationlabel3.text = notuse
-            linenamelabel3.text = notuse
-            ridetimelabel3.text = notuse
-            transportationlabel3.text = notuse
-            transittimelabel3.text = notuse
-            departstationlabel3.textColor = uigray
-            arrivalstationlabel3.textColor = uigray
-            linenamelabel3.textColor = uigray
-            ridetimelabel3.textColor = uigray
-            transportationlabel3.textColor = uigray
-            transittimelabel3.textColor = uigray
-            departstationbutton3.setButtonColor(gray)
-            arrivalstationbutton3.setButtonColor(gray)
-            linenamebutton3.setButtonColor(gray)
-            ridetimebutton3.setButtonColor(gray)
-            transportationbutton3.setButtonColor(gray)
-            transittimebutton3.setButtonColor(gray)
-        }
+        transportationlabelarray[0].text = goorback!.transportation("e", notset)
+        transittimelabelarray[0].text = goorback!.transitTimeString("e")
 
-        departstationbutton2.isEnabled = changeline.buttonEnabled(1)
-        departstationbutton3.isEnabled = changeline.buttonEnabled(2)
-        arrivalstationbutton2.isEnabled = changeline.buttonEnabled(1)
-        arrivalstationbutton3.isEnabled = changeline.buttonEnabled(2)
-        linenamebutton2.isEnabled = changeline.buttonEnabled(1)
-        linenamebutton3.isEnabled = changeline.buttonEnabled(2)
-        ridetimebutton2.isEnabled = changeline.buttonEnabled(1)
-        ridetimebutton3.isEnabled = changeline.buttonEnabled(2)
-        transportationbutton2.isEnabled = changeline.buttonEnabled(1)
-        transportationbutton3.isEnabled = changeline.buttonEnabled(2)
-        transittimebutton2.isEnabled = changeline.buttonEnabled(1)
-        transittimebutton3.isEnabled = changeline.buttonEnabled(2)
+        //乗換回数に応じて表示を変更
+        for i in 1...2 {
+            if (changeline < i) {
+                departstationlabelarray[i].text = notuse
+                arrivalstationlabelarray[i].text = notuse
+                linenamelabelarray[i].text = notuse
+                ridetimelabelarray[i].text = notuse
+                transportationlabelarray[i + 1].text = notuse
+                transittimelabelarray[i + 1].text = notuse
+                departstationlabelarray[i].textColor = uigray
+                arrivalstationlabelarray[i].textColor = uigray
+                linenamelabelarray[i].textColor = uigray
+                ridetimelabelarray[i].textColor = uigray
+                transportationlabelarray[i + 1].textColor = uigray
+                transittimelabelarray[i + 1].textColor = uigray
+                departstationbuttonarray[i - 1].setButtonColor(gray)
+                arrivalstationbuttonarray[i - 1].setButtonColor(gray)
+                linenamebuttonarray[i - 1].setButtonColor(gray)
+                ridetimebuttonarray[i - 1].setButtonColor(gray)
+                transportationbuttonarray[i - 1].setButtonColor(gray)
+                transittimebuttonarray[i - 1].setButtonColor(gray)
+                departstationbuttonarray[i - 1].isEnabled = false
+                arrivalstationbuttonarray[i - 1].isEnabled = false
+                linenamebuttonarray[i - 1].isEnabled = false
+                ridetimebuttonarray[i - 1].isEnabled = false
+                transportationbuttonarray[i - 1].isEnabled = false
+                transittimebuttonarray[i - 1].isEnabled = false
+            }
+        }
      }
     
     @IBAction func departplacebutton(_ sender: Any) {
