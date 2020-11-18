@@ -43,13 +43,6 @@ class SettingsTableViewController: UITableViewController, UITextViewDelegate, GA
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        bannerView = GADBannerView(adSize: kGADAdSizeSmartBannerPortrait)
-        addBannerViewToView(bannerView)
-        bannerView.adUnitID = "ca-app-pub-1585283309075901/1821605177"
-        bannerView.rootViewController = self
-        bannerView.load(GADRequest())
-        bannerView.delegate = self
-
         //ルート２スイッチの表示
         back2switchflag = "back2".switchFlag
         back2switch.setOn(back2switchflag, animated: false)
@@ -155,15 +148,5 @@ class SettingsTableViewController: UITableViewController, UITextViewDelegate, GA
         // テキスト色を変更する
         let header = view as! UITableViewHeaderFooterView
         header.textLabel?.textColor = DefaultColor.white.UI
-    }
-
-    //ADMob広告の追加
-    func addBannerViewToView(_ bannerView: GADBannerView) {
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(bannerView)
-        view.addConstraints([
-            NSLayoutConstraint(item: bannerView, attribute: .bottom, relatedBy: .equal, toItem: view.safeAreaLayoutGuide, attribute: .bottom, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: bannerView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
-        ])
     }
 }
