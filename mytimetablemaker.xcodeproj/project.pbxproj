@@ -18,6 +18,8 @@
 		02473D9C2529B1B50069A622 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02473D9E2529B1B50069A622 /* Localizable.strings */; };
 		0254B31425569E2800577244 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0254B31325569E2800577244 /* Timetable.swift */; };
 		02668A5C252E8A3700E2B2CD /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */; };
+		02CA14D12567391100BF7496 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02CA14CF2567390700BF7496 /* ic_clock2.png */; };
+		02CA14D22567391100BF7496 /* ic_settings1.png in Resources */ = {isa = PBXBuildFile; fileRef = 02CA14D02567390C00BF7496 /* ic_settings1.png */; };
 		02DD3B472501333000B28F13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B462501333000B28F13 /* AppDelegate.swift */; };
 		02DD3B492501333000B28F13 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B482501333000B28F13 /* SceneDelegate.swift */; };
 		02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B4C2501333000B28F13 /* Main.storyboard */; };
@@ -25,8 +27,6 @@
 		02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B512501333200B28F13 /* LaunchScreen.storyboard */; };
 		02DD3B5E2501333200B28F13 /* mytimetablemakerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B5D2501333200B28F13 /* mytimetablemakerTests.swift */; };
 		02DD3B692501333200B28F13 /* mytimetablemakerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */; };
-		02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B772501342D00B28F13 /* ic_settings1.png */; };
-		02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */ = {isa = PBXBuildFile; fileRef = 02DD3B782501342D00B28F13 /* ic_clock2.png */; };
 		02DD3B7D2501B5C500B28F13 /* VariousSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */; };
 		02DD3B7F2501BEC900B28F13 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */; };
 		02EABE4E2504CC9800628B40 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EABE4D2504CC9800628B40 /* ViewExtension.swift */; };
@@ -91,6 +91,8 @@
 		02473DAF2529B3D10069A622 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		0254B31325569E2800577244 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
 		02668A5B252E8A3700E2B2CD /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
+		02CA14CF2567390700BF7496 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_clock2.png; sourceTree = "<group>"; };
+		02CA14D02567390C00BF7496 /* ic_settings1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ic_settings1.png; sourceTree = "<group>"; };
 		02DD3B432501333000B28F13 /* mytimetablemaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B462501333000B28F13 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		02DD3B482501333000B28F13 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -104,8 +106,6 @@
 		02DD3B642501333200B28F13 /* mytimetablemakerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mytimetablemakerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02DD3B682501333200B28F13 /* mytimetablemakerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemakerUITests.swift; sourceTree = "<group>"; };
 		02DD3B6A2501333200B28F13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		02DD3B772501342D00B28F13 /* ic_settings1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_settings1.png; path = "../../../AndroidStudioProjects/Timetable/app/src/main/res/drawable-v24/ic_settings1.png"; sourceTree = "<group>"; };
-		02DD3B782501342D00B28F13 /* ic_clock2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ic_clock2.png; path = ../../../AndroidStudioProjects/Timetable/app/src/main/res/drawable/ic_clock2.png; sourceTree = "<group>"; };
 		02DD3B7C2501B5C500B28F13 /* VariousSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingTableViewController.swift; sourceTree = "<group>"; };
 		02DD3B7E2501BEC900B28F13 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		02EABE4D2504CC9800628B40 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
@@ -211,8 +211,8 @@
 				02DD3B4C2501333000B28F13 /* Main.storyboard */,
 				02473D9E2529B1B50069A622 /* Localizable.strings */,
 				02DD3B4F2501333200B28F13 /* Assets.xcassets */,
-				02DD3B782501342D00B28F13 /* ic_clock2.png */,
-				02DD3B772501342D00B28F13 /* ic_settings1.png */,
+				02CA14CF2567390700BF7496 /* ic_clock2.png */,
+				02CA14D02567390C00BF7496 /* ic_settings1.png */,
 				02DD3B542501333200B28F13 /* Info.plist */,
 				022CDA6E254318120018CEC0 /* splash.png */,
 				02FB8439253DD845003B21C7 /* InfoPlist.strings */,
@@ -360,14 +360,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				02DD3B532501333200B28F13 /* LaunchScreen.storyboard in Resources */,
+				02CA14D12567391100BF7496 /* ic_clock2.png in Resources */,
 				02FB8435253DD845003B21C7 /* InfoPlist.strings in Resources */,
 				02473D9C2529B1B50069A622 /* Localizable.strings in Resources */,
-				02DD3B7A2501342E00B28F13 /* ic_settings1.png in Resources */,
 				02DD3B502501333200B28F13 /* Assets.xcassets in Resources */,
+				02CA14D22567391100BF7496 /* ic_settings1.png in Resources */,
 				02FB83C425331EBC003B21C7 /* Licenses in Resources */,
 				02DD3B4E2501333000B28F13 /* Main.storyboard in Resources */,
 				022CDA6F254318120018CEC0 /* splash.png in Resources */,
-				02DD3B7B2501342E00B28F13 /* ic_clock2.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
