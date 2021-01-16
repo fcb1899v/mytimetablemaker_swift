@@ -83,8 +83,8 @@
 //その他
 "Office" = "オフィス";
 "Home" = "自宅";
-"Dep. St." = "発車駅";
-"Arr. St." = "降車駅";
+"Dep. St. " = "発車駅";
+"Arr. St. " = "降車駅";
 "Departure place" = "出発地";
 "Destination" = "目的地";
 "Departure station " = "発車駅";
@@ -110,6 +110,10 @@
 "houmen" = "方面";
 "Hour" = "時台";
 "terms" = "利用規約・プライバシーポリシー";
+"Start" = "開始";
+"Stop" = "停止";
+"Back" = "帰宅";
+"Go" = "外出";
 
 
 

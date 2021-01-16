@@ -7,11 +7,9 @@
 //
 
 import UIKit
-import GoogleMobileAds
 
-class SettingsTableViewController: UITableViewController, UITextViewDelegate, GADBannerViewDelegate {
+class SettingsTableViewController: UITableViewController, UITextViewDelegate {
 
-    var bannerView: GADBannerView!
     var back2switchflag = true
     var go2switchflag = true
     let black = DefaultColor.black.rawValue

@@ -20,6 +20,7 @@ protocol Display {
 }
 
 class MainViewController: UIViewController, GADBannerViewDelegate {
+//class MainViewController: UIViewController {
 
     var bannerView: GADBannerView!
     var timer = Timer()
