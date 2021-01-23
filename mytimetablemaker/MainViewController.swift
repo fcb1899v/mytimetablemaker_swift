@@ -22,7 +22,6 @@ protocol Display {
 class MainViewController: UIViewController, GADBannerViewDelegate {
 //class MainViewController: UIViewController {
 
-    var bannerView: GADBannerView!
     var timer = Timer()
     var timeflag = true
     var weekflag = Date().weekFlag
@@ -123,6 +122,8 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
     @IBOutlet weak var timelabel26: UILabel!
     @IBOutlet weak var timelabel2e: UILabel!
 
+    @IBOutlet var bannerView: GADBannerView!
+
     var departstationlabelarray1: [UILabel] = []
     var departstationlabelarray2: [UILabel] = []
     var arrivalstationlabelarray1: [UILabel] = []
@@ -146,7 +147,7 @@ class MainViewController: UIViewController, GADBannerViewDelegate {
         bannerView.rootViewController = self
         bannerView.load(GADRequest())
         bannerView.delegate = self
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: {
             (timer) in
 

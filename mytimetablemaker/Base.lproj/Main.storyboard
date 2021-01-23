@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EDe-AG-kFH">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EDe-AG-kFH">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17126"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -3169,14 +3169,24 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                                 <viewLayoutGuide key="contentLayoutGuide" id="2hE-XO-IOa"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="fz9-LD-C5g"/>
                             </scrollView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7Jp-nZ-VeT" userLabel="Banner View">
+                                <rect key="frame" x="47" y="812" width="320" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="2vl-uV-56s"/>
+                                    <constraint firstAttribute="width" constant="320" id="jEU-Sa-ROh"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="1gB-a3-c5D"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="gn4-cs-2Hs" firstAttribute="leading" secondItem="1gB-a3-c5D" secondAttribute="leading" id="3GB-Xy-tXc"/>
                             <constraint firstItem="b5r-NN-oRr" firstAttribute="trailing" secondItem="gn4-cs-2Hs" secondAttribute="trailing" id="42r-UT-Dsu"/>
+                            <constraint firstItem="7Jp-nZ-VeT" firstAttribute="bottom" secondItem="1gB-a3-c5D" secondAttribute="bottom" id="9s4-jp-EMt"/>
                             <constraint firstItem="b5r-NN-oRr" firstAttribute="leading" secondItem="gn4-cs-2Hs" secondAttribute="leading" id="9u0-fO-b2y"/>
                             <constraint firstItem="gn4-cs-2Hs" firstAttribute="top" secondItem="b5r-NN-oRr" secondAttribute="bottom" id="Gat-S0-OgJ"/>
+                            <constraint firstItem="7Jp-nZ-VeT" firstAttribute="centerX" secondItem="b5r-NN-oRr" secondAttribute="centerX" id="IPt-Dg-rk4"/>
                             <constraint firstItem="gn4-cs-2Hs" firstAttribute="bottom" secondItem="1gB-a3-c5D" secondAttribute="bottom" id="Qeb-O3-fnm"/>
                             <constraint firstItem="b5r-NN-oRr" firstAttribute="top" secondItem="1gB-a3-c5D" secondAttribute="top" constant="-64" id="bbD-j4-V2l"/>
                             <constraint firstItem="gn4-cs-2Hs" firstAttribute="top" secondItem="b5r-NN-oRr" secondAttribute="bottom" id="cz4-oi-lbD"/>
@@ -3185,6 +3195,7 @@ RGVwYXJ0IFN0LjERERERERERIChMaW5lMSBmb3IgQXJyaXZlIFN0LjEpA
                     </view>
                     <connections>
                         <outlet property="backbutton" destination="Wqo-2Z-Bie" id="2n7-ph-NaO"/>
+                        <outlet property="bannerView" destination="7Jp-nZ-VeT" id="4v9-La-nUx"/>
                         <outlet property="centerlineview" destination="Kjz-xg-23P" id="InR-Id-Jgm"/>
                         <outlet property="countdown1" destination="Zxy-t9-zeb" id="A93-2P-6o3"/>
                         <outlet property="countdown2" destination="Dfc-wi-dQB" id="0Fi-aN-Fyy"/>
