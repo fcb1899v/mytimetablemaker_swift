@@ -1,15 +1,31 @@
 //
 //  LoginBackgroundView.swift
-//  mytimetablemaker_swiftui
+//  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/04/06.
+//  Created by 中島正雄 on 2021/03/09.
 //
 
 import SwiftUI
 
 struct LoginBackgroundView: View {
+    
+    let accent = Color(DefaultColor.accent.rawValue.colorInt)
+    let primary = Color(DefaultColor.primary.rawValue.colorInt)
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack {
+            accent
+            VStack(spacing: 0) {
+                Image("splash")
+                    .resizable()
+                    .scaledToFit()
+                    .offset(y: 50)
+                primary
+                    .frame(width: UIScreen.screenWidth, height: 50)
+                    .offset(y: 50)
+            }
+        }.edgesIgnoringSafeArea(.all)
+        .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
     }
 }
 

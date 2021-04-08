@@ -1,13 +1,13 @@
 //
-//  arriveStationAlertView.swift
-//  mytimetablemakers_swiftui
+//  departStationAndTime.swift
+//  mytimetablemaker_swiftui
 //
 //  Created by 中島正雄 on 2021/02/22.
 //
 
 import SwiftUI
 
-struct arriveStationAndTime: View {
+struct departStationAndTime: View {
     
     @State private var isShowingAlert = false
     @State private var text = ""
@@ -29,26 +29,23 @@ struct arriveStationAndTime: View {
 
     var body: some View {
         
-        let ofarrsta = "of arrival station ".localized
-        let arrsta = "Arr. St. ".localized
+        let ofdepsta = "of departure station ".localized
+        let depsta = "Dep. St. ".localized
 
         let title = DialogTitle.stationname.rawValue.localized
-        let message = "\(ofarrsta)\(keytag)"
-        let key = "\(goorback)arrivestation\(keytag)"
-        let defaultvalue = "\(arrsta)\(keytag)"
+        let message = "\(ofdepsta)\(keytag)"
+        let key = "\(goorback)departstation\(keytag)"
+        let defaultvalue = "\(depsta)\(keytag)"
         
         HStack {
             mainAlertLabel(title, message, key, defaultvalue)
             timeLabel(time)
         }
     }
-
-    
 }
 
-struct arriveStationAndTime_Previews: PreviewProvider {
+struct departStationAndTime_Previews: PreviewProvider {
     static var previews: some View {
-        arriveStationAndTime("back1", "1", "00:00")
+        departStationAndTime("back1", "1", "00:00")
     }
 }
-

@@ -1,20 +1,69 @@
 //
 //  LoginContentView.swift
-//  mytimetablemaker_swiftui
+//  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/04/06.
+//  Created by 中島正雄 on 2021/03/09.
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
+import GoogleMobileAds
 
 struct LoginContentView: View {
+
+    @ObservedObject private var loginviewmodel: LoginViewModel
+    @ObservedObject private var mainviewmodel: MainViewModel
+    @ObservedObject private var firestoreviewmodel: FirestoreViewModel
+
+    init(
+        _ loginviewmodel: LoginViewModel,
+        _ mainviewmodel: MainViewModel,
+        _ firestoreviewmodel: FirestoreViewModel
+    ) {
+        self.loginviewmodel = loginviewmodel
+        self.mainviewmodel = mainviewmodel
+        self.firestoreviewmodel = firestoreviewmodel
+    }
+
+    @State private var isShowSplash = true
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+
+        let title = "My Transit Makers".localized
+        
+        ZStack(alignment: .top) {
+            LoginBackgroundView()
+            VStack(spacing: 30) {
+                loginTitleView(title)
+                emailTextField(loginviewmodel)
+                loginButton(loginviewmodel, firestoreviewmodel)
+                moveSignUpButton(loginviewmodel, firestoreviewmodel)
+                passwordResetView(loginviewmodel)
+                Spacer()
+                Spacer()
+                Spacer()
+                Spacer()
+                AdMobView()
+            }
+            .edgesIgnoringSafeArea(.all)
+            .opacity(isShowSplash ? 0 : 1)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    withAnimation() {
+                        self.isShowSplash = false
+                    }
+                }
+            }
+        }.navigationBarHidden(true)
     }
 }
 
 struct LoginContentView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginContentView()
+        let loginviewmodel = LoginViewModel()
+        let mainviewmodel = MainViewModel()
+        let firestoreviewmodel = FirestoreViewModel()
+        LoginContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
     }
 }

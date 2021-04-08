@@ -9,12 +9,14 @@ import SwiftUI
 
 @main
 struct mytimetablemaker_swiftuiApp: App {
-    let persistenceController = PersistenceController.shared
+    //let persistenceController = PersistenceController.shared
 
     var body: some Scene {
+        let loginviewmodel = LoginViewModel()
+        let mainviewmodel = MainViewModel()
+        let firestoreviewmodel = FirestoreViewModel()
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
         }
     }
 }

@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */; };
 		02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257D261BDD7E00655E54 /* ContentView.swift */; };
 		02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F0257F261BDD7F00655E54 /* Assets.xcassets */; };
@@ -15,6 +16,60 @@
 		02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 02F02586261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld */; };
 		02F02593261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02592261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift */; };
 		02F0259E261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0259D261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift */; };
+		02F025B8261BDE7900655E54 /* CalcTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025B7261BDE7900655E54 /* CalcTime.swift */; };
+		02F025BD261BDEA000655E54 /* DateAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025BC261BDEA000655E54 /* DateAndTime.swift */; };
+		02F025C5261BDED100655E54 /* EnumSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025C4261BDED100655E54 /* EnumSetting.swift */; };
+		02F025CA261BDF0600655E54 /* LineData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025C9261BDF0600655E54 /* LineData.swift */; };
+		02F025CF261BDF2D00655E54 /* Timetable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025CE261BDF2D00655E54 /* Timetable.swift */; };
+		02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */; };
+		02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025E6261BE54700655E54 /* LoginViewModel.swift */; };
+		02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025EC261BE5A500655E54 /* MainViewModel.swift */; };
+		02F025F2261BE77D00655E54 /* LoginBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025F1261BE77D00655E54 /* LoginBackgroundView.swift */; };
+		02F02616261C92C300655E54 /* emailPlusTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02615261C92C300655E54 /* emailPlusTextField.swift */; };
+		02F0261E261C930A00655E54 /* emailTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0261D261C930A00655E54 /* emailTextField.swift */; };
+		02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02622261C935A00655E54 /* FirestoreViewModel.swift */; };
+		02F02628261C939F00655E54 /* loginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02627261C939F00655E54 /* loginButton.swift */; };
+		02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0262C261C94E600655E54 /* LoginContentView.swift */; };
+		02F02632261C952500655E54 /* moveSignUpButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02631261C952500655E54 /* moveSignUpButton.swift */; };
+		02F0263B261C95A900655E54 /* passwordResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263A261C95A900655E54 /* passwordResetView.swift */; };
+		02F02640261C95E400655E54 /* signUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* signUpView.swift */; };
+		02F02648261C976C00655E54 /* signUpButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02647261C976C00655E54 /* signUpButton.swift */; };
+		02F02650261C97A400655E54 /* termsLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0264F261C97A400655E54 /* termsLinkView.swift */; };
+		02F02655261C97C000655E54 /* termsCheckBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02654261C97C000655E54 /* termsCheckBox.swift */; };
+		02F02673261C994800655E54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 02F02672261C994800655E54 /* GoogleService-Info.plist */; };
+		02F02678261C99F400655E54 /* AdMobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02677261C99F400655E54 /* AdMobView.swift */; };
+		02F0267D261C9C9000655E54 /* loginTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0267C261C9C9000655E54 /* loginTitleView.swift */; };
+		02F02685261D2C1C00655E54 /* arriveStationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */; };
+		02F0268A261D2EFB00655E54 /* timeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02689261D2EFB00655E54 /* timeLabel.swift */; };
+		02F0268F261D2F2C00655E54 /* countdownLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0268E261D2F2C00655E54 /* countdownLabel.swift */; };
+		02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02693261D2F4700655E54 /* datePickerLabel.swift */; };
+		02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02698261D2FA000655E54 /* textFieldAlertView.swift */; };
+		02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0269D261D304600655E54 /* mainAlertLabel.swift */; };
+		02F026A3261D377900655E54 /* departAndArriveTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026A2261D377900655E54 /* departAndArriveTime.swift */; };
+		02F026AB261D37AB00655E54 /* departPointAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026AA261D37AB00655E54 /* departPointAndTime.swift */; };
+		02F026B0261D37DF00655E54 /* departStationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026AF261D37DF00655E54 /* departStationAndTime.swift */; };
+		02F026B5261D381300655E54 /* destinationAndTIme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026B4261D381300655E54 /* destinationAndTIme.swift */; };
+		02F026BA261D385A00655E54 /* lineColorAndName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026B9261D385A00655E54 /* lineColorAndName.swift */; };
+		02F026BF261D389000655E54 /* lineColorAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026BE261D389000655E54 /* lineColorAlertView.swift */; };
+		02F026C4261D38BF00655E54 /* mainAlertPlusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */; };
+		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
+		02F026CE261D393500655E54 /* MainHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026CD261D393500655E54 /* MainHeaderView.swift */; };
+		02F026D3261D396A00655E54 /* moveSettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026D2261D396A00655E54 /* moveSettingsButton.swift */; };
+		02F026D8261DEC2400655E54 /* routeInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026D7261DEC2400655E54 /* routeInfo.swift */; };
+		02F026DD261DEC4800655E54 /* routeInfoArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026DC261DEC4800655E54 /* routeInfoArray.swift */; };
+		02F026E2261DEC7100655E54 /* stateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E1261DEC7100655E54 /* stateButton.swift */; };
+		02F026E7261DEC9400655E54 /* stateButtonArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E6261DEC9400655E54 /* stateButtonArray.swift */; };
+		02F026EC261DECD200655E54 /* timePickerLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026EB261DECD200655E54 /* timePickerLabelView.swift */; };
+		02F026F1261DED0400655E54 /* transitTimeAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* transitTimeAlertView.swift */; };
+		02F026F6261DED4000655E54 /* transitTimeAndName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F5261DED4000655E54 /* transitTimeAndName.swift */; };
+		02F026FB261DED6500655E54 /* transportPickerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026FA261DED6500655E54 /* transportPickerLabel.swift */; };
+		02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */; };
+		02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */; };
+		02F0270D261E7E8100655E54 /* numberFieldPlusAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */; };
+		02F02712261E80ED00655E54 /* actionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02711261E80ED00655E54 /* actionSheetView.swift */; };
+		8B2A4EC6558183E46F985561 /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */; };
+		9017C56EAE73C90AF4550249 /* Pods_mytimetablemaker_swiftui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB361942317B1D0EA05FAEF /* Pods_mytimetablemaker_swiftui.framework */; };
+		F47416D355D75A55115E70DB /* Pods_mytimetablemaker_swiftuiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B466FE170FBC6C4B45D237 /* Pods_mytimetablemaker_swiftuiTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +90,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02F02578261BDD7E00655E54 /* mytimetablemaker_swiftui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker_swiftui.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemaker_swiftuiApp.swift; sourceTree = "<group>"; };
 		02F0257D261BDD7E00655E54 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -49,6 +107,65 @@
 		02F02599261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mytimetablemaker_swiftuiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		02F0259D261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemaker_swiftuiUITests.swift; sourceTree = "<group>"; };
 		02F0259F261BDD7F00655E54 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		02F025B7261BDE7900655E54 /* CalcTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalcTime.swift; sourceTree = "<group>"; };
+		02F025BC261BDEA000655E54 /* DateAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateAndTime.swift; sourceTree = "<group>"; };
+		02F025C4261BDED100655E54 /* EnumSetting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumSetting.swift; sourceTree = "<group>"; };
+		02F025C9261BDF0600655E54 /* LineData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineData.swift; sourceTree = "<group>"; };
+		02F025CE261BDF2D00655E54 /* Timetable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timetable.swift; sourceTree = "<group>"; };
+		02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
+		02F025E6261BE54700655E54 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		02F025EC261BE5A500655E54 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		02F025F1261BE77D00655E54 /* LoginBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginBackgroundView.swift; sourceTree = "<group>"; };
+		02F02615261C92C300655E54 /* emailPlusTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = emailPlusTextField.swift; sourceTree = "<group>"; };
+		02F0261D261C930A00655E54 /* emailTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = emailTextField.swift; sourceTree = "<group>"; };
+		02F02622261C935A00655E54 /* FirestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreViewModel.swift; sourceTree = "<group>"; };
+		02F02627261C939F00655E54 /* loginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginButton.swift; sourceTree = "<group>"; };
+		02F0262C261C94E600655E54 /* LoginContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginContentView.swift; sourceTree = "<group>"; };
+		02F02631261C952500655E54 /* moveSignUpButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = moveSignUpButton.swift; sourceTree = "<group>"; };
+		02F0263A261C95A900655E54 /* passwordResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = passwordResetView.swift; sourceTree = "<group>"; };
+		02F0263F261C95E400655E54 /* signUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = signUpView.swift; sourceTree = "<group>"; };
+		02F02647261C976C00655E54 /* signUpButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = signUpButton.swift; sourceTree = "<group>"; };
+		02F0264F261C97A400655E54 /* termsLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = termsLinkView.swift; sourceTree = "<group>"; };
+		02F02654261C97C000655E54 /* termsCheckBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = termsCheckBox.swift; sourceTree = "<group>"; };
+		02F02672261C994800655E54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		02F02677261C99F400655E54 /* AdMobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobView.swift; sourceTree = "<group>"; };
+		02F0267C261C9C9000655E54 /* loginTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginTitleView.swift; sourceTree = "<group>"; };
+		02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = arriveStationAndTime.swift; sourceTree = "<group>"; };
+		02F02689261D2EFB00655E54 /* timeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timeLabel.swift; sourceTree = "<group>"; };
+		02F0268E261D2F2C00655E54 /* countdownLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = countdownLabel.swift; sourceTree = "<group>"; };
+		02F02693261D2F4700655E54 /* datePickerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = datePickerLabel.swift; sourceTree = "<group>"; };
+		02F02698261D2FA000655E54 /* textFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldAlertView.swift; sourceTree = "<group>"; };
+		02F0269D261D304600655E54 /* mainAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertLabel.swift; sourceTree = "<group>"; };
+		02F026A2261D377900655E54 /* departAndArriveTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departAndArriveTime.swift; sourceTree = "<group>"; };
+		02F026AA261D37AB00655E54 /* departPointAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departPointAndTime.swift; sourceTree = "<group>"; };
+		02F026AF261D37DF00655E54 /* departStationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departStationAndTime.swift; sourceTree = "<group>"; };
+		02F026B4261D381300655E54 /* destinationAndTIme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = destinationAndTIme.swift; sourceTree = "<group>"; };
+		02F026B9261D385A00655E54 /* lineColorAndName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineColorAndName.swift; sourceTree = "<group>"; };
+		02F026BE261D389000655E54 /* lineColorAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineColorAlertView.swift; sourceTree = "<group>"; };
+		02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertPlusLabel.swift; sourceTree = "<group>"; };
+		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
+		02F026CD261D393500655E54 /* MainHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHeaderView.swift; sourceTree = "<group>"; };
+		02F026D2261D396A00655E54 /* moveSettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = moveSettingsButton.swift; sourceTree = "<group>"; };
+		02F026D7261DEC2400655E54 /* routeInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = routeInfo.swift; sourceTree = "<group>"; };
+		02F026DC261DEC4800655E54 /* routeInfoArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = routeInfoArray.swift; sourceTree = "<group>"; };
+		02F026E1261DEC7100655E54 /* stateButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stateButton.swift; sourceTree = "<group>"; };
+		02F026E6261DEC9400655E54 /* stateButtonArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stateButtonArray.swift; sourceTree = "<group>"; };
+		02F026EB261DECD200655E54 /* timePickerLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timePickerLabelView.swift; sourceTree = "<group>"; };
+		02F026F0261DED0400655E54 /* transitTimeAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transitTimeAlertView.swift; sourceTree = "<group>"; };
+		02F026F5261DED4000655E54 /* transitTimeAndName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transitTimeAndName.swift; sourceTree = "<group>"; };
+		02F026FA261DED6500655E54 /* transportPickerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transportPickerLabel.swift; sourceTree = "<group>"; };
+		02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldPlusAlertView.swift; sourceTree = "<group>"; };
+		02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numberFieldAlertView.swift; sourceTree = "<group>"; };
+		02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numberFieldPlusAlertView.swift; sourceTree = "<group>"; };
+		02F02711261E80ED00655E54 /* actionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = actionSheetView.swift; sourceTree = "<group>"; };
+		07B466FE170FBC6C4B45D237 /* Pods_mytimetablemaker_swiftuiTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftuiTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		20DE2FA1CCFA9FB19B020B60 /* Pods-mytimetablemaker_swiftuiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftuiTests.debug.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftuiTests/Pods-mytimetablemaker_swiftuiTests.debug.xcconfig"; sourceTree = "<group>"; };
+		3065381D4BC994B2C5F659E6 /* Pods-mytimetablemaker_swiftui.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftui.debug.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui.debug.xcconfig"; sourceTree = "<group>"; };
+		40407DB5CA70BCB3EDCF1044 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.release.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.release.xcconfig"; sourceTree = "<group>"; };
+		732CF3C7F5E63781D8A37B02 /* Pods-mytimetablemaker_swiftuiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftuiTests.release.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftuiTests/Pods-mytimetablemaker_swiftuiTests.release.xcconfig"; sourceTree = "<group>"; };
+		7D11E2EE441F17C4FBFBB148 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.debug.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		C1ACE500666BBC902619CB87 /* Pods-mytimetablemaker_swiftui.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftui.release.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui.release.xcconfig"; sourceTree = "<group>"; };
+		EEB361942317B1D0EA05FAEF /* Pods_mytimetablemaker_swiftui.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +173,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9017C56EAE73C90AF4550249 /* Pods_mytimetablemaker_swiftui.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +181,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F47416D355D75A55115E70DB /* Pods_mytimetablemaker_swiftuiTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +189,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B2A4EC6558183E46F985561 /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +203,8 @@
 				02F02591261BDD7F00655E54 /* mytimetablemaker_swiftuiTests */,
 				02F0259C261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests */,
 				02F02579261BDD7E00655E54 /* Products */,
+				B68575ACBBA142C44F1A9456 /* Pods */,
+				69EE982EB6E6DCF0FA018442 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -101,10 +223,16 @@
 			children = (
 				02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */,
 				02F0257D261BDD7E00655E54 /* ContentView.swift */,
-				02F0257F261BDD7F00655E54 /* Assets.xcassets */,
 				02F02584261BDD7F00655E54 /* Persistence.swift */,
 				02F02589261BDD7F00655E54 /* Info.plist */,
+				02F02672261C994800655E54 /* GoogleService-Info.plist */,
 				02F02586261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld */,
+				02F025B2261BDDE100655E54 /* Common */,
+				02F025AE261BDDA400655E54 /* LoginView */,
+				02F025AF261BDDB700655E54 /* MainView */,
+				02F025B0261BDDC600655E54 /* SettingsView */,
+				02F025B1261BDDD200655E54 /* VariousSettingsView */,
+				02F025B6261BDE3100655E54 /* TimetableView */,
 				02F02581261BDD7F00655E54 /* Preview Content */,
 			);
 			path = mytimetablemaker_swiftui;
@@ -136,6 +264,123 @@
 			path = mytimetablemaker_swiftuiUITests;
 			sourceTree = "<group>";
 		};
+		02F025AE261BDDA400655E54 /* LoginView */ = {
+			isa = PBXGroup;
+			children = (
+				02F0262C261C94E600655E54 /* LoginContentView.swift */,
+				02F025E6261BE54700655E54 /* LoginViewModel.swift */,
+				02F025F1261BE77D00655E54 /* LoginBackgroundView.swift */,
+				02F0267C261C9C9000655E54 /* loginTitleView.swift */,
+				02F02627261C939F00655E54 /* loginButton.swift */,
+				02F02631261C952500655E54 /* moveSignUpButton.swift */,
+				02F0261D261C930A00655E54 /* emailTextField.swift */,
+				02F02615261C92C300655E54 /* emailPlusTextField.swift */,
+				02F0263A261C95A900655E54 /* passwordResetView.swift */,
+				02F0263F261C95E400655E54 /* signUpView.swift */,
+				02F02647261C976C00655E54 /* signUpButton.swift */,
+				02F0264F261C97A400655E54 /* termsLinkView.swift */,
+				02F02654261C97C000655E54 /* termsCheckBox.swift */,
+			);
+			path = LoginView;
+			sourceTree = "<group>";
+		};
+		02F025AF261BDDB700655E54 /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				02F026C8261D38F900655E54 /* MainContentView.swift */,
+				02F025EC261BE5A500655E54 /* MainViewModel.swift */,
+				02F026CD261D393500655E54 /* MainHeaderView.swift */,
+				02F02693261D2F4700655E54 /* datePickerLabel.swift */,
+				02F026EB261DECD200655E54 /* timePickerLabelView.swift */,
+				02F026D2261D396A00655E54 /* moveSettingsButton.swift */,
+				02F026E1261DEC7100655E54 /* stateButton.swift */,
+				02F026E6261DEC9400655E54 /* stateButtonArray.swift */,
+				02F026D7261DEC2400655E54 /* routeInfo.swift */,
+				02F026DC261DEC4800655E54 /* routeInfoArray.swift */,
+				02F0268E261D2F2C00655E54 /* countdownLabel.swift */,
+				02F026A2261D377900655E54 /* departAndArriveTime.swift */,
+				02F026AA261D37AB00655E54 /* departPointAndTime.swift */,
+				02F026AF261D37DF00655E54 /* departStationAndTime.swift */,
+				02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */,
+				02F026B4261D381300655E54 /* destinationAndTIme.swift */,
+				02F026B9261D385A00655E54 /* lineColorAndName.swift */,
+				02F026F5261DED4000655E54 /* transitTimeAndName.swift */,
+				02F02689261D2EFB00655E54 /* timeLabel.swift */,
+				02F0269D261D304600655E54 /* mainAlertLabel.swift */,
+				02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */,
+				02F026BE261D389000655E54 /* lineColorAlertView.swift */,
+				02F026F0261DED0400655E54 /* transitTimeAlertView.swift */,
+				02F026FA261DED6500655E54 /* transportPickerLabel.swift */,
+				02F02698261D2FA000655E54 /* textFieldAlertView.swift */,
+				02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */,
+				02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */,
+				02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */,
+				02F02711261E80ED00655E54 /* actionSheetView.swift */,
+			);
+			path = MainView;
+			sourceTree = "<group>";
+		};
+		02F025B0261BDDC600655E54 /* SettingsView */ = {
+			isa = PBXGroup;
+			children = (
+				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
+			);
+			path = SettingsView;
+			sourceTree = "<group>";
+		};
+		02F025B1261BDDD200655E54 /* VariousSettingsView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = VariousSettingsView;
+			sourceTree = "<group>";
+		};
+		02F025B2261BDDE100655E54 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				02F0257F261BDD7F00655E54 /* Assets.xcassets */,
+				02F025B7261BDE7900655E54 /* CalcTime.swift */,
+				02E7F6A0261F35D700C00545 /* Localizable.strings */,
+				02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */,
+				02F02677261C99F400655E54 /* AdMobView.swift */,
+				02F025C9261BDF0600655E54 /* LineData.swift */,
+				02F025BC261BDEA000655E54 /* DateAndTime.swift */,
+				02F025C4261BDED100655E54 /* EnumSetting.swift */,
+				02F025CE261BDF2D00655E54 /* Timetable.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		02F025B6261BDE3100655E54 /* TimetableView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = TimetableView;
+			sourceTree = "<group>";
+		};
+		69EE982EB6E6DCF0FA018442 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				EEB361942317B1D0EA05FAEF /* Pods_mytimetablemaker_swiftui.framework */,
+				0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */,
+				07B466FE170FBC6C4B45D237 /* Pods_mytimetablemaker_swiftuiTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B68575ACBBA142C44F1A9456 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3065381D4BC994B2C5F659E6 /* Pods-mytimetablemaker_swiftui.debug.xcconfig */,
+				C1ACE500666BBC902619CB87 /* Pods-mytimetablemaker_swiftui.release.xcconfig */,
+				7D11E2EE441F17C4FBFBB148 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.debug.xcconfig */,
+				40407DB5CA70BCB3EDCF1044 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.release.xcconfig */,
+				20DE2FA1CCFA9FB19B020B60 /* Pods-mytimetablemaker_swiftuiTests.debug.xcconfig */,
+				732CF3C7F5E63781D8A37B02 /* Pods-mytimetablemaker_swiftuiTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -143,9 +388,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 02F025A2261BDD7F00655E54 /* Build configuration list for PBXNativeTarget "mytimetablemaker_swiftui" */;
 			buildPhases = (
+				CCE64982E1AB757F160F3588 /* [CP] Check Pods Manifest.lock */,
 				02F02574261BDD7E00655E54 /* Sources */,
 				02F02575261BDD7E00655E54 /* Frameworks */,
 				02F02576261BDD7E00655E54 /* Resources */,
+				84CCE54DC03FEF34D851FDE5 /* [CP] Embed Pods Frameworks */,
+				764E0D11834510B852DABA00 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -160,6 +408,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 02F025A5261BDD7F00655E54 /* Build configuration list for PBXNativeTarget "mytimetablemaker_swiftuiTests" */;
 			buildPhases = (
+				7FCB9AF24F0DEEC854F3EF24 /* [CP] Check Pods Manifest.lock */,
 				02F0258A261BDD7F00655E54 /* Sources */,
 				02F0258B261BDD7F00655E54 /* Frameworks */,
 				02F0258C261BDD7F00655E54 /* Resources */,
@@ -178,9 +427,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 02F025A8261BDD7F00655E54 /* Build configuration list for PBXNativeTarget "mytimetablemaker_swiftuiUITests" */;
 			buildPhases = (
+				E922B7A177FFE8522C8A9684 /* [CP] Check Pods Manifest.lock */,
 				02F02595261BDD7F00655E54 /* Sources */,
 				02F02596261BDD7F00655E54 /* Frameworks */,
 				02F02597261BDD7F00655E54 /* Resources */,
+				6197F313F196380BE7724FB5 /* [CP] Embed Pods Frameworks */,
+				59CE91CBC0939ED1EF4D4FBA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -221,6 +473,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ja,
 			);
 			mainGroup = 02F0256F261BDD7E00655E54;
 			productRefGroup = 02F02579261BDD7E00655E54 /* Products */;
@@ -240,7 +493,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F02583261BDD7F00655E54 /* Preview Assets.xcassets in Resources */,
+				02E7F69E261F35D700C00545 /* Localizable.strings in Resources */,
 				02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */,
+				02F02673261C994800655E54 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,15 +515,202 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		59CE91CBC0939ED1EF4D4FBA /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6197F313F196380BE7724FB5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		764E0D11834510B852DABA00 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7FCB9AF24F0DEEC854F3EF24 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mytimetablemaker_swiftuiTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		84CCE54DC03FEF34D851FDE5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CCE64982E1AB757F160F3588 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mytimetablemaker_swiftui-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E922B7A177FFE8522C8A9684 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		02F02574261BDD7E00655E54 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
+				02F0268A261D2EFB00655E54 /* timeLabel.swift in Sources */,
+				02F02678261C99F400655E54 /* AdMobView.swift in Sources */,
+				02F0261E261C930A00655E54 /* emailTextField.swift in Sources */,
+				02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */,
+				02F0263B261C95A900655E54 /* passwordResetView.swift in Sources */,
+				02F025B8261BDE7900655E54 /* CalcTime.swift in Sources */,
+				02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */,
+				02F02628261C939F00655E54 /* loginButton.swift in Sources */,
+				02F0270D261E7E8100655E54 /* numberFieldPlusAlertView.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
+				02F02640261C95E400655E54 /* signUpView.swift in Sources */,
+				02F026E2261DEC7100655E54 /* stateButton.swift in Sources */,
+				02F026F1261DED0400655E54 /* transitTimeAlertView.swift in Sources */,
+				02F026D3261D396A00655E54 /* moveSettingsButton.swift in Sources */,
+				02F026CE261D393500655E54 /* MainHeaderView.swift in Sources */,
+				02F026BF261D389000655E54 /* lineColorAlertView.swift in Sources */,
+				02F025CF261BDF2D00655E54 /* Timetable.swift in Sources */,
+				02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */,
+				02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */,
+				02F02650261C97A400655E54 /* termsLinkView.swift in Sources */,
+				02F026BA261D385A00655E54 /* lineColorAndName.swift in Sources */,
+				02F02712261E80ED00655E54 /* actionSheetView.swift in Sources */,
 				02F02585261BDD7F00655E54 /* Persistence.swift in Sources */,
+				02F02648261C976C00655E54 /* signUpButton.swift in Sources */,
+				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
+				02F026F6261DED4000655E54 /* transitTimeAndName.swift in Sources */,
+				02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */,
+				02F026B0261D37DF00655E54 /* departStationAndTime.swift in Sources */,
+				02F02632261C952500655E54 /* moveSignUpButton.swift in Sources */,
+				02F025CA261BDF0600655E54 /* LineData.swift in Sources */,
+				02F0268F261D2F2C00655E54 /* countdownLabel.swift in Sources */,
+				02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */,
 				02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */,
+				02F02685261D2C1C00655E54 /* arriveStationAndTime.swift in Sources */,
+				02F026EC261DECD200655E54 /* timePickerLabelView.swift in Sources */,
+				02F026E7261DEC9400655E54 /* stateButtonArray.swift in Sources */,
+				02F026D8261DEC2400655E54 /* routeInfo.swift in Sources */,
+				02F026A3261D377900655E54 /* departAndArriveTime.swift in Sources */,
+				02F026C4261D38BF00655E54 /* mainAlertPlusLabel.swift in Sources */,
+				02F02655261C97C000655E54 /* termsCheckBox.swift in Sources */,
+				02F02616261C92C300655E54 /* emailPlusTextField.swift in Sources */,
+				02F026DD261DEC4800655E54 /* routeInfoArray.swift in Sources */,
+				02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */,
+				02F026B5261D381300655E54 /* destinationAndTIme.swift in Sources */,
+				02F025F2261BE77D00655E54 /* LoginBackgroundView.swift in Sources */,
+				02F026FB261DED6500655E54 /* transportPickerLabel.swift in Sources */,
+				02F025BD261BDEA000655E54 /* DateAndTime.swift in Sources */,
+				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
+				02F025C5261BDED100655E54 /* EnumSetting.swift in Sources */,
+				02F0267D261C9C9000655E54 /* loginTitleView.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
+				02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */,
+				02F026AB261D37AB00655E54 /* departPointAndTime.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,6 +744,18 @@
 			targetProxy = 02F0259A261BDD7F00655E54 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		02E7F6A0261F35D700C00545 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				02E7F69F261F35D700C00545 /* ja */,
+				02E7F6A4261F35DE00C00545 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		02F025A0261BDD7F00655E54 /* Debug */ = {
@@ -422,6 +876,7 @@
 		};
 		02F025A3261BDD7F00655E54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3065381D4BC994B2C5F659E6 /* Pods-mytimetablemaker_swiftui.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -444,6 +899,7 @@
 		};
 		02F025A4261BDD7F00655E54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C1ACE500666BBC902619CB87 /* Pods-mytimetablemaker_swiftui.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -466,6 +922,7 @@
 		};
 		02F025A6261BDD7F00655E54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20DE2FA1CCFA9FB19B020B60 /* Pods-mytimetablemaker_swiftuiTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -488,6 +945,7 @@
 		};
 		02F025A7261BDD7F00655E54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 732CF3C7F5E63781D8A37B02 /* Pods-mytimetablemaker_swiftuiTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -510,6 +968,7 @@
 		};
 		02F025A9261BDD7F00655E54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7D11E2EE441F17C4FBFBB148 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -530,6 +989,7 @@
 		};
 		02F025AA261BDD7F00655E54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 40407DB5CA70BCB3EDCF1044 /* Pods-mytimetablemaker_swiftui-mytimetablemaker_swiftuiUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;

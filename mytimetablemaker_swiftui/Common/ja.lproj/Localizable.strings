@@ -1,0 +1,222 @@
+/* 
+  Localizable.strings
+  mytimetablemaker_swiftui
+
+  Created by 中島正雄 on 2021/04/08.
+  
+*/
+
+//Action
+"Register" = "登録";
+"Cancel" = "キャンセル";
+"Add" = "追加";
+"Delete" = "削除";
+"Copy" = "コピー";
+"Reset" = "リセット";
+"OK" = "OK";
+"Yes" = "はい";
+"No" = "いいえ";
+"back" = "戻る";
+
+//Button
+"Back" = "帰宅";
+"Go" = "外出";
+"Start" = "開始";
+"Stop" = "停止";
+
+
+//TransitTime
+"Zero" = "なし";
+"Once" = "1回";
+"Twice" = "2回";
+
+//Transportation
+"Walking" = "徒歩";
+"Bicycle" = "自転車";
+"Car" = "車";
+
+//CustomColor
+"DEFAULT" = "デフォルト";
+"RED" = "赤";
+"ORANGE" = "オレンジ";
+"YELLOW" = "黄";
+"YELLOW GREEN" = "黄緑";
+"GREEN" = "緑";
+"BLUE GREEN" = "青緑";
+"LIGHT BLUE" = "水色";
+"BLUE" = "青";
+"NAVY BLUE" = "紺";
+"PURPLE" = "紫";
+"PINK" = "ピンク";
+"DARK RED" = "えんじ";
+"BROWN" = "茶";
+"GOLD" = "ゴールド";
+"SILVER" = "シルバー";
+"BLACK" = "黒";
+
+//Unit
+"[min]" = " [分]";
+"Not set" = "未設定";
+"Not use" = "未利用";
+"E, MMM d, yyyy" = "yyyy/M/d (E)";
+"maxchar" = "10";
+
+//SettingTitle
+"Setting your number of transfers" = "乗換回数の設定";
+"Setting your departure place" = "出発地の設定";
+"Setting your station name" = "駅名の設定";
+"Setting your destination" = "目的地の設定";
+"Setting your line name" = "路線名の設定";
+"Setting your line color" = "路線カラーの設定";
+"Setting your ride time [min]" = "乗車時間の設定 [分]";
+"Setting your transportation" = "移動手段の設定";
+"Setting your transit time [min]" = "移動時間の設定 [分]";
+"Setting your timetable" = "時刻表設定";
+"Add and delete your time [min]" = "時刻の追加と削除 [分]";
+"Copying your time" = "時刻のコピー";
+"Copying all the time" = "全時刻をコピーしますか？";
+
+
+//Hint
+"Maximum 20 Charactors" = "全角10文字以内";
+"Enter 0~99 [min]" = "0〜99[分]を入力";
+"Enter 0~59 [min]" = "0〜59[分]を入力";
+
+//SettingsTitle
+"Settings" = "設定";
+"Display route 2" = "ルート2の表示";
+"Change line" = "乗換回数";
+"Various settings" = "各種設定";
+"Terms and privacy policy" = "利用規約・プライバシーポリシー";
+"About" = "このアプリについて";
+"Version" = "バージョン";
+"Going home route 1" = "帰宅ルート1";
+"Going home route 2" = "帰宅ルート2";
+"Outgoing route 1" = "外出ルート1";
+"Outgoing route 2" = "外出ルート2";
+
+
+//VariousSettingTitle
+"Various settings on route home 1" = "帰宅ルート1の各種設定";
+"Various settings on outgoing route 1" = "外出ルート1の各種設定";
+"Various settings on route home 2" = "帰宅ルート2の各種設定";
+"Various settings on outgoing route 2" = "外出ルート2の各種設定";
+
+//その他
+"Office" = "オフィス";
+"Home" = "自宅";
+"Dep. St. " = "発車駅";
+"Arr. St. " = "降車駅";
+"Departure place" = "出発地";
+"Destination" = "目的地";
+"Departure station " = "発車駅";
+"Arrival station " = "降車駅";
+"Line " = "路線";
+"line " = "路線";
+"of departure station " = "発車駅";
+"of arrival station " = "降車駅";
+"Other route of line 1" = "別ルートの路線1";
+"Other route of line 2" = "別ルートの路線2";
+"Other route of line 3" = "別ルートの路線3";
+"Weekday" = "平日";
+"Weekend" = "土日";
+"of " = "";
+"from " = "";
+"From " = "";
+"kara" = "から";
+" to " = "から";
+"To " = "";
+"he" = "へ";
+"on " = "";
+" for " = "：";
+"houmen" = "方面";
+"Hour" = "時台";
+"terms" = "利用規約・プライバシーポリシー";
+"I have read and agree to the " = "";
+"terms and privacy policy" = "利用規約・プライバシーポリシー";
+"Terms and privacy policy" = "利用規約・プライバシーポリシー";
+"kakunin" = "を確認しました";
+"https://nakajimamasao-appstudio.web.app/privacypolicy.html" = "https://nakajimamasao-appstudio.web.app/ja/privacypolicy.html";
+"Select your timetable picture" =  "時刻表写真の選択";
+
+//FirebaseAuth
+"My Transit Makers" = "マイ乗換ルートメーカー";
+"Account" = "アカウント";
+"Email" = "Eメールアドレス";
+"Password" = "パスワード";
+"Confirm Password" = "確認用パスワード";
+"Enter your email" = "Eメールアドレスを入力してください";
+"Enter your password" = "パスワードを入力してください";
+"Enter your confirm password" = "確認用パスワードを入力してください";
+
+//Login
+"Login" = "ログイン";
+"Login successfully" = "ログイン成功";
+"Login error" = "ログインエラー";
+"Not verified account" = "認証が完了していません";
+"Check your email" = "メールを確認してください";
+
+
+//Sign Up
+"Create Account" = "アカウント登録";
+"Signup" = "アカウント登録";
+"Signup successfully" = "アカウント登録成功";
+"Signup error" = "アカウント登録エラー";
+"Send an verification email?" = "認証用メールを送信しますか？";
+"Verification email Sent successfully" = "認証用メールの送信成功";
+"Verification email could not be sent" = "認証用メールの送信失敗";
+
+//Password Reset
+"Forgot Password?" = "パスワードを忘れた場合";
+"Reset your password?" = "パスワードリセットしますか？";
+"Password Reset" = "パスワードリセット";
+"Password reset error" = "パスワードリセットエラー";
+"Password reset email Sent successfully" = "パスワードリセット用メールの送信成功";
+"Password reset email could not be sent" = "パスワードリセット用メールの送信失敗";
+
+//Input Error
+"Incorrect email" = "メールアドレスが正しくありません";
+"Incorrect password" = "パスワードが正しくありません";
+"Incorrect email or password" = "メールアドレスまたはパスワードが正しくありません";
+"Incorrect email format" = "メールアドレスの形式が正しくありません";
+"Confirm password don't match" = "確認用パスワードが一致しません";
+
+//Auth Error
+"This email is not registered" = "このメールアドレスは登録されていません";
+"This account is disabled" = "このアカウントは無効になっています";
+"This email has already been registered" = "このメールアドレスは登録されています";
+"Password must be at least 6 characters" = "パスワードは6文字以上にしてください";
+
+//Logout
+"Logout" = "ログアウト";
+"Logout your account?" = "ログアウトしますか？";
+"Logged out" = "ログアウトしました";
+"Logout error" = "ログアウトエラー";
+
+//Delete Account
+"Delete Account" = "アカウント削除";
+"Delete your account?" = "アカウントを削除しますか？";
+"Delete account error" = "アカウント削除エラー";
+"Account deleted successfully" = "アカウントの削除成功";
+"Account could not be deleted" = "アカウントの削除失敗";
+
+//Get data from Firestore
+"Get saved data" = "保存データの取得";
+"Overwritten current data?" = "現在のデータが上書きされます";
+"Data got error" = "データ取得エラー";
+"Data got successfully" = "データの取得成功";
+"Data could not be got" = "データの取得失敗";
+
+//Save data to Firestore
+"Save current data" = "データの保存";
+"Overwritten saved data?" = "保存データが上書きされます";
+"Data saved error" = "データ保存エラー";
+"Data saved successfully" = "データの保存成功";
+"Data could not be saved" = "データの保存失敗";
+
+//Delete data in Firestore
+"Deleted saved data" = "保存データの削除";
+"Data deleted error" = "データ削除エラー";
+"Data deleted successfully" = "データの削除成功";
+"Data could not be deleted" = "データの削除失敗";
+

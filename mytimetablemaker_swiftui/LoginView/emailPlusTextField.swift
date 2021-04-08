@@ -1,20 +1,44 @@
 //
-//  SwiftUIView.swift
-//  mytimetablemaker_swiftui
+//  emailPlusTextField.swift
+//  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/04/06.
+//  Created by 中島正雄 on 2021/03/12.
 //
 
 import SwiftUI
 
-struct SwiftUIView: View {
+struct emailPlusTextField: View {
+    
+    @ObservedObject private var loginviewmodel: LoginViewModel
+    
+    init(
+        _ loginviewmodel: LoginViewModel
+    ) {
+        self.loginviewmodel = loginviewmodel
+    }
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(spacing: 20) {
+            TextField("Email".localized, text: $loginviewmodel.email)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .background(Color.white)
+                .frame(width: UIScreen.screenWidth * 0.8)
+            SecureField("Password".localized, text: $loginviewmodel.password)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .background(Color.white)
+                .frame(width: UIScreen.screenWidth * 0.8)
+            SecureField("Confirm Password".localized, text: $loginviewmodel.passwordconfirm)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .background(Color.white)
+                .frame(width: UIScreen.screenWidth * 0.8)
+        }
     }
 }
 
-struct SwiftUIView_Previews: PreviewProvider {
+struct emailPlusTextField_Previews: PreviewProvider {
     static var previews: some View {
-        SwiftUIView()
+        let loginviewmodel = LoginViewModel()
+        emailPlusTextField(loginviewmodel)
     }
 }
+
