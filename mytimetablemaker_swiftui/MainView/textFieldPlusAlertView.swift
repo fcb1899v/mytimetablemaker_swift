@@ -17,9 +17,9 @@ struct textFieldPlusAlertView: UIViewControllerRepresentable {
     let message: String
     let key: String
     let addtitle: String
-    let placeholder = Hint.maxchar.rawValue
+    
+    let placeholder = Hint.maxchar.rawValue.localized
     let isSecureTextEntry = false
-
     let leftButtonTitle = "Cancel".localized
     let rightButtonTitle = "OK".localized
     
@@ -60,7 +60,7 @@ struct textFieldPlusAlertView: UIViewControllerRepresentable {
             }
             alert.dismiss(animated: true) {
                 isShowingAlert = false
-                if let textField = alert.textFields?.first, let text = textField.text {
+                if text != "" {
                     UserDefaults.standard.set(text, forKey: key)
                 }
             }
@@ -72,7 +72,7 @@ struct textFieldPlusAlertView: UIViewControllerRepresentable {
             }
             alert.dismiss(animated: true) {
                 isShowingAlert = false
-                if let textField = alert.textFields?.first, let text = textField.text {
+                if text != "" {
                     UserDefaults.standard.set(text, forKey: key)
                 }
                 isShowingNextAlert = true

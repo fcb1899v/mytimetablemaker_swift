@@ -8,6 +8,39 @@
 
 /* Begin PBXBuildFile section */
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
+		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
+		02E7F6B1261FD4F400C00545 /* SettingsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B0261FD4F400C00545 /* SettingsClass.swift */; };
+		02E7F6B6261FD52000C00545 /* settingsLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B5261FD52000C00545 /* settingsLinkView.swift */; };
+		02E7F6BE261FD56600C00545 /* settingsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6BD261FD56600C00545 /* settingsTitle.swift */; };
+		02E7F6C3261FD58900C00545 /* settingsVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6C2261FD58900C00545 /* settingsVersion.swift */; };
+		02E7F6C8261FD5B400C00545 /* settingsTextFieldAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6C7261FD5B400C00545 /* settingsTextFieldAlertLabel.swift */; };
+		02E7F6CD261FD5E800C00545 /* settingsSwitchRoute2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6CC261FD5E800C00545 /* settingsSwitchRoute2.swift */; };
+		02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */; };
+		02E7F6D7261FD63A00C00545 /* settingsBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */; };
+		02E7F6DC261FD65F00C00545 /* settingsActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6DB261FD65F00C00545 /* settingsActionSheet.swift */; };
+		02E7F6E1261FD6DA00C00545 /* deleteAccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6E0261FD6DA00C00545 /* deleteAccountButton.swift */; };
+		02E7F6E6261FD6F800C00545 /* logOutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6E5261FD6F800C00545 /* logOutButton.swift */; };
+		02E7F6EE261FD71700C00545 /* setDataButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6ED261FD71700C00545 /* setDataButton.swift */; };
+		02E7F6F3261FD72900C00545 /* getDataButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6F2261FD72900C00545 /* getDataButton.swift */; };
+		02E7F6F8261FD7C800C00545 /* settingsArriveStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6F7261FD7C800C00545 /* settingsArriveStation.swift */; };
+		02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */; };
+		02E7F705261FD82F00C00545 /* settingsDepartPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */; };
+		02E7F70A261FD89500C00545 /* settingsDepartStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F709261FD89500C00545 /* settingsDepartStation.swift */; };
+		02E7F70F2620834300C00545 /* settingsDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F70E2620834300C00545 /* settingsDestination.swift */; };
+		02E7F714262083A000C00545 /* settingsLineName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F713262083A000C00545 /* settingsLineName.swift */; };
+		02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7182620840700C00545 /* settingsRideTime.swift */; };
+		02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F71D2620848D00C00545 /* settingsTransitTime.swift */; };
+		02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F722262084FA00C00545 /* settingsTransportation.swift */; };
+		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
+		02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F72C2620858600C00545 /* TimetableTitleView.swift */; };
+		02E7F732262085A800C00545 /* TimetableGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F731262085A800C00545 /* TimetableGridView.swift */; };
+		02E7F737262086D800C00545 /* TimetableGridTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F736262086D800C00545 /* TimetableGridTitle.swift */; };
+		02E7F73C262086F900C00545 /* TimetableEachGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F73B262086F900C00545 /* TimetableEachGridView.swift */; };
+		02E7F7412620872F00C00545 /* dayAndEndButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7402620872F00C00545 /* dayAndEndButton.swift */; };
+		02E7F7462620874E00C00545 /* imagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7452620874E00C00545 /* imagePickerView.swift */; };
+		02E7F74B2620877700C00545 /* imagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F74A2620877700C00545 /* imagePicker.swift */; };
+		02E7F750262087AC00C00545 /* TimetableAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */; };
+		02E7F75526208B4E00C00545 /* timeFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */; };
 		02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */; };
 		02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257D261BDD7E00655E54 /* ContentView.swift */; };
 		02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F0257F261BDD7F00655E54 /* Assets.xcassets */; };
@@ -66,7 +99,6 @@
 		02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */; };
 		02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */; };
 		02F0270D261E7E8100655E54 /* numberFieldPlusAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */; };
-		02F02712261E80ED00655E54 /* actionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02711261E80ED00655E54 /* actionSheetView.swift */; };
 		8B2A4EC6558183E46F985561 /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */; };
 		9017C56EAE73C90AF4550249 /* Pods_mytimetablemaker_swiftui.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB361942317B1D0EA05FAEF /* Pods_mytimetablemaker_swiftui.framework */; };
 		F47416D355D75A55115E70DB /* Pods_mytimetablemaker_swiftuiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07B466FE170FBC6C4B45D237 /* Pods_mytimetablemaker_swiftuiTests.framework */; };
@@ -93,6 +125,39 @@
 		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
+		02E7F6B0261FD4F400C00545 /* SettingsClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsClass.swift; sourceTree = "<group>"; };
+		02E7F6B5261FD52000C00545 /* settingsLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsLinkView.swift; sourceTree = "<group>"; };
+		02E7F6BD261FD56600C00545 /* settingsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTitle.swift; sourceTree = "<group>"; };
+		02E7F6C2261FD58900C00545 /* settingsVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsVersion.swift; sourceTree = "<group>"; };
+		02E7F6C7261FD5B400C00545 /* settingsTextFieldAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTextFieldAlertLabel.swift; sourceTree = "<group>"; };
+		02E7F6CC261FD5E800C00545 /* settingsSwitchRoute2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsSwitchRoute2.swift; sourceTree = "<group>"; };
+		02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsChangeLine.swift; sourceTree = "<group>"; };
+		02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsBackButton.swift; sourceTree = "<group>"; };
+		02E7F6DB261FD65F00C00545 /* settingsActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsActionSheet.swift; sourceTree = "<group>"; };
+		02E7F6E0261FD6DA00C00545 /* deleteAccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = deleteAccountButton.swift; sourceTree = "<group>"; };
+		02E7F6E5261FD6F800C00545 /* logOutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = logOutButton.swift; sourceTree = "<group>"; };
+		02E7F6ED261FD71700C00545 /* setDataButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = setDataButton.swift; sourceTree = "<group>"; };
+		02E7F6F2261FD72900C00545 /* getDataButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = getDataButton.swift; sourceTree = "<group>"; };
+		02E7F6F7261FD7C800C00545 /* settingsArriveStation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsArriveStation.swift; sourceTree = "<group>"; };
+		02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsContentView.swift; sourceTree = "<group>"; };
+		02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsDepartPoint.swift; sourceTree = "<group>"; };
+		02E7F709261FD89500C00545 /* settingsDepartStation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsDepartStation.swift; sourceTree = "<group>"; };
+		02E7F70E2620834300C00545 /* settingsDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsDestination.swift; sourceTree = "<group>"; };
+		02E7F713262083A000C00545 /* settingsLineName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsLineName.swift; sourceTree = "<group>"; };
+		02E7F7182620840700C00545 /* settingsRideTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsRideTime.swift; sourceTree = "<group>"; };
+		02E7F71D2620848D00C00545 /* settingsTransitTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransitTime.swift; sourceTree = "<group>"; };
+		02E7F722262084FA00C00545 /* settingsTransportation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransportation.swift; sourceTree = "<group>"; };
+		02E7F7272620856100C00545 /* TimetableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableContentView.swift; sourceTree = "<group>"; };
+		02E7F72C2620858600C00545 /* TimetableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableTitleView.swift; sourceTree = "<group>"; };
+		02E7F731262085A800C00545 /* TimetableGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridView.swift; sourceTree = "<group>"; };
+		02E7F736262086D800C00545 /* TimetableGridTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridTitle.swift; sourceTree = "<group>"; };
+		02E7F73B262086F900C00545 /* TimetableEachGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEachGridView.swift; sourceTree = "<group>"; };
+		02E7F7402620872F00C00545 /* dayAndEndButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dayAndEndButton.swift; sourceTree = "<group>"; };
+		02E7F7452620874E00C00545 /* imagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagePickerView.swift; sourceTree = "<group>"; };
+		02E7F74A2620877700C00545 /* imagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagePicker.swift; sourceTree = "<group>"; };
+		02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableAlertLabel.swift; sourceTree = "<group>"; };
+		02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timeFieldAlertView.swift; sourceTree = "<group>"; };
 		02F02578261BDD7E00655E54 /* mytimetablemaker_swiftui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker_swiftui.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemaker_swiftuiApp.swift; sourceTree = "<group>"; };
 		02F0257D261BDD7E00655E54 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -157,7 +222,6 @@
 		02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldPlusAlertView.swift; sourceTree = "<group>"; };
 		02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numberFieldAlertView.swift; sourceTree = "<group>"; };
 		02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numberFieldPlusAlertView.swift; sourceTree = "<group>"; };
-		02F02711261E80ED00655E54 /* actionSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = actionSheetView.swift; sourceTree = "<group>"; };
 		07B466FE170FBC6C4B45D237 /* Pods_mytimetablemaker_swiftuiTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftuiTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		20DE2FA1CCFA9FB19B020B60 /* Pods-mytimetablemaker_swiftuiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftuiTests.debug.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftuiTests/Pods-mytimetablemaker_swiftuiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3065381D4BC994B2C5F659E6 /* Pods-mytimetablemaker_swiftui.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mytimetablemaker_swiftui.debug.xcconfig"; path = "Target Support Files/Pods-mytimetablemaker_swiftui/Pods-mytimetablemaker_swiftui.debug.xcconfig"; sourceTree = "<group>"; };
@@ -315,7 +379,6 @@
 				02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */,
 				02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */,
 				02F0270C261E7E8100655E54 /* numberFieldPlusAlertView.swift */,
-				02F02711261E80ED00655E54 /* actionSheetView.swift */,
 			);
 			path = MainView;
 			sourceTree = "<group>";
@@ -324,6 +387,20 @@
 			isa = PBXGroup;
 			children = (
 				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
+				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
+				02E7F6B0261FD4F400C00545 /* SettingsClass.swift */,
+				02E7F6B5261FD52000C00545 /* settingsLinkView.swift */,
+				02E7F6C2261FD58900C00545 /* settingsVersion.swift */,
+				02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */,
+				02E7F6DB261FD65F00C00545 /* settingsActionSheet.swift */,
+				02E7F6C7261FD5B400C00545 /* settingsTextFieldAlertLabel.swift */,
+				02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */,
+				02E7F6BD261FD56600C00545 /* settingsTitle.swift */,
+				02E7F6CC261FD5E800C00545 /* settingsSwitchRoute2.swift */,
+				02E7F6E0261FD6DA00C00545 /* deleteAccountButton.swift */,
+				02E7F6E5261FD6F800C00545 /* logOutButton.swift */,
+				02E7F6ED261FD71700C00545 /* setDataButton.swift */,
+				02E7F6F2261FD72900C00545 /* getDataButton.swift */,
 			);
 			path = SettingsView;
 			sourceTree = "<group>";
@@ -331,6 +408,15 @@
 		02F025B1261BDDD200655E54 /* VariousSettingsView */ = {
 			isa = PBXGroup;
 			children = (
+				02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */,
+				02E7F6F7261FD7C800C00545 /* settingsArriveStation.swift */,
+				02E7F709261FD89500C00545 /* settingsDepartStation.swift */,
+				02E7F7182620840700C00545 /* settingsRideTime.swift */,
+				02E7F70E2620834300C00545 /* settingsDestination.swift */,
+				02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */,
+				02E7F713262083A000C00545 /* settingsLineName.swift */,
+				02E7F71D2620848D00C00545 /* settingsTransitTime.swift */,
+				02E7F722262084FA00C00545 /* settingsTransportation.swift */,
 			);
 			path = VariousSettingsView;
 			sourceTree = "<group>";
@@ -354,6 +440,16 @@
 		02F025B6261BDE3100655E54 /* TimetableView */ = {
 			isa = PBXGroup;
 			children = (
+				02E7F7272620856100C00545 /* TimetableContentView.swift */,
+				02E7F72C2620858600C00545 /* TimetableTitleView.swift */,
+				02E7F731262085A800C00545 /* TimetableGridView.swift */,
+				02E7F736262086D800C00545 /* TimetableGridTitle.swift */,
+				02E7F73B262086F900C00545 /* TimetableEachGridView.swift */,
+				02E7F7402620872F00C00545 /* dayAndEndButton.swift */,
+				02E7F7452620874E00C00545 /* imagePickerView.swift */,
+				02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */,
+				02E7F74A2620877700C00545 /* imagePicker.swift */,
+				02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */,
 			);
 			path = TimetableView;
 			sourceTree = "<group>";
@@ -657,58 +753,90 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */,
 				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
 				02F0268A261D2EFB00655E54 /* timeLabel.swift in Sources */,
+				02E7F6F8261FD7C800C00545 /* settingsArriveStation.swift in Sources */,
 				02F02678261C99F400655E54 /* AdMobView.swift in Sources */,
+				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
+				02E7F7412620872F00C00545 /* dayAndEndButton.swift in Sources */,
 				02F0261E261C930A00655E54 /* emailTextField.swift in Sources */,
 				02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */,
 				02F0263B261C95A900655E54 /* passwordResetView.swift in Sources */,
+				02E7F6DC261FD65F00C00545 /* settingsActionSheet.swift in Sources */,
+				02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */,
+				02E7F6EE261FD71700C00545 /* setDataButton.swift in Sources */,
+				02E7F6C3261FD58900C00545 /* settingsVersion.swift in Sources */,
 				02F025B8261BDE7900655E54 /* CalcTime.swift in Sources */,
 				02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */,
 				02F02628261C939F00655E54 /* loginButton.swift in Sources */,
+				02E7F6B1261FD4F400C00545 /* SettingsClass.swift in Sources */,
 				02F0270D261E7E8100655E54 /* numberFieldPlusAlertView.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* signUpView.swift in Sources */,
 				02F026E2261DEC7100655E54 /* stateButton.swift in Sources */,
+				02E7F6F3261FD72900C00545 /* getDataButton.swift in Sources */,
+				02E7F7462620874E00C00545 /* imagePickerView.swift in Sources */,
+				02E7F70A261FD89500C00545 /* settingsDepartStation.swift in Sources */,
 				02F026F1261DED0400655E54 /* transitTimeAlertView.swift in Sources */,
+				02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */,
+				02E7F75526208B4E00C00545 /* timeFieldAlertView.swift in Sources */,
+				02E7F70F2620834300C00545 /* settingsDestination.swift in Sources */,
 				02F026D3261D396A00655E54 /* moveSettingsButton.swift in Sources */,
+				02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */,
 				02F026CE261D393500655E54 /* MainHeaderView.swift in Sources */,
 				02F026BF261D389000655E54 /* lineColorAlertView.swift in Sources */,
+				02E7F6B6261FD52000C00545 /* settingsLinkView.swift in Sources */,
+				02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */,
 				02F025CF261BDF2D00655E54 /* Timetable.swift in Sources */,
 				02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */,
 				02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */,
 				02F02650261C97A400655E54 /* termsLinkView.swift in Sources */,
 				02F026BA261D385A00655E54 /* lineColorAndName.swift in Sources */,
-				02F02712261E80ED00655E54 /* actionSheetView.swift in Sources */,
 				02F02585261BDD7F00655E54 /* Persistence.swift in Sources */,
 				02F02648261C976C00655E54 /* signUpButton.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02F026F6261DED4000655E54 /* transitTimeAndName.swift in Sources */,
+				02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */,
+				02E7F73C262086F900C00545 /* TimetableEachGridView.swift in Sources */,
+				02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */,
 				02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */,
 				02F026B0261D37DF00655E54 /* departStationAndTime.swift in Sources */,
 				02F02632261C952500655E54 /* moveSignUpButton.swift in Sources */,
 				02F025CA261BDF0600655E54 /* LineData.swift in Sources */,
 				02F0268F261D2F2C00655E54 /* countdownLabel.swift in Sources */,
+				02E7F714262083A000C00545 /* settingsLineName.swift in Sources */,
 				02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */,
+				02E7F737262086D800C00545 /* TimetableGridTitle.swift in Sources */,
+				02E7F6D7261FD63A00C00545 /* settingsBackButton.swift in Sources */,
 				02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */,
+				02E7F732262085A800C00545 /* TimetableGridView.swift in Sources */,
+				02E7F6C8261FD5B400C00545 /* settingsTextFieldAlertLabel.swift in Sources */,
+				02E7F705261FD82F00C00545 /* settingsDepartPoint.swift in Sources */,
+				02E7F6E6261FD6F800C00545 /* logOutButton.swift in Sources */,
 				02F02685261D2C1C00655E54 /* arriveStationAndTime.swift in Sources */,
+				02E7F74B2620877700C00545 /* imagePicker.swift in Sources */,
 				02F026EC261DECD200655E54 /* timePickerLabelView.swift in Sources */,
 				02F026E7261DEC9400655E54 /* stateButtonArray.swift in Sources */,
 				02F026D8261DEC2400655E54 /* routeInfo.swift in Sources */,
 				02F026A3261D377900655E54 /* departAndArriveTime.swift in Sources */,
 				02F026C4261D38BF00655E54 /* mainAlertPlusLabel.swift in Sources */,
 				02F02655261C97C000655E54 /* termsCheckBox.swift in Sources */,
+				02E7F6E1261FD6DA00C00545 /* deleteAccountButton.swift in Sources */,
 				02F02616261C92C300655E54 /* emailPlusTextField.swift in Sources */,
 				02F026DD261DEC4800655E54 /* routeInfoArray.swift in Sources */,
 				02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */,
 				02F026B5261D381300655E54 /* destinationAndTIme.swift in Sources */,
 				02F025F2261BE77D00655E54 /* LoginBackgroundView.swift in Sources */,
+				02E7F6BE261FD56600C00545 /* settingsTitle.swift in Sources */,
+				02E7F750262087AC00C00545 /* TimetableAlertLabel.swift in Sources */,
 				02F026FB261DED6500655E54 /* transportPickerLabel.swift in Sources */,
 				02F025BD261BDEA000655E54 /* DateAndTime.swift in Sources */,
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
 				02F025C5261BDED100655E54 /* EnumSetting.swift in Sources */,
 				02F0267D261C9C9000655E54 /* loginTitleView.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
+				02E7F6CD261FD5E800C00545 /* settingsSwitchRoute2.swift in Sources */,
 				02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */,
 				02F026AB261D37AB00655E54 /* departPointAndTime.swift in Sources */,
 			);

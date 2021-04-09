@@ -72,12 +72,14 @@ struct mainAlertPlusLabel: View {
                     addtitle: addtitle
                 )
             }.actionSheet(isPresented: $isShowingNextAlert) {
-                setActionSheet(
-                    title: colortitle,
-                    message: colormessage,
-                    list: colorlist,
-                    value: colorvalue,
-                    key: colorkey
+                ActionSheet(
+                    title: Text(colortitle),
+                    message:  Text(colormessage),
+                    buttons: ActionSheetButtons(
+                        list: colorlist,
+                        value: colorvalue,
+                        key: colorkey
+                    )
                 )
             }
         }

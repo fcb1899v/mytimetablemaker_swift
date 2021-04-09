@@ -1,5 +1,5 @@
 //
-//  textFieldAlertView.swift
+//  timeFieldAlertView.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by 中島正雄 on 2021/04/07.
@@ -7,25 +7,27 @@
 
 import SwiftUI
 
-struct textFieldAlertView: UIViewControllerRepresentable {
+struct timeFieldAlertView: UIViewControllerRepresentable {
     
     @Binding var text: String
     @Binding var isShowingAlert: Bool
+    @Binding var isShowingPicker: Bool
     
     let title: String
     let message: String
     let key: String
+    let maxnumber: Int
     
-    let placeholder = Hint.maxchar.rawValue.localized
+    let placeholder = Hint.to59min.rawValue.localized
     let isSecureTextEntry = false
     let leftButtonTitle = "Cancel".localized
     let rightButtonTitle = "OK".localized
     
-    func makeUIViewController(context: UIViewControllerRepresentableContext<textFieldAlertView>) -> some UIViewController {
+    func makeUIViewController(context: UIViewControllerRepresentableContext<timeFieldAlertView>) -> some UIViewController {
         return UIViewController()
     }
     
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: UIViewControllerRepresentableContext<textFieldAlertView>) {
+    func updateUIViewController(_ uiViewController: UIViewControllerType, context: UIViewControllerRepresentableContext<timeFieldAlertView>) {
         
         guard context.coordinator.alert == nil else {
             return
@@ -44,6 +46,7 @@ struct textFieldAlertView: UIViewControllerRepresentable {
             textField.delegate = context.coordinator
             textField.isSecureTextEntry = isSecureTextEntry
             textField.textAlignment = .center
+            textField.keyboardType = .numberPad
         }
         
         alert.addAction(UIAlertAction(title: leftButtonTitle, style: .cancel) { _ in
@@ -58,8 +61,10 @@ struct textFieldAlertView: UIViewControllerRepresentable {
             }
             alert.dismiss(animated: true) {
                 isShowingAlert = false
-                if text != "" {
-                    UserDefaults.standard.set(text, forKey: key)
+                if let inttext = Int(text)  {
+                    if inttext >= 0 && inttext <= maxnumber {
+                        UserDefaults.standard.set(text, forKey: key)
+                    }
                 }
             }
         })
@@ -72,16 +77,16 @@ struct textFieldAlertView: UIViewControllerRepresentable {
         }
     }
     
-    func makeCoordinator() -> textFieldAlertView.Coordinator {
+    func makeCoordinator() -> timeFieldAlertView.Coordinator {
         Coordinator(self)
     }
     
     class Coordinator: NSObject, UITextFieldDelegate {
         
         var alert: UIAlertController?
-        var view: textFieldAlertView
+        var view: timeFieldAlertView
         
-        init(_ view: textFieldAlertView) {
+        init(_ view: timeFieldAlertView) {
             self.view = view
         }
         

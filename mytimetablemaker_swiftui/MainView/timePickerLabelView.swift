@@ -29,6 +29,7 @@ struct timePickerLabelView: View {
             )
             .labelsHidden()
             .accentColor(.clear)
+            .frame(height: 20)
             .onReceive(timer) { (_) in
                 mainviewmodel.timelabel = "\(mainviewmodel.selectdate.setTime)"
             }

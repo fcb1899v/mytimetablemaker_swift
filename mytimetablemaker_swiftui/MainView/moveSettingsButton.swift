@@ -31,7 +31,7 @@ struct moveSettingsButton: View {
                 .resizable()
                 .frame(width: 20, height: 20, alignment: .center)
         }.sheet(isPresented: $loginviewmodel.isMoveSettings, content: {
-            //SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
         })
     }
 }

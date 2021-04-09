@@ -17,7 +17,7 @@ struct numberFieldAlertView: UIViewControllerRepresentable {
     let key: String
     let maxnumber: Int
     
-    let placeholder = Hint.maxchar.rawValue
+    let placeholder = Hint.to99min.rawValue.localized
     let isSecureTextEntry = false
     let leftButtonTitle = "Cancel".localized
     let rightButtonTitle = "OK".localized
@@ -60,8 +60,8 @@ struct numberFieldAlertView: UIViewControllerRepresentable {
             }
             alert.dismiss(animated: true) {
                 isShowingAlert = false
-                if let textField = alert.textFields?.first, let text = textField.text {
-                    if Int(text)! > -1 && Int(text)! < maxnumber + 1 {
+                if let inttext = Int(text)  {
+                    if inttext >= 0 && inttext <= maxnumber {
                         UserDefaults.standard.set(text, forKey: key)
                     }
                 }

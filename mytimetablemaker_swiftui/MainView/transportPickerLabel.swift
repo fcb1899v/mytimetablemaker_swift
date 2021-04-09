@@ -48,12 +48,14 @@ struct transportPickerLabel: View {
         .lineLimit(1)
         .foregroundColor(gray)
         .actionSheet(isPresented: $isShowingPicker) {
-            setActionSheet(
-                title: title,
-                message: message,
-                list: list,
-                value: list,
-                key: key
+            ActionSheet(
+                title: Text(title),
+                message:  Text(message),
+                buttons: ActionSheetButtons(
+                    list: list,
+                    value: list,
+                    key: key
+                )
             )
         }
     }

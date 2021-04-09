@@ -28,7 +28,7 @@ struct MainHeaderView: View {
     var body: some View {
         ZStack{
             primary
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 HStack{
                     Spacer(minLength: 15)
                     if (mainviewmodel.timeflag) {
@@ -48,8 +48,8 @@ struct MainHeaderView: View {
                     Spacer(minLength: 15)
                 }
                 stateButtonArray(mainviewmodel)
-            }.offset(y: 18)
-        }.frame(width: UIScreen.screenWidth, height: 125)
+            }.offset(y: 20)
+        }.frame(width: UIScreen.screenWidth, height: 130)
     }
 }
 
