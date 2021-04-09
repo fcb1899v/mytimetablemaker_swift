@@ -1,5 +1,5 @@
 //
-//  LoginTitleView.swift
+//  loginTitleView.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by 中島正雄 on 2021/04/06.
@@ -7,14 +7,29 @@
 
 import SwiftUI
 
-struct LoginTitleView: View {
+struct loginTitleView: View {
+    
+    private let title: String
+
+    init(
+        _ title: String
+    ) {
+        self.title = title
+    }
+    
+    let primary = Color(DefaultColor.primary.rawValue.colorInt)
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text(title)
+            .font(.title)
+            .foregroundColor(primary)
+            .frame(height: 180)
+            .offset(y: 50)
     }
 }
 
-struct LoginTitleView_Previews: PreviewProvider {
+struct loginTitleView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginTitleView()
+        loginTitleView("My Transit Makers")
     }
 }

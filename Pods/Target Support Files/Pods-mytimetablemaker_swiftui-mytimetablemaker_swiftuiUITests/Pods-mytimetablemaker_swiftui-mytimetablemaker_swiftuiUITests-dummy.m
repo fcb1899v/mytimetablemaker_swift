@@ -1,0 +1,5 @@
+#import <Foundation/Foundation.h>
+@interface PodsDummy_Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests : NSObject
+@end
+@implementation PodsDummy_Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests
+@end

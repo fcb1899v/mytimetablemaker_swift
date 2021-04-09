@@ -1,0 +1,6 @@
+framework module Pods_mytimetablemaker_swiftuiTests {
+  umbrella header "Pods-mytimetablemaker_swiftuiTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
