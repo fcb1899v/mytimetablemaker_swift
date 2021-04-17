@@ -8,21 +8,22 @@
 import SwiftUI
 
 struct departPointAndTime: View {
-    
-    @State private var isShowingAlert = false
-    
+
     private let goorback: String
-    private let time: String
+    private let weekflag: Bool
+    private let currenttime: Int
     
     /// 値を指定して生成する
     init(
         _ goorback: String,
-        _ time: String
+        _ weekflag: Bool,
+        _ currenttime: Int
     ){
         self.goorback = goorback
-        self.time = time
+        self.weekflag = weekflag
+        self.currenttime = currenttime
     }
-    
+
     var body: some View {
         
         let office = "Office".localized
@@ -32,16 +33,25 @@ struct departPointAndTime: View {
         let message = ""
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
         let defaultvalue = goorback.departurePoint(office, home)
-
+        let time = weekflag.displayTimeArray(goorback, currenttime)[1]
+        let primary = Color(DefaultColor.primary.rawValue.colorInt)
+        
         HStack {
-            mainAlertLabel(title, message, key, defaultvalue)
-            timeLabel(time)
+            mainAlertBothLabel(title, message, key, defaultvalue)
+            Text(time)
+                .font(Font.title2.monospacedDigit())
+                .foregroundColor(primary)
         }
     }
 }
 
 struct departPointAndTime_Previews: PreviewProvider {
     static var previews: some View {
-        departPointAndTime("back1", "00:00")
+        let mainviewmodel = MainViewModel()
+        departPointAndTime(
+            mainviewmodel.goorback1,
+            mainviewmodel.weekFlag,
+            mainviewmodel.currentHHmmssFromTime
+        )
     }
 }

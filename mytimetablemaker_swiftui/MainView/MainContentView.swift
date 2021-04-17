@@ -34,12 +34,16 @@ struct MainContentView: View {
                     MainHeaderView(loginviewmodel, mainviewmodel, firestoreviewmodel)
                     ZStack {
                         Color.white
-                        routeInfoArray(mainviewmodel)
+                        VStack {
+                            routeInfoArray(mainviewmodel)
+                            Rectangle()
+                                .foregroundColor(primary)
+                                .frame(width: UIScreen.screenWidth, height: 1.5)
+                                .offset(y: -10)
+                            AdMobView()
+                                .offset(y: -14)
+                        }
                     }
-                    Rectangle()
-                        .foregroundColor(primary)
-                        .frame(width: UIScreen.screenWidth, height: 1.5)
-                    AdMobView()
                 }
                 LoginBackgroundView()
                     .opacity(showSplash ? 1 : 0)

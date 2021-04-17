@@ -15,22 +15,23 @@ struct transitTimeAlertView: View {
     @State private var text = ""
     
     private let goorback: String
-    private let keytag: String
-
+    private let num: Int
+    
     /// 値を指定して生成する
     init(
         _ goorback: String,
-        _ keytag: String
+        _ num: Int
     ){
         self.goorback = goorback
-        self.keytag = keytag
+        self.num = num
     }
 
     var body: some View {
 
+        let keytag = (num == 0) ? "e": "\(num)"
         let gray = Color(DefaultColor.gray.rawValue.colorInt)
-        let transitdepartstation = goorback.transitDepartStation(keytag).localized
-        let transitarrivestation = goorback.transitArriveStation(keytag).localized
+        let transitdepartstation = goorback.transitDepartStation(num).localized
+        let transitarrivestation = goorback.transitArriveStation(num).localized
         let title = DialogTitle.transittime.rawValue.localized
         let message = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
         let key = "\(goorback)transittime\(keytag)"
@@ -39,13 +40,13 @@ struct transitTimeAlertView: View {
             self.isShowingAlert = true
         }) {
             ZStack(alignment: .leading) {
-                gray.frame(width: 30, height: 35.0)
+                gray.frame(width: 22, height: 30)
                 Image(uiImage: UIImage(named: "ic_clock2.png")!)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 25)
+                    .frame(width: 20)
                     .foregroundColor(.white)
-                    .padding(.leading, 2.5)
+                    .padding(.leading, 1)
                 numberFieldAlertView(
                     text: $text,
                     isShowingAlert: $isShowingAlert,
@@ -54,14 +55,16 @@ struct transitTimeAlertView: View {
                     key: key,
                     maxnumber: 99
                 )
-            }.frame(width: 30, height: 35.0, alignment: .center)
+            }
+            .frame(width: 30, height: 35.0, alignment: .center)
+            .padding(.leading, 10.0)
         }
     }
 }
 
 struct transitTimeAlertView_Previews: PreviewProvider {
     static var previews: some View {
-        transitTimeAlertView("back1", "1")
+        transitTimeAlertView("back1", 0)
     }
 }
 

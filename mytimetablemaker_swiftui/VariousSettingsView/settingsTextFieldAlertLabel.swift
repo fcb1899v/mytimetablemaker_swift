@@ -16,26 +16,25 @@ struct settingsTextFieldAlertLabel: View {
     private let title: String
     private let message: String
     private let key: String
-    private let color: Color
 
     /// 値を指定して生成する
     init(
         _ label: String,
         _ title: String,
         _ message: String,
-        _ key: String,
-        _ color: Color
+        _ key: String
     ){
         self.label = label
         self.title = title
         self.message = message
         self.key = key
-        self.color = color
     }
 
     var body: some View {
         
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
+        let gray = Color(DefaultColor.gray.rawValue.colorInt)
+        var color = (key.userDefaultsValue("") == "") ? gray: Color.black
         
         Button (action: {
             self.isShowingAlert = true
@@ -63,6 +62,7 @@ struct settingsTextFieldAlertLabel: View {
                     .padding(5)
                     .onReceive(timer) { (_) in
                         text = key.userDefaultsValue("Not set".localized)
+                        color = (key.userDefaultsValue("") == "") ? gray: Color.black
                     }
             }
         }

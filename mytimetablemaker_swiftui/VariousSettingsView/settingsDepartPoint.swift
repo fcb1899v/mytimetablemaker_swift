@@ -24,15 +24,13 @@ struct settingsDepartPoint: View {
      
         let departurepoint = "Departure place".localized
         let destination = "Destination".localized
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
 
         let label = (goorback == "back1" || goorback == "back2") ? destination: departurepoint
         let title = DialogTitle.departplace.rawValue.localized
         let message = ""
         let key = (goorback == "back1" || goorback == "back2") ? "destination": "departurepoint"
-        let color = (key.userDefaultsValue("") == "") ? gray: Color.black
 
-        settingsTextFieldAlertLabel(label, title, message, key, color)
+        settingsTextFieldAlertLabel(label, title, message, key)
     }
 }
 

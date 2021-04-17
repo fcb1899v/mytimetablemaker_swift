@@ -9,46 +9,56 @@ import SwiftUI
 
 struct arriveStationAndTime: View {
     
-    @State private var isShowingAlert = false
-    @State private var text = ""
-    
     private let goorback: String
-    private let keytag: String
-    private let time: String
+    private let weekflag: Bool
+    private let currenttime: Int
+    private let num: Int
     
     /// 値を指定して生成する
     init(
         _ goorback: String,
-        _ keytag: String,
-        _ time: String
+        _ weekflag: Bool,
+        _ currenttime: Int,
+        _ num: Int
     ){
         self.goorback = goorback
-        self.keytag = keytag
-        self.time = time
+        self.weekflag = weekflag
+        self.currenttime = currenttime
+        self.num = num
     }
 
     var body: some View {
         
         let ofarrsta = "of arrival station ".localized
         let arrsta = "Arr. St. ".localized
-
+        let keytag = "\(num + 1)"
         let title = DialogTitle.stationname.rawValue.localized
         let message = "\(ofarrsta)\(keytag)"
         let key = "\(goorback)arrivestation\(keytag)"
         let defaultvalue = "\(arrsta)\(keytag)"
+        let primary = Color(DefaultColor.primary.rawValue.colorInt)
         
-        HStack {
-            mainAlertLabel(title, message, key, defaultvalue)
-            timeLabel(time)
+        if num < goorback.changeLineInt + 1 {
+            let time = weekflag.displayTimeArray(goorback, currenttime)[2 * num + 3]
+            HStack {
+                mainAlertLabel(title, message, key, defaultvalue)
+                Text(time)
+                    .font(Font.title2.monospacedDigit())
+                    .foregroundColor(primary)
+            }
         }
     }
-
-    
 }
 
 struct arriveStationAndTime_Previews: PreviewProvider {
     static var previews: some View {
-        arriveStationAndTime("back1", "1", "00:00")
+        let mainviewmodel = MainViewModel()
+        arriveStationAndTime(
+            mainviewmodel.goorback1,
+            mainviewmodel.weekFlag,
+            mainviewmodel.currentHHmmssFromTime,
+            1
+        )
     }
 }
 

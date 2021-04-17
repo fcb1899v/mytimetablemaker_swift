@@ -216,20 +216,16 @@ extension String{
     }
 
     //UserDefaultsに保存された乗換出発駅を取得する関数
-    func transitDepartStation(_ keytag: String) -> String {
-        let intkeytag = Int(keytag) ?? self.changeLineInt + 2
-        let keytag0 = (intkeytag > self.changeLineInt + 2) ?
-            String(self.changeLineInt + 1): String(intkeytag - 1)
-        return (keytag0 == "0") ? self.departurePoint("Office".localized, "Home".localized):
-            "\(self)arrivestation\(keytag0)".userDefaultsValue("\("Arr. St. ".localized)\(keytag0)")
+    func transitDepartStation(_ num: Int) -> String {
+        let keytag = (num == 0) ? "\(self.changeLineInt + 1)": "\(num - 1)"
+        return (num == 1) ? self.departurePoint("Office".localized, "Home".localized):
+            "\(self)arrivestation\(keytag)".userDefaultsValue("\("Arr. St. ".localized)\(keytag)")
     }
 
     //UserDefaultsに保存された乗換到着駅を取得する関数
-    func transitArriveStation(_ keytag: String) -> String {
-        let intkeytag = Int(keytag) ?? self.changeLineInt + 2
-        let keytag0 = (intkeytag > self.changeLineInt + 1) ? "e": keytag
-        return (keytag0 == "e") ? self.destination("Home".localized, "Office".localized):
-            "\(self)departstation\(keytag0)".userDefaultsValue("\("Dep. St. ".localized)\(keytag0)")
+    func transitArriveStation(_ num: Int) -> String {
+        return (num == 0) ? self.destination("Home".localized, "Office".localized):
+            "\(self)departstation\(num)".userDefaultsValue("\("Dep. St. ".localized)\(num)")
     }
 
     //UserDefaultsに保存された乗車時間を取得

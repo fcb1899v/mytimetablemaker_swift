@@ -57,7 +57,6 @@ struct TimetableAlertLabel: View {
                         timeFieldAlertView(
                             text: $text,
                             isShowingAlert: $isShowingAlert,
-                            isShowingPicker: $isShowingPicker,
                             title: title,
                             message: message,
                             key: key,

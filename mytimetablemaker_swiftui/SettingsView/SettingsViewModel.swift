@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-class Settings: ObservableObject {
+class SettingsViewModel: ObservableObject {
     
     private let goorback: String
-    private let weekflag: Bool
     
     @Published var route2flag: Bool {
         didSet {
@@ -19,20 +18,20 @@ class Settings: ObservableObject {
     }
     
     init(
-        _ goorback: String,
-        _ weekflag: Bool
+        _ goorback: String
     ) {
         self.goorback = goorback
-        self.weekflag = weekflag
-        self.route2flag = (goorback + "route2flag").userDefaultsBool(true)
+        self.route2flag = goorback.route2Flag
     }
     
     var VariousSettingsEachView: some View {
-        NavigationLink(destination: VariousSettingsContentView(goorback, weekflag)){
-            Text(goorback.routeTitle)
-                .font(.subheadline)
-                .foregroundColor(.black)
-                .padding(5)
+        NavigationLink(destination: VariousSettingsContentView(goorback)){
+            if route2flag {
+                Text(goorback.routeTitle)
+                    .font(.subheadline)
+                    .foregroundColor(.black)
+                    .padding(5)
+            }
         }
     }
 }

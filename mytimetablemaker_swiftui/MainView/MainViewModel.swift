@@ -17,9 +17,21 @@ class MainViewModel: ObservableObject {
     @Published var goorbackflag = true              //back:true
     @Published var goorback1 = "back1"
     @Published var goorback2 = "back2"
-
+    
+    @Published var linecolor1 = [
+        "back1".lineColor("1", DefaultColor.accent.rawValue),
+        "back1".lineColor("2", DefaultColor.accent.rawValue),
+        "back1".lineColor("3", DefaultColor.accent.rawValue)
+    ]
+    @Published var linecolor2 = [
+        "back2".lineColor("1", DefaultColor.accent.rawValue),
+        "back2".lineColor("2", DefaultColor.accent.rawValue),
+        "back2".lineColor("3", DefaultColor.accent.rawValue)
+    ]
+    
     let timer = Timer.publish(every: 0.4, on: .current, in: .common).autoconnect()
     let primary = Color(DefaultColor.primary.rawValue.colorInt)
+    let accent = Color(DefaultColor.accent.rawValue.colorInt)
     let customdate = Unit.customdate.rawValue.localized
     let customHHmmss = Unit.customHHmmss.rawValue
     let customHHmm = Unit.customHHmm.rawValue
@@ -28,14 +40,29 @@ class MainViewModel: ObservableObject {
         goorbackflag = true
         goorback1 = "back1"
         goorback2 = "back2"
+        setLineColor()
     }
 
     func goButtonChangeData() {
         goorbackflag = false
         goorback1 = "go1"
         goorback2 = "go2"
+        setLineColor()
     }
 
+    func setLineColor() {
+        linecolor1 = [
+            goorback1.lineColor("1", DefaultColor.accent.rawValue),
+            goorback1.lineColor("2", DefaultColor.accent.rawValue),
+            goorback1.lineColor("3", DefaultColor.accent.rawValue)
+        ]
+        linecolor2 = [
+            goorback2.lineColor("1", DefaultColor.accent.rawValue),
+            goorback2.lineColor("2", DefaultColor.accent.rawValue),
+            goorback2.lineColor("3", DefaultColor.accent.rawValue)
+        ]
+    }
+    
     func startButtonChangeData() {
         datelabel = "\(Date().setDate)"
         timelabel = "\(Date().setTime)"

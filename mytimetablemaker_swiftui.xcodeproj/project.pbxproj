@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		021FDC6F2621C17100E123D2 /* mainAlertBothLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */; };
+		021FDCA02629773B00E123D2 /* VariousSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
-		02E7F6B1261FD4F400C00545 /* SettingsClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B0261FD4F400C00545 /* SettingsClass.swift */; };
+		02E7F6B1261FD4F400C00545 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B0261FD4F400C00545 /* SettingsViewModel.swift */; };
 		02E7F6B6261FD52000C00545 /* settingsLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B5261FD52000C00545 /* settingsLinkView.swift */; };
 		02E7F6BE261FD56600C00545 /* settingsTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6BD261FD56600C00545 /* settingsTitle.swift */; };
 		02E7F6C3261FD58900C00545 /* settingsVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6C2261FD58900C00545 /* settingsVersion.swift */; };
@@ -73,18 +75,15 @@
 		02F02678261C99F400655E54 /* AdMobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02677261C99F400655E54 /* AdMobView.swift */; };
 		02F0267D261C9C9000655E54 /* loginTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0267C261C9C9000655E54 /* loginTitleView.swift */; };
 		02F02685261D2C1C00655E54 /* arriveStationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */; };
-		02F0268A261D2EFB00655E54 /* timeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02689261D2EFB00655E54 /* timeLabel.swift */; };
 		02F0268F261D2F2C00655E54 /* countdownLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0268E261D2F2C00655E54 /* countdownLabel.swift */; };
 		02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02693261D2F4700655E54 /* datePickerLabel.swift */; };
 		02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02698261D2FA000655E54 /* textFieldAlertView.swift */; };
 		02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0269D261D304600655E54 /* mainAlertLabel.swift */; };
-		02F026A3261D377900655E54 /* departAndArriveTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026A2261D377900655E54 /* departAndArriveTime.swift */; };
 		02F026AB261D37AB00655E54 /* departPointAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026AA261D37AB00655E54 /* departPointAndTime.swift */; };
 		02F026B0261D37DF00655E54 /* departStationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026AF261D37DF00655E54 /* departStationAndTime.swift */; };
 		02F026B5261D381300655E54 /* destinationAndTIme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026B4261D381300655E54 /* destinationAndTIme.swift */; };
-		02F026BA261D385A00655E54 /* lineColorAndName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026B9261D385A00655E54 /* lineColorAndName.swift */; };
 		02F026BF261D389000655E54 /* lineColorAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026BE261D389000655E54 /* lineColorAlertView.swift */; };
-		02F026C4261D38BF00655E54 /* mainAlertPlusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */; };
+		02F026C4261D38BF00655E54 /* lineNameAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C3261D38BF00655E54 /* lineNameAlertLabel.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
 		02F026CE261D393500655E54 /* MainHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026CD261D393500655E54 /* MainHeaderView.swift */; };
 		02F026D3261D396A00655E54 /* moveSettingsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026D2261D396A00655E54 /* moveSettingsButton.swift */; };
@@ -94,7 +93,6 @@
 		02F026E7261DEC9400655E54 /* stateButtonArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E6261DEC9400655E54 /* stateButtonArray.swift */; };
 		02F026EC261DECD200655E54 /* timePickerLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026EB261DECD200655E54 /* timePickerLabelView.swift */; };
 		02F026F1261DED0400655E54 /* transitTimeAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* transitTimeAlertView.swift */; };
-		02F026F6261DED4000655E54 /* transitTimeAndName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F5261DED4000655E54 /* transitTimeAndName.swift */; };
 		02F026FB261DED6500655E54 /* transportPickerLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026FA261DED6500655E54 /* transportPickerLabel.swift */; };
 		02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */; };
 		02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */; };
@@ -123,10 +121,12 @@
 
 /* Begin PBXFileReference section */
 		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertBothLabel.swift; sourceTree = "<group>"; };
+		021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsViewModel.swift; sourceTree = "<group>"; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
-		02E7F6B0261FD4F400C00545 /* SettingsClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsClass.swift; sourceTree = "<group>"; };
+		02E7F6B0261FD4F400C00545 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		02E7F6B5261FD52000C00545 /* settingsLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsLinkView.swift; sourceTree = "<group>"; };
 		02E7F6BD261FD56600C00545 /* settingsTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTitle.swift; sourceTree = "<group>"; };
 		02E7F6C2261FD58900C00545 /* settingsVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsVersion.swift; sourceTree = "<group>"; };
@@ -196,18 +196,15 @@
 		02F02677261C99F400655E54 /* AdMobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobView.swift; sourceTree = "<group>"; };
 		02F0267C261C9C9000655E54 /* loginTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginTitleView.swift; sourceTree = "<group>"; };
 		02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = arriveStationAndTime.swift; sourceTree = "<group>"; };
-		02F02689261D2EFB00655E54 /* timeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timeLabel.swift; sourceTree = "<group>"; };
 		02F0268E261D2F2C00655E54 /* countdownLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = countdownLabel.swift; sourceTree = "<group>"; };
 		02F02693261D2F4700655E54 /* datePickerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = datePickerLabel.swift; sourceTree = "<group>"; };
 		02F02698261D2FA000655E54 /* textFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldAlertView.swift; sourceTree = "<group>"; };
 		02F0269D261D304600655E54 /* mainAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertLabel.swift; sourceTree = "<group>"; };
-		02F026A2261D377900655E54 /* departAndArriveTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departAndArriveTime.swift; sourceTree = "<group>"; };
 		02F026AA261D37AB00655E54 /* departPointAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departPointAndTime.swift; sourceTree = "<group>"; };
 		02F026AF261D37DF00655E54 /* departStationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = departStationAndTime.swift; sourceTree = "<group>"; };
 		02F026B4261D381300655E54 /* destinationAndTIme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = destinationAndTIme.swift; sourceTree = "<group>"; };
-		02F026B9261D385A00655E54 /* lineColorAndName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineColorAndName.swift; sourceTree = "<group>"; };
 		02F026BE261D389000655E54 /* lineColorAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineColorAlertView.swift; sourceTree = "<group>"; };
-		02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertPlusLabel.swift; sourceTree = "<group>"; };
+		02F026C3261D38BF00655E54 /* lineNameAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineNameAlertLabel.swift; sourceTree = "<group>"; };
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		02F026CD261D393500655E54 /* MainHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainHeaderView.swift; sourceTree = "<group>"; };
 		02F026D2261D396A00655E54 /* moveSettingsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = moveSettingsButton.swift; sourceTree = "<group>"; };
@@ -217,7 +214,6 @@
 		02F026E6261DEC9400655E54 /* stateButtonArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stateButtonArray.swift; sourceTree = "<group>"; };
 		02F026EB261DECD200655E54 /* timePickerLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timePickerLabelView.swift; sourceTree = "<group>"; };
 		02F026F0261DED0400655E54 /* transitTimeAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transitTimeAlertView.swift; sourceTree = "<group>"; };
-		02F026F5261DED4000655E54 /* transitTimeAndName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transitTimeAndName.swift; sourceTree = "<group>"; };
 		02F026FA261DED6500655E54 /* transportPickerLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transportPickerLabel.swift; sourceTree = "<group>"; };
 		02F02702261DF41900655E54 /* textFieldPlusAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = textFieldPlusAlertView.swift; sourceTree = "<group>"; };
 		02F02707261E7C0C00655E54 /* numberFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = numberFieldAlertView.swift; sourceTree = "<group>"; };
@@ -362,17 +358,14 @@
 				02F026D7261DEC2400655E54 /* routeInfo.swift */,
 				02F026DC261DEC4800655E54 /* routeInfoArray.swift */,
 				02F0268E261D2F2C00655E54 /* countdownLabel.swift */,
-				02F026A2261D377900655E54 /* departAndArriveTime.swift */,
 				02F026AA261D37AB00655E54 /* departPointAndTime.swift */,
+				02F026B4261D381300655E54 /* destinationAndTIme.swift */,
+				021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */,
 				02F026AF261D37DF00655E54 /* departStationAndTime.swift */,
 				02F02684261D2C1C00655E54 /* arriveStationAndTime.swift */,
-				02F026B4261D381300655E54 /* destinationAndTIme.swift */,
-				02F026B9261D385A00655E54 /* lineColorAndName.swift */,
-				02F026F5261DED4000655E54 /* transitTimeAndName.swift */,
-				02F02689261D2EFB00655E54 /* timeLabel.swift */,
 				02F0269D261D304600655E54 /* mainAlertLabel.swift */,
-				02F026C3261D38BF00655E54 /* mainAlertPlusLabel.swift */,
 				02F026BE261D389000655E54 /* lineColorAlertView.swift */,
+				02F026C3261D38BF00655E54 /* lineNameAlertLabel.swift */,
 				02F026F0261DED0400655E54 /* transitTimeAlertView.swift */,
 				02F026FA261DED6500655E54 /* transportPickerLabel.swift */,
 				02F02698261D2FA000655E54 /* textFieldAlertView.swift */,
@@ -386,17 +379,14 @@
 		02F025B0261BDDC600655E54 /* SettingsView */ = {
 			isa = PBXGroup;
 			children = (
-				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
 				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
-				02E7F6B0261FD4F400C00545 /* SettingsClass.swift */,
-				02E7F6B5261FD52000C00545 /* settingsLinkView.swift */,
-				02E7F6C2261FD58900C00545 /* settingsVersion.swift */,
-				02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */,
-				02E7F6DB261FD65F00C00545 /* settingsActionSheet.swift */,
-				02E7F6C7261FD5B400C00545 /* settingsTextFieldAlertLabel.swift */,
-				02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */,
+				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
+				02E7F6B0261FD4F400C00545 /* SettingsViewModel.swift */,
 				02E7F6BD261FD56600C00545 /* settingsTitle.swift */,
 				02E7F6CC261FD5E800C00545 /* settingsSwitchRoute2.swift */,
+				02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */,
+				02E7F6B5261FD52000C00545 /* settingsLinkView.swift */,
+				02E7F6C2261FD58900C00545 /* settingsVersion.swift */,
 				02E7F6E0261FD6DA00C00545 /* deleteAccountButton.swift */,
 				02E7F6E5261FD6F800C00545 /* logOutButton.swift */,
 				02E7F6ED261FD71700C00545 /* setDataButton.swift */,
@@ -409,14 +399,18 @@
 			isa = PBXGroup;
 			children = (
 				02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */,
+				021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */,
+				02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */,
+				02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */,
 				02E7F6F7261FD7C800C00545 /* settingsArriveStation.swift */,
 				02E7F709261FD89500C00545 /* settingsDepartStation.swift */,
-				02E7F7182620840700C00545 /* settingsRideTime.swift */,
 				02E7F70E2620834300C00545 /* settingsDestination.swift */,
-				02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */,
+				02E7F6C7261FD5B400C00545 /* settingsTextFieldAlertLabel.swift */,
 				02E7F713262083A000C00545 /* settingsLineName.swift */,
-				02E7F71D2620848D00C00545 /* settingsTransitTime.swift */,
+				02E7F7182620840700C00545 /* settingsRideTime.swift */,
 				02E7F722262084FA00C00545 /* settingsTransportation.swift */,
+				02E7F71D2620848D00C00545 /* settingsTransitTime.swift */,
+				02E7F6DB261FD65F00C00545 /* settingsActionSheet.swift */,
 			);
 			path = VariousSettingsView;
 			sourceTree = "<group>";
@@ -755,7 +749,6 @@
 			files = (
 				02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */,
 				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
-				02F0268A261D2EFB00655E54 /* timeLabel.swift in Sources */,
 				02E7F6F8261FD7C800C00545 /* settingsArriveStation.swift in Sources */,
 				02F02678261C99F400655E54 /* AdMobView.swift in Sources */,
 				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
@@ -765,12 +758,13 @@
 				02F0263B261C95A900655E54 /* passwordResetView.swift in Sources */,
 				02E7F6DC261FD65F00C00545 /* settingsActionSheet.swift in Sources */,
 				02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */,
+				021FDCA02629773B00E123D2 /* VariousSettingsViewModel.swift in Sources */,
 				02E7F6EE261FD71700C00545 /* setDataButton.swift in Sources */,
 				02E7F6C3261FD58900C00545 /* settingsVersion.swift in Sources */,
 				02F025B8261BDE7900655E54 /* CalcTime.swift in Sources */,
 				02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */,
 				02F02628261C939F00655E54 /* loginButton.swift in Sources */,
-				02E7F6B1261FD4F400C00545 /* SettingsClass.swift in Sources */,
+				02E7F6B1261FD4F400C00545 /* SettingsViewModel.swift in Sources */,
 				02F0270D261E7E8100655E54 /* numberFieldPlusAlertView.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* signUpView.swift in Sources */,
@@ -792,11 +786,9 @@
 				02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */,
 				02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */,
 				02F02650261C97A400655E54 /* termsLinkView.swift in Sources */,
-				02F026BA261D385A00655E54 /* lineColorAndName.swift in Sources */,
 				02F02585261BDD7F00655E54 /* Persistence.swift in Sources */,
 				02F02648261C976C00655E54 /* signUpButton.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
-				02F026F6261DED4000655E54 /* transitTimeAndName.swift in Sources */,
 				02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */,
 				02E7F73C262086F900C00545 /* TimetableEachGridView.swift in Sources */,
 				02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */,
@@ -819,10 +811,10 @@
 				02F026EC261DECD200655E54 /* timePickerLabelView.swift in Sources */,
 				02F026E7261DEC9400655E54 /* stateButtonArray.swift in Sources */,
 				02F026D8261DEC2400655E54 /* routeInfo.swift in Sources */,
-				02F026A3261D377900655E54 /* departAndArriveTime.swift in Sources */,
-				02F026C4261D38BF00655E54 /* mainAlertPlusLabel.swift in Sources */,
+				02F026C4261D38BF00655E54 /* lineNameAlertLabel.swift in Sources */,
 				02F02655261C97C000655E54 /* termsCheckBox.swift in Sources */,
 				02E7F6E1261FD6DA00C00545 /* deleteAccountButton.swift in Sources */,
+				021FDC6F2621C17100E123D2 /* mainAlertBothLabel.swift in Sources */,
 				02F02616261C92C300655E54 /* emailPlusTextField.swift in Sources */,
 				02F026DD261DEC4800655E54 /* routeInfoArray.swift in Sources */,
 				02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */,

@@ -29,6 +29,6 @@ struct AdMobView: View {
 
 struct AdMobView_Previews: PreviewProvider {
     static var previews: some View {
-        AdMobView()
+        AdMobView().background(Color.black)
     }
 }

@@ -13,22 +13,23 @@ struct transportPickerLabel: View {
     @State private var isShowingPicker = false
 
     private let goorback: String
-    private let keytag: String
-
+    private let num: Int
+    
     /// 値を指定して生成する
     init(
         _ goorback: String,
-        _ keytag: String
+        _ num: Int
     ){
         self.goorback = goorback
-        self.keytag = keytag
+        self.num = num
     }
 
     var body: some View {
         
+        let keytag = (num == 0) ? "e": "\(num)"
         let list = Transportation.allCases.map{$0.rawValue.localized}
-        let transitdepartstation = goorback.transitDepartStation(keytag).localized
-        let transitarrivestation = goorback.transitArriveStation(keytag).localized
+        let transitdepartstation = goorback.transitDepartStation(num).localized
+        let transitarrivestation = goorback.transitArriveStation(num).localized
 
         let title = DialogTitle.transport.rawValue.localized
         let message = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
@@ -44,9 +45,10 @@ struct transportPickerLabel: View {
             self.isShowingPicker = true
         }
         .frame(alignment: .leading)
-        .font(.subheadline)
+        .font(.footnote)
         .lineLimit(1)
         .foregroundColor(gray)
+        .padding(.leading, 15.0)
         .actionSheet(isPresented: $isShowingPicker) {
             ActionSheet(
                 title: Text(title),
@@ -63,6 +65,6 @@ struct transportPickerLabel: View {
 
 struct transportPickerLabel_Previews: PreviewProvider {
     static var previews: some View {
-        transportPickerLabel("back1", "1")
+        transportPickerLabel("back1", 0)
     }
 }

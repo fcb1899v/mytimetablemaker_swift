@@ -22,14 +22,14 @@ struct routeInfoArray: View {
     var body: some View {
         ScrollView {
             HStack(alignment: .top) {
-                routeInfo(mainviewmodel, mainviewmodel.goorback1)
-                    .padding(.trailing, 5.0)
+                routeInfo1(mainviewmodel)
                 if (mainviewmodel.goorback2.route2Flag) {
                     Divider()
                         .frame(width: 1.5, height: UIScreen.screenHeight)
                         .background(primary)
-                    routeInfo(mainviewmodel, mainviewmodel.goorback2)
-                        .padding(.leading, 5.0)
+                        .padding(.leading, 10.0)
+                        .padding(.trailing, 10.0)
+                    routeInfo2(mainviewmodel)
                 }
             }
         }

@@ -9,21 +9,23 @@ import SwiftUI
 
 struct countdownLabel: View {
     
-    @ObservedObject private var mainviewmodel: MainViewModel
-    private let goorback: String
+    let goorback: String
+    let weekflag: Bool
+    let currenttime: Int
 
     init(
-        _ mainviewmodel: MainViewModel,
-        _ goorback: String
+        _ goorback: String,
+        _ weekflag: Bool,
+        _ currenttime: Int
     ) {
-        self.mainviewmodel = mainviewmodel
         self.goorback = goorback
+        self.weekflag = weekflag
+        self.currenttime = currenttime
     }
 
     var body: some View {
 
-        let currenttime = mainviewmodel.currentHHmmssFromTime
-        let departuretime = mainviewmodel.weekFlag.departureTime(goorback, currenttime)
+        let departuretime = weekflag.departureTime(goorback, currenttime)
         let time = currenttime.countdownTime(departuretime)
         let color = currenttime.countdownColor(departuretime)
 
@@ -36,7 +38,11 @@ struct countdownLabel: View {
 struct countdownLabel_Previews: PreviewProvider {
     static var previews: some View {
         let mainviewmodel = MainViewModel()
-        countdownLabel(mainviewmodel, "back1")
+        countdownLabel(
+            mainviewmodel.goorback1,
+            mainviewmodel.weekFlag,
+            mainviewmodel.currentHHmmssFromTime
+        )
     }
 }
 

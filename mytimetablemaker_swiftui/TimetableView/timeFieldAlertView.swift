@@ -11,7 +11,6 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
     
     @Binding var text: String
     @Binding var isShowingAlert: Bool
-    @Binding var isShowingPicker: Bool
     
     let title: String
     let message: String
@@ -20,8 +19,9 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
     
     let placeholder = Hint.to59min.rawValue.localized
     let isSecureTextEntry = false
-    let leftButtonTitle = "Cancel".localized
-    let rightButtonTitle = "OK".localized
+    let cancelButtonTitle = Action.cancel.rawValue.localized
+    let deleteButtonTitle = Action.delete.rawValue.localized
+    let addButtonTitle = Action.add.rawValue.localized
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<timeFieldAlertView>) -> some UIViewController {
         return UIViewController()
@@ -42,29 +42,51 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
         
         alert.addTextField { textField in
             textField.placeholder = placeholder
-            textField.text = text
+            textField.text = ""
             textField.delegate = context.coordinator
             textField.isSecureTextEntry = isSecureTextEntry
             textField.textAlignment = .center
             textField.keyboardType = .numberPad
         }
         
-        alert.addAction(UIAlertAction(title: leftButtonTitle, style: .cancel) { _ in
+        alert.addAction(UIAlertAction(title: cancelButtonTitle, style: .cancel) { _ in
             alert.dismiss(animated: true) {
                 isShowingAlert = false
             }
         })
 
-        alert.addAction(UIAlertAction(title: rightButtonTitle, style: .default) { _ in
-            if let textField = alert.textFields?.first, let text = textField.text {
-                self.text = text
-            }
-            alert.dismiss(animated: true) {
-                isShowingAlert = false
-                if let inttext = Int(text)  {
+        alert.addAction(UIAlertAction(title: addButtonTitle, style: .default) { _ in
+            if let textField = alert.textFields?.first,
+               let text = textField.text,
+               let inttext = Int(text)
+            {
+                alert.dismiss(animated: true) {
                     if inttext >= 0 && inttext <= maxnumber {
-                        UserDefaults.standard.set(text, forKey: key)
+                        UserDefaults.standard.set(text.addTimeFromTimetable(key), forKey: key)
                     }
+                    isShowingAlert = true
+                }
+            } else {
+                alert.dismiss(animated: true) {
+                    isShowingAlert = false
+                }
+            }
+        })
+
+        alert.addAction(UIAlertAction(title: deleteButtonTitle, style: .destructive) { _ in
+            if let textField = alert.textFields?.first,
+               let text = textField.text,
+               let inttext = Int(text)
+            {
+                alert.dismiss(animated: true) {
+                    if inttext >= 0 && inttext <= maxnumber {
+                        UserDefaults.standard.set(text.deleteTimeFromTimetable(key), forKey: key)
+                    }
+                    isShowingAlert = true
+                }
+            } else {
+                alert.dismiss(animated: true) {
+                    isShowingAlert = false
                 }
             }
         })

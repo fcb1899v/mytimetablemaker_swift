@@ -12,66 +12,70 @@ struct lineColorAlertView: View {
     @State private var isShowingAlert = false
     @State private var isShowingNextAlert = false
     @State private var text = ""
-    @State private var color = Color(DefaultColor.accent.rawValue.colorInt)
 
     private let goorback: String
     private let weekflag: Bool
-    private let keytag: String
+    private let num: Int
     
     /// 値を指定して生成する
     init(
         _ goorback: String,
         _ weekflag: Bool,
-        _ keytag: String
+        _ num: Int
     ){
         self.goorback = goorback
         self.weekflag = weekflag
-        self.keytag = keytag
+        self.num = num
     }
 
     var body: some View {
         
-        let title = DialogTitle.ridetime.rawValue.localized
-        let message = "\("on ".localized)\(goorback.lineName(keytag, "\("Line ".localized)\(keytag)"))"
-        let key = "\(goorback)ridetime\(keytag)"
-        let timetabletitle = DialogTitle.timetable.rawValue.localized
+        let keytag = "\(num + 1)"
+//        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
         let accent = DefaultColor.accent.rawValue
+
+        let ridetimetitle = DialogTitle.ridetime.rawValue.localized
+        let ridetimemessage = "\("on ".localized)\(goorback.lineName(keytag, "\("Line ".localized)\(keytag)"))"
+        let ridetimekey = "\(goorback)ridetime\(keytag)"
+        let timetabletitle = DialogTitle.timetable.rawValue.localized
+        let colorkey = "\(goorback)linecolor\(keytag)"
+        var color = colorkey.userDefaultsColor(accent)
         
         Button (action: {
             self.isShowingAlert = true
         }) {
             ZStack(alignment: .leading) {
-                goorback.lineColor(keytag, accent)
-                    .frame(width: 30, height: 35.0)
+                Rectangle()
+                    .frame(width: 22, height: 30)
+                    .foregroundColor(color)
                 Image(uiImage: UIImage(named: "ic_clock2.png")!)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 25)
+                    .frame(width: 20)
                     .foregroundColor(.white)
-                    .padding(.leading, 2.5)
+                    .padding(.leading, 1)
                 numberFieldPlusAlertView(
                     text: $text,
                     isShowingAlert: $isShowingAlert,
                     isShowingNextAlert: $isShowingNextAlert,
-                    title: title,
-                    message: message,
-                    key: key,
+                    title: ridetimetitle,
+                    message: ridetimemessage,
+                    key: ridetimekey,
                     addtitle: timetabletitle,
                     maxnumber: 99
                 ).sheet(isPresented: $isShowingNextAlert) {
-//                    TimetableContentView(
-//                        goorback: goorback,
-//                        weekflag: weekflag,
-//                        keytag: keytag)
+                    TimetableContentView(goorback, num)
                 }
-            }.frame(width: 30, height: 35.0, alignment: .center)
+            }
+            .frame(width: 30, height: 35.0, alignment: .center)
+            .padding(.leading, 10.0)
         }
     }
 }
 
 struct lineColorAlertView_Previews: PreviewProvider {
     static var previews: some View {
-        lineColorAlertView("back1", false, "1")
+        lineColorAlertView("back1", false, 0)
     }
 }
 

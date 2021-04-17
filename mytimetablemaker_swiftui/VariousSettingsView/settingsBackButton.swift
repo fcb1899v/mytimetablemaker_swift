@@ -9,24 +9,17 @@ import SwiftUI
 
 struct settingsBackButton: View {
     
-    private let action: () -> Void
-    private let color: Color
-    
-    init(
-        action: @escaping () -> Void,
-        _ color: Color
-    ) {
-        self.action = action
-        self.color = color
-    }
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+        }) {
             HStack {
                 Image("arrow_back_ios")
-                    .foregroundColor(color)
+                    .foregroundColor(Color.white)
                 Text("back".localized)
-                    .foregroundColor(color)
+                    .foregroundColor(Color.white)
             }
         }
     }
@@ -34,7 +27,7 @@ struct settingsBackButton: View {
 
 struct settingsBackButton_Previews: PreviewProvider {
     static var previews: some View {
-        settingsBackButton(action: {}, Color.black)
+        settingsBackButton()
     }
 }
 

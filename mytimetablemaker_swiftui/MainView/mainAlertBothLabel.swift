@@ -1,17 +1,16 @@
 //
-//  mainAlertLabel.swift
-//  mytimetablemakers_swiftui
+//  mainAlertBothLabel.swift
+//  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/02/07.
+//  Created by 中島正雄 on 2021/03/04.
 //
 
 import SwiftUI
 
-struct mainAlertLabel: View {
+struct mainAlertBothLabel: View {
 
     @State private var isShowingAlert = false
     @State private var text = ""
-    @State private var label = ""
     
     private let title: String
     private let message: String
@@ -34,13 +33,12 @@ struct mainAlertLabel: View {
     var body: some View {
         
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
-        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-        
+
         Button (action: {
             self.isShowingAlert = true
         }) {
             ZStack (alignment: .leading) {
-                Text(label)
+                Text(key.userDefaultsValue(defaultvalue))
                     .font(.footnote)
                     .lineLimit(1)
                     .foregroundColor(primary)
@@ -50,16 +48,14 @@ struct mainAlertLabel: View {
                     title: title,
                     message: message,
                     key: key
-                ).onReceive(timer) { _ in
-                    label = key.userDefaultsValue(defaultvalue)
-                }
+                )
             }
         }
     }
 }
 
-struct mainAlertLabel_Previews: PreviewProvider {
+struct mainAlertBothLabel_Previews: PreviewProvider {
     static var previews: some View {
-        mainAlertLabel(DialogTitle.departplace.rawValue, "", "destination", "Office")
+        mainAlertBothLabel(DialogTitle.departplace.rawValue, "", "destination", "Office")
     }
 }

@@ -15,54 +15,72 @@ struct settingsTransitTime: View {
     @State private var text = ""
 
     private let goorback: String
-    private let keytag: String
+    private let num: Int
     
     /// 値を指定して生成する
     init(
         _ goorback: String,
-        _ keytag: String
+        _ num: Int
     ){
         self.goorback = goorback
-        self.keytag = keytag
+        self.num = num
     }
-    
+
     var body: some View {
         
-        let transitdepartstation = goorback.transitDepartStation(keytag).localized
-        let transitarrivestation = goorback.transitArriveStation(keytag).localized
-
-        let label = "\("To ".localized)\(transitarrivestation)\("he".localized)"
+        let keytag = (num == 0) ? "e": "\(num)"
+        let transitdepartstation = goorback.transitDepartStation(num).localized
+        let transitarrivestation = goorback.transitArriveStation(num).localized
+        let gray = Color(DefaultColor.gray.rawValue.colorInt)
+        
+        let label = (num == 1) ? "\("from ".localized)\(transitdepartstation)\(" to ".localized)":
+            "\("To ".localized)\(transitarrivestation)\("he".localized)"
         let title = DialogTitle.transittime.rawValue.localized
         let message = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
         let key = "\(goorback)transittime\(keytag)"
-        let color = (goorback.transitTimeString(keytag) == "Not set".localized) ? Color(DefaultColor.gray.rawValue.colorInt): Color.black
+        var color = (key.userDefaultsValue("") == "") ? gray: Color.black
 
-        Button (action: {
-            self.isShowingAlert = true
-        }) {
-            HStack {
-                ZStack (alignment: .leading) {
-                    Text(label)
-                        .frame(alignment: .leading)
+        if goorback.changeLineInt > num - 2 || num == 0 {
+
+            let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
+            
+            Button (action: {
+                self.isShowingAlert = true
+            }) {
+                HStack {
+                    ZStack (alignment: .leading) {
+                        Text(label)
+                            .frame(alignment: .leading)
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                            .padding(5)
+                        numberFieldAlertView(
+                            text: $text,
+                            isShowingAlert: $isShowingAlert,
+                            title: title,
+                            message: message,
+                            key: key,
+                            maxnumber: 99
+                        )
+                    }
+                    Spacer()
+                    Text(text)
                         .font(.subheadline)
-                        .foregroundColor(.black)
+                        .lineLimit(1)
+                        .foregroundColor(color)
                         .padding(5)
-                    numberFieldAlertView(
-                        text: $text,
-                        isShowingAlert: $isShowingAlert,
-                        title: title,
-                        message: message,
-                        key: key,
-                        maxnumber: 99
-                    )
+                        .onReceive(timer) { _ in
+                            text = goorback.transitTimeString(keytag)
+                            color = (key.userDefaultsValue("") == "") ? gray: Color.black
+                        }
                 }
-                Spacer()
-                Text((text == "") ? goorback.transitTimeString(keytag): text)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .foregroundColor(color)
-                    .padding(5)
             }
         }
+    }
+}
+
+struct settingsTransitTime_Previews: PreviewProvider {
+    static var previews: some View {
+        settingsTransitTime("back1", 0)
     }
 }

@@ -167,4 +167,9 @@ extension Date {
         formatter.dateFormat = Unit.customHHmmss.rawValue.localized
         return formatter.string(from: self)
     }
+    
+    var weekFlag: Bool {
+        let weeknumber = Calendar.current.component(.weekday, from: self)
+        return (weeknumber == 0 || weeknumber == 6) ? false: true
+    }
 }

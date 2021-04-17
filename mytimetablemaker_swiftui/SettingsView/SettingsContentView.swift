@@ -8,11 +8,16 @@
 import SwiftUI
 
 struct SettingsContentView: View {
-
+    
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject private var loginviewmodel: LoginViewModel
     @ObservedObject private var mainviewmodel: MainViewModel
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
+    @ObservedObject var back2setting = SettingsViewModel("back2")
+    @ObservedObject var go2setting = SettingsViewModel("go2")
+    @State private var isShowLogIn = false
+    private let primary = Color(DefaultColor.primary.rawValue.colorInt)
+    private let goorbackarray = ["back1", "back2", "go1", "go2"]
 
     init(
         _ loginviewmodel: LoginViewModel,
@@ -23,62 +28,36 @@ struct SettingsContentView: View {
         self.mainviewmodel = mainviewmodel
         self.firestoreviewmodel = firestoreviewmodel
     }
-
-    @ObservedObject var back1setting = Settings("back1", true)
-    @ObservedObject var go1setting = Settings("go1", true)
-    @ObservedObject var back2setting = Settings("back2", true)
-    @ObservedObject var go2setting = Settings("go2", true)
-
-
-    @State var back1changeline = "back1".changeLine
-    @State var go1changeline = "go1".changeLine
-    @State var back2changeline = "back2".changeLine
-    @State var go2changeline = "go2".changeLine
-    @State private var isShowLogIn = false
-    
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
-    let route2title = "\n" + "Display route 2".localized
-    let changelinetitle = "Change line".localized
-    let varioussettingstitle = "Various settings".localized
-    let accounttitle = "Account".localized
-    let back2label = "Going home route 2".localized
-    let go2label = "Outgoing route 2".localized
     
     var body: some View {
         NavigationView {
             Form {
                 Section(
-                    header: settingsTitle(route2title)
+                    header: settingsTitle("\n" + "Display route 2".localized)
                 ) {
-                    settingsSwitchRoute2(back2label, $back2setting.route2flag)
-                    settingsSwitchRoute2(go2label, $go2setting.route2flag)
+                    settingsSwitchRoute2("back2", $back2setting.route2flag)
+                    settingsSwitchRoute2("go2", $go2setting.route2flag)
                 }
                 Section(
-                    header: settingsTitle(changelinetitle)
+                    header: settingsTitle("Change line".localized)
                 ) {
-                    settingsChangeLine("back1", $back1changeline)
-                    if back2setting.route2flag {
-                        settingsChangeLine("back2", $back2changeline)
-                    }
-                    settingsChangeLine("go1", $go1changeline)
-                    if go2setting.route2flag {
-                        settingsChangeLine("go2", $go2changeline)
+                    ForEach(goorbackarray, id: \.self) { goorback in
+                        if goorback.route2Flag {
+                            settingsChangeLine(goorback)
+                        }
                     }
                 }
                 Section(
-                    header: settingsTitle(varioussettingstitle)
+                    header: settingsTitle("Various settings".localized)
                 ) {
-                    back1setting.VariousSettingsEachView
-                    if back2setting.route2flag {
-                        back2setting.VariousSettingsEachView
-                    }
-                    go1setting.VariousSettingsEachView
-                    if go2setting.route2flag {
-                        go2setting.VariousSettingsEachView
+                    ForEach(goorbackarray, id: \.self) { goorback in
+                        if goorback.route2Flag {
+                            SettingsViewModel(goorback).VariousSettingsEachView
+                        }
                     }
                 }
                 Section(
-                    header: settingsTitle(accounttitle)
+                    header: settingsTitle("Account".localized)
                 ) {
                     getDataButton(firestoreviewmodel)
                     setDataButton(firestoreviewmodel)
@@ -96,13 +75,6 @@ struct SettingsContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
             .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
-                    settingsBackButton(action: {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }, Color.white)
-                }
-            }
         }
     }
 }
