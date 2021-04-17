@@ -30,33 +30,17 @@ struct routeInfo1: View {
             Spacer(minLength: 15)
             countdownLabel(goorback, weekflag, currenttime)
             Spacer(minLength: 15)
-            departPointAndTime(goorback, weekflag, currenttime)
-            Spacer(minLength: 1)
-            ForEach(0...goorback.changeLineInt, id: \.self) { num in
-                HStack {
-                    transitTimeAlertView(goorback, num + 1)
-                    transportPickerLabel(goorback, num + 1)
-                    Spacer()
+            VStack(spacing: 1) {
+                departPointAndTime(goorback, weekflag, currenttime)
+                ForEach(0...goorback.changeLineInt, id: \.self) { num in
+                    transitInfoAlertView(goorback, num + 1)
+                    departStationAndTime(goorback, weekflag, currenttime, num)
+                    lineInfoAlertLabel(goorback, weekflag, num)
+                    arriveStationAndTime(goorback, weekflag, currenttime, num)
                 }
-                Spacer(minLength: 1)
-                departStationAndTime(goorback, weekflag, currenttime, num)
-                Spacer(minLength: 1)
-                HStack {
-                    lineColorAlertView(goorback, weekflag, num)
-                    lineNameAlertLabel(goorback, num)
-                }
-                Spacer(minLength: 1)
-                arriveStationAndTime(goorback, weekflag, currenttime, num)
-                Spacer(minLength: 1)
+                transitInfoAlertView(goorback, 0)
+                destinationAndTime(goorback, weekflag, currenttime)
             }
-            HStack {
-                transitTimeAlertView(goorback, 0)
-                transportPickerLabel(goorback, 0)
-                Spacer()
-            }
-            Spacer(minLength: 1)
-            destinationAndTime(goorback, weekflag, currenttime)
-            Spacer(minLength: 1)
         }.frame(width: width, alignment: .top)
     }
 }
@@ -84,33 +68,17 @@ struct routeInfo2: View {
             Spacer(minLength: 15)
             countdownLabel(goorback, weekflag, currenttime)
             Spacer(minLength: 15)
-            departPointAndTime(goorback, weekflag, currenttime)
-            Spacer(minLength: 1)
-            ForEach(0...goorback.changeLineInt, id: \.self) { num in
-                HStack {
-                    transitTimeAlertView(goorback, num + 1)
-                    transportPickerLabel(goorback, num + 1)
-                    Spacer()
+            VStack(spacing: 1) {
+                departPointAndTime(goorback, weekflag, currenttime)
+                ForEach(0...goorback.changeLineInt, id: \.self) { num in
+                    transitInfoAlertView(goorback, num + 1)
+                    departStationAndTime(goorback, weekflag, currenttime, num)
+                    lineInfoAlertLabel(goorback, weekflag, num)
+                    arriveStationAndTime(goorback, weekflag, currenttime, num)
                 }
-                Spacer(minLength: 1)
-                departStationAndTime(goorback, weekflag, currenttime, num)
-                Spacer(minLength: 1)
-                HStack {
-                    lineColorAlertView(goorback, weekflag, num)
-                    lineNameAlertLabel(goorback, num)
-                }
-                Spacer(minLength: 1)
-                arriveStationAndTime(goorback, weekflag, currenttime, num)
-                Spacer(minLength: 1)
+                transitInfoAlertView(goorback, 0)
+                destinationAndTime(goorback, weekflag, currenttime)
             }
-            HStack {
-                transitTimeAlertView(goorback, 0)
-                transportPickerLabel(goorback, 0)
-                Spacer()
-            }
-            Spacer(minLength: 1)
-            destinationAndTime(goorback, weekflag, currenttime)
-            Spacer(minLength: 1)
         }.frame(width: width, alignment: .top)
     }
 }
