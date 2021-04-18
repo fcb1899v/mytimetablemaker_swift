@@ -19,7 +19,7 @@ struct passwordResetView: View {
     }
 
     @State private var isShowingAlert = false
-    @State private var isSendEmail = false
+    @State private var isSendingEmail = false
     @State private var title = ""
     @State private var message = ""
     
@@ -32,19 +32,19 @@ struct passwordResetView: View {
                     .underline(color: Color.white)
                     .font(.headline)
                     .foregroundColor(.white)
-//                passwordResetAlertView(
-//                    email: $loginviewmodel.email,
-//                    isShowingAlert: $isShowingAlert,
-//                    isSendEmail: $isSendEmail,
-//                    title: $title,
-//                    message: $message
-//                )
-//                .alert(isPresented: $isSendEmail) {
-//                    Alert(
-//                        title: Text(title),
-//                        message: Text(message)
-//                    )
-//                }
+                passwordResetAlertView(
+                    email: $loginviewmodel.email,
+                    isShowingAlert: $isShowingAlert,
+                    isSendingEmail: $isSendingEmail,
+                    title: $title,
+                    message: $message
+                )
+                .alert(isPresented: $isSendingEmail) {
+                    Alert(
+                        title: Text(title),
+                        message: Text(message)
+                    )
+                }
             }.frame(height: 25)
         }
     }

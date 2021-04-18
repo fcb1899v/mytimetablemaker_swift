@@ -5,11 +5,14 @@
 //  Created by 中島正雄 on 2021/04/06.
 //
 
+import UIKit
 import SwiftUI
+import Firebase
 
 @main
 struct mytimetablemaker_swiftuiApp: App {
-    //let persistenceController = PersistenceController.shared
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
         
@@ -18,7 +21,20 @@ struct mytimetablemaker_swiftuiApp: App {
         let firestoreviewmodel = FirestoreViewModel()
         
         WindowGroup {
-            MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
         }
+    }
+}
+
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    var window: UIWindow?
+
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        FirebaseApp.configure()
+        return true
     }
 }

@@ -41,7 +41,6 @@ struct MainContentView: View {
                                 .frame(width: UIScreen.screenWidth, height: 1.5)
                                 .offset(y: -10)
                             AdMobView()
-                                .offset(y: -14)
                         }
                     }
                 }

@@ -169,6 +169,7 @@
 "Forgot Password?" = "Forgot Password?";
 "Reset your password?" = "Reset your password?";
 "Password Reset" = "Password Reset";
+"Password reset successfully" = "Password reset successfully";
 "Password reset error" = "Password reset error";
 "Password reset email Sent successfully" = "Password reset email Sent successfully";
 "Password reset email could not be sent" = "Password reset email could not be sent";

@@ -23,7 +23,9 @@ struct AdView: UIViewRepresentable {
 
 struct AdMobView: View {
     var body: some View {
-        AdView().frame(width: 320, height: 50)
+        AdView()
+            .frame(width: 320, height: 50)
+            .offset(y: -14)
     }
 }
 

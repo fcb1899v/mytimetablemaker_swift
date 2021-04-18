@@ -170,6 +170,7 @@
 "Forgot Password?" = "パスワードを忘れた場合";
 "Reset your password?" = "パスワードリセットしますか？";
 "Password Reset" = "パスワードリセット";
+"Password reset successfully" = "パスワードリセット成功";
 "Password reset error" = "パスワードリセットエラー";
 "Password reset email Sent successfully" = "パスワードリセット用メールの送信成功";
 "Password reset email could not be sent" = "パスワードリセット用メールの送信失敗";

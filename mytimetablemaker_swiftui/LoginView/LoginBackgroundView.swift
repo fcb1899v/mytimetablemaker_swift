@@ -21,7 +21,7 @@ struct LoginBackgroundView: View {
                     .scaledToFit()
                     .offset(y: 50)
                 primary
-                    .frame(width: UIScreen.screenWidth, height: 50)
+                    .frame(width: UIScreen.screenWidth, height: 70)
                     .offset(y: 50)
             }
         }.edgesIgnoringSafeArea(.all)

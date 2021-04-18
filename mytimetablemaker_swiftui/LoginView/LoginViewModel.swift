@@ -72,7 +72,7 @@ class LoginViewModel : ObservableObject {
                         case .userNotFound: self.message = "Incorrect email or password".localized
                         case .wrongPassword: self.message = "Incorrect email or password".localized
                         case .userDisabled: self.message = "This account is disabled".localized
-                        default: self.message = error.domain
+                        default: self.message = ""
                     }
                 }
             }

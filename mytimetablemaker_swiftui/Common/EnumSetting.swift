@@ -126,7 +126,7 @@ enum Hint: String {
     case maxchar = "Maximum 20 Charactors"
     case to99min = "Enter 0~99 [min]"
     case to59min = "Enter 0~59 [min]"
-    case email = "Enter your e-mail"
+    case email = "Enter your email"
 }
 
 //EachRouteTitle

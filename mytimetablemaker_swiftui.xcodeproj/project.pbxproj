@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		021FDC6F2621C17100E123D2 /* mainAlertBothLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */; };
 		021FDCA02629773B00E123D2 /* VariousSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */; };
+		02C15511262BC9170037EEC0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* ContentView.swift */; };
+		02C15519262BCFBB0037EEC0 /* passwordResetAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
 		02E7F6B1261FD4F400C00545 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6B0261FD4F400C00545 /* SettingsViewModel.swift */; };
@@ -44,10 +46,8 @@
 		02E7F750262087AC00C00545 /* TimetableAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */; };
 		02E7F75526208B4E00C00545 /* timeFieldAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */; };
 		02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */; };
-		02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257D261BDD7E00655E54 /* ContentView.swift */; };
 		02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F0257F261BDD7F00655E54 /* Assets.xcassets */; };
 		02F02583261BDD7F00655E54 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F02582261BDD7F00655E54 /* Preview Assets.xcassets */; };
-		02F02585261BDD7F00655E54 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02584261BDD7F00655E54 /* Persistence.swift */; };
 		02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 02F02586261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld */; };
 		02F02593261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02592261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift */; };
 		02F0259E261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0259D261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift */; };
@@ -121,6 +121,8 @@
 		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertBothLabel.swift; sourceTree = "<group>"; };
 		021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsViewModel.swift; sourceTree = "<group>"; };
+		02C15510262BC9170037EEC0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = passwordResetAlertView.swift; sourceTree = "<group>"; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
@@ -158,10 +160,8 @@
 		02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timeFieldAlertView.swift; sourceTree = "<group>"; };
 		02F02578261BDD7E00655E54 /* mytimetablemaker_swiftui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker_swiftui.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemaker_swiftuiApp.swift; sourceTree = "<group>"; };
-		02F0257D261BDD7E00655E54 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		02F0257F261BDD7F00655E54 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		02F02582261BDD7F00655E54 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		02F02584261BDD7F00655E54 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		02F02587261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = mytimetablemaker_swiftui.xcdatamodel; sourceTree = "<group>"; };
 		02F02589261BDD7F00655E54 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		02F0258E261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mytimetablemaker_swiftuiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -278,10 +278,9 @@
 			isa = PBXGroup;
 			children = (
 				02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */,
-				02F0257D261BDD7E00655E54 /* ContentView.swift */,
-				02F02584261BDD7F00655E54 /* Persistence.swift */,
 				02F02589261BDD7F00655E54 /* Info.plist */,
 				02F02672261C994800655E54 /* GoogleService-Info.plist */,
+				02C15510262BC9170037EEC0 /* ContentView.swift */,
 				02F02586261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld */,
 				02F025B2261BDDE100655E54 /* Common */,
 				02F025AE261BDDA400655E54 /* LoginView */,
@@ -332,6 +331,7 @@
 				02F0261D261C930A00655E54 /* emailTextField.swift */,
 				02F02615261C92C300655E54 /* emailPlusTextField.swift */,
 				02F0263A261C95A900655E54 /* passwordResetView.swift */,
+				02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */,
 				02F0263F261C95E400655E54 /* signUpView.swift */,
 				02F02647261C976C00655E54 /* signUpButton.swift */,
 				02F0264F261C97A400655E54 /* termsLinkView.swift */,
@@ -779,7 +779,7 @@
 				02F0269E261D304600655E54 /* mainAlertLabel.swift in Sources */,
 				02F02694261D2F4700655E54 /* datePickerLabel.swift in Sources */,
 				02F02650261C97A400655E54 /* termsLinkView.swift in Sources */,
-				02F02585261BDD7F00655E54 /* Persistence.swift in Sources */,
+				02C15511262BC9170037EEC0 /* ContentView.swift in Sources */,
 				02F02648261C976C00655E54 /* signUpButton.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */,
@@ -794,7 +794,6 @@
 				02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */,
 				02E7F737262086D800C00545 /* TimetableGridTitle.swift in Sources */,
 				02E7F6D7261FD63A00C00545 /* settingsBackButton.swift in Sources */,
-				02F0257E261BDD7E00655E54 /* ContentView.swift in Sources */,
 				02E7F732262085A800C00545 /* TimetableGridView.swift in Sources */,
 				02E7F6C8261FD5B400C00545 /* settingsTextFieldAlertLabel.swift in Sources */,
 				02E7F705261FD82F00C00545 /* settingsDepartPoint.swift in Sources */,
@@ -814,6 +813,7 @@
 				02F026B5261D381300655E54 /* destinationAndTIme.swift in Sources */,
 				02F025F2261BE77D00655E54 /* LoginBackgroundView.swift in Sources */,
 				02E7F6BE261FD56600C00545 /* settingsTitle.swift in Sources */,
+				02C15519262BCFBB0037EEC0 /* passwordResetAlertView.swift in Sources */,
 				02E7F750262087AC00C00545 /* TimetableAlertLabel.swift in Sources */,
 				02F025BD261BDEA000655E54 /* DateAndTime.swift in Sources */,
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
