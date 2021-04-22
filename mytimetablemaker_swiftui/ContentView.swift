@@ -26,9 +26,9 @@ struct ContentView: View {
     }
 
     var body: some View {
-        
-        if Auth.auth().currentUser != nil {
+        if "Login".userDefaultsBool(false) {
             MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            
         } else {
             LoginContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
         }
@@ -37,6 +37,7 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+        
         let loginviewmodel = LoginViewModel()
         let mainviewmodel = MainViewModel()
         let firestoreviewmodel = FirestoreViewModel()

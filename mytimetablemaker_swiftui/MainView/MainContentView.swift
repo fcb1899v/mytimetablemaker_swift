@@ -57,7 +57,7 @@ struct MainContentView: View {
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(true)
             .edgesIgnoringSafeArea(.all)
-        }.preferredColorScheme(.dark)
+        }
     }
 }
 

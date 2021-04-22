@@ -50,7 +50,7 @@ struct TimetableContentView: View {
                 .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading){
-                        settingsBackButton()
+                        variousSettingsBackButton()
                     }
                 }
             }

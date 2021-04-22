@@ -75,6 +75,11 @@ struct SettingsContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
             .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading){
+                    settingsBackButton(loginviewmodel)
+                }
+            }
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct settingsBackButton: View {
+struct variousSettingsBackButton: View {
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -17,7 +17,8 @@ struct settingsBackButton: View {
         }) {
             HStack {
                 Image("arrow_back_ios")
-                    .foregroundColor(Color.white)
+                    .resizable()
+                    .frame(width: 10, height: 18, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                 Text("back".localized)
                     .foregroundColor(Color.white)
             }
@@ -25,9 +26,8 @@ struct settingsBackButton: View {
     }
 }
 
-struct settingsBackButton_Previews: PreviewProvider {
+struct variousSettingsBackButton_Previews: PreviewProvider {
     static var previews: some View {
-        settingsBackButton()
+        variousSettingsBackButton().background(Color.black)
     }
 }
-

@@ -294,7 +294,11 @@ extension String{
 
     //UserDefaultsに保存されたスイッチの状態を取得
     var route2Flag: Bool {
-        return "\(self)route2flag".userDefaultsBool(true)
+        var route2flag = "\(self)route2flag".userDefaultsBool(true)
+        if (self == "back1" || self == "go1") {
+            route2flag = true
+        }
+        return route2flag
     }
     //UserDefaultsに保存された乗換回数の取得
     var changeLineInt: Int {

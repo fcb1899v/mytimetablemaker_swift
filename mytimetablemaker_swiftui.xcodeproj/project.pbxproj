@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		021FDC6F2621C17100E123D2 /* mainAlertBothLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */; };
 		021FDCA02629773B00E123D2 /* VariousSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */; };
+		022E53302630EAB6007921D9 /* variousSettingsBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */; };
 		02C15511262BC9170037EEC0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* ContentView.swift */; };
 		02C15519262BCFBB0037EEC0 /* passwordResetAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
@@ -121,6 +122,7 @@
 		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		021FDC6E2621C17100E123D2 /* mainAlertBothLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mainAlertBothLabel.swift; sourceTree = "<group>"; };
 		021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsViewModel.swift; sourceTree = "<group>"; };
+		022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = variousSettingsBackButton.swift; sourceTree = "<group>"; };
 		02C15510262BC9170037EEC0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = passwordResetAlertView.swift; sourceTree = "<group>"; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -329,10 +331,10 @@
 				02F02627261C939F00655E54 /* loginButton.swift */,
 				02F02631261C952500655E54 /* moveSignUpButton.swift */,
 				02F0261D261C930A00655E54 /* emailTextField.swift */,
-				02F02615261C92C300655E54 /* emailPlusTextField.swift */,
 				02F0263A261C95A900655E54 /* passwordResetView.swift */,
 				02C15518262BCFBB0037EEC0 /* passwordResetAlertView.swift */,
 				02F0263F261C95E400655E54 /* signUpView.swift */,
+				02F02615261C92C300655E54 /* emailPlusTextField.swift */,
 				02F02647261C976C00655E54 /* signUpButton.swift */,
 				02F0264F261C97A400655E54 /* termsLinkView.swift */,
 				02F02654261C97C000655E54 /* termsCheckBox.swift */,
@@ -376,6 +378,7 @@
 				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
 				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
 				02E7F6B0261FD4F400C00545 /* SettingsViewModel.swift */,
+				02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */,
 				02E7F6BD261FD56600C00545 /* settingsTitle.swift */,
 				02E7F6CC261FD5E800C00545 /* settingsSwitchRoute2.swift */,
 				02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */,
@@ -394,7 +397,7 @@
 			children = (
 				02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */,
 				021FDC9F2629773B00E123D2 /* VariousSettingsViewModel.swift */,
-				02E7F6D6261FD63A00C00545 /* settingsBackButton.swift */,
+				022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */,
 				02E7F704261FD82F00C00545 /* settingsDepartPoint.swift */,
 				02E7F6F7261FD7C800C00545 /* settingsArriveStation.swift */,
 				02E7F709261FD89500C00545 /* settingsDepartStation.swift */,
@@ -807,6 +810,7 @@
 				02F02655261C97C000655E54 /* termsCheckBox.swift in Sources */,
 				02E7F6E1261FD6DA00C00545 /* deleteAccountButton.swift in Sources */,
 				021FDC6F2621C17100E123D2 /* mainAlertBothLabel.swift in Sources */,
+				022E53302630EAB6007921D9 /* variousSettingsBackButton.swift in Sources */,
 				02F02616261C92C300655E54 /* emailPlusTextField.swift in Sources */,
 				02F026DD261DEC4800655E54 /* routeInfoArray.swift in Sources */,
 				02F02699261D2FA000655E54 /* textFieldAlertView.swift in Sources */,

@@ -55,7 +55,7 @@ struct LoginContentView: View {
                     }
                 }
             }
-        }.navigationBarHidden(true)
+        }
     }
 }
 

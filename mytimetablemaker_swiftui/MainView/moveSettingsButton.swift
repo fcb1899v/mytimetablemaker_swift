@@ -24,15 +24,28 @@ struct moveSettingsButton: View {
     }
 
     var body: some View {
-        Button(action: {
-            loginviewmodel.isMoveSettings = true
-        }) {
-            Image("ic_settings1")
-                .resizable()
-                .frame(width: 20, height: 20, alignment: .center)
-        }.sheet(isPresented: $loginviewmodel.isMoveSettings, content: {
-            SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-        })
+        VStack (spacing: 0) {
+            Button(action: {
+                loginviewmodel.isMoveSettings = true
+            }) {
+                Image("ic_settings1")
+                    .resizable()
+                    .frame(width: 20, height: 20, alignment: .center)
+            }
+            NavigationLink(
+                destination: SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel),
+                isActive: $loginviewmodel.isMoveSettings
+            ){
+                EmptyView()
+            }
+        }.frame(width: 20, height: 20, alignment: .center)
+//            .sheet(
+//                isPresented: $loginviewmodel.isMoveSettings,
+//                content: {
+//                    SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+//                }
+//            )
+//        }
     }
 }
 

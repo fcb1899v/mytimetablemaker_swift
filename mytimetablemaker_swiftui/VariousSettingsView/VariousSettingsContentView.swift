@@ -71,7 +71,7 @@ struct VariousSettingsContentView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){
-                settingsBackButton()
+                variousSettingsBackButton()
             }
         }
     }
