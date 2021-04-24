@@ -57,11 +57,13 @@ struct TimetableAlertLabel: View {
                         timeFieldAlertView(
                             text: $text,
                             isShowingAlert: $isShowingAlert,
+                            isShowingPicker: $isShowingPicker,
                             title: title,
                             message: message,
                             key: key,
                             maxnumber: 59
-                        ).actionSheet(isPresented: $isShowingPicker) {
+                        )
+                        .actionSheet(isPresented: $isShowingPicker) {
                             timetable.copyTimetableSheet(hour, key)
                         }
                     }

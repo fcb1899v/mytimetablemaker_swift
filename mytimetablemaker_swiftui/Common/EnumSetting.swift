@@ -115,9 +115,9 @@ enum DialogTitle: String {
     case transport   = "Setting your transportation"
     case transittime = "Setting your transit time [min]"
     case timetable   = "Setting your timetable"
-    case adddeletime = "Add and delete your time [min]"
-    case copytime    = "Copying your time"
-    case allcopytime = "Copying all the time"
+    case adddeletime = "Add and delete departure time [min]"
+    case copytime    = "Copying your timetable"
+    case allcopytime = "Copying all the time?"
     case selectpicture = "Select your timetable picture"
 }
 

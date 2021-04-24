@@ -73,8 +73,8 @@
 "Setting your transit time [min]" = "移動時間の設定 [分]";
 "Setting your timetable" = "時刻表設定";
 "Add and delete your time [min]" = "時刻の追加と削除 [分]";
-"Copying your time" = "時刻のコピー";
-"Copying all the time" = "全時刻をコピーしますか？";
+"Copying your timetable" = "発車時刻のコピー";
+"Copying all the time?" = "全時刻をコピーしますか？";
 
 
 //Hint

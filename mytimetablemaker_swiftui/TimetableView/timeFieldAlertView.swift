@@ -11,7 +11,8 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
     
     @Binding var text: String
     @Binding var isShowingAlert: Bool
-    
+    @Binding var isShowingPicker: Bool
+
     let title: String
     let message: String
     let key: String
@@ -20,8 +21,9 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
     let placeholder = Hint.to59min.rawValue.localized
     let isSecureTextEntry = false
     let cancelButtonTitle = Action.cancel.rawValue.localized
-    let deleteButtonTitle = Action.delete.rawValue.localized
     let addButtonTitle = Action.add.rawValue.localized
+    let deleteButtonTitle = Action.delete.rawValue.localized
+    let copyButtonTitle = DialogTitle.copytime.rawValue.localized
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<timeFieldAlertView>) -> some UIViewController {
         return UIViewController()
@@ -73,7 +75,7 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
             }
         })
 
-        alert.addAction(UIAlertAction(title: deleteButtonTitle, style: .destructive) { _ in
+        alert.addAction(UIAlertAction(title: deleteButtonTitle, style: .default) { _ in
             if let textField = alert.textFields?.first,
                let text = textField.text,
                let inttext = Int(text)
@@ -91,6 +93,13 @@ struct timeFieldAlertView: UIViewControllerRepresentable {
             }
         })
 
+        alert.addAction(UIAlertAction(title: copyButtonTitle, style: .destructive) { _ in
+            alert.dismiss(animated: true) {
+                isShowingAlert = false
+                isShowingPicker = true
+            }
+        })
+        
         DispatchQueue.main.async {
             uiViewController.present(alert, animated: true, completion: {
                 isShowingAlert = false
