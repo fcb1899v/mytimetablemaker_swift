@@ -70,7 +70,6 @@ struct signUpButton: View {
             message: Text(loginviewmodel.message),
             dismissButton: .default(Text("OK")) {
                 if !self.loginviewmodel.isError {
-                    firestoreviewmodel.resetFirestore()
                     self.presentationMode.wrappedValue.dismiss()
                 }
             }

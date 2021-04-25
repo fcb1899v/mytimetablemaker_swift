@@ -44,6 +44,7 @@ struct TimetableGridView: View {
     
 struct TimetableGridView_Previews: PreviewProvider {
     static var previews: some View {
-        TimetableGridView("back1", true, "1")
+        let weekflag = !Date().weekFlag
+        TimetableGridView("back1", weekflag, "1")
     }
 }

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import GoogleMobileAds
 
 struct TimetableContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @State var weekflag = Date().weekFlag
+    @State var weekflag = !Date().weekFlag
     
     private let goorback: String
     private let num: Int
@@ -32,17 +33,20 @@ struct TimetableContentView: View {
         NavigationView {
             ZStack {
                 primary
-                ScrollView {
+                VStack {
                     TimetableTitleView(
                         goorback, weekflag, keytag, {
                             weekflag = (weekflag) ? false: true
                         }
                     )
-                    TimetableGridView(
-                        goorback, weekflag, keytag
-                    )
-                    imagePickerView()
-                    Spacer(minLength: 30)
+                    ScrollView {
+                        TimetableGridView(
+                            goorback, weekflag, keytag
+                        )
+                        imagePickerView()
+                        Spacer(minLength: 30)
+                    }
+                    //AdMobView()
                 }
                 .navigationTitle(DialogTitle.timetable.rawValue.localized)
                 .navigationBarTitleDisplayMode(.inline)

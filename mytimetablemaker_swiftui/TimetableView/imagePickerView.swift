@@ -46,6 +46,8 @@ struct imagePickerView: View {
 
 struct imagePickerView_Previews: PreviewProvider {
     static var previews: some View {
+        let primary = Color(DefaultColor.primary.rawValue.colorInt)
         imagePickerView()
+            .background(primary)
     }
 }

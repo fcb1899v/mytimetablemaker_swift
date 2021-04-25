@@ -40,7 +40,7 @@ struct MainContentView: View {
                                 .foregroundColor(primary)
                                 .frame(width: UIScreen.screenWidth, height: 1.5)
                                 .offset(y: -10)
-                            AdMobView()
+                            //AdMobView()
                         }
                     }
                 }

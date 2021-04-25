@@ -50,6 +50,7 @@ struct TimetableEachGridView: View {
 
 struct TimetableEachGridView_Previews: PreviewProvider {
     static var previews: some View {
-        TimetableEachGridView("back1", true, "1", 4)
+        let weekflag = !Date().weekFlag
+        TimetableEachGridView("back1", weekflag, "1", 4)
     }
 }

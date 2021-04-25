@@ -40,6 +40,8 @@ struct dayAndEndButton: View {
 
 struct dayAndEndButton_Previews: PreviewProvider {
     static var previews: some View {
-        dayAndEndButton(true, action: {})
+        let weekflag = !Date().weekFlag
+        dayAndEndButton(weekflag, action: {})
+            .background(Color.black)
     }
 }

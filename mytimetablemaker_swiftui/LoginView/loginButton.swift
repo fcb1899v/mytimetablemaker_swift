@@ -47,7 +47,11 @@ struct loginButton: View {
             message: Text(loginviewmodel.message),
             dismissButton: .default(Text("OK")) {
                 if !self.loginviewmodel.isError {
-                    firestoreviewmodel.getFirestore()
+                    if firestoreviewmodel.isFirstLogin {
+                        firestoreviewmodel.getFirestore()
+                    } else {
+                        firestoreviewmodel.isFirstLogin = true
+                    }
                     UserDefaults.standard.set(true, forKey: "Login")
                 }
             }

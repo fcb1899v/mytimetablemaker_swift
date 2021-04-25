@@ -31,9 +31,10 @@ struct TimetableTitleView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text(Timetable(goorback, weekflag, keytag).timetableDepartStation)
-                        .font(.title3)
+                        .font(.headline)
                         .foregroundColor(Color.white)
                     Text(Timetable(goorback, weekflag, keytag).timetableTitle)
+                        .font(.callout)
                         .foregroundColor(Color.white)
                 }
                 Spacer()
@@ -44,6 +45,8 @@ struct TimetableTitleView: View {
 
 struct TimetableTitleView_Previews: PreviewProvider {
     static var previews: some View {
-        TimetableTitleView("back1", true, "1", {})
+        let weekflag = !Date().weekFlag
+        TimetableTitleView("back1", weekflag, "1", {})
+            .background(Color.black)
     }
 }

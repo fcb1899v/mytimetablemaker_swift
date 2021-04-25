@@ -46,6 +46,7 @@ struct TimetableGridTitle: View {
 
 struct TimetableGridTitle_Previews: PreviewProvider {
     static var previews: some View {
-        TimetableGridTitle(false)
+        let weekflag = !Date().weekFlag
+        TimetableGridTitle(weekflag)
     }
 }

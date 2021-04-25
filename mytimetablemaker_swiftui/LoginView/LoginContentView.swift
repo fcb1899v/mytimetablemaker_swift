@@ -44,7 +44,7 @@ struct LoginContentView: View {
                 Spacer()
                 Spacer()
                 Spacer()
-                AdMobView()
+                //AdMobView()
             }
             .edgesIgnoringSafeArea(.all)
             .opacity(isShowSplash ? 0 : 1)
