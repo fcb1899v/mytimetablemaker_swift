@@ -41,6 +41,9 @@ struct ContentView_Previews: PreviewProvider {
         let loginviewmodel = LoginViewModel()
         let mainviewmodel = MainViewModel()
         let firestoreviewmodel = FirestoreViewModel()
-        ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+        Group {
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+        }
     }
 }

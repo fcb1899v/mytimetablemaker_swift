@@ -44,9 +44,9 @@ struct TimetableContentView: View {
                             goorback, weekflag, keytag
                         )
                         imagePickerView()
-                        Spacer(minLength: 30)
+                        Spacer()
                     }
-                    //AdMobView()
+                    AdMobView()
                 }
                 .navigationTitle(DialogTitle.timetable.rawValue.localized)
                 .navigationBarTitleDisplayMode(.inline)
@@ -58,7 +58,7 @@ struct TimetableContentView: View {
                     }
                 }
             }
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

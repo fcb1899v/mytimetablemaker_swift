@@ -40,7 +40,7 @@ struct MainContentView: View {
                                 .foregroundColor(primary)
                                 .frame(width: UIScreen.screenWidth, height: 1.5)
                                 .offset(y: -10)
-                            //AdMobView()
+                            AdMobView()
                         }
                     }
                 }
@@ -57,7 +57,7 @@ struct MainContentView: View {
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(true)
             .edgesIgnoringSafeArea(.all)
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

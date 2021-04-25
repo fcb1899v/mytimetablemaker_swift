@@ -80,7 +80,7 @@ struct SettingsContentView: View {
                     settingsBackButton(loginviewmodel)
                 }
             }
-        }
+        }.navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
