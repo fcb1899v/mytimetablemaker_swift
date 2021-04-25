@@ -38,4 +38,3 @@ struct settingsSwitchRoute2: View {
         }.toggleStyle(SwitchToggleStyle(tint: accent))
     }
 }
-
