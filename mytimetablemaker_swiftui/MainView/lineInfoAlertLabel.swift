@@ -79,13 +79,19 @@ struct lineInfoAlertLabel: View {
                         key: ridetimekey,
                         addtitle: timetabletitle,
                         maxnumber: 99
-                    ).sheet(isPresented: $isShowingTimetableAlert) {
-                        TimetableContentView(goorback, num)
-                    }
+                    )
+                    NavigationLink(
+                        destination: TimetableContentView(goorback, num),
+                        isActive: $isShowingTimetableAlert,
+                        label: { }
+                    )
                 }
-                .frame(width: 30, height: 35.0, alignment: .center)
-                .padding(.leading, 10.0)
+//                .sheet(isPresented: $isShowingTimetableAlert) {
+//                    TimetableContentView(goorback, num)
+//                }
             }
+            .frame(width: 30, height: 35.0, alignment: .center)
+            .padding(.leading, 10.0)
             
             Button (action: {
                 isShowingLineNameAlert = true

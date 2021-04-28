@@ -211,7 +211,7 @@
 "Save current data" = "Save current data";
 "Overwritten saved data?" = "Overwritten saved data?";
 "Data saved error" = "Data saved error";
-"Data saved successfully" = "Data saved successfully<";
+"Data saved successfully" = "Data saved successfully";
 "Data could not be saved" = "Data could not be saved";
 
 //Delete data in Firestore

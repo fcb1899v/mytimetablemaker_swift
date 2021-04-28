@@ -69,11 +69,10 @@ class FirestoreViewModel: ObservableObject {
         let batch = db.batch()
         batch.setData(setLineInfo(goorback), forDocument: ref)
         batch.commit() { error in
+            self.title = "Data saved successfully".localized
             if error != nil {
                 self.title = "Save data error".localized
                 self.message = "Data could not be saved".localized
-            } else {
-                self.title = "Data saved successfully".localized
             }
         }
     }
@@ -118,6 +117,7 @@ class FirestoreViewModel: ObservableObject {
         let userdb = db.collection("users").document(userid)
         let ref = userdb.collection("goorback").document(goorback)
         ref.getDocument { (document, error) in
+            self.title = "Data got successfully".localized
             if let document = document, document.exists, let data = document.data() {
                 UserDefaults.standard.set(data["switch"], forKey: "\(goorback)route2flag")
                 UserDefaults.standard.set(data["changeline"], forKey: "\(goorback)changeline")
@@ -134,7 +134,6 @@ class FirestoreViewModel: ObservableObject {
                 }
                 UserDefaults.standard.set(data["transportatione"], forKey: "\(goorback)transporte")
                 UserDefaults.standard.set(data["transittimee"], forKey: "\(goorback)transittimee")
-                self.title = "Data got successfully".localized
             } else {
                 self.title = "Get data error".localized
                 self.message = "Data could not be got".localized
@@ -171,11 +170,10 @@ class FirestoreViewModel: ObservableObject {
         let batch = db.batch()
         batch.setData(setTimetableHour(goorback, linenumber, day), forDocument: nextref)
         batch.commit() { error in
+            self.title = "Data saved successfully".localized
             if error != nil {
                 self.title = "Save data error".localized
                 self.message = "Data could not be saved".localized
-            } else {
-                self.title = "Data saved successfully".localized
             }
         }
     }
@@ -219,10 +217,10 @@ class FirestoreViewModel: ObservableObject {
         let ref = userdb.collection("goorback").document(goorback)
         let nextref = ref.collection("timetable").document("timetable\(linenumber + 1)\(day.weekDayOrEnd)")
         nextref.getDocument { (document, error) in
+            self.title = "Data got successfully".localized
             if let document = document, document.exists, let data = document.data() {
                 let key = "\(goorback)line\(linenumber + 1)\(day.weekDayOrEnd)\(hour.addZeroTime)"
                 UserDefaults.standard.setValue(data["hour\(hour.addZeroTime)"], forKey: key)
-                self.title = "Data got successfully".localized
             } else {
                 self.title = "Get data error".localized
                 self.message = "Data could not be got".localized

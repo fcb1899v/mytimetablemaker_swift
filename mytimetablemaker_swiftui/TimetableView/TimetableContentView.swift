@@ -11,7 +11,7 @@ import GoogleMobileAds
 struct TimetableContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @State var weekflag = !Date().weekFlag
+    @State var weekflag = Date().weekFlag
     
     private let goorback: String
     private let num: Int
@@ -44,8 +44,8 @@ struct TimetableContentView: View {
                             goorback, weekflag, keytag
                         )
                         imagePickerView()
-                        Spacer()
                     }
+                    Spacer()
                     AdMobView()
                 }
                 .navigationTitle(DialogTitle.timetable.rawValue.localized)

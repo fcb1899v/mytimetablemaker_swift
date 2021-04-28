@@ -29,9 +29,9 @@ struct TimetableTitleView: View {
     var body: some View {
         
             HStack {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 5) {
                     Text(Timetable(goorback, weekflag, keytag).timetableDepartStation)
-                        .font(.headline)
+                        .font(.title3)
                         .foregroundColor(Color.white)
                     Text(Timetable(goorback, weekflag, keytag).timetableTitle)
                         .font(.callout)
@@ -39,7 +39,7 @@ struct TimetableTitleView: View {
                 }
                 Spacer()
                 dayAndEndButton(weekflag, action: action)
-            }.frame(width: UIScreen.screenWidth - 20)
+            }.padding(10)
     }
 }
 

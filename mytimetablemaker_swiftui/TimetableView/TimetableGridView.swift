@@ -34,8 +34,7 @@ struct TimetableGridView: View {
                     ForEach(4...25, id: \.self) { hour in
                         TimetableEachGridView(goorback, weekflag, keytag, hour)
                     }
-                    Color.white
-                        .frame(width: UIScreen.screenWidth, height: 0)
+                    Color.white.frame(height: 0)
                 }
             }
         }

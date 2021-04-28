@@ -24,13 +24,11 @@ struct TimetableGridTitle: View {
         ZStack {
             Color.white
             LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
-                primary
-                    .frame(width: UIScreen.screenWidth, height: 0)
+                primary.frame(height: 0)
                 HStack(spacing: 1) {
                     Color.white.frame(width: 1)
                     ZStack(alignment: .center) {
-                        primary
-                            .frame(width: UIScreen.screenWidth - 2, height: 25)
+                        primary.frame(height: 25)
                         Text(weekflag.weekLabelText)
                             .foregroundColor(weekflag.weekLabelColor)
                             .fontWeight(.bold)
@@ -39,8 +37,7 @@ struct TimetableGridTitle: View {
                 }
             }
         }
-        Color.white
-            .frame(width: UIScreen.screenWidth, height: 0)
+        Color.white.frame(height: 0)
     }
 }
 

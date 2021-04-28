@@ -26,21 +26,18 @@ struct imagePickerView: View {
                 Text(title)
                     .font(.subheadline)
                     .fontWeight(.bold)
-                    .frame(width: UIScreen.screenWidth * 0.7,
-                           height: 35,
-                           alignment: .center)
+                    .frame(width: 300, height: 35)
                     .foregroundColor(Color.white)
                     .background(accent)
                     .cornerRadius(15)
             }).sheet(isPresented: $isShowPhotoLibrary, content: {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
             })
-            primary.frame(height: 0)
             Image(uiImage: self.image)
                 .resizable()
                 .scaledToFit()
-                .frame(width: UIScreen.screenWidth * 0.9)
-        }
+                .padding(50)
+        }.frame(alignment: .top)
     }
 }
 

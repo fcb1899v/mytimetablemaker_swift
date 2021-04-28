@@ -22,15 +22,21 @@ struct AdView: UIViewRepresentable {
 }
 
 struct AdMobView: View {
+    
+    let admobflag = true
+        
     var body: some View {
-        AdView()
-            .frame(width: 320, height: 50)
-            .offset(y: -14)
+        if (admobflag) {
+            AdView()
+                .frame(width: 320, height: 50)
+                .offset(y: -14)
+        }
     }
 }
 
 struct AdMobView_Previews: PreviewProvider {
     static var previews: some View {
-        AdMobView().background(Color.black)
+        AdMobView()
+            .background(Color.black)
     }
 }

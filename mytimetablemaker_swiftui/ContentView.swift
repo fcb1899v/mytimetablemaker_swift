@@ -28,9 +28,11 @@ struct ContentView: View {
     var body: some View {
         if "Login".userDefaultsBool(false) {
             MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+                .preferredColorScheme(.light)
             
         } else {
             LoginContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+                .preferredColorScheme(.light)
         }
     }
 }
@@ -42,6 +44,9 @@ struct ContentView_Previews: PreviewProvider {
         let mainviewmodel = MainViewModel()
         let firestoreviewmodel = FirestoreViewModel()
         Group {
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
             ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
             ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
         }
