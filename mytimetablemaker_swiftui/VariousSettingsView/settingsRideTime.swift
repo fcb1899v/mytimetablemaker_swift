@@ -61,15 +61,10 @@ struct settingsRideTime: View {
                             addtitle: addtitle,
                             maxnumber: 99
                         )
-                        NavigationLink(
-                            destination: TimetableContentView(goorback, num),
-                            isActive: $isShowingNextAlert,
-                            label: { }
-                        )
                     }
-//                    .sheet(isPresented: $isShowingNextAlert) {
-//                        TimetableContentView(goorback, num)
-//                    }
+                    .sheet(isPresented: $isShowingNextAlert) {
+                        TimetableContentView(goorback, num)
+                    }
                     Spacer()
                     Text(text)
                         .font(.subheadline)

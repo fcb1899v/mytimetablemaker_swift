@@ -80,15 +80,10 @@ struct lineInfoAlertLabel: View {
                         addtitle: timetabletitle,
                         maxnumber: 99
                     )
-                    NavigationLink(
-                        destination: TimetableContentView(goorback, num),
-                        isActive: $isShowingTimetableAlert,
-                        label: { }
-                    )
                 }
-//                .sheet(isPresented: $isShowingTimetableAlert) {
-//                    TimetableContentView(goorback, num)
-//                }
+                .sheet(isPresented: $isShowingTimetableAlert) {
+                    TimetableContentView(goorback, num)
+                }
             }
             .frame(width: 30, height: 35.0, alignment: .center)
             .padding(.leading, 10.0)
