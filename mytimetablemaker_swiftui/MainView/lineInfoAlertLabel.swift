@@ -14,7 +14,7 @@ struct lineInfoAlertLabel: View {
     @State private var isShowingLineNameAlert = false
     @State private var isShowingLineColorAlert = false
     @State private var text = ""
-    @State private var label = ""
+    @State private var label = "Line 1"
     @State private var color = Color(DefaultColor.accent.rawValue.colorInt)
 
     private let goorback: String

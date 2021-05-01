@@ -35,7 +35,7 @@ struct MainContentView: View {
                     ZStack {
                         Color.white
                         VStack {
-                            routeInfoArray(mainviewmodel)
+                            routeInfoView(mainviewmodel)
                             Rectangle()
                                 .foregroundColor(primary)
                                 .frame(width: UIScreen.screenWidth, height: 1.5)
