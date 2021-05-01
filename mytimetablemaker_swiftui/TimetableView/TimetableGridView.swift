@@ -26,13 +26,49 @@ struct TimetableGridView: View {
     }
     
     var body: some View {
+        
+        let primary = Color(DefaultColor.primary.rawValue.colorInt)
+        let accent = Color(DefaultColor.accent.rawValue.colorInt)
+        
         ScrollView {
+            
             ZStack {
                 Color.white
                 VStack(spacing: 0.5) {
-                    TimetableGridTitle(weekflag)
+                    
+                    ZStack {
+                        Color.white
+                        LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
+                            primary.frame(height: 0)
+                            HStack(spacing: 1) {
+                                Color.white.frame(width: 1)
+                                ZStack(alignment: .center) {
+                                    primary.frame(height: 25)
+                                    Text(weekflag.weekLabelText)
+                                        .foregroundColor(weekflag.weekLabelColor)
+                                        .fontWeight(.bold)
+                                }
+                                Color.white.frame(width: 1)
+                            }
+                        }
+                    }
+                    Color.white.frame(height: 0)
+
                     ForEach(4...25, id: \.self) { hour in
-                        TimetableEachGridView(goorback, weekflag, num, hour)
+                        ZStack {
+                            Color.white
+                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
+                                HStack(spacing: 1) {
+                                    Color.white.frame(width: 1)
+                                    ZStack {
+                                        primary.frame(width: 27)
+                                        Text(hour.addZeroTime).foregroundColor(accent)
+                                    }
+                                    TimetableAlertLabel(goorback, weekflag, num, hour)
+                                    Color.white.frame(width: 1)
+                                }
+                            }
+                        }
                     }
                     Color.white.frame(height: 0)
                 }
@@ -43,7 +79,7 @@ struct TimetableGridView: View {
     
 struct TimetableGridView_Previews: PreviewProvider {
     static var previews: some View {
-        let weekflag = !Date().weekFlag
+        let weekflag = Date().weekFlag
         TimetableGridView("back1", weekflag, 0)
     }
 }

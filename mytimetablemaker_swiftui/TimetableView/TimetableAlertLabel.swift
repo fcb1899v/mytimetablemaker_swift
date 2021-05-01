@@ -32,12 +32,9 @@ struct TimetableAlertLabel: View {
 
     var body: some View {
         
-        let timetable = Timetable(goorback, weekflag, num)
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
-        
-        let message = "\(goorback.lineNameArray[num]) (\(String(hour))\("Hour".localized))"
-        let key = timetable.timetableKey(hour)
+        let timetable = Timetable(goorback, weekflag, num)
 
         Button (action: {
             self.isShowingAlert = true
@@ -51,19 +48,19 @@ struct TimetableAlertLabel: View {
                         Text(text)
                             .foregroundColor(.white)
                             .onReceive(timer) { (_) in
-                                text = "\(key.userDefaultsValue(""))"
+                                text = "\(timetable.timetableKey(hour).userDefaultsValue(""))"
                             }
                         timeFieldAlertView(
                             text: $text,
                             isShowingAlert: $isShowingAlert,
                             isShowingPicker: $isShowingPicker,
                             title: DialogTitle.adddeletime.rawValue.localized,
-                            message: message,
-                            key: key,
+                            message: timetable.timetableAlertMessage(hour),
+                            key: timetable.timetableKey(hour),
                             maxnumber: 59
                         )
                         .actionSheet(isPresented: $isShowingPicker) {
-                            timetable.copyTimetableSheet(hour, key)
+                            timetable.copyTimetableSheet(hour, timetable.timetableKey(hour))
                         }
                     }
                 }

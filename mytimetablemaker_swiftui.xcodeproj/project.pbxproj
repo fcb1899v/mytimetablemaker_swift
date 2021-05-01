@@ -34,9 +34,6 @@
 		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
 		02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F72C2620858600C00545 /* TimetableTitleView.swift */; };
 		02E7F732262085A800C00545 /* TimetableGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F731262085A800C00545 /* TimetableGridView.swift */; };
-		02E7F737262086D800C00545 /* TimetableGridTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F736262086D800C00545 /* TimetableGridTitle.swift */; };
-		02E7F73C262086F900C00545 /* TimetableEachGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F73B262086F900C00545 /* TimetableEachGridView.swift */; };
-		02E7F7412620872F00C00545 /* dayAndEndButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7402620872F00C00545 /* dayAndEndButton.swift */; };
 		02E7F7462620874E00C00545 /* imagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7452620874E00C00545 /* imagePickerView.swift */; };
 		02E7F74B2620877700C00545 /* imagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F74A2620877700C00545 /* imagePicker.swift */; };
 		02E7F750262087AC00C00545 /* TimetableAlertLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */; };
@@ -138,9 +135,6 @@
 		02E7F7272620856100C00545 /* TimetableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableContentView.swift; sourceTree = "<group>"; };
 		02E7F72C2620858600C00545 /* TimetableTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableTitleView.swift; sourceTree = "<group>"; };
 		02E7F731262085A800C00545 /* TimetableGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridView.swift; sourceTree = "<group>"; };
-		02E7F736262086D800C00545 /* TimetableGridTitle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridTitle.swift; sourceTree = "<group>"; };
-		02E7F73B262086F900C00545 /* TimetableEachGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEachGridView.swift; sourceTree = "<group>"; };
-		02E7F7402620872F00C00545 /* dayAndEndButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dayAndEndButton.swift; sourceTree = "<group>"; };
 		02E7F7452620874E00C00545 /* imagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagePickerView.swift; sourceTree = "<group>"; };
 		02E7F74A2620877700C00545 /* imagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imagePicker.swift; sourceTree = "<group>"; };
 		02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableAlertLabel.swift; sourceTree = "<group>"; };
@@ -403,12 +397,9 @@
 				02E7F7272620856100C00545 /* TimetableContentView.swift */,
 				02E7F72C2620858600C00545 /* TimetableTitleView.swift */,
 				02E7F731262085A800C00545 /* TimetableGridView.swift */,
-				02E7F736262086D800C00545 /* TimetableGridTitle.swift */,
-				02E7F73B262086F900C00545 /* TimetableEachGridView.swift */,
-				02E7F7402620872F00C00545 /* dayAndEndButton.swift */,
 				02E7F7452620874E00C00545 /* imagePickerView.swift */,
-				02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */,
 				02E7F74A2620877700C00545 /* imagePicker.swift */,
+				02E7F74F262087AC00C00545 /* TimetableAlertLabel.swift */,
 				02E7F75426208B4E00C00545 /* timeFieldAlertView.swift */,
 			);
 			path = TimetableView;
@@ -718,7 +709,6 @@
 				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
 				02F02678261C99F400655E54 /* AdMobView.swift in Sources */,
 				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
-				02E7F7412620872F00C00545 /* dayAndEndButton.swift in Sources */,
 				02F0261E261C930A00655E54 /* emailTextField.swift in Sources */,
 				02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */,
 				02F0263B261C95A900655E54 /* passwordResetView.swift in Sources */,
@@ -751,7 +741,6 @@
 				02F02648261C976C00655E54 /* signUpButton.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02E7F72D2620858600C00545 /* TimetableTitleView.swift in Sources */,
-				02E7F73C262086F900C00545 /* TimetableEachGridView.swift in Sources */,
 				02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */,
 				02F02708261E7C0C00655E54 /* numberFieldAlertView.swift in Sources */,
 				02F02632261C952500655E54 /* moveSignUpButton.swift in Sources */,
@@ -759,7 +748,6 @@
 				02F0268F261D2F2C00655E54 /* countdownLabel.swift in Sources */,
 				02E7F714262083A000C00545 /* settingsLineName.swift in Sources */,
 				02F02703261DF41900655E54 /* textFieldPlusAlertView.swift in Sources */,
-				02E7F737262086D800C00545 /* TimetableGridTitle.swift in Sources */,
 				02E7F6D7261FD63A00C00545 /* settingsBackButton.swift in Sources */,
 				02E7F732262085A800C00545 /* TimetableGridView.swift in Sources */,
 				02E7F6E6261FD6F800C00545 /* logOutButton.swift in Sources */,
@@ -965,7 +953,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 125;
+				CURRENT_PROJECT_VERSION = 126;
 				DEVELOPMENT_ASSET_PATHS = "\"mytimetablemaker_swiftui/Preview Content\"";
 				DEVELOPMENT_TEAM = P3MMV68RR4;
 				ENABLE_PREVIEWS = YES;
@@ -975,7 +963,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 1.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = Personal.mytimetablemaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -991,7 +979,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = mytimetablemaker_swiftui/mytimetablemaker_swiftuiRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 125;
+				CURRENT_PROJECT_VERSION = 126;
 				DEVELOPMENT_ASSET_PATHS = "\"mytimetablemaker_swiftui/Preview Content\"";
 				DEVELOPMENT_TEAM = P3MMV68RR4;
 				ENABLE_PREVIEWS = YES;
@@ -1001,7 +989,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.5;
+				MARKETING_VERSION = 1.2.6;
 				PRODUCT_BUNDLE_IDENTIFIER = Personal.mytimetablemaker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;

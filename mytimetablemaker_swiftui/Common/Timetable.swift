@@ -133,6 +133,10 @@ extension Timetable {
         return "\(goorback)linename\(num + 1)"
             .userDefaultsValue("\("Line ".localized)\(num + 1)")
     }
+    
+    func timetableAlertMessage(_ hour: Int) -> String {
+        return "\(goorback.lineNameArray[num]) (\(String(hour))\("Hour".localized))"
+    }
 }
 
 //weekflagの変換

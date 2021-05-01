@@ -28,24 +28,39 @@ struct TimetableTitleView: View {
     
     var body: some View {
         
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(Timetable(goorback, weekflag, num).timetableDepartStation)
-                        .font(.title3)
-                        .foregroundColor(Color.white)
-                    Text(Timetable(goorback, weekflag, num).timetableTitle)
-                        .font(.callout)
-                        .foregroundColor(Color.white)
-                }
-                Spacer()
-                dayAndEndButton(weekflag, action: action)
-            }.padding(10)
+        let primary = Color(DefaultColor.primary.rawValue.colorInt)
+
+        HStack {
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text(Timetable(goorback, weekflag, num).timetableDepartStation)
+                    .font(.title3)
+                    .foregroundColor(Color.white)
+                Text(Timetable(goorback, weekflag, num).timetableTitle)
+                    .font(.callout)
+                    .foregroundColor(Color.white)
+            }
+            
+            Spacer()
+            
+            Button(action: action){
+                Text((!weekflag).weekLabelText)
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .frame(width: UIScreen.screenWidth/5,
+                           height: 35,
+                           alignment: .center)
+                    .foregroundColor((!weekflag) ? primary: Color.white)
+                    .background((!weekflag) ? Color.white: Color.red)
+                    .cornerRadius(15)
+            }
+        }.padding(10)
     }
 }
 
 struct TimetableTitleView_Previews: PreviewProvider {
     static var previews: some View {
-        let weekflag = !Date().weekFlag
+        let weekflag = Date().weekFlag
         TimetableTitleView("back1", weekflag, 0, {})
             .background(Color.black)
     }

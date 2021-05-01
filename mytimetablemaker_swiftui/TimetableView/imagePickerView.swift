@@ -16,14 +16,13 @@ struct imagePickerView: View {
         
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
         let accent = Color(DefaultColor.accent.rawValue.colorInt)
-        let title = "Select your timetable picture".localized
 
         VStack(spacing: 10) {
             primary.frame(height: 10)
             Button(action: {
                 self.isShowPhotoLibrary = true
             }, label: {
-                Text(title)
+                Text(DialogTitle.selectpicture.rawValue.localized)
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .frame(width: 300, height: 35)

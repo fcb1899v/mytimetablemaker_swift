@@ -11,7 +11,7 @@ import GoogleMobileAds
 struct TimetableContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @State var weekflag = Date().weekFlag
+    @State var weekflag = !Date().weekFlag
     
     private let goorback: String
     private let num: Int
@@ -34,9 +34,8 @@ struct TimetableContentView: View {
                 primary
                 VStack {
                     TimetableTitleView(goorback, weekflag, num, {
-                            weekflag = (weekflag) ? false: true
-                        }
-                    )
+                        weekflag = (weekflag) ? false: true
+                    })
                     ScrollView {
                         TimetableGridView(goorback, weekflag, num)
                         imagePickerView()
