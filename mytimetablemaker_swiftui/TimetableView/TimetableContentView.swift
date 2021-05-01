@@ -28,21 +28,17 @@ struct TimetableContentView: View {
     var body: some View {
 
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
-        let keytag = "\(num + 1)"
         
         NavigationView {
             ZStack {
                 primary
                 VStack {
-                    TimetableTitleView(
-                        goorback, weekflag, keytag, {
+                    TimetableTitleView(goorback, weekflag, num, {
                             weekflag = (weekflag) ? false: true
                         }
                     )
                     ScrollView {
-                        TimetableGridView(
-                            goorback, weekflag, keytag
-                        )
+                        TimetableGridView(goorback, weekflag, num)
                         imagePickerView()
                     }
                     Spacer()

@@ -15,29 +15,28 @@ struct TimetableAlertLabel: View {
     
     private let goorback: String
     private let weekflag: Bool
-    private let keytag: String
+    private let num: Int
     private let hour: Int
 
     init(
         _ goorback: String,
         _ weekflag: Bool,
-        _ keytag: String,
+        _ num: Int,
         _ hour: Int
     ) {
         self.goorback = goorback
         self.weekflag = weekflag
-        self.keytag = keytag
+        self.num = num
         self.hour = hour
     }
 
     var body: some View {
         
-        let timetable = Timetable(goorback, weekflag, keytag)
+        let timetable = Timetable(goorback, weekflag, num)
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
         
-        let title = DialogTitle.adddeletime.rawValue.localized
-        let message = "\(goorback.lineName(keytag, "Line ".localized + keytag)) (\(String(hour))\("Hour".localized))"
+        let message = "\(goorback.lineNameArray[num]) (\(String(hour))\("Hour".localized))"
         let key = timetable.timetableKey(hour)
 
         Button (action: {
@@ -58,7 +57,7 @@ struct TimetableAlertLabel: View {
                             text: $text,
                             isShowingAlert: $isShowingAlert,
                             isShowingPicker: $isShowingPicker,
-                            title: title,
+                            title: DialogTitle.adddeletime.rawValue.localized,
                             message: message,
                             key: key,
                             maxnumber: 59

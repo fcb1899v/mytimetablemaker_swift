@@ -47,7 +47,7 @@ extension Bool {
     private func transitTimeArray(_ goorback: String) -> [Int]{
         var transittimearray: [Int] = []
         for i in 0...goorback.changeLineInt + 1 {
-            let transittime = (i == goorback.changeLineInt + 1) ? (goorback.transitTime("e")): goorback.transitTime(String(i + 1))
+            let transittime = (i == goorback.changeLineInt + 1) ? (goorback.transitTime(0)): goorback.transitTime(i)
             transittimearray.append(transittime)
         }
         return transittimearray
@@ -58,7 +58,7 @@ extension Bool {
         var ridetimearray: [Int] = []
         let changeline = goorback.changeLineInt
         for i in 0...changeline {
-            ridetimearray.append(goorback.rideTime(String(i + 1)))
+            ridetimearray.append(goorback.rideTime(i))
         }
         return ridetimearray
     }

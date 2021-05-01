@@ -12,6 +12,9 @@ struct settingsRideTime: View {
     @State private var isShowingAlert = false
     @State private var isShowingNextAlert = false
     @State private var text = ""
+    @State private var title = "Line 1"
+    @State private var label = "Not set".localized
+    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
 
     private let goorback: String
     private let num: Int
@@ -27,55 +30,45 @@ struct settingsRideTime: View {
     
     var body: some View {
 
-        let keytag = "\(num + 1)"
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
+        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
         
-        let label = "\("Line ".localized)\(keytag)"
-        let title = DialogTitle.ridetime.rawValue.localized
-        let message = "\("on ".localized)\(goorback.lineName(keytag, "\("Line ".localized)\(keytag)"))"
-        let key = "\(goorback)ridetime\(keytag)"
-        let addtitle = DialogTitle.timetable.rawValue.localized
-        var color = (key.userDefaultsValue("") == "") ? gray: Color.black
-
-        if goorback.changeLineInt > num - 1 {
-            
-            let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-            
-            Button (action: {
-                self.isShowingAlert = true
-            }) {
-                HStack {
-                    ZStack (alignment: .leading) {
-                        Text(label)
-                            .frame(alignment: .leading)
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                            .padding(5)
-                        numberFieldPlusAlertView(
-                            text: $text,
-                            isShowingAlert: $isShowingAlert,
-                            isShowingNextAlert: $isShowingNextAlert,
-                            title: title,
-                            message: message,
-                            key: key,
-                            addtitle: addtitle,
-                            maxnumber: 99
-                        )
-                    }
-                    .sheet(isPresented: $isShowingNextAlert) {
-                        TimetableContentView(goorback, num)
-                    }
-                    Spacer()
-                    Text(text)
+        Button (action: {
+            self.isShowingAlert = true
+        }) {
+            HStack {
+                ZStack (alignment: .leading) {
+                    Text(title)
+                        .frame(alignment: .leading)
                         .font(.subheadline)
-                        .lineLimit(1)
-                        .foregroundColor(color)
+                        .foregroundColor(.black)
                         .padding(5)
                         .onReceive(timer) { _ in
-                            text = goorback.rideTimeString(keytag)
-                            color = (key.userDefaultsValue("") == "") ? gray: Color.black
+                            title = goorback.lineNameArray[num]
                         }
+                    numberFieldPlusAlertView(
+                        text: $text,
+                        isShowingAlert: $isShowingAlert,
+                        isShowingNextAlert: $isShowingNextAlert,
+                        title: DialogTitle.ridetime.rawValue.localized,
+                        message: goorback.rideTimeAlertMessage(num),
+                        key: goorback.rideTimeKey(num),
+                        addtitle: DialogTitle.timetable.rawValue.localized,
+                        maxnumber: 99
+                    )
                 }
+                .sheet(isPresented: $isShowingNextAlert) {
+                    TimetableContentView(goorback, num)
+                }
+                Spacer()
+                Text(label)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .foregroundColor(color)
+                    .padding(5)
+                    .onReceive(timer) { _ in
+                        label = goorback.rideTimeStringArray[num]
+                        color = goorback.rideTimeSettingsColor(num)
+                    }
             }
         }
     }

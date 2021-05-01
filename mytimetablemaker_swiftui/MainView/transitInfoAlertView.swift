@@ -12,7 +12,8 @@ struct transitInfoAlertView: View {
     @State private var isShowingAlert = false
     @State private var isShowingPicker = false
     @State private var text = ""
-
+    @State private var label = "Walking".localized
+    
     private let goorback: String
     private let num: Int
     
@@ -26,23 +27,9 @@ struct transitInfoAlertView: View {
     }
 
     var body: some View {
-
-        let keytag = (num == 0) ? "e": "\(num)"
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
         
-        let transitdepartstation = goorback.transitDepartStation(num).localized
-        let transitarrivestation = goorback.transitArriveStation(num).localized
-    
-        let transittimetitle = DialogTitle.transittime.rawValue.localized
-        let transittimemessage = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
-        let transittimekey = "\(goorback)transittime\(keytag)"
-
-        let transportlist = Transportation.allCases.map{$0.rawValue.localized}
-        let transporttitle = DialogTitle.transport.rawValue.localized
-        let transportmessage = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
-        let transportkey = "\(goorback)transport\(keytag)"
-        let defaultvalue = "Walking".localized
-        let transportation = goorback.transportation(keytag, defaultvalue)
+        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
+        let gray = Color(DefaultColor.gray.rawValue.colorInt)
         
         HStack {
             
@@ -60,33 +47,36 @@ struct transitInfoAlertView: View {
                     numberFieldAlertView(
                         text: $text,
                         isShowingAlert: $isShowingAlert,
-                        title: transittimetitle,
-                        message: transittimemessage,
-                        key: transittimekey,
+                        title: DialogTitle.transittime.rawValue.localized,
+                        message: goorback.transportationMessage(num),
+                        key: goorback.transitTimeKey(num),
                         maxnumber: 99
                     )
                 }
                 .frame(width: 30, height: 35.0, alignment: .center)
                 .padding(.leading, 10.0)
             }
-            Button(
-                (transportation == "") ? transportlist[0]: transportation
-            ) {
+            
+            Button(action: {
                 self.isShowingPicker = true
+            }) {
+                Text(label)
             }
             .frame(alignment: .leading)
             .font(.footnote)
             .lineLimit(1)
             .foregroundColor(gray)
             .padding(.leading, 15.0)
+            .onReceive(timer) { _ in
+                label = goorback.transportationArray[num]
+            }
             .actionSheet(isPresented: $isShowingPicker) {
                 ActionSheet(
-                    title: Text(transporttitle),
-                    message:  Text(transportmessage),
-                    buttons: ActionSheetButtons(
-                        list: transportlist,
-                        value: transportlist,
-                        key: transportkey
+                    title: Text(DialogTitle.transport.rawValue.localized),
+                    message:  Text(goorback.transportationMessage(num)),
+                    buttons: goorback.transportationKey(num).ActionSheetButtons(
+                        list: Transportation.allCases.map{$0.rawValue.localized},
+                        value: Transportation.allCases.map{$0.rawValue.localized}
                     )
                 )
             }

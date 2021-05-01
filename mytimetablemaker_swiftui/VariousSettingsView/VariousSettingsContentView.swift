@@ -27,31 +27,29 @@ struct VariousSettingsContentView: View {
             Section(
                 header: settingsTitle("\n" + DialogTitle.stationname.rawValue.localized)
             ) {
-                settingsDepartPoint(goorback)
-                ForEach(0..<3) { num in
-                    settingsDepartStation(goorback, num)
-                    settingsArriveStation(goorback, num)
+                ForEach(1..<2 * goorback.changeLineInt + 4) { num in
+                    settingsStations(goorback, num)
                 }
-                settingsDestination(goorback)
+                settingsStations(goorback, 0)
             }
             Section(
                 header: settingsTitle(DialogTitle.linename.rawValue.localized)
             ) {
-                ForEach(0..<3) { num in
+                ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsLineName(goorback, num)
                 }
             }
             Section(
                 header: settingsTitle(DialogTitle.ridetime.rawValue.localized)
             ) {
-                ForEach(0..<3) { num in
+                ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsRideTime(goorback, num)
                 }
             }
             Section(
                 header: settingsTitle(DialogTitle.transport.rawValue.localized)
             ) {
-                ForEach(1..<4) { num in
+                ForEach(1..<goorback.changeLineInt + 2) { num in
                     settingsTransportation(goorback, num)
                 }
                 settingsTransportation(goorback, 0)
@@ -59,7 +57,7 @@ struct VariousSettingsContentView: View {
             Section(
                 header: settingsTitle(DialogTitle.transittime.rawValue.localized)
             ) {
-                ForEach(1..<4) { num in
+                ForEach(1..<goorback.changeLineInt + 2) { num in
                     settingsTransitTime(goorback, num)
                 }
                 settingsTransitTime(goorback, 0)

@@ -82,8 +82,8 @@ class FirestoreViewModel: ObservableObject {
         return [
             "switch": goorback.route2Flag,
             "changeline" : "\(goorback.changeLineInt)",
-            "departpoint" : goorback.departurePoint("Office".localized, "Home".localized),
-            "arrivalpoint" : goorback.destination("Home".localized, "Office".localized),
+            "departpoint" : goorback.departurePoint,
+            "arrivalpoint" : goorback.arrivalPoint,
             "departstation1" : goorback.departStationArray[0],
             "departstation2" : goorback.departStationArray[1],
             "departstation3" : goorback.departStationArray[2],
@@ -121,7 +121,7 @@ class FirestoreViewModel: ObservableObject {
             if let document = document, document.exists, let data = document.data() {
                 UserDefaults.standard.set(data["switch"], forKey: "\(goorback)route2flag")
                 UserDefaults.standard.set(data["changeline"], forKey: "\(goorback)changeline")
-                UserDefaults.standard.set(data["departpoint"], forKey: goorback.departPointKey)
+                UserDefaults.standard.set(data["departpoint"], forKey: goorback.departurePointKey)
                 UserDefaults.standard.set(data["arrivalpoint"], forKey: goorback.arrivalPointKey)
                 for i in 1..<4 {
                     UserDefaults.standard.set(data["departstation\(i)"], forKey: "\(goorback)departstation\(i)")
@@ -145,7 +145,7 @@ class FirestoreViewModel: ObservableObject {
     private func resetLineInfoFirestore(_ goorback: String) {
         UserDefaults.standard.set(true, forKey: "\(goorback)route2flag")
         UserDefaults.standard.set("2", forKey: "\(goorback)changeline")
-        UserDefaults.standard.set(goorback.stringGoOrBack("Office".localized, "Home".localized), forKey: goorback.departPointKey)
+        UserDefaults.standard.set(goorback.stringGoOrBack("Office".localized, "Home".localized), forKey: goorback.departurePointKey)
         UserDefaults.standard.set(goorback.stringGoOrBack("Home".localized, "Office".localized), forKey: goorback.arrivalPointKey)
         for i in 1..<4 {
             UserDefaults.standard.set("Dep. St. ".localized + "\(i)", forKey: "\(goorback)departstation\(i)")
@@ -182,7 +182,7 @@ class FirestoreViewModel: ObservableObject {
     
     //UserDefaultsに保存された時刻表データを取得
     private func setTimetableHour(_ goorback: String, _ linenumber: Int, _ day: Int)  -> [String : String] {
-        let timetable = Timetable(goorback, day.weekDayOrEndFlag, "\(linenumber + 1)")
+        let timetable = Timetable(goorback, day.weekDayOrEndFlag, linenumber)
         return [
             "hour04" : timetable.timetableTime(4),
             "hour05" : timetable.timetableTime(5),

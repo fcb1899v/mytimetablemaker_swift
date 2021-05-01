@@ -35,8 +35,8 @@ struct SettingsContentView: View {
                 Section(
                     header: settingsTitle("\n" + "Display route 2".localized)
                 ) {
-                    settingsSwitchRoute2("back2", $back2setting.route2flag)
-                    settingsSwitchRoute2("go2", $go2setting.route2flag)
+                    settingsSwitchRoute2("back2")
+                    settingsSwitchRoute2("go2")
                 }
                 Section(
                     header: settingsTitle("Change line".localized)

@@ -1,47 +1,41 @@
 //
-//  settingsTextFieldAlertLabel.swift
+//  settingsStations.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/01.
+//  Created by 中島正雄 on 2021/04/30.
 //
 
 import SwiftUI
 
-struct settingsTextFieldAlertLabel: View {
+struct settingsStations: View {
     
     @State private var isShowingAlert = false
     @State private var text = ""
+    @State private var label = ""
+    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
 
-    private let label: String
-    private let title: String
-    private let message: String
-    private let key: String
+    private let goorback: String
+    private let num: Int
 
     /// 値を指定して生成する
     init(
-        _ label: String,
-        _ title: String,
-        _ message: String,
-        _ key: String
+        _ goorback: String,
+        _ num: Int
     ){
-        self.label = label
-        self.title = title
-        self.message = message
-        self.key = key
+        self.goorback = goorback
+        self.num = num
     }
-
+    
     var body: some View {
-        
+
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
-        var color = (key.userDefaultsValue("") == "") ? gray: Color.black
-        
+
         Button (action: {
             self.isShowingAlert = true
         }) {
             HStack {
                 ZStack (alignment: .leading) {
-                    Text(label)
+                    Text(goorback.stationAlertLabelArray[num])
                         .frame(alignment: .leading)
                         .font(.subheadline)
                         .foregroundColor(.black)
@@ -49,22 +43,23 @@ struct settingsTextFieldAlertLabel: View {
                     textFieldAlertView(
                         text: $text,
                         isShowingAlert: $isShowingAlert,
-                        title: title,
-                        message: message,
-                        key: key
+                        title: goorback.stationAlertTitleArray[num],
+                        message: goorback.stationAlertMessageArray[num],
+                        key: goorback.stationKeyArray[num]
                     )
                 }
                 Spacer()
-                Text(text)
+                Text(label)
                     .font(.subheadline)
                     .lineLimit(1)
                     .foregroundColor(color)
                     .padding(5)
-                    .onReceive(timer) { (_) in
-                        text = key.userDefaultsValue("Not set".localized)
-                        color = (key.userDefaultsValue("") == "") ? gray: Color.black
+                    .onReceive(timer) { _ in
+                        label = goorback.stationSettingsArray[num]
+                        color = goorback.stationSettingsArray[num].settingsColor
                     }
             }
         }
     }
 }
+

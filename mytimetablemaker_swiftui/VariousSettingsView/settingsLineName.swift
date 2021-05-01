@@ -12,10 +12,12 @@ struct settingsLineName: View {
     @State private var isShowingAlert = false
     @State private var isShowingNextAlert = false
     @State private var text = ""
+    @State private var label = ""
+    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
 
     private let goorback: String
     private let num: Int
-    
+
     /// 値を指定して生成する
     init(
         _ goorback: String,
@@ -27,68 +29,50 @@ struct settingsLineName: View {
     
     var body: some View {
         
-        let keytag = "\(num + 1)"
-        let label = "\("Line ".localized)\(keytag)"
-        let title = DialogTitle.linename.rawValue.localized
-        let message = "\("of ".localized)\("line ".localized)\(keytag)"
-        let key = "\(goorback)linename\(keytag)"
-        let addtitle = DialogTitle.linecolor.rawValue.localized
-
-        var color = goorback.lineColor(keytag, DefaultColor.gray.rawValue)
-        let colortitle = DialogTitle.linecolor.rawValue.localized
-        let colormessage = goorback.lineName(keytag, "line ".localized + keytag)
-        let colorlist = CustomColor.allCases.map{$0.rawValue.localized}
-        let colorvalue = CustomColor.allCases.map{$0.RGB}
-        let colorkey = "\(goorback)linecolor\(keytag)"
-
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
 
-        if goorback.changeLineInt > num - 1 {
-            
-            Button (action: {
-                self.isShowingAlert = true
-            }) {
-                HStack {
-                    ZStack (alignment: .leading) {
-                        Text(label)
-                            .frame(alignment: .leading)
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                            .padding(5)
-                        textFieldPlusAlertView(
-                            text: $text,
-                            isShowingAlert: $isShowingAlert,
-                            isShowingNextAlert: $isShowingNextAlert,
-                            title: title,
-                            message: message,
-                            key: key,
-                            addtitle: addtitle
-                        )
-                    }.actionSheet(isPresented: $isShowingNextAlert) {
-                        ActionSheet(
-                            title: Text(colortitle),
-                            message:  Text(colormessage),
-                            buttons: ActionSheetButtons(
-                                list: colorlist,
-                                value: colorvalue,
-                                key: colorkey
-                            )
-                        )
-                    }
-                    Spacer()
-                    Text(text)
+        Button (action: {
+            self.isShowingAlert = true
+        }) {
+            HStack {
+                ZStack (alignment: .leading) {
+                    Text(goorback.lineNameDefault(num))
+                        .frame(alignment: .leading)
                         .font(.subheadline)
-                        .lineLimit(1)
-                        .foregroundColor(color)
+                        .foregroundColor(.black)
                         .padding(5)
-                        .onReceive(timer) { (_) in
-                            text = key.userDefaultsValue("Not set".localized)
-                            color = goorback.lineColor(keytag, DefaultColor.gray.rawValue)
-                        }
-
+                    textFieldPlusAlertView(
+                        text: $text,
+                        isShowingAlert: $isShowingAlert,
+                        isShowingNextAlert: $isShowingNextAlert,
+                        title: DialogTitle.linename.rawValue.localized,
+                        message: goorback.lineNameAlertMessage(num),
+                        key: goorback.lineNameKey(num),
+                        addtitle: DialogTitle.linecolor.rawValue.localized
+                    )
+                }.actionSheet(isPresented: $isShowingNextAlert) {
+                    ActionSheet(
+                        title: Text(DialogTitle.linecolor.rawValue.localized),
+                        message:  Text(goorback.lineNameArray[num]),
+                        buttons: goorback.lineColorKey(num).ActionSheetButtons(
+                            list: CustomColor.allCases.map{$0.rawValue.localized},
+                            value: CustomColor.allCases.map{$0.RGB}
+                        )
+                    )
                 }
+                Spacer()
+                Text(label)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .foregroundColor(color)
+                    .padding(5)
+                    .onReceive(timer) { _ in
+                        label = goorback.lineNameArray[num]
+                        color = goorback.lineColorArray[num]
+                    }
             }
         }
+
     }
 }
 

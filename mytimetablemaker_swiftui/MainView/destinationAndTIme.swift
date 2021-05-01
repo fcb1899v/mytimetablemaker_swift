@@ -26,13 +26,10 @@ struct destinationAndTime: View {
 
     var body: some View {
         
-        let office = "Office".localized
-        let home = "Home".localized
-        
         let title = DialogTitle.destination.rawValue.localized
         let message = ""
-        let key = (goorback == "back1" || goorback == "back2") ? "departurepoint": "destination"
-        let defaultvalue = goorback.destination(home, office)
+        let key = goorback.arrivalPointKey
+        let defaultvalue = goorback.arrivalPointDefault
         let time = weekflag.displayTimeArray(goorback, currenttime)[0]
         let primary = Color(DefaultColor.primary.rawValue.colorInt)
 

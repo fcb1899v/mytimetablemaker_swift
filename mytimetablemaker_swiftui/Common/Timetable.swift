@@ -16,16 +16,16 @@ struct Timetable: Calculation{
     
     let goorback: String
     let weekflag: Bool
-    let keytag: String
+    let num: Int
     
     init(
         _ goorback: String,
         _ weekflag: Bool,
-        _ keytag: String
+        _ num: Int
     ){
         self.goorback = goorback
         self.weekflag = weekflag
-        self.keytag = keytag
+        self.num = num
     }
     
     let register = Action.register.rawValue.localized
@@ -41,7 +41,7 @@ extension Timetable {
 
     //
     func timetableKey(_ hour: Int) -> String {
-        return "\(goorback)line\(keytag)\(weekflag.weektag)\(hour.addZeroTime)"
+        return "\(goorback)line\(num + 1)\(weekflag.weektag)\(hour.addZeroTime)"
     }
 
     //UserDefaultに保存された時刻表の時刻の表示を取得
@@ -52,9 +52,9 @@ extension Timetable {
     //
     private func choiceCopyTimeKey(_ hour: Int) -> [String] {
         return [
-            "\(goorback)line\(keytag)\(weekflag.weektag)\((hour - 1).addZeroTime)",
-            "\(goorback)line\(keytag)\(weekflag.weektag)\((hour + 1).addZeroTime)",
-            "\(goorback)line\(keytag)\((!weekflag).weektag)\(hour.addZeroTime)",
+            "\(goorback)line\(num + 1)\(weekflag.weektag)\((hour - 1).addZeroTime)",
+            "\(goorback)line\(num + 1)\(weekflag.weektag)\((hour + 1).addZeroTime)",
+            "\(goorback)line\(num + 1)\((!weekflag).weektag)\(hour.addZeroTime)",
             "\(goorback.otherroute)line1\(weekflag.weektag)\(hour.addZeroTime)",
             "\(goorback.otherroute)line2\(weekflag.weektag)\(hour.addZeroTime)",
             "\(goorback.otherroute)line3\(weekflag.weektag)\(hour.addZeroTime)"
@@ -118,20 +118,20 @@ extension Timetable {
 
     //UserDefaultsに保存された発車駅名を取得
     var timetableDepartStation: String {
-        return "\(goorback)departstation\(keytag)"
-            .userDefaultsValue("\("Dep. St. ".localized)\(keytag)")
+        return "\(goorback)departstation\(num + 1)"
+            .userDefaultsValue("\("Dep. St. ".localized)\(num + 1)")
     }
 
     //UserDefaultsに保存された降車駅名を取得
     private var timetableArriveStation: String {
-        return "\(goorback)arrivestation\(keytag)"
-            .userDefaultsValue("Arr. St. ".localized + keytag)
+        return "\(goorback)arrivestation\(num + 1)"
+            .userDefaultsValue("\("Arr. St. ".localized)\(num + 1)")
     }
 
     //UserDefaultsに保存された路線名を取得
     private var timetableLineName: String {
-        return "\(goorback)linename\(keytag)"
-            .userDefaultsValue("Line ".localized + keytag)
+        return "\(goorback)linename\(num + 1)"
+            .userDefaultsValue("\("Line ".localized)\(num + 1)")
     }
 }
 

@@ -15,6 +15,7 @@ struct lineInfoAlertLabel: View {
     @State private var isShowingLineColorAlert = false
     @State private var text = ""
     @State private var label = ""
+    @State private var color = Color(DefaultColor.accent.rawValue.colorInt)
 
     private let goorback: String
     private let weekflag: Bool
@@ -33,30 +34,10 @@ struct lineInfoAlertLabel: View {
 
     var body: some View {
         
-        let keytag = "\(num + 1)"
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-        let accent = DefaultColor.accent.rawValue
-
-        let ridetimetitle = DialogTitle.ridetime.rawValue.localized
-        let ridetimemessage = "\("on ".localized)\(goorback.lineName(keytag, "\("Line ".localized)\(keytag)"))"
-        let ridetimekey = "\(goorback)ridetime\(keytag)"
-        let timetabletitle = DialogTitle.timetable.rawValue.localized
-        
-        let linenametitle = DialogTitle.linename.rawValue.localized
-        let linenamemessage = "\("of ".localized)\("line ".localized)\(keytag)"
-        let linenamekey = "\(goorback)linename\(keytag)"
-        let addtitle = DialogTitle.linecolor.rawValue.localized
-        let defaultlinename = "\("Line ".localized)\(keytag)"
-        
-        let colortitle = DialogTitle.linecolor.rawValue.localized
-        let colormessage = goorback.lineName(keytag, "line ".localized + keytag)
-        let colorlist = CustomColor.allCases.map{$0.rawValue.localized}
-        let colorvalue = CustomColor.allCases.map{$0.RGB}
-        let colorkey = "\(goorback)linecolor\(keytag)"
-        var color = colorkey.userDefaultsColor(accent)
 
         HStack {
-        
+            
             Button (action: {
                 self.isShowingRideTimeAlert = true
             }) {
@@ -74,10 +55,10 @@ struct lineInfoAlertLabel: View {
                         text: $text,
                         isShowingAlert: $isShowingRideTimeAlert,
                         isShowingNextAlert: $isShowingTimetableAlert,
-                        title: ridetimetitle,
-                        message: ridetimemessage,
-                        key: ridetimekey,
-                        addtitle: timetabletitle,
+                        title: DialogTitle.ridetime.rawValue.localized,
+                        message: goorback.rideTimeAlertMessage(num),
+                        key: goorback.rideTimeKey(num),
+                        addtitle: DialogTitle.timetable.rawValue.localized,
                         maxnumber: 99
                     )
                 }
@@ -98,26 +79,25 @@ struct lineInfoAlertLabel: View {
                         .foregroundColor(color)
                         .padding(.leading, 15.0)
                         .onReceive(timer) { _ in
-                            label = linenamekey.userDefaultsValue(defaultlinename)
-                            color = colorkey.userDefaultsColor(accent)
+                            label = goorback.lineNameArray[num]
+                            color = goorback.lineColorArray[num]
                         }
                     textFieldPlusAlertView(
                         text: $text,
                         isShowingAlert: $isShowingLineNameAlert,
                         isShowingNextAlert: $isShowingLineColorAlert,
-                        title: linenametitle,
-                        message: linenamemessage,
-                        key: linenamekey,
-                        addtitle: addtitle
+                        title: DialogTitle.linename.rawValue.localized,
+                        message: goorback.lineNameAlertMessage(num),
+                        key: goorback.lineNameKey(num),
+                        addtitle: DialogTitle.linecolor.rawValue.localized
                     )
                 }.actionSheet(isPresented: $isShowingLineColorAlert) {
                     ActionSheet(
-                        title: Text(colortitle),
-                        message:  Text(colormessage),
-                        buttons: ActionSheetButtons(
-                            list: colorlist,
-                            value: colorvalue,
-                            key: colorkey
+                        title: Text(DialogTitle.linecolor.rawValue.localized),
+                        message:  Text(goorback.lineNameArray[num]),
+                        buttons: goorback.lineColorKey(num).ActionSheetButtons(
+                            list: CustomColor.allCases.map{$0.rawValue.localized},
+                            value: CustomColor.allCases.map{$0.RGB}
                         )
                     )
                 }

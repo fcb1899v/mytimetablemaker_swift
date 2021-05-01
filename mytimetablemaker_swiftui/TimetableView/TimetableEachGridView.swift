@@ -11,18 +11,18 @@ struct TimetableEachGridView: View {
 
     private let goorback: String
     private let weekflag: Bool
-    private let keytag: String
+    private let num: Int
     private let hour: Int
 
     init(
         _ goorback: String,
         _ weekflag: Bool,
-        _ keytag: String,
+        _ num: Int,
         _ hour: Int
     ) {
         self.goorback = goorback
         self.weekflag = weekflag
-        self.keytag = keytag
+        self.num = num
         self.hour = hour
     }
 
@@ -40,7 +40,7 @@ struct TimetableEachGridView: View {
                         primary.frame(width: 27)
                         Text(hour.addZeroTime).foregroundColor(accent)
                     }
-                    TimetableAlertLabel(goorback, weekflag, keytag, hour)
+                    TimetableAlertLabel(goorback, weekflag, num, hour)
                     Color.white.frame(width: 1)
                 }
             }
@@ -51,6 +51,6 @@ struct TimetableEachGridView: View {
 struct TimetableEachGridView_Previews: PreviewProvider {
     static var previews: some View {
         let weekflag = !Date().weekFlag
-        TimetableEachGridView("back1", weekflag, "1", 4)
+        TimetableEachGridView("back1", weekflag, 0, 4)
     }
 }

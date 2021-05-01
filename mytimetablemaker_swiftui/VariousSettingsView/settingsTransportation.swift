@@ -10,6 +10,9 @@ import SwiftUI
 struct settingsTransportation: View {
 
     @State private var isShowingAlert = false
+    @State private var title = "To Office"
+    @State private var label = "Not set".localized
+    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
 
     private let goorback: String
     private let num: Int
@@ -24,20 +27,42 @@ struct settingsTransportation: View {
     }
 
     var body: some View {
-
-        let keytag = (num == 0) ? "e": "\(num)"
-        let list = Transportation.allCases.map{$0.rawValue.localized}
-        let transitdepartstation = goorback.transitDepartStation(num).localized
-        let transitarrivestation = goorback.transitArriveStation(num).localized
-
-        let label = (num == 1) ? "\("from ".localized)\(transitdepartstation)\(" to ".localized)":
-            "\("To ".localized)\(transitarrivestation)\("he".localized)"
-        let title = DialogTitle.transport.rawValue.localized
-        let message = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
-        let key = "\(goorback)transport\(keytag)"
         
-        if goorback.changeLineInt > num - 2 || num == 0 {
-            settingActionSheet(label, title, message, key, list, list)
+        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
+
+        Button (action: {
+            self.isShowingAlert = true
+        }) {
+            HStack {
+                Text(title)
+                    .frame(alignment: .leading)
+                    .font(.subheadline)
+                    .foregroundColor(Color.black)
+                    .padding(5)
+                    .onReceive(timer) { _ in
+                        title = goorback.transportationLabel(num)
+                    }
+                    .actionSheet(isPresented: $isShowingAlert) {
+                        ActionSheet(
+                            title: Text(DialogTitle.transport.rawValue.localized),
+                            message:  Text(goorback.transportationMessage(num)),
+                            buttons: goorback.transportationKey(num).ActionSheetButtons(
+                                list: Transportation.allCases.map{$0.rawValue.localized},
+                                value: Transportation.allCases.map{$0.rawValue.localized}
+                            )
+                        )
+                    }
+                Spacer()
+                Text(label)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .foregroundColor(color)
+                    .padding(5)
+                    .onReceive(timer) { _ in
+                        label = goorback.transportationSettingsArray[num]
+                        color = label.settingsColor
+                    }
+            }
         }
     }
 }

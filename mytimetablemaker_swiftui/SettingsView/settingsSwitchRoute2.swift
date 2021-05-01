@@ -10,31 +10,36 @@ import SwiftUI
 struct settingsSwitchRoute2: View {
     
     private let goorback: String
-    private let ison: Binding<Bool>
-    
+    @ObservedObject var settingviewmodel:  SettingsViewModel
+
     /// 値を指定して生成する
     init(
-        _ goorback: String,
-        _ ison: Binding<Bool>
+        _ goorback: String
     ){
         self.goorback = goorback
-        self.ison = ison
+        self.settingviewmodel = SettingsViewModel(goorback)
     }
-    
-    private let accent = Color(DefaultColor.accent.rawValue.colorInt)
     
     var body: some View {
     
-        let back2label = "Going home route 2".localized
-        let go2label = "Outgoing route 2".localized
-        let label = (goorback == "back2") ? back2label: go2label
+        let label = (goorback == "back2") ? "Going home route 2".localized: "Outgoing route 2".localized
+        let accent = Color(DefaultColor.accent.rawValue.colorInt)
         
         Toggle(
-            isOn: ison
+            isOn: $settingviewmodel.route2flag
         ){
             Text(label)
                 .font(.subheadline)
                 .foregroundColor(Color.black)
-        }.toggleStyle(SwitchToggleStyle(tint: accent))
+        }.toggleStyle(SwitchToggleStyle(
+            tint: accent
+        ))
     }
 }
+
+struct settingsSwitchRoute2_Previews: PreviewProvider {
+    static var previews: some View {
+        settingsSwitchRoute2("back2")
+    }
+}
+

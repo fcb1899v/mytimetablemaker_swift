@@ -13,6 +13,9 @@ struct settingsTransitTime: View {
     @State private var isShowingNext1Alert = false
     @State private var isShowingNext2Alert = false
     @State private var text = ""
+    @State private var title = "To Office"
+    @State private var label = "Not set".localized
+    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
 
     private let goorback: String
     private let num: Int
@@ -28,52 +31,40 @@ struct settingsTransitTime: View {
 
     var body: some View {
         
-        let keytag = (num == 0) ? "e": "\(num)"
-        let transitdepartstation = goorback.transitDepartStation(num).localized
-        let transitarrivestation = goorback.transitArriveStation(num).localized
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
+        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
         
-        let label = (num == 1) ? "\("from ".localized)\(transitdepartstation)\(" to ".localized)":
-            "\("To ".localized)\(transitarrivestation)\("he".localized)"
-        let title = DialogTitle.transittime.rawValue.localized
-        let message = "\("from ".localized)\(transitdepartstation)\(" to ".localized)\(transitarrivestation)"
-        let key = "\(goorback)transittime\(keytag)"
-        var color = (key.userDefaultsValue("") == "") ? gray: Color.black
-
-        if goorback.changeLineInt > num - 2 || num == 0 {
-
-            let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-            
-            Button (action: {
-                self.isShowingAlert = true
-            }) {
-                HStack {
-                    ZStack (alignment: .leading) {
-                        Text(label)
-                            .frame(alignment: .leading)
-                            .font(.subheadline)
-                            .foregroundColor(.black)
-                            .padding(5)
-                        numberFieldAlertView(
-                            text: $text,
-                            isShowingAlert: $isShowingAlert,
-                            title: title,
-                            message: message,
-                            key: key,
-                            maxnumber: 99
-                        )
-                    }
-                    Spacer()
-                    Text(text)
+        Button (action: {
+            self.isShowingAlert = true
+        }) {
+            HStack {
+                ZStack (alignment: .leading) {
+                    Text(title)
+                        .frame(alignment: .leading)
                         .font(.subheadline)
-                        .lineLimit(1)
-                        .foregroundColor(color)
+                        .foregroundColor(.black)
                         .padding(5)
                         .onReceive(timer) { _ in
-                            text = goorback.transitTimeString(keytag)
-                            color = (key.userDefaultsValue("") == "") ? gray: Color.black
+                            title = goorback.transportationLabel(num)
                         }
+                    numberFieldAlertView(
+                        text: $text,
+                        isShowingAlert: $isShowingAlert,
+                        title: DialogTitle.transittime.rawValue.localized,
+                        message: goorback.transportationMessage(num),
+                        key: goorback.transitTimeKey(num),
+                        maxnumber: 99
+                    )
                 }
+                Spacer()
+                Text(label)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .foregroundColor(color)
+                    .padding(5)
+                    .onReceive(timer) { _ in
+                        label = goorback.transitTimeStringArray[num]
+                        color = label.settingsColor
+                    }
             }
         }
     }

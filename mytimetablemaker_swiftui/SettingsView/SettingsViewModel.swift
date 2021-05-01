@@ -10,10 +10,16 @@ import SwiftUI
 class SettingsViewModel: ObservableObject {
     
     private let goorback: String
-    
+
     @Published var route2flag: Bool {
         didSet {
             UserDefaults.standard.set(route2flag, forKey: goorback + "route2flag")
+        }
+    }
+
+    @Published var changeline: String {
+        didSet {
+            UserDefaults.standard.set(changeline, forKey: goorback.changeLine)
         }
     }
     
@@ -21,6 +27,7 @@ class SettingsViewModel: ObservableObject {
         _ goorback: String
     ) {
         self.goorback = goorback
+        self.changeline = goorback.changeLine
         self.route2flag = goorback.route2Flag
     }
     
@@ -36,13 +43,3 @@ class SettingsViewModel: ObservableObject {
     }
 }
 
-func ActionSheetButtons(list: [String], value: [Any], key: String) -> [ActionSheet.Button] {
-    var buttonsArray: [ActionSheet.Button] = []
-    for i in 0..<list.count {
-        buttonsArray.append(.default(Text(list[i])) {
-            UserDefaults.standard.set(value[i], forKey: key)
-        })
-    }
-    buttonsArray.append(.cancel())
-    return buttonsArray
-}

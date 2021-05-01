@@ -11,18 +11,18 @@ struct TimetableTitleView: View {
 
     private let goorback: String
     private let weekflag: Bool
-    private let keytag: String
+    private let num: Int
     private let action: () -> Void
 
     init(
         _ goorback: String,
         _ weekflag: Bool,
-        _ keytag: String,
+        _ num: Int,
         _ action: @escaping () -> Void
     ) {
         self.goorback = goorback
         self.weekflag = weekflag
-        self.keytag = keytag
+        self.num = num
         self.action = action
     }
     
@@ -30,10 +30,10 @@ struct TimetableTitleView: View {
         
             HStack {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(Timetable(goorback, weekflag, keytag).timetableDepartStation)
+                    Text(Timetable(goorback, weekflag, num).timetableDepartStation)
                         .font(.title3)
                         .foregroundColor(Color.white)
-                    Text(Timetable(goorback, weekflag, keytag).timetableTitle)
+                    Text(Timetable(goorback, weekflag, num).timetableTitle)
                         .font(.callout)
                         .foregroundColor(Color.white)
                 }
@@ -46,7 +46,7 @@ struct TimetableTitleView: View {
 struct TimetableTitleView_Previews: PreviewProvider {
     static var previews: some View {
         let weekflag = !Date().weekFlag
-        TimetableTitleView("back1", weekflag, "1", {})
+        TimetableTitleView("back1", weekflag, 0, {})
             .background(Color.black)
     }
 }
