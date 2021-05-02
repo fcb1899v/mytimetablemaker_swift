@@ -12,7 +12,7 @@ struct settingsTransportation: View {
     @State private var isShowingAlert = false
     @State private var title = "To Office"
     @State private var label = "Not set".localized
-    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
+    @State private var color = Color.mygray
 
     private let goorback: String
     private let num: Int

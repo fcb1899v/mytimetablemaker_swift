@@ -45,11 +45,10 @@ struct moveSettingsButton: View {
 
 struct moveSettingsButton_Previews: PreviewProvider {
     static var previews: some View {
-        let primary = Color(DefaultColor.primary.rawValue.colorInt)
         let loginviewmodel = LoginViewModel()
         let mainviewmodel = MainViewModel()
         let firestoreviewmodel = FirestoreViewModel()
         moveSettingsButton(loginviewmodel, mainviewmodel, firestoreviewmodel)
-            .background(primary)
+            .background(Color.myprimary)
     }
 }

@@ -61,7 +61,6 @@ struct datePickerLabelView: View {
 struct dateLabelView_Previews: PreviewProvider {
     static var previews: some View {
         let mainviewmodel = MainViewModel()
-        let primary = Color(DefaultColor.primary.rawValue.colorInt)
-        datePickerLabelView(mainviewmodel).background(primary)
+        datePickerLabelView(mainviewmodel).background(Color.myprimary)
     }
 }

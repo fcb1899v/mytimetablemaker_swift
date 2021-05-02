@@ -26,7 +26,6 @@ struct VariousSettingsContentView: View {
             Section(
                 header: Text("\n" + DialogTitle.stationname.rawValue.localized)
                             .fontWeight(.bold)
-                            .foregroundColor(Color.black)
             ) {
                 ForEach(1..<2 * goorback.changeLineInt + 4) { num in
                     settingsStations(goorback, num)
@@ -36,7 +35,6 @@ struct VariousSettingsContentView: View {
             Section(
                 header: Text(DialogTitle.linename.rawValue.localized)
                             .fontWeight(.bold)
-                            .foregroundColor(Color.black)
             ) {
                 ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsLineName(goorback, num)
@@ -45,7 +43,6 @@ struct VariousSettingsContentView: View {
             Section(
                 header: Text(DialogTitle.ridetime.rawValue.localized)
                             .fontWeight(.bold)
-                            .foregroundColor(Color.black)
             ) {
                 ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsRideTime(goorback, num)
@@ -54,7 +51,6 @@ struct VariousSettingsContentView: View {
             Section(
                 header: Text(DialogTitle.transport.rawValue.localized)
                             .fontWeight(.bold)
-                            .foregroundColor(Color.black)
 
             ) {
                 ForEach(1..<goorback.changeLineInt + 2) { num in
@@ -64,7 +60,6 @@ struct VariousSettingsContentView: View {
             }
             Section(
                 header: Text(DialogTitle.transittime.rawValue.localized)                                .fontWeight(.bold)
-                           .foregroundColor(Color.black)
 
             ) {
                 ForEach(1..<goorback.changeLineInt + 2) { num in

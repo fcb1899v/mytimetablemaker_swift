@@ -28,11 +28,9 @@ struct settingsSwitchRoute2: View {
             Text((goorback == "back2") ?
                     "Going home route 2".localized:
                     "Outgoing route 2".localized
-            )
-                .font(.subheadline)
-                .foregroundColor(Color.black)
+            ).font(.subheadline)
         }.toggleStyle(SwitchToggleStyle(
-            tint: Color.accent
+            tint: Color.myaccent
         ))
     }
 }

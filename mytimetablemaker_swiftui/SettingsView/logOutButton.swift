@@ -33,7 +33,7 @@ struct logOutButton: View {
         }) {
             Text("Logout".localized)
             .font(.subheadline)
-            .foregroundColor(Color.black)
+            .foregroundColor(.black)
             .padding(5)
         }
         .alert(isPresented: $isLogOutAlert) {

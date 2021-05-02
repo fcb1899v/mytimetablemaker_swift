@@ -17,8 +17,6 @@ struct routeInfoView: View {
         self.mainviewmodel = mainviewmodel
     }
 
-    private let primary = Color(DefaultColor.primary.rawValue.colorInt)
-
     var body: some View {
 
         let goorback1 = mainviewmodel.goorback1
@@ -63,7 +61,7 @@ struct routeInfoView: View {
                     
                     Divider()
                         .frame(width: 1.5, height: UIScreen.screenHeight)
-                        .background(primary)
+                        .background(Color.myprimary)
                         .padding(.leading, 10.0)
                         .padding(.trailing, 10.0)
                     

@@ -300,8 +300,7 @@ extension String{
 
     //
     func rideTimeSettingsColor(_ num: Int) -> Color {
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
-        return (self.rideTime(num) == 0) ? gray: lineColorArray[num]
+        return (self.rideTime(num) == 0) ? Color.mygray: lineColorArray[num]
     }
     
     //

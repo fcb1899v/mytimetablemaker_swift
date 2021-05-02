@@ -30,9 +30,9 @@ struct loginButton: View {
         }) {
             Text("Login".localized)
                 .font(.headline)
-                .foregroundColor(Color.white)
+                .foregroundColor(.white)
                 .frame(width: UIScreen.screenWidth * 0.8, height: 50)
-                .background(Color.primary)
+                .background(Color.myprimary)
                 .cornerRadius(15.0)
         }.alert(isPresented: $isLoginAlert) {
             loginAlert

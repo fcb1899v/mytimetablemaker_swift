@@ -31,7 +31,7 @@ struct settingsChangeLine: View {
                 }
                 .frame(alignment: .leading)
                 .font(.subheadline)
-                .foregroundColor(Color.black)
+                .foregroundColor(.black)
                 .padding(5)
                 .actionSheet(isPresented: $isShowingPicker) {
                     ActionSheet(
@@ -45,7 +45,6 @@ struct settingsChangeLine: View {
                 }
                 Spacer()
                 Text(settingviewmodel.changeline)
-                    .foregroundColor(Color.black)
                     .font(.subheadline)
                     .padding(5)
             }

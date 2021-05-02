@@ -20,7 +20,7 @@ struct loginTitleView: View {
     var body: some View {
         Text(title)
             .font(.title)
-            .foregroundColor(Color.primary)
+            .foregroundColor(.myprimary)
             .frame(height: 180)
             .offset(y: 50)
     }

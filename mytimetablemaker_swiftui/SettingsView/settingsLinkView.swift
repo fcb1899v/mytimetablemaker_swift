@@ -11,7 +11,6 @@ struct settingsLinkView: View {
     
     let termstitle = "Terms and privacy policy".localized
     let termslink = "https://nakajimamasao-appstudio.web.app/privacypolicy.html".localized
-    let gray = Color(DefaultColor.gray.rawValue.colorInt)
     
     var body: some View {
         Button(action: {

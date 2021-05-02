@@ -44,11 +44,11 @@ struct TimetableGridView: View {
                     ZStack {
                         Color.white
                         LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
-                            Color.primary.frame(height: 0)
+                            Color.myprimary.frame(height: 0)
                             HStack(spacing: 1) {
                                 Color.white.frame(width: 1)
                                 ZStack(alignment: .center) {
-                                    Color.primary
+                                    Color.myprimary
                                         .frame(height: 25)
                                     Text(weekflag.weekLabelText)
                                         .foregroundColor(weekflag.weekLabelColor)
@@ -68,14 +68,14 @@ struct TimetableGridView: View {
                                 HStack(spacing: 1) {
                                     Color.white.frame(width: 1)
                                     ZStack {
-                                        Color.primary.frame(width: 27)
-                                        Text(hour.addZeroTime).foregroundColor(Color.accent)
+                                        Color.myprimary.frame(width: 27)
+                                        Text(hour.addZeroTime).foregroundColor(.myaccent)
                                     }
                                     Button (action: {
                                         self.isShowingAlert = true
                                     }) {
                                         ZStack(alignment: .leading) {
-                                            Color.primary.frame(width: UIScreen.screenWidth - 30)
+                                            Color.myprimary.frame(width: UIScreen.screenWidth - 30)
                                             Button (action: {
                                                 self.isShowingAlert = true
                                             }) {

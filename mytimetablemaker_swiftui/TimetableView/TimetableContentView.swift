@@ -29,7 +29,7 @@ struct TimetableContentView: View {
 
         NavigationView {
             ZStack {
-                Color.primary
+                Color.myprimary
                 VStack {
                     TimetableTitleView(goorback, weekflag, num, {
                         weekflag = (weekflag) ? false: true

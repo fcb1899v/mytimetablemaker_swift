@@ -24,7 +24,7 @@ struct signUpView: View {
 
     var body: some View {
         ZStack(alignment: .top){
-            Color.accent
+            Color.myaccent
             VStack(spacing: 35) {
                 loginTitleView(MainTitle.signup.rawValue.localized)
                 emailPlusTextField(loginviewmodel)

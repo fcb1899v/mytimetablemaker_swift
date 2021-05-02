@@ -11,18 +11,16 @@ struct settingsVersion: View {
         
     var body: some View {
 
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
         let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 
         HStack {
             Text("Version".localized)
                 .font(.subheadline)
-                .foregroundColor(.black)
                 .padding(5)
             Spacer()
             Text(version)
                 .font(.subheadline)
-                .foregroundColor(gray)
+                .foregroundColor(.mygray)
                 .padding(5)
         }
     }

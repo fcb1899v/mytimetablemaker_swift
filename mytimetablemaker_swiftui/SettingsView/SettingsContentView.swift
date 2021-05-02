@@ -34,7 +34,6 @@ struct SettingsContentView: View {
                 Section(
                     header: Text("\n" + "Display route 2".localized)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.black)
                 ) {
                     settingsSwitchRoute2("back2")
                     settingsSwitchRoute2("go2")
@@ -42,7 +41,6 @@ struct SettingsContentView: View {
                 Section(
                     header: Text("Change line".localized)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.black)
                 ) {
                     ForEach(goorbackarray, id: \.self) { goorback in
                         if goorback.route2Flag {
@@ -53,7 +51,6 @@ struct SettingsContentView: View {
                 Section(
                     header: Text("Various settings".localized)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.black)
                 ) {
                     ForEach(goorbackarray, id: \.self) { goorback in
                         if goorback.route2Flag {
@@ -64,7 +61,6 @@ struct SettingsContentView: View {
                 Section(
                     header: Text("Account".localized)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.black)
                 ) {
                     getDataButton(firestoreviewmodel)
                     setDataButton(firestoreviewmodel)
@@ -74,7 +70,6 @@ struct SettingsContentView: View {
                 Section(
                     header: Text("About".localized)
                         .fontWeight(.bold)
-                        .foregroundColor(Color.black)
                 ) {
                     settingsVersion()
                     settingsLinkView()

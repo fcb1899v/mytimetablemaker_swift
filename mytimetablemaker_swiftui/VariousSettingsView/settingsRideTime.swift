@@ -14,7 +14,7 @@ struct settingsRideTime: View {
     @State private var text = ""
     @State private var title = "Line 1"
     @State private var label = "Not set".localized
-    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
+    @State private var color = Color.mygray
 
     private let goorback: String
     private let num: Int

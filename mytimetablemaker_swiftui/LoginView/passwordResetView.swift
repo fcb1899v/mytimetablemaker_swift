@@ -29,9 +29,9 @@ struct passwordResetView: View {
         }) {
             ZStack(alignment: .top) {
                 Text("Forgot Password?".localized)
-                    .underline(color: Color.white)
+                    .underline(color: .white)
                     .font(.headline)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                 passwordResetAlertView(
                     email: $loginviewmodel.email,
                     isShowingAlert: $isShowingAlert,
@@ -54,7 +54,7 @@ struct passwordResetView_Previews: PreviewProvider {
     static var previews: some View {
         let loginviewmodel = LoginViewModel()
         passwordResetView(loginviewmodel)
-            .background(Color.accent)
+            .background(Color.myaccent)
     }
 }
 

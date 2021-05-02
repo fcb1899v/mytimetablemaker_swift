@@ -32,7 +32,7 @@ struct getDataButton: View {
         }) {
             Text("Get saved data".localized)
             .font(.subheadline)
-            .foregroundColor(Color.black)
+                .foregroundColor(.black)
             .padding(5)
         }
         .alert(isPresented: $isGetDataAlert) {

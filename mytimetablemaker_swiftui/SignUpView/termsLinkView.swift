@@ -27,11 +27,11 @@ struct termsLinkView: View {
                 Button(action: toggle) {
                     if(loginviewmodel.isTermsAgree) {
                         Image(systemName: "checkmark.square.fill")
-                            .foregroundColor(Color.primary)
+                            .foregroundColor(.myprimary)
                             .padding(10)
                     } else {
                         Image(systemName: "square")
-                            .foregroundColor(Color.white)
+                            .foregroundColor(.white)
                             .padding(10)
                     }
                 }
@@ -43,7 +43,7 @@ struct termsLinkView: View {
                         + Text("kakunin".localized)
                 )
                     .font(.subheadline)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                 
             }.frame(width: UIScreen.screenWidth * 0.7, height: 40 ,alignment: .leading)
         }
@@ -68,7 +68,7 @@ struct termsLinkView_Previews: PreviewProvider {
     static var previews: some View {
         let loginviewmodel = LoginViewModel()
         termsLinkView(loginviewmodel)
-            .background(Color.accent)
+            .background(Color.myaccent)
     }
 }
 

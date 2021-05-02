@@ -153,7 +153,7 @@ extension Bool {
 
     //
     var weekLabelColor: Color {
-        return self ? Color.white: Color.red
+        return self ? Color.white: Color.myred
     }
 
     //

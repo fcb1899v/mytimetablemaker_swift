@@ -41,19 +41,16 @@ extension String {
 }
 
 extension Color {
-    
-    static let accent = Color("accentcolor")
-
-    static let primary = Color("primarycolor")
-
-    static let gray = Color("graycolor")
-
+    static let myaccent = Color("myaccent")
+    static let myprimary = Color("myprimary")
+    static let mygray = Color("mygray")
+    static let myred = Color("myred")
+    static let myyellow = Color("myyellow")
 }
 
 //<>
 extension String {
     var settingsColor: Color {
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
-        return (self == Unit.notset.rawValue.localized) ? gray: Color.black
+        return (self == Unit.notset.rawValue.localized) ? Color.mygray: Color.black
     }
 }

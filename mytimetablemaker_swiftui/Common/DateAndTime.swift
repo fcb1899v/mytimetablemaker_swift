@@ -116,20 +116,21 @@ extension Int {
     }
     //カウントダウン表示の警告色を取得
     func countdownColor(_ departtime:Int) -> Color{
-        return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdownColor!
+        return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdownColor
     }
     
     //
-    var countdownColor: Color? {
+    var countdownColor: Color {
         if (self % 2 == 0) {
             switch (self) {
-            case 1000...9999: return Color(DefaultColor.accent.rawValue.colorInt)
-            case 500...999: return Color.yellow
-                case 0...499: return Color.red
-                default: return Color(DefaultColor.gray.rawValue.colorInt)
+            case 1000...9999: return Color.myaccent
+            case 500...999: return Color.myyellow
+                case 0...499: return Color.myred
+                default: return Color.mygray
             }
+        } else {
+            return Color.mygray
         }
-        return Color(DefaultColor.gray.rawValue.colorInt)
     }
 }
 

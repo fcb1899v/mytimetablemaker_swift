@@ -27,7 +27,7 @@ struct moveSignUpButton: View {
         }) {
             Text("Signup".localized)
                 .font(.headline)
-                .foregroundColor(Color.primary)
+                .foregroundColor(.myprimary)
                 .frame(width: UIScreen.screenWidth * 0.8, height: 50)
                 .background(Color.white)
                 .cornerRadius(15.0)
@@ -42,7 +42,7 @@ struct moveSignUpButton_Previews: PreviewProvider {
         let loginviewmodel = LoginViewModel()
         let firestoreviewmodel = FirestoreViewModel()
         moveSignUpButton(loginviewmodel, firestoreviewmodel)
-            .background(Color.accent)
+            .background(Color.myaccent)
     }
 }
 

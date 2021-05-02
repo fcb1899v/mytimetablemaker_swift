@@ -26,7 +26,7 @@ struct settingsBackButton: View {
                     .resizable()
                     .frame(width: 10, height: 18, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
                 Text("back".localized)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
             }
         }
     }
@@ -36,7 +36,7 @@ struct settingsBackButton_Previews: PreviewProvider {
     static var previews: some View {
         let loginviewmodel = LoginViewModel()
         settingsBackButton(loginviewmodel)
-            .background(Color.primary)
+            .background(Color.myprimary)
     }
 }
 

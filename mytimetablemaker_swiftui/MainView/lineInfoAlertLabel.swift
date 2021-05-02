@@ -15,7 +15,7 @@ struct lineInfoAlertLabel: View {
     @State private var isShowingLineColorAlert = false
     @State private var text = ""
     @State private var label = "Line 1"
-    @State private var color = Color(DefaultColor.accent.rawValue.colorInt)
+    @State private var color = Color.myaccent
 
     private let goorback: String
     private let weekflag: Bool

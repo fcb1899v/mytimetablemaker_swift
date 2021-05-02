@@ -11,13 +11,13 @@ struct LoginBackgroundView: View {
     
     var body: some View {
         ZStack {
-            Color.accent
+            Color.myaccent
             VStack(spacing: 0) {
                 Image("splash")
                     .resizable()
                     .scaledToFit()
                     .offset(y: 50)
-                Color.primary
+                Color.myprimary
                     .frame(width: UIScreen.screenWidth, height: 70)
                     .offset(y: 50)
             }

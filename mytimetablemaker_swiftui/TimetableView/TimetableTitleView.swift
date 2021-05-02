@@ -33,10 +33,10 @@ struct TimetableTitleView: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text(Timetable(goorback, weekflag, num).timetableDepartStation)
                     .font(.title3)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                 Text(Timetable(goorback, weekflag, num).timetableTitle)
                     .font(.callout)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
             }
             
             Spacer()
@@ -48,8 +48,8 @@ struct TimetableTitleView: View {
                     .frame(width: UIScreen.screenWidth/5,
                            height: 35,
                            alignment: .center)
-                    .foregroundColor((!weekflag) ? Color.primary: Color.white)
-                    .background((!weekflag) ? Color.white: Color.red)
+                    .foregroundColor((!weekflag) ? .myprimary: .white)
+                    .background((!weekflag) ? Color.white: Color.myred)
                     .cornerRadius(15)
             }
         }.padding(10)
@@ -60,6 +60,6 @@ struct TimetableTitleView_Previews: PreviewProvider {
     static var previews: some View {
         let weekflag = Date().weekFlag
         TimetableTitleView("back1", weekflag, 0, {})
-            .background(Color.primary)
+            .background(Color.myprimary)
     }
 }

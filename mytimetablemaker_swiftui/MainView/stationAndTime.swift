@@ -13,7 +13,7 @@ struct stationAndTime: View {
     @State private var text = ""
     @State private var label = "Office".localized
     @State private var time = "--:--"
-    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
+    @State private var color = Color.mygray
 
     private let goorback: String
     private let weekflag: Bool

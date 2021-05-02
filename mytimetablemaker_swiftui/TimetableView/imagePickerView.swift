@@ -15,7 +15,7 @@ struct imagePickerView: View {
     var body: some View {
         
         VStack(spacing: 10) {
-            Color.primary.frame(height: 10)
+            Color.myprimary.frame(height: 10)
             Button(action: {
                 self.isShowPhotoLibrary = true
             }, label: {
@@ -23,8 +23,8 @@ struct imagePickerView: View {
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .frame(width: 300, height: 35)
-                    .foregroundColor(Color.white)
-                    .background(Color.accent)
+                    .foregroundColor(.white)
+                    .background(Color.myaccent)
                     .cornerRadius(15)
             }).sheet(isPresented: $isShowPhotoLibrary, content: {
                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
@@ -40,6 +40,6 @@ struct imagePickerView: View {
 struct imagePickerView_Previews: PreviewProvider {
     static var previews: some View {
         imagePickerView()
-            .background(Color.primary)
+            .background(Color.myprimary)
     }
 }

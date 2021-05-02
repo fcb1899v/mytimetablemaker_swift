@@ -12,8 +12,8 @@ struct settingsLineName: View {
     @State private var isShowingAlert = false
     @State private var isShowingNextAlert = false
     @State private var text = ""
-    @State private var label = ""
-    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
+    @State private var label = "Not set".localized
+    @State private var color = Color.mygray
 
     private let goorback: String
     private let num: Int

@@ -32,7 +32,7 @@ struct setDataButton: View {
         }) {
             Text("Save current data".localized)
             .font(.subheadline)
-            .foregroundColor(Color.black)
+            .foregroundColor(.black)
             .padding(5)
         }.alert(isPresented: $isSetDataAlert) {
             switch alertType {

@@ -11,8 +11,8 @@ struct settingsStations: View {
     
     @State private var isShowingAlert = false
     @State private var text = ""
-    @State private var label = ""
-    @State private var color = Color(DefaultColor.gray.rawValue.colorInt)
+    @State private var label = "Not set".localized
+    @State private var color = Color.mygray
 
     private let goorback: String
     private let num: Int
@@ -63,3 +63,8 @@ struct settingsStations: View {
     }
 }
 
+struct settingsStations_Previews: PreviewProvider {
+    static var previews: some View {
+        settingsStations("back1", 0)
+    }
+}

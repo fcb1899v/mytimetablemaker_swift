@@ -29,7 +29,6 @@ struct transitInfoAlertView: View {
     var body: some View {
         
         let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
         
         HStack {
             
@@ -37,7 +36,7 @@ struct transitInfoAlertView: View {
                 self.isShowingAlert = true
             }) {
                 ZStack(alignment: .leading) {
-                    gray.frame(width: 22, height: 30)
+                    Color.mygray.frame(width: 22, height: 30)
                     Image(uiImage: UIImage(named: "ic_clock2.png")!)
                         .resizable()
                         .scaledToFit()
@@ -65,7 +64,7 @@ struct transitInfoAlertView: View {
             .frame(alignment: .leading)
             .font(.footnote)
             .lineLimit(1)
-            .foregroundColor(gray)
+            .foregroundColor(.mygray)
             .padding(.leading, 15.0)
             .onReceive(timer) { _ in
                 label = goorback.transportationArray[num]

@@ -26,9 +26,6 @@ struct stateButton: View {
 
     var body: some View {
         
-        let accent = Color(DefaultColor.accent.rawValue.colorInt)
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
-
         Button(action: action) {
             if (flag) {
                 Text(label)
@@ -37,8 +34,8 @@ struct stateButton: View {
                     .frame(width: UIScreen.screenWidth/5,
                            height: 35,
                            alignment: .center)
-                    .foregroundColor(Color.white)
-                    .background(accent)
+                    .foregroundColor(.white)
+                    .background(Color.myaccent)
                     .cornerRadius(15)
             } else {
                 Text(label)
@@ -47,8 +44,8 @@ struct stateButton: View {
                     .frame(width: UIScreen.screenWidth/5,
                            height: 35,
                            alignment: .center)
-                    .foregroundColor(Color.white)
-                    .background(gray)
+                    .foregroundColor(.white)
+                    .background(Color.mygray)
                     .cornerRadius(15)
             }
         }
