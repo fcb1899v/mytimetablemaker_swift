@@ -73,7 +73,7 @@ extension Timetable {
         ]
     }
 
-    private func copyButtonsArray(_ hour: Int, _ key: String) -> [ActionSheet.Button] {
+    private func copyButtonsArray(_ hour: Int) -> [ActionSheet.Button] {
         
         let copylist = choiceCopyTimeTitle(hour)
         let copykey = choiceCopyTimeKey(hour)
@@ -89,7 +89,7 @@ extension Timetable {
             let button: ActionSheet.Button = .default(
                     Text(copylist[i]),
                     action: {
-                        UserDefaults.standard.set(copykey[i].userDefaultsValue(""), forKey: key)
+                        UserDefaults.standard.set(copykey[i].userDefaultsValue(""), forKey: timetableKey(hour))
                     }
             )
             buttonsArray.append(button)
@@ -101,11 +101,11 @@ extension Timetable {
         return buttonsArray
     }
     
-    func copyTimetableSheet(_ hour: Int, _ key: String) -> ActionSheet {
+    func copyTimetableSheet(_ hour: Int) -> ActionSheet {
         ActionSheet(
             title: Text(DialogTitle.copytime.rawValue.localized),
             message: Text(""),
-            buttons: copyButtonsArray(hour, key)
+            buttons: copyButtonsArray(hour)
         )
     }
 

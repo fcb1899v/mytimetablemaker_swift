@@ -12,7 +12,6 @@ struct VariousSettingsContentView: View {
     @Environment(\.presentationMode) var presentationMode
     private let goorback: String
     private let weekflag = Date().weekFlag
-    private let primary = Color(DefaultColor.primary.rawValue.colorInt)
 
     /// 値を指定して生成する
     init(
@@ -25,7 +24,9 @@ struct VariousSettingsContentView: View {
         
         Form {
             Section(
-                header: settingsTitle("\n" + DialogTitle.stationname.rawValue.localized)
+                header: Text("\n" + DialogTitle.stationname.rawValue.localized)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.black)
             ) {
                 ForEach(1..<2 * goorback.changeLineInt + 4) { num in
                     settingsStations(goorback, num)
@@ -33,21 +34,28 @@ struct VariousSettingsContentView: View {
                 settingsStations(goorback, 0)
             }
             Section(
-                header: settingsTitle(DialogTitle.linename.rawValue.localized)
+                header: Text(DialogTitle.linename.rawValue.localized)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.black)
             ) {
                 ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsLineName(goorback, num)
                 }
             }
             Section(
-                header: settingsTitle(DialogTitle.ridetime.rawValue.localized)
+                header: Text(DialogTitle.ridetime.rawValue.localized)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.black)
             ) {
                 ForEach(0..<goorback.changeLineInt + 1) { num in
                     settingsRideTime(goorback, num)
                 }
             }
             Section(
-                header: settingsTitle(DialogTitle.transport.rawValue.localized)
+                header: Text(DialogTitle.transport.rawValue.localized)
+                            .fontWeight(.bold)
+                            .foregroundColor(Color.black)
+
             ) {
                 ForEach(1..<goorback.changeLineInt + 2) { num in
                     settingsTransportation(goorback, num)
@@ -55,7 +63,9 @@ struct VariousSettingsContentView: View {
                 settingsTransportation(goorback, 0)
             }
             Section(
-                header: settingsTitle(DialogTitle.transittime.rawValue.localized)
+                header: Text(DialogTitle.transittime.rawValue.localized)                                .fontWeight(.bold)
+                           .foregroundColor(Color.black)
+
             ) {
                 ForEach(1..<goorback.changeLineInt + 2) { num in
                     settingsTransitTime(goorback, num)
@@ -65,7 +75,7 @@ struct VariousSettingsContentView: View {
         }
         .navigationTitle(goorback.routeTitle.localized)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
+        .navigationBarColor(backgroundColor: UIColor(Color.primary), titleColor: .white)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){

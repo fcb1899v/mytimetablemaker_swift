@@ -16,7 +16,6 @@ struct SettingsContentView: View {
     @ObservedObject var back2setting = SettingsViewModel("back2")
     @ObservedObject var go2setting = SettingsViewModel("go2")
     @State private var isShowLogIn = false
-    private let primary = Color(DefaultColor.primary.rawValue.colorInt)
     private let goorbackarray = ["back1", "back2", "go1", "go2"]
 
     init(
@@ -33,13 +32,17 @@ struct SettingsContentView: View {
         NavigationView {
             Form {
                 Section(
-                    header: settingsTitle("\n" + "Display route 2".localized)
+                    header: Text("\n" + "Display route 2".localized)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
                 ) {
                     settingsSwitchRoute2("back2")
                     settingsSwitchRoute2("go2")
                 }
                 Section(
-                    header: settingsTitle("Change line".localized)
+                    header: Text("Change line".localized)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
                 ) {
                     ForEach(goorbackarray, id: \.self) { goorback in
                         if goorback.route2Flag {
@@ -48,7 +51,9 @@ struct SettingsContentView: View {
                     }
                 }
                 Section(
-                    header: settingsTitle("Various settings".localized)
+                    header: Text("Various settings".localized)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
                 ) {
                     ForEach(goorbackarray, id: \.self) { goorback in
                         if goorback.route2Flag {
@@ -57,7 +62,9 @@ struct SettingsContentView: View {
                     }
                 }
                 Section(
-                    header: settingsTitle("Account".localized)
+                    header: Text("Account".localized)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
                 ) {
                     getDataButton(firestoreviewmodel)
                     setDataButton(firestoreviewmodel)
@@ -65,7 +72,9 @@ struct SettingsContentView: View {
                     deleteAccountButton(loginviewmodel, firestoreviewmodel)
                 }
                 Section(
-                    header: settingsTitle("About".localized)
+                    header: Text("About".localized)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.black)
                 ) {
                     settingsVersion()
                     settingsLinkView()
@@ -73,7 +82,7 @@ struct SettingsContentView: View {
             }
             .navigationTitle("Settings".localized)
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
+            .navigationBarColor(backgroundColor: UIColor(Color.primary), titleColor: .white)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){

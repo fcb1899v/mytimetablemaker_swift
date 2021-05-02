@@ -22,13 +22,11 @@ struct signUpView: View {
         self.firestoreviewmodel = firestoreviewmodel
     }
 
-    let accent = Color(DefaultColor.accent.rawValue.colorInt)
-
     var body: some View {
         ZStack(alignment: .top){
-            accent
+            Color.accent
             VStack(spacing: 35) {
-                loginTitleView("Create Account".localized)
+                loginTitleView(MainTitle.signup.rawValue.localized)
                 emailPlusTextField(loginviewmodel)
                 signUpButton(loginviewmodel, firestoreviewmodel)
                 termsLinkView(loginviewmodel)

@@ -28,6 +28,7 @@ struct variousSettingsBackButton: View {
 
 struct variousSettingsBackButton_Previews: PreviewProvider {
     static var previews: some View {
-        variousSettingsBackButton().background(Color.black)
+        variousSettingsBackButton()
+            .background(Color.primary)
     }
 }

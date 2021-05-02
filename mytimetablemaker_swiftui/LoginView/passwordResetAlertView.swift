@@ -64,7 +64,6 @@ struct passwordResetAlertView: UIViewControllerRepresentable {
             }
         })
 
-        
         DispatchQueue.main.async {
             uiViewController.present(alert, animated: true, completion: {
                 isShowingAlert = false

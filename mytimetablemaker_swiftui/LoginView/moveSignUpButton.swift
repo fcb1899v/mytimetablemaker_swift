@@ -9,6 +9,7 @@ import SwiftUI
 
 struct moveSignUpButton: View {
     
+    @State private var isShowSignUp = false
     @ObservedObject private var loginviewmodel: LoginViewModel
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
 
@@ -19,9 +20,6 @@ struct moveSignUpButton: View {
         self.loginviewmodel = loginviewmodel
         self.firestoreviewmodel = firestoreviewmodel
     }
-
-    @State private var isShowSignUp = false
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
     
     var body: some View {
         Button(action: {
@@ -29,7 +27,7 @@ struct moveSignUpButton: View {
         }) {
             Text("Signup".localized)
                 .font(.headline)
-                .foregroundColor(primary)
+                .foregroundColor(Color.primary)
                 .frame(width: UIScreen.screenWidth * 0.8, height: 50)
                 .background(Color.white)
                 .cornerRadius(15.0)
@@ -44,7 +42,7 @@ struct moveSignUpButton_Previews: PreviewProvider {
         let loginviewmodel = LoginViewModel()
         let firestoreviewmodel = FirestoreViewModel()
         moveSignUpButton(loginviewmodel, firestoreviewmodel)
-            .background(Color.black)
+            .background(Color.accent)
     }
 }
 

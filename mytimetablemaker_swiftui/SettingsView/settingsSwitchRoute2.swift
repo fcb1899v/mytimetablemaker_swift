@@ -21,18 +21,18 @@ struct settingsSwitchRoute2: View {
     }
     
     var body: some View {
-    
-        let label = (goorback == "back2") ? "Going home route 2".localized: "Outgoing route 2".localized
-        let accent = Color(DefaultColor.accent.rawValue.colorInt)
         
         Toggle(
             isOn: $settingviewmodel.route2flag
         ){
-            Text(label)
+            Text((goorback == "back2") ?
+                    "Going home route 2".localized:
+                    "Outgoing route 2".localized
+            )
                 .font(.subheadline)
                 .foregroundColor(Color.black)
         }.toggleStyle(SwitchToggleStyle(
-            tint: accent
+            tint: Color.accent
         ))
     }
 }

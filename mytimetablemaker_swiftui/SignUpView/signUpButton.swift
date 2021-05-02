@@ -10,6 +10,7 @@ import SwiftUI
 struct signUpButton: View {
         
     @Environment(\.presentationMode) var presentationMode
+    @State private var isSignUpAlert = false
     @ObservedObject private var loginviewmodel: LoginViewModel
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
 
@@ -21,10 +22,6 @@ struct signUpButton: View {
         self.firestoreviewmodel = firestoreviewmodel
     }
     
-    @State private var isSignUpAlert = false
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
-    let gray = Color(DefaultColor.gray.rawValue.colorInt)
-
     var body: some View {
         Button(action: {
             if (loginviewmodel.isTermsAgree) {
@@ -34,9 +31,9 @@ struct signUpButton: View {
         }) {
             Text("Signup".localized)
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundColor(Color.white)
                 .frame(width: UIScreen.screenWidth * 0.8, height: 50)
-                .background((loginviewmodel.isTermsAgree) ? primary: gray)
+                .background((loginviewmodel.isTermsAgree) ? Color.primary: Color.gray)
                 .cornerRadius(15.0)
         }
         .alert(isPresented: $isSignUpAlert) {

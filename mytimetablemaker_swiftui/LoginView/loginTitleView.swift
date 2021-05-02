@@ -16,13 +16,11 @@ struct loginTitleView: View {
     ) {
         self.title = title
     }
-    
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
 
     var body: some View {
         Text(title)
             .font(.title)
-            .foregroundColor(primary)
+            .foregroundColor(Color.primary)
             .frame(height: 180)
             .offset(y: 50)
     }

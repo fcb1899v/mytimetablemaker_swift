@@ -36,7 +36,7 @@ struct settingsBackButton_Previews: PreviewProvider {
     static var previews: some View {
         let loginviewmodel = LoginViewModel()
         settingsBackButton(loginviewmodel)
-            .background(Color.black)
+            .background(Color.primary)
     }
 }
 

@@ -9,18 +9,15 @@ import SwiftUI
 
 struct LoginBackgroundView: View {
     
-    let accent = Color(DefaultColor.accent.rawValue.colorInt)
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
-    
     var body: some View {
         ZStack {
-            accent
+            Color.accent
             VStack(spacing: 0) {
                 Image("splash")
                     .resizable()
                     .scaledToFit()
                     .offset(y: 50)
-                primary
+                Color.primary
                     .frame(width: UIScreen.screenWidth, height: 70)
                     .offset(y: 50)
             }

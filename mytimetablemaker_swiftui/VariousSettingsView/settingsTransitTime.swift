@@ -31,7 +31,7 @@ struct settingsTransitTime: View {
 
     var body: some View {
         
-        let timer = Timer.publish(every: 0.5, on: .current, in: .common).autoconnect()
+        let timer = Timer.publish(every: 1, on: .current, in: .common).autoconnect()
         
         Button (action: {
             self.isShowingAlert = true

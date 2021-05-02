@@ -20,22 +20,43 @@ struct datePickerLabelView: View {
     let timer = Timer.publish(every: 0.4, on: .current, in: .common).autoconnect()
     
     var body: some View {
-        ZStack {
-            mainviewmodel.dateLabelView
-            DatePicker(
-                "datepicker",
-                selection: $mainviewmodel.selectdate,
-                displayedComponents: .date
-            )
-            .labelsHidden()
-            .accentColor(.clear)
-            .frame(height: 20)
-            .onReceive(timer) { (_) in
-                mainviewmodel.datelabel = "\(mainviewmodel.selectdate.setDate)"
+        HStack() {
+            
+            ZStack {
+                mainviewmodel.dateLabelView
+                DatePicker(
+                    "datepicker",
+                    selection: $mainviewmodel.selectdate,
+                    displayedComponents: .date
+                )
+                .labelsHidden()
+                .accentColor(.clear)
+                .frame(height: 20)
+                .onReceive(timer) { _ in
+                    mainviewmodel.datelabel = "\(mainviewmodel.selectdate.setDate)"
+                }
+            }
+            
+            Spacer()
+            
+            ZStack {
+                mainviewmodel.timeLabelView
+                DatePicker(
+                    "datepicker",
+                    selection: $mainviewmodel.selectdate,
+                    displayedComponents: .hourAndMinute
+                )
+                .labelsHidden()
+                .accentColor(.clear)
+                .frame(height: 20)
+                .onReceive(timer) { _ in
+                    mainviewmodel.timelabel = "\(mainviewmodel.selectdate.setTime)"
+                }
             }
         }
     }
 }
+
 
 struct dateLabelView_Previews: PreviewProvider {
     static var previews: some View {

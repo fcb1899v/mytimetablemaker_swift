@@ -11,6 +11,9 @@ import FirebaseAuth
 struct deleteAccountButton: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @State private var isDeleteAlert = false
+    @State private var title = ""
+    @State private var message = ""
     @ObservedObject private var loginviewmodel: LoginViewModel
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
 
@@ -22,10 +25,6 @@ struct deleteAccountButton: View {
         self.firestoreviewmodel = firestoreviewmodel
     }
     
-    @State private var isDeleteAlert = false
-    @State private var title = ""
-    @State private var message = ""
-
     var body: some View {
 
         Button(action: {

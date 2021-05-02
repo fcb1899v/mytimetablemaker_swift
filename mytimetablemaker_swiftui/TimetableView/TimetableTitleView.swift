@@ -28,8 +28,6 @@ struct TimetableTitleView: View {
     
     var body: some View {
         
-        let primary = Color(DefaultColor.primary.rawValue.colorInt)
-
         HStack {
             
             VStack(alignment: .leading, spacing: 5) {
@@ -50,7 +48,7 @@ struct TimetableTitleView: View {
                     .frame(width: UIScreen.screenWidth/5,
                            height: 35,
                            alignment: .center)
-                    .foregroundColor((!weekflag) ? primary: Color.white)
+                    .foregroundColor((!weekflag) ? Color.primary: Color.white)
                     .background((!weekflag) ? Color.white: Color.red)
                     .cornerRadius(15)
             }
@@ -62,6 +60,6 @@ struct TimetableTitleView_Previews: PreviewProvider {
     static var previews: some View {
         let weekflag = Date().weekFlag
         TimetableTitleView("back1", weekflag, 0, {})
-            .background(Color.black)
+            .background(Color.primary)
     }
 }

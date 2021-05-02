@@ -25,7 +25,6 @@ struct MainContentView: View {
     }
 
     @State private var showSplash = true
-    let primary = Color(DefaultColor.primary.rawValue.colorInt)
     
     var body: some View {
         NavigationView {
@@ -37,7 +36,7 @@ struct MainContentView: View {
                         VStack {
                             routeInfoView(mainviewmodel)
                             Rectangle()
-                                .foregroundColor(primary)
+                                .foregroundColor(Color.primary)
                                 .frame(width: UIScreen.screenWidth, height: 1.5)
                                 .offset(y: -10)
                             AdMobView()

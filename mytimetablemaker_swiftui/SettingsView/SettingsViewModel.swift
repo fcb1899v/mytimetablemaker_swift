@@ -36,7 +36,7 @@ class SettingsViewModel: ObservableObject {
             if route2flag {
                 Text(goorback.routeTitle)
                     .font(.subheadline)
-                    .foregroundColor(.black)
+                    .foregroundColor(Color.black)
                     .padding(5)
             }
         }

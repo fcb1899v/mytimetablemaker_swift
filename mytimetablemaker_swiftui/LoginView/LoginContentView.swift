@@ -30,12 +30,10 @@ struct LoginContentView: View {
 
     var body: some View {
 
-        let title = "My Transit Makers".localized
-        
         ZStack(alignment: .top) {
             LoginBackgroundView()
             VStack(spacing: 30) {
-                loginTitleView(title)
+                loginTitleView(MainTitle.main.rawValue.localized)
                 emailTextField(loginviewmodel)
                 loginButton(loginviewmodel, firestoreviewmodel)
                 moveSignUpButton(loginviewmodel, firestoreviewmodel)

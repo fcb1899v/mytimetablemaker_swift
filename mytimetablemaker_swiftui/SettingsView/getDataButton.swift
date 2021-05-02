@@ -9,6 +9,8 @@ import SwiftUI
 
 struct getDataButton: View {
     
+    @State private var alertType: AlertType = .select
+    @State private var isGetDataAlert = false
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
 
     init(
@@ -22,9 +24,6 @@ struct getDataButton: View {
         case complete
     }
     
-    @State private var alertType: AlertType = .select
-    @State private var isGetDataAlert = false
-
     var body: some View {
 
         Button(action: {

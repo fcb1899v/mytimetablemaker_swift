@@ -11,6 +11,9 @@ import FirebaseAuth
 struct logOutButton: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @State private var isLogOutAlert = false
+    @State private var title = ""
+    @State private var message = ""
     @ObservedObject private var loginviewmodel: LoginViewModel
     @ObservedObject private var firestoreviewmodel: FirestoreViewModel
 
@@ -21,10 +24,6 @@ struct logOutButton: View {
         self.loginviewmodel = loginviewmodel
         self.firestoreviewmodel = firestoreviewmodel
     }
-
-    @State private var isLogOutAlert = false
-    @State private var title = ""
-    @State private var message = ""
 
     var body: some View {
 

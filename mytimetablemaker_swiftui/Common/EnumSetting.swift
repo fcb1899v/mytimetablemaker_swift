@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+enum MainTitle: String {
+    case main = "My Transit Makers"
+    case signup = "Create Account"
+}
+
 enum Action: String {
     case register = "Register"
     case cancel = "Cancel"

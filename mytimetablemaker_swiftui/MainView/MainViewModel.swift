@@ -60,19 +60,21 @@ class MainViewModel: ObservableObject {
     }
     
     var dateTextView: some View {
-        dateLabelView
-            .onReceive(timer) { (_) in
-                self.selectdate = Date()
-                self.datelabel = "\(Date().setDate)"
-            }
-    }
-        
-    var timeTextView: some View {
-        timeLabelView
-            .onReceive(timer) { (_) in
-                self.selectdate = Date()
-                self.timelabel = "\(Date().setTime)"
-            }
+        HStack {
+            dateLabelView
+                .onReceive(timer) { (_) in
+                    self.selectdate = Date()
+                    self.datelabel = "\(Date().setDate)"
+                }
+            
+            Spacer()
+            
+            timeLabelView
+                .onReceive(timer) { (_) in
+                    self.selectdate = Date()
+                    self.timelabel = "\(Date().setTime)"
+                }
+        }
     }
 
     //表示されている時刻を取得する関数

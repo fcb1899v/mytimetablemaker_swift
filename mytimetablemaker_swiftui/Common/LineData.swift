@@ -9,94 +9,6 @@ import SwiftUI
 import Foundation
 import Combine
 
-// 多言語対応
-extension String {
-    var localized: String {
-        return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
-    }
-}
-
-//画面サイズを取得
-extension UIScreen{
-   static let screenWidth = UIScreen.main.bounds.size.width
-   static let screenHeight = UIScreen.main.bounds.size.height
-   static let screenSize = UIScreen.main.bounds.size
-}
-
-//色をRGCの16進数数字で指定
-extension Color {
-    
-    init(
-        _ hex: Int,
-        opacity: Double = 1.0
-    ) {
-        let red = Double((hex & 0xff0000) >> 16) / 255.0
-        let green = Double((hex & 0xff00) >> 8) / 255.0
-        let blue = Double((hex & 0xff) >> 0) / 255.0
-        self.init(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
-    }
-
-    func hex(withHash hash: Bool = false, uppercase up: Bool = false) -> String {
-        if let components = self.cgColor?.components {
-            let r = ("0" + String(Int(components[0] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            let g = ("0" + String(Int(components[1] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            let b = ("0" + String(Int(components[2] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            return (hash ? "#" : "") + String(r + g + b)
-        }
-        return "000000"
-    }
-}
-
-//String型ColorをInt型に変換
-extension String {
-    var colorInt: Int {
-        return Int(self.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 000000
-    }
-}
-
-//＜key＞
-extension String{
-    
-    //UserDefaultsに保存された文字列を取得
-    func userDefaultsValue(_ defaultvalue: String?) -> String {
-        let defaultstring = (defaultvalue != nil) ? defaultvalue: ""
-        return UserDefaults.standard.string(forKey: self) ?? defaultstring!
-    }
-    
-    //UserDefaultsに保存された文字列を取得
-    func userDefaultsInt(_ defaultvalue: Int?) -> Int {
-        let defaultint = (defaultvalue != nil) ? defaultvalue: 0
-        return (UserDefaults.standard.object(forKey: self) != nil) ?
-            UserDefaults.standard.integer(forKey: self):
-            defaultint!
-    }
-   
-    //UserDefaultsに保存されたBoolを取得
-    func userDefaultsBool(_ defaultvalue: Bool?) -> Bool {
-        let defaultbool = (defaultvalue != nil) ? defaultvalue: false
-        return (UserDefaults.standard.object(forKey: self) != nil) ?
-            UserDefaults.standard.bool(forKey: self):
-            defaultbool!
-    }
-    
-    //UserDefaultsに保存された色データを取得
-    func userDefaultsColor(_ defaultvalue: String?) -> Color {
-        return Color(userDefaultsValue(defaultvalue).colorInt)
-    }
-    
-    //UserDefaultsに保存するActionButtonの配列を取得
-    func ActionSheetButtons(list: [String], value: [Any]) -> [ActionSheet.Button] {
-        var buttonsArray: [ActionSheet.Button] = []
-        for i in 0..<list.count {
-            buttonsArray.append(.default(Text(list[i])) {
-                UserDefaults.standard.set(value[i], forKey: self)
-            })
-        }
-        buttonsArray.append(.cancel())
-        return buttonsArray
-    }
-}
-
 //＜goorback＞
 extension String{
 
@@ -537,15 +449,6 @@ extension String{
         }
     }
 }
-
-//<>
-extension String {
-    var settingsColor: Color {
-        let gray = Color(DefaultColor.gray.rawValue.colorInt)
-        return (self == Unit.notset.rawValue.localized) ? gray: Color.black
-    }
-}
-
 
 //
 extension Int {

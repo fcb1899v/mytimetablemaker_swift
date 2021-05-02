@@ -27,11 +27,9 @@ struct TimetableContentView: View {
     
     var body: some View {
 
-        let primary = Color(DefaultColor.primary.rawValue.colorInt)
-        
         NavigationView {
             ZStack {
-                primary
+                Color.primary
                 VStack {
                     TimetableTitleView(goorback, weekflag, num, {
                         weekflag = (weekflag) ? false: true
@@ -46,7 +44,7 @@ struct TimetableContentView: View {
                 .navigationTitle(DialogTitle.timetable.rawValue.localized)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
-                .navigationBarColor(backgroundColor: UIColor(primary), titleColor: .white)
+                .navigationBarColor(backgroundColor: UIColor(Color.primary), titleColor: .white)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading){
                         variousSettingsBackButton()

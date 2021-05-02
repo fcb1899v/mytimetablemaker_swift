@@ -29,25 +29,47 @@ struct MainHeaderView: View {
         ZStack{
             primary
             VStack(spacing: 10) {
+                
                 HStack{
-                    Spacer(minLength: 15)
+                    Spacer(minLength: 30)
                     if (mainviewmodel.timeflag) {
                         mainviewmodel.dateTextView
                     } else {
                         datePickerLabelView(mainviewmodel)
                     }
-                    Spacer()
-                    if (mainviewmodel.timeflag) {
-                        mainviewmodel.timeTextView
-                    } else {
-                        timePickerLabelView(mainviewmodel)
-                    }
-                    Spacer()
-                    Spacer()
+                    Spacer(minLength: 30)
                     moveSettingsButton(loginviewmodel, mainviewmodel, firestoreviewmodel)
-                    Spacer(minLength: 15)
+                    Spacer(minLength: 30)
                 }
-                stateButtonArray(mainviewmodel)
+                
+                HStack{
+                    Spacer()
+                    stateButton(
+                        flag: mainviewmodel.goorbackflag,
+                        label: "Back".localized,
+                        action: mainviewmodel.backButtonChangeData
+                    )
+                    Spacer()
+                    stateButton(
+                        flag: !mainviewmodel.goorbackflag,
+                        label: "Go".localized,
+                        action: mainviewmodel.goButtonChangeData
+                    )
+                    Spacer()
+                    stateButton(
+                        flag: mainviewmodel.timeflag,
+                        label: "Start".localized,
+                        action: mainviewmodel.startButtonChangeData
+                    )
+                    Spacer()
+                    stateButton(
+                        flag: !mainviewmodel.timeflag,
+                        label: "Stop".localized,
+                        action: mainviewmodel.stopButtonChangeData
+                    )
+                    Spacer()
+                }
+
             }.offset(y: 20)
         }.frame(width: UIScreen.screenWidth, height: 130)
     }
