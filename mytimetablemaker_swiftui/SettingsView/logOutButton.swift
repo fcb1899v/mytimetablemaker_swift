@@ -51,10 +51,6 @@ struct logOutButton: View {
             primaryButton: .cancel(Text("Cancel".localized)),
             secondaryButton: .default(Text("OK"),
                 action: {
-                    if !firestoreviewmodel.isFirstLogout {
-                        firestoreviewmodel.setFirestore()
-                        firestoreviewmodel.isFirstLogout = true
-                    }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         title = "Logged out".localized
                         do {
