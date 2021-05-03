@@ -41,10 +41,6 @@ extension Int {
     var MMSStoHHMMSS: Int {
         return (self / 100 / 60) * 10000 + (self / 100 % 60) * 100 + self % 100
     }
-}
-
-//＜時刻の計算＞
-extension Int {
 
     //Int型時刻HHMMの足し算
     func plusHHMM(_ time: Int) -> Int {
@@ -74,10 +70,7 @@ extension Int {
     func minusMMSS(_ time: Int) -> Int {
         return (self.MMSStoSS - time.MMSStoSS).SStoMMSS
     }
-}
 
-//＜時刻の表示＞
-extension Int {
     //1桁のときに0を追加
     var addZeroTime: String {
         return (0...9 ~= self) ? "0" + String(self): String(self)
@@ -94,6 +87,7 @@ extension Int {
             return "--:--"
         }
     }
+    
     //Int型時刻MMSSからカウントダウンに変換
     var countdown: String{
         var intcountdowntime = self
@@ -109,11 +103,13 @@ extension Int {
             return countdownmm + ":" + countdownss
         }
     }
+    
     //カウントダウン時間（mm:ss）を取得
     func countdownTime(_ departtime: Int) -> String {
         //カウントダウン（出発時刻と現在時刻の差）を計算
         return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown
     }
+    
     //カウントダウン表示の警告色を取得
     func countdownColor(_ departtime:Int) -> Color{
         return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdownColor
@@ -132,23 +128,15 @@ extension Int {
             return Color.mygray
         }
     }
-}
 
-//曜日の変換
-extension Int {
-    
+    //曜日の変換
     var weekDayOrEnd: String {
-        switch (self) {
-            case 0, 6: return "weekend".localized
-            default: return "weekday".localized
-        }
+        return (self == 0 || self == 6) ? "weekend".localized: "weekday".localized
     }
-    
+
+    //曜日の変換
     var weekDayOrEndFlag: Bool {
-        switch (self) {
-            case 0, 6: return false
-            default: return true
-        }
+        return (self == 0 || self == 6) ? false: true
     }
 }
 

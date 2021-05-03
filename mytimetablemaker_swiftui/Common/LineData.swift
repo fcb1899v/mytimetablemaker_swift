@@ -411,18 +411,24 @@ extension String{
         ]
     }
     
+    var route2FlagKey: String {
+        return "\(self)route2flag"
+    }
+    
     //UserDefaultsに保存されたスイッチの状態を取得
     var route2Flag: Bool {
-        var route2flag = "\(self)route2flag".userDefaultsBool(true)
-        if (self == "back1" || self == "go1") {
-            route2flag = true
-        }
-        return route2flag
+        return (self == "back1" || self == "go1") ? true: route2FlagKey.userDefaultsBool(true)
     }
+    
+    var changeLineKey: String {
+        return "\(self)changeline"
+    }
+
     //UserDefaultsに保存された乗換回数の取得
     var changeLineInt: Int {
-        return "\(self)changeline".userDefaultsInt(0)
+        return changeLineKey.userDefaultsInt(0)
     }
+
     //乗換回数の取得(String型)
     var changeLine: String {
         return self.changeLineInt.stringChangeLine

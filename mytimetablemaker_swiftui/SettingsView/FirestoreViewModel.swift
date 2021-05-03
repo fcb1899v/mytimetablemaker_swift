@@ -119,21 +119,21 @@ class FirestoreViewModel: ObservableObject {
         ref.getDocument { (document, error) in
             self.title = "Data got successfully".localized
             if let document = document, document.exists, let data = document.data() {
-                UserDefaults.standard.set(data["switch"], forKey: "\(goorback)route2flag")
-                UserDefaults.standard.set(data["changeline"], forKey: "\(goorback)changeline")
+                UserDefaults.standard.set(data["switch"], forKey: goorback.route2FlagKey)
+                UserDefaults.standard.set(data["changeline"], forKey: goorback.changeLineKey)
                 UserDefaults.standard.set(data["departpoint"], forKey: goorback.departurePointKey)
                 UserDefaults.standard.set(data["arrivalpoint"], forKey: goorback.arrivalPointKey)
-                for i in 1..<4 {
-                    UserDefaults.standard.set(data["departstation\(i)"], forKey: "\(goorback)departstation\(i)")
-                    UserDefaults.standard.set(data["arrivalstation\(i)"], forKey: "\(goorback)arrivestation\(i)")
-                    UserDefaults.standard.set(data["linename\(i)"], forKey: "\(goorback)linename\(i)")
-                    UserDefaults.standard.set(data["linecolor\(i)"], forKey: "\(goorback)linecolor\(i)")
-                    UserDefaults.standard.set(data["ridetime\(i)"], forKey: "\(goorback)ridetime\(i)")
-                    UserDefaults.standard.set(data["transportation\(i)"], forKey: "\(goorback)transport\(i)")
-                    UserDefaults.standard.set(data["transittime\(i)"], forKey: "\(goorback)transittime\(i)")
+                for num in 0..<3 {
+                    UserDefaults.standard.set(data["departstation\(num + 1)"], forKey: goorback.departStationKey(num))
+                    UserDefaults.standard.set(data["arrivalstation\(num + 1)"], forKey: goorback.arriveStationKey(num))
+                    UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))
+                    UserDefaults.standard.set(data["linecolor\(num + 1)"], forKey: goorback.lineColorKey(num))
+                    UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
+                    UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
+                    UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transitTimeKey(num + 1))
                 }
-                UserDefaults.standard.set(data["transportatione"], forKey: "\(goorback)transporte")
-                UserDefaults.standard.set(data["transittimee"], forKey: "\(goorback)transittimee")
+                UserDefaults.standard.set(data["transportatione"], forKey: goorback.transportationKey(0))
+                UserDefaults.standard.set(data["transittimee"], forKey: goorback.transitTimeKey(0))
             } else {
                 self.title = "Get data error".localized
                 self.message = "Data could not be got".localized
@@ -143,32 +143,32 @@ class FirestoreViewModel: ObservableObject {
     
     //UserDefaultsに保存された路線データをリセット
     private func resetLineInfoFirestore(_ goorback: String) {
-        UserDefaults.standard.set(true, forKey: "\(goorback)route2flag")
-        UserDefaults.standard.set("2", forKey: "\(goorback)changeline")
-        UserDefaults.standard.set(goorback.stringGoOrBack("Office".localized, "Home".localized), forKey: goorback.departurePointKey)
-        UserDefaults.standard.set(goorback.stringGoOrBack("Home".localized, "Office".localized), forKey: goorback.arrivalPointKey)
-        for i in 1..<4 {
-            UserDefaults.standard.set("Dep. St. ".localized + "\(i)", forKey: "\(goorback)departstation\(i)")
-            UserDefaults.standard.set("Arr. St. ".localized + "\(i)", forKey: "\(goorback)arrivestation\(i)")
-            UserDefaults.standard.set("Line ".localized + "\(i)", forKey: "\(goorback)linename\(i)")
-            UserDefaults.standard.set("#03DAC5", forKey: "\(goorback)linecolor\(i)")
-            UserDefaults.standard.set("0", forKey: "\(goorback)ridetime\(i)")
-            UserDefaults.standard.set("Walking".localized, forKey: "\(goorback)transport\(i)")
-            UserDefaults.standard.set("0", forKey: "\(goorback)transittime\(i)")
+        UserDefaults.standard.set(true, forKey: goorback.route2FlagKey)
+        UserDefaults.standard.set("2", forKey: goorback.changeLineKey)
+        UserDefaults.standard.set(goorback.departurePointDefault, forKey: goorback.departurePointKey)
+        UserDefaults.standard.set(goorback.arrivalPointDefault, forKey: goorback.arrivalPointKey)
+        for num in 0..<3 {
+            UserDefaults.standard.set(goorback.departStationDefault(num), forKey: goorback.departStationKey(num))
+            UserDefaults.standard.set(goorback.arriveStationDefault(num), forKey: goorback.arriveStationKey(num))
+            UserDefaults.standard.set(goorback.lineNameDefault(num), forKey: goorback.lineNameKey(num))
+            UserDefaults.standard.set("#03DAC5", forKey: goorback.lineColorKey(num))
+            UserDefaults.standard.set("0", forKey: goorback.rideTimeKey(num))
         }
-        UserDefaults.standard.set("Walking".localized, forKey: "\(goorback)transporte")
-        UserDefaults.standard.set("0", forKey: "\(goorback)transittimee")
+        for num in 0..<4 {
+            UserDefaults.standard.set("Walking".localized, forKey: goorback.transportationKey(num))
+            UserDefaults.standard.set("0", forKey: goorback.transitTimeKey(num))
+        }
     }
 
     //Firestoreサーバーに、UserDefaultsに保存された時刻表データを保存
-    private func setTimetableFirestore(_ goorback: String, _ linenumber: Int, _ day: Int){
+    private func setTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int){
         let db = Firestore.firestore()
         let userid = Auth.auth().currentUser!.uid
         let userdb = db.collection("users").document(userid)
         let ref = userdb.collection("goorback").document(goorback)
-        let nextref = ref.collection("timetable").document("timetable\(linenumber + 1)\(day.weekDayOrEnd)")
+        let nextref = ref.collection("timetable").document("timetable\(num + 1)\(day.weekDayOrEnd)")
         let batch = db.batch()
-        batch.setData(setTimetableHour(goorback, linenumber, day), forDocument: nextref)
+        batch.setData(setTimetableHour(goorback, num, day), forDocument: nextref)
         batch.commit() { error in
             self.title = "Data saved successfully".localized
             if error != nil {
@@ -177,12 +177,10 @@ class FirestoreViewModel: ObservableObject {
             }
         }
     }
-
-    
     
     //UserDefaultsに保存された時刻表データを取得
-    private func setTimetableHour(_ goorback: String, _ linenumber: Int, _ day: Int)  -> [String : String] {
-        let timetable = Timetable(goorback, day.weekDayOrEndFlag, linenumber)
+    private func setTimetableHour(_ goorback: String, _ num: Int, _ day: Int)  -> [String : String] {
+        let timetable = Timetable(goorback, day.weekDayOrEndFlag, num)
         return [
             "hour04" : timetable.timetableTime(4),
             "hour05" : timetable.timetableTime(5),
@@ -210,17 +208,18 @@ class FirestoreViewModel: ObservableObject {
     }
     
     //Firestoreサーバーから時刻表データを取得し、UserDefaultsに保存
-    private func getTimetableFirestore(_ goorback: String, _ linenumber: Int, _ day: Int, _ hour: Int) {
+    private func getTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int, _ hour: Int) {
         let db = Firestore.firestore()
         let userid = Auth.auth().currentUser!.uid
         let userdb = db.collection("users").document(userid)
         let ref = userdb.collection("goorback").document(goorback)
-        let nextref = ref.collection("timetable").document("timetable\(linenumber + 1)\(day.weekDayOrEnd)")
+        let nextref = ref.collection("timetable").document("timetable\(num + 1)\(day.weekDayOrEnd)")
         nextref.getDocument { (document, error) in
             self.title = "Data got successfully".localized
             if let document = document, document.exists, let data = document.data() {
-                let key = "\(goorback)line\(linenumber + 1)\(day.weekDayOrEnd)\(hour.addZeroTime)"
-                UserDefaults.standard.setValue(data["hour\(hour.addZeroTime)"], forKey: key)
+                UserDefaults.standard.setValue(data["hour\(hour.addZeroTime)"],
+                    forKey: Timetable(goorback, day.weekDayOrEndFlag, num).timetableKey(hour)
+                )
             } else {
                 self.title = "Get data error".localized
                 self.message = "Data could not be got".localized
@@ -229,8 +228,9 @@ class FirestoreViewModel: ObservableObject {
     }
     
     //UserDefaultsに保存された時刻表データをリセット
-    private func resetTimetableFirestore(_ goorback: String, _ linenumber: Int, _ day: Int, _ hour: Int) {
-        let key = "\(goorback)line\(linenumber + 1)\(day.weekDayOrEnd)\(hour.addZeroTime)"
-        UserDefaults.standard.setValue("", forKey: key)
+    private func resetTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int, _ hour: Int) {
+        UserDefaults.standard.setValue("",
+            forKey: Timetable(goorback, day.weekDayOrEndFlag, num).timetableKey(hour)
+        )
     }
 }

@@ -30,7 +30,7 @@ struct Timetable: Calculation{
 
     //
     func timetableKey(_ hour: Int) -> String {
-        return "\(goorback)line\(num + 1)\(weekTag)\(hour.addZeroTime)"
+        return "\(goorback.lineNameKey(num))\(weekTag)\(hour.addZeroTime)"
     }
 
     //UserDefaultに保存された時刻表の時刻の表示を取得
