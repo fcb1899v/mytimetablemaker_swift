@@ -25,7 +25,7 @@ struct routeInfoView: View {
         let currenttime = mainviewmodel.currentHHmmssFromTime
         let departuretime1 = CalcTime(goorback1, weekflag).departureTime(currenttime)
         let departuretime2 = CalcTime(goorback2, weekflag).departureTime(currenttime)
-        let width = (goorback2.route2Flag) ? UIScreen.screenWidth/2 - 40: UIScreen.screenWidth - 80
+        let width = (goorback2.route2Flag) ? .doubleroutewidth: CGFloat.singleroutewidth
 
         ScrollView {
             HStack(alignment: .top) {
@@ -60,7 +60,7 @@ struct routeInfoView: View {
                 if (mainviewmodel.goorback2.route2Flag) {
                     
                     Divider()
-                        .frame(width: 1.5, height: UIScreen.screenHeight)
+                        .frame(width: 1.5, height: .screenheight)
                         .background(Color.myprimary)
                         .padding(.leading, 10.0)
                         .padding(.trailing, 10.0)

@@ -66,7 +66,7 @@ struct lineInfoAlertLabel: View {
                     TimetableContentView(goorback, num)
                 }
             }
-            .frame(width: 30, height: 35.0, alignment: .center)
+            .frame(width: 30, height: 35.0)
             .padding(.leading, 10.0)
             
             Button (action: {

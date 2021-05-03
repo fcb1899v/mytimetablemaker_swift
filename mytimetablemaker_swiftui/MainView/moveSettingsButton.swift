@@ -31,7 +31,7 @@ struct moveSettingsButton: View {
                 ZStack {
                     Image("ic_settings1")
                         .resizable()
-                        .frame(width: 20, height: 20, alignment: .center)
+                        .frame(width: 20, height: 20)
                     NavigationLink(
                         destination: SettingsContentView(loginviewmodel, mainviewmodel, firestoreviewmodel),
                         isActive: $loginviewmodel.isMoveSettings,
@@ -39,7 +39,7 @@ struct moveSettingsButton: View {
                     )
                 }
             }
-        }.frame(width: 20, height: 20, alignment: .center)
+        }.frame(width: 20, height: 20)
     }
 }
 

@@ -32,7 +32,7 @@ struct signUpButton: View {
             Text("Signup".localized)
                 .font(.headline)
                 .foregroundColor(.white)
-                .frame(width: UIScreen.screenWidth * 0.8, height: 50)
+                .frame(width: .loginbuttonwidth, height: 50)
                 .background((loginviewmodel.isTermsAgree) ? Color.myprimary: Color.mygray)
                 .cornerRadius(15.0)
         }

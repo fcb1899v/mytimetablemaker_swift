@@ -45,7 +45,7 @@ struct termsLinkView: View {
                     .font(.subheadline)
                     .foregroundColor(.white)
                 
-            }.frame(width: UIScreen.screenWidth * 0.7, height: 40 ,alignment: .leading)
+            }.frame(width: .loginbuttonwidth, height: 40 ,alignment: .topLeading)
         }
     }
     

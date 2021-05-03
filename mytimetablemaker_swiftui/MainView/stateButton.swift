@@ -31,9 +31,7 @@ struct stateButton: View {
                 Text(label)
                     .font(.subheadline)
                     .fontWeight(.bold)
-                    .frame(width: UIScreen.screenWidth/5,
-                           height: 35,
-                           alignment: .center)
+                    .frame(width: .statebuttonwidth, height: 35)
                     .foregroundColor(.white)
                     .background(Color.myaccent)
                     .cornerRadius(15)
@@ -41,9 +39,7 @@ struct stateButton: View {
                 Text(label)
                     .font(.subheadline)
                     .fontWeight(.bold)
-                    .frame(width: UIScreen.screenWidth/5,
-                           height: 35,
-                           alignment: .center)
+                    .frame(width: .statebuttonwidth, height: 35)
                     .foregroundColor(.white)
                     .background(Color.mygray)
                     .cornerRadius(15)

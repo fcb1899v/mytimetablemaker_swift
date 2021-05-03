@@ -37,7 +37,7 @@ struct MainContentView: View {
                             routeInfoView(mainviewmodel)
                             Rectangle()
                                 .foregroundColor(Color.primary)
-                                .frame(width: UIScreen.screenWidth, height: 1.5)
+                                .frame(width: .screenwidth, height: 1.5)
                                 .offset(y: -10)
                             AdMobView()
                         }

@@ -18,11 +18,11 @@ struct LoginBackgroundView: View {
                     .scaledToFit()
                     .offset(y: 50)
                 Color.myprimary
-                    .frame(width: UIScreen.screenWidth, height: 70)
+                    .frame(width: .screenwidth, height: 70)
                     .offset(y: 50)
             }
         }.edgesIgnoringSafeArea(.all)
-        .frame(width: UIScreen.screenWidth, height: UIScreen.screenHeight)
+        .frame(width: .screenwidth, height: .screenheight)
     }
 }
 

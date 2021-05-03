@@ -71,7 +71,7 @@ struct MainHeaderView: View {
                 }
 
             }.offset(y: 20)
-        }.frame(width: UIScreen.screenWidth, height: 130)
+        }.frame(width: .screenwidth, height: 130)
     }
 }
 

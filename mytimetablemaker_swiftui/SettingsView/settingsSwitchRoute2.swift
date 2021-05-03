@@ -30,7 +30,7 @@ struct settingsSwitchRoute2: View {
                     "Outgoing route 2".localized
             ).font(.subheadline)
         }.toggleStyle(SwitchToggleStyle(
-            tint: Color.myaccent
+            tint: .myaccent
         ))
     }
 }

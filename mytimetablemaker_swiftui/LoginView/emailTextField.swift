@@ -23,12 +23,12 @@ struct emailTextField: View {
             TextField("Email".localized, text: $loginviewmodel.email)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .background(Color.white)
-                .frame(width: UIScreen.screenWidth * 0.8)
+                .frame(width: .loginbuttonwidth)
             
             SecureField("Password".localized, text: $loginviewmodel.password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .background(Color.white)
-                .frame(width: UIScreen.screenWidth * 0.8)
+                .frame(width: .loginbuttonwidth)
         }
     }
 }

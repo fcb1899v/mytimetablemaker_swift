@@ -30,35 +30,35 @@ struct TimetableGridView: View {
         ScrollView {
             
             ZStack {
-                
                 Color.white
-                
                 VStack(spacing: 0.5) {
-                    
                     ZStack {
                         Color.white
                         LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
                             Color.myprimary.frame(height: 0)
                             HStack(spacing: 1) {
-                                Color.white.frame(width: 1)
+                                Color.myprimary
                                 ZStack(alignment: .center) {
                                     Color.myprimary
-                                        .frame(height: 25)
+                                        .frame(width: CGFloat().timetablewidth, height: 25)
                                     Text(timetable.weekLabelText)
                                         .foregroundColor(timetable.weekLabelColor)
                                         .fontWeight(.bold)
                                 }
-                                Color.white.frame(width: 1)
+                                Color.myprimary
                             }
                         }
                     }
-                    
                     Color.white.frame(height: 0)
-
                     ForEach(4...25, id: \.self) { hour in
                         TimetableEachGridView(goorback, weekflag, num, hour)
                     }
                     Color.white.frame(height: 0)
+                }
+                HStack(spacing: 1) {
+                    Color.myprimary
+                    Color.clear.frame(width: (CGFloat.screenwidth > 600) ? 631: CGFloat.screenwidth)
+                    Color.myprimary
                 }
             }
         }

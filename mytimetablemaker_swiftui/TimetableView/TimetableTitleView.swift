@@ -39,7 +39,7 @@ struct TimetableTitleView: View {
                 Text(timetable.timetableTitle)
                     .font(.callout)
                     .foregroundColor(.white)
-            }
+            }.padding(10)
             
             Spacer()
             
@@ -47,14 +47,12 @@ struct TimetableTitleView: View {
                 Text(timetable.revWeekLabelText)
                     .font(.subheadline)
                     .fontWeight(.bold)
-                    .frame(width: UIScreen.screenWidth/5,
-                           height: 35,
-                           alignment: .center)
+                    .frame(width: .statebuttonwidth, height: 35)
                     .foregroundColor(timetable.weekButtonLabelColor)
                     .background(timetable.weekButtonBackColor)
                     .cornerRadius(15)
             }
-        }.padding(10)
+        }.frame(width: CGFloat().timetablewidth)
     }
 }
 

@@ -52,7 +52,7 @@ struct transitInfoAlertView: View {
                         maxnumber: 99
                     )
                 }
-                .frame(width: 30, height: 35.0, alignment: .center)
+                .frame(width: 30, height: 35.0)
                 .padding(.leading, 10.0)
             }
             

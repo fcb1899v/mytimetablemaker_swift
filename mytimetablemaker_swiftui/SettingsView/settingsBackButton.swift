@@ -24,7 +24,7 @@ struct settingsBackButton: View {
             HStack {
                 Image("arrow_back_ios")
                     .resizable()
-                    .frame(width: 10, height: 18, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
+                    .frame(width: 10, height: 18)
                 Text("back".localized)
                     .foregroundColor(.white)
             }

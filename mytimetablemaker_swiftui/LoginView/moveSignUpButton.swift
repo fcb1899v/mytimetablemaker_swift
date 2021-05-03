@@ -28,7 +28,7 @@ struct moveSignUpButton: View {
             Text("Signup".localized)
                 .font(.headline)
                 .foregroundColor(.myprimary)
-                .frame(width: UIScreen.screenWidth * 0.8, height: 50)
+                .frame(width: .loginbuttonwidth, height: 50)
                 .background(Color.white)
                 .cornerRadius(15.0)
         }.sheet(isPresented: $isShowSignUp) {

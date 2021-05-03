@@ -40,11 +40,9 @@ struct TimetableEachGridView: View {
             Color.white
             LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
                 HStack(spacing: 1) {
-                    Color.white
-                        .frame(width: 1)
+                    Color.myprimary
                     ZStack {
-                        Color.myprimary
-                            .frame(width: 27)
+                        Color.myprimary.frame(width: 30)
                         Text(hour.addZeroTime)
                             .foregroundColor(.myaccent)
                     }
@@ -53,7 +51,7 @@ struct TimetableEachGridView: View {
                     }) {
                         ZStack(alignment: .leading) {
                             Color.myprimary
-                                .frame(width: UIScreen.screenWidth - 30)
+                                .frame(width: CGFloat().timetableeachwidth)
                             Button (action: {
                                 self.isShowingAlert = true
                             }) {
@@ -79,7 +77,7 @@ struct TimetableEachGridView: View {
                             }
                         }
                     }
-                    Color.white.frame(width: 1)
+                    Color.myprimary
                 }
             }
         }

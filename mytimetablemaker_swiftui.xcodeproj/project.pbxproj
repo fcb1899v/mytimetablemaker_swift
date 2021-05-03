@@ -10,6 +10,7 @@
 		0212A534263C35C600627363 /* settingsStations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0212A533263C35C600627363 /* settingsStations.swift */; };
 		0212A536263D897200627363 /* stationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0212A535263D897200627363 /* stationAndTime.swift */; };
 		0220F1AE263F77FB0007EDC8 /* TimetableEachGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1AD263F77FB0007EDC8 /* TimetableEachGridView.swift */; };
+		0220F1B2263FE1120007EDC8 /* Size.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1B1263FE1120007EDC8 /* Size.swift */; };
 		022E53302630EAB6007921D9 /* variousSettingsBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */; };
 		022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 022E53442633B3C0007921D9 /* InfoPlist.strings */; };
 		0257E432263E1B3D00D45CFB /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* Color.swift */; };
@@ -106,6 +107,7 @@
 		0212A533263C35C600627363 /* settingsStations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsStations.swift; sourceTree = "<group>"; };
 		0212A535263D897200627363 /* stationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stationAndTime.swift; sourceTree = "<group>"; };
 		0220F1AD263F77FB0007EDC8 /* TimetableEachGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEachGridView.swift; sourceTree = "<group>"; };
+		0220F1B1263FE1120007EDC8 /* Size.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Size.swift; sourceTree = "<group>"; };
 		022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = variousSettingsBackButton.swift; sourceTree = "<group>"; };
 		022E53432633B3C0007921D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mytimetablemaker_swiftuiRelease.entitlements; sourceTree = "<group>"; };
@@ -397,6 +399,7 @@
 			children = (
 				02F0257F261BDD7F00655E54 /* Assets.xcassets */,
 				0257E431263E1B3D00D45CFB /* Color.swift */,
+				0220F1B1263FE1120007EDC8 /* Size.swift */,
 				02E7F6A0261F35D700C00545 /* Localizable.strings */,
 				02F025B7261BDE7900655E54 /* CalcTime.swift */,
 				02F025CE261BDF2D00655E54 /* Timetable.swift */,
@@ -742,6 +745,7 @@
 				02E7F7462620874E00C00545 /* imagePickerView.swift in Sources */,
 				02F026F1261DED0400655E54 /* transitInfoAlertView.swift in Sources */,
 				02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */,
+				0220F1B2263FE1120007EDC8 /* Size.swift in Sources */,
 				02E7F75526208B4E00C00545 /* timeFieldAlertView.swift in Sources */,
 				02F026D3261D396A00655E54 /* moveSettingsButton.swift in Sources */,
 				02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */,

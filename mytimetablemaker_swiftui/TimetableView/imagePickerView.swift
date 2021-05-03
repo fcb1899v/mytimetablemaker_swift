@@ -33,7 +33,8 @@ struct imagePickerView: View {
                 .resizable()
                 .scaledToFit()
                 .padding(50)
-        }.frame(alignment: .top)
+                .frame(width: CGFloat().timetableeachwidth)
+        }.frame(width: CGFloat().timetablewidth)
     }
 }
 
