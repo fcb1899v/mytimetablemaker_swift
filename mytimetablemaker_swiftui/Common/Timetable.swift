@@ -27,21 +27,10 @@ struct Timetable: Calculation{
         self.weekflag = weekflag
         self.num = num
     }
-    
-    let register = Action.register.rawValue.localized
-    let cancel = Action.cancel.rawValue.localized
-    let add = Action.add.rawValue.localized
-    let delete = Action.delete.rawValue.localized
-    let copy = Action.copy.rawValue.localized
-    let to59min = Hint.to59min.rawValue.localized
-    
-}
-
-extension Timetable {
 
     //
     func timetableKey(_ hour: Int) -> String {
-        return "\(goorback)line\(num + 1)\(weekflag.weektag)\(hour.addZeroTime)"
+        return "\(goorback)line\(num + 1)\(weekTag)\(hour.addZeroTime)"
     }
 
     //UserDefaultに保存された時刻表の時刻の表示を取得
@@ -49,31 +38,49 @@ extension Timetable {
         return timetableKey(hour).userDefaultsValue("")
     }
 
+    //時刻表データを取得
+    var timetable: [Int] {
+        var timetable: [Int] = []
+        for hour in 4...25 {
+            let temptext = timetableTime(hour)
+            let timetext = (temptext.prefix(1) == " ") ? String(temptext.suffix(temptext.count - 1)): temptext
+            if (timetext != "") {
+                let timearray = Array(Set(timetext.components(separatedBy: CharacterSet(charactersIn: " "))
+                                        .map{(Int($0)! + hour * 100)}
+                                        .filter{$0 < 2700}
+                                        .filter{$0 > -1}
+                            )).sorted()
+                timetable.append(contentsOf: timearray)
+            }
+        }
+        return timetable
+    }
+    
     //
-    private func choiceCopyTimeKey(_ hour: Int) -> [String] {
+    func choiceCopyTimeKey(_ hour: Int) -> [String] {
         return [
-            "\(goorback)line\(num + 1)\(weekflag.weektag)\((hour - 1).addZeroTime)",
-            "\(goorback)line\(num + 1)\(weekflag.weektag)\((hour + 1).addZeroTime)",
-            "\(goorback)line\(num + 1)\((!weekflag).weektag)\(hour.addZeroTime)",
-            "\(goorback.otherroute)line1\(weekflag.weektag)\(hour.addZeroTime)",
-            "\(goorback.otherroute)line2\(weekflag.weektag)\(hour.addZeroTime)",
-            "\(goorback.otherroute)line3\(weekflag.weektag)\(hour.addZeroTime)"
+            "\(goorback.lineNameKey(num))\(weekTag)\((hour - 1).addZeroTime)",
+            "\(goorback.lineNameKey(num))\(weekTag)\((hour + 1).addZeroTime)",
+            "\(goorback.lineNameKey(num))\(revWeekTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(0))\(weekTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(1))\(weekTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(2))\(weekTag)\(hour.addZeroTime)"
         ]
     }
 
     //
-    private func choiceCopyTimeTitle(_ hour: Int) -> [String] {
+    func choiceCopyTimeTitle(_ hour: Int) -> [String] {
         return [
             "\(String(hour - 1))\("Hour".localized)",
             "\(String(hour + 1))\("Hour".localized)",
-            (!weekflag) ? "Weekday".localized: "Weekend".localized,
+            revWeekLabelText,
             "Other route of line 1".localized,
             "Other route of line 2".localized,
             "Other route of line 3".localized
         ]
     }
 
-    private func copyButtonsArray(_ hour: Int) -> [ActionSheet.Button] {
+    func copyButtonsArray(_ hour: Int) -> [ActionSheet.Button] {
         
         let copylist = choiceCopyTimeTitle(hour)
         let copykey = choiceCopyTimeKey(hour)
@@ -111,59 +118,53 @@ extension Timetable {
 
     //時刻表のタイトルを取得
     var timetableTitle: String {
-        let arrivestation = timetableArriveStation
-        let linename = timetableLineName
+        let arrivestation = goorback.stationArray[2 * num + 3]
+        let linename = goorback.lineNameArray[num]
         return "(\(linename)\(" for ".localized)\(arrivestation)\("houmen".localized))"
     }
 
-    //UserDefaultsに保存された発車駅名を取得
-    var timetableDepartStation: String {
-        return "\(goorback)departstation\(num + 1)"
-            .userDefaultsValue("\("Dep. St. ".localized)\(num + 1)")
-    }
-
-    //UserDefaultsに保存された降車駅名を取得
-    private var timetableArriveStation: String {
-        return "\(goorback)arrivestation\(num + 1)"
-            .userDefaultsValue("\("Arr. St. ".localized)\(num + 1)")
-    }
-
-    //UserDefaultsに保存された路線名を取得
-    private var timetableLineName: String {
-        return "\(goorback)linename\(num + 1)"
-            .userDefaultsValue("\("Line ".localized)\(num + 1)")
-    }
-    
     func timetableAlertMessage(_ hour: Int) -> String {
         return "\(goorback.lineNameArray[num]) (\(String(hour))\("Hour".localized))"
     }
-}
-
-//weekflagの変換
-extension Bool {
     
-    var weektag: String {
-        return (self) ? "weekday": "weekend"
+    //
+    var weekTag: String {
+        return weekflag ? "weekday": "weekend"
+    }
+
+    //
+    var revWeekTag: String {
+        return !weekflag ? "weekday": "weekend"
     }
 
     //
     var weekLabelText: String {
-        return self ? "Weekday".localized: "Weekend".localized
+        return weekflag ? "Weekday".localized: "Weekend".localized
+    }
+
+    //
+    var revWeekLabelText: String {
+        return !weekflag ? "Weekday".localized: "Weekend".localized
     }
 
     //
     var weekLabelColor: Color {
-        return self ? Color.white: Color.myred
+        return weekflag ? Color.white: Color.myred
     }
 
     //
-    var weekButtonTitle: String {
-        return self ? "Weekend".localized: "Weekday".localized
+    var weekButtonBackColor: Color {
+        return weekflag ? Color.myred: Color.white
+    }
+    
+    //
+    var weekButtonLabelColor: Color {
+        return weekflag ? Color.white: Color.myprimary
     }
 
-    //
-    func weekButtonColor(_ daycolor: Int, _ endcolor: Int) -> Color {
-        return self ? Color(daycolor): Color(endcolor)
+    //goorbackを別ルートに変更
+    var otherroute: String {
+        return goorback.prefix(goorback.count - 1) + ((goorback.suffix(1) == "1") ? "2": "1")
     }
 }
 
@@ -207,10 +208,5 @@ extension String {
         let temptext = currenttext.trimmingCharacters(in: .whitespaces)
         let textarray = temptext.timeSorting(charactersin: " ").filter{$0 != self}
         return textarray.joined(separator: " ")
-    }
-    
-    //goorbackを別ルートに変更
-    var otherroute: String {
-        return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1")
     }
 }

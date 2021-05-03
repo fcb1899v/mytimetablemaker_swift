@@ -11,7 +11,7 @@ import GoogleMobileAds
 struct TimetableContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @State var weekflag = !Date().weekFlag
+    @State var weekflag = Date().weekFlag
     
     private let goorback: String
     private let num: Int
@@ -44,7 +44,7 @@ struct TimetableContentView: View {
                 .navigationTitle(DialogTitle.timetable.rawValue.localized)
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationBarBackButtonHidden(true)
-                .navigationBarColor(backgroundColor: UIColor(Color.primary), titleColor: .white)
+                .navigationBarColor(backgroundColor: UIColor(Color.myprimary), titleColor: .white)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading){
                         variousSettingsBackButton()

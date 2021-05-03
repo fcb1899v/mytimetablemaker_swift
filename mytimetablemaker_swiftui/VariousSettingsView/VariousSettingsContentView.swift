@@ -70,7 +70,7 @@ struct VariousSettingsContentView: View {
         }
         .navigationTitle(goorback.routeTitle.localized)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarColor(backgroundColor: UIColor(Color.primary), titleColor: .white)
+        .navigationBarColor(backgroundColor: UIColor(Color.myprimary), titleColor: .white)
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){

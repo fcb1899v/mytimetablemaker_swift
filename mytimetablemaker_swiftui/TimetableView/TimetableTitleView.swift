@@ -28,13 +28,15 @@ struct TimetableTitleView: View {
     
     var body: some View {
         
+        let timetable = Timetable(goorback, weekflag, num)
+        
         HStack {
             
             VStack(alignment: .leading, spacing: 5) {
-                Text(Timetable(goorback, weekflag, num).timetableDepartStation)
+                Text(goorback.stationArray[2 * num + 2])
                     .font(.title3)
                     .foregroundColor(.white)
-                Text(Timetable(goorback, weekflag, num).timetableTitle)
+                Text(timetable.timetableTitle)
                     .font(.callout)
                     .foregroundColor(.white)
             }
@@ -42,14 +44,14 @@ struct TimetableTitleView: View {
             Spacer()
             
             Button(action: action){
-                Text((!weekflag).weekLabelText)
+                Text(timetable.revWeekLabelText)
                     .font(.subheadline)
                     .fontWeight(.bold)
                     .frame(width: UIScreen.screenWidth/5,
                            height: 35,
                            alignment: .center)
-                    .foregroundColor((!weekflag) ? .myprimary: .white)
-                    .background((!weekflag) ? Color.white: Color.myred)
+                    .foregroundColor(timetable.weekButtonLabelColor)
+                    .background(timetable.weekButtonBackColor)
                     .cornerRadius(15)
             }
         }.padding(10)

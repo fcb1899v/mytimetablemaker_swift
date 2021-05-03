@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0212A534263C35C600627363 /* settingsStations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0212A533263C35C600627363 /* settingsStations.swift */; };
 		0212A536263D897200627363 /* stationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0212A535263D897200627363 /* stationAndTime.swift */; };
+		0220F1AE263F77FB0007EDC8 /* TimetableEachGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1AD263F77FB0007EDC8 /* TimetableEachGridView.swift */; };
 		022E53302630EAB6007921D9 /* variousSettingsBackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */; };
 		022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 022E53442633B3C0007921D9 /* InfoPlist.strings */; };
 		0257E432263E1B3D00D45CFB /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* Color.swift */; };
@@ -104,6 +105,7 @@
 		0146BBCFF961E21ECACCBEBB /* Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mytimetablemaker_swiftui_mytimetablemaker_swiftuiUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0212A533263C35C600627363 /* settingsStations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsStations.swift; sourceTree = "<group>"; };
 		0212A535263D897200627363 /* stationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stationAndTime.swift; sourceTree = "<group>"; };
+		0220F1AD263F77FB0007EDC8 /* TimetableEachGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableEachGridView.swift; sourceTree = "<group>"; };
 		022E532F2630EAB6007921D9 /* variousSettingsBackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = variousSettingsBackButton.swift; sourceTree = "<group>"; };
 		022E53432633B3C0007921D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mytimetablemaker_swiftuiRelease.entitlements; sourceTree = "<group>"; };
@@ -394,14 +396,14 @@
 			isa = PBXGroup;
 			children = (
 				02F0257F261BDD7F00655E54 /* Assets.xcassets */,
+				0257E431263E1B3D00D45CFB /* Color.swift */,
 				02E7F6A0261F35D700C00545 /* Localizable.strings */,
 				02F025B7261BDE7900655E54 /* CalcTime.swift */,
-				02F025C9261BDF0600655E54 /* LineData.swift */,
-				0257E431263E1B3D00D45CFB /* Color.swift */,
+				02F025CE261BDF2D00655E54 /* Timetable.swift */,
 				0257E434263E1BF500D45CFB /* Common.swift */,
+				02F025C9261BDF0600655E54 /* LineData.swift */,
 				02F025BC261BDEA000655E54 /* DateAndTime.swift */,
 				02F025C4261BDED100655E54 /* EnumSetting.swift */,
-				02F025CE261BDF2D00655E54 /* Timetable.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -412,6 +414,7 @@
 				02E7F7272620856100C00545 /* TimetableContentView.swift */,
 				02E7F72C2620858600C00545 /* TimetableTitleView.swift */,
 				02E7F731262085A800C00545 /* TimetableGridView.swift */,
+				0220F1AD263F77FB0007EDC8 /* TimetableEachGridView.swift */,
 				02E7F7452620874E00C00545 /* imagePickerView.swift */,
 			);
 			path = TimetableView;
@@ -745,6 +748,7 @@
 				02F026CE261D393500655E54 /* MainHeaderView.swift in Sources */,
 				02E7F6B6261FD52000C00545 /* settingsLinkView.swift in Sources */,
 				02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */,
+				0220F1AE263F77FB0007EDC8 /* TimetableEachGridView.swift in Sources */,
 				0257E435263E1BF500D45CFB /* Common.swift in Sources */,
 				02F025CF261BDF2D00655E54 /* Timetable.swift in Sources */,
 				0212A534263C35C600627363 /* settingsStations.swift in Sources */,

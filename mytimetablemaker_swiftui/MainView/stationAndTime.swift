@@ -64,7 +64,7 @@ struct stationAndTime: View {
                 .font(Font.title2.monospacedDigit())
                 .foregroundColor(primary)
                 .onReceive(timer) { _ in
-                    time = weekflag.displayTimeArray(goorback, currenttime)[num]
+                    time = CalcTime(goorback, weekflag).displayTimeArray(currenttime)[num]
                 }
         }
     }

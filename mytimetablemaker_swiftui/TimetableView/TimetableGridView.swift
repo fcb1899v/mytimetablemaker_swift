@@ -9,11 +9,6 @@ import SwiftUI
 
 struct TimetableGridView: View {
 
-    @State private var isShowingAlert = false
-    @State private var isShowingPicker = false
-    @State private var text = ""
-    @State private var label = ""
-    
     private let goorback: String
     private let weekflag: Bool
     private let num: Int
@@ -30,7 +25,6 @@ struct TimetableGridView: View {
     
     var body: some View {
         
-        let timer = Timer.publish(every: 1, on: .current, in: .common).autoconnect()
         let timetable = Timetable(goorback, weekflag, num)
         
         ScrollView {
@@ -50,8 +44,8 @@ struct TimetableGridView: View {
                                 ZStack(alignment: .center) {
                                     Color.myprimary
                                         .frame(height: 25)
-                                    Text(weekflag.weekLabelText)
-                                        .foregroundColor(weekflag.weekLabelColor)
+                                    Text(timetable.weekLabelText)
+                                        .foregroundColor(timetable.weekLabelColor)
                                         .fontWeight(.bold)
                                 }
                                 Color.white.frame(width: 1)
@@ -62,49 +56,7 @@ struct TimetableGridView: View {
                     Color.white.frame(height: 0)
 
                     ForEach(4...25, id: \.self) { hour in
-                        ZStack {
-                            Color.white
-                            LazyVGrid(columns: [GridItem(.flexible())], spacing: 1) {
-                                HStack(spacing: 1) {
-                                    Color.white.frame(width: 1)
-                                    ZStack {
-                                        Color.myprimary.frame(width: 27)
-                                        Text(hour.addZeroTime).foregroundColor(.myaccent)
-                                    }
-                                    Button (action: {
-                                        self.isShowingAlert = true
-                                    }) {
-                                        ZStack(alignment: .leading) {
-                                            Color.myprimary.frame(width: UIScreen.screenWidth - 30)
-                                            Button (action: {
-                                                self.isShowingAlert = true
-                                            }) {
-                                                ZStack(alignment: .leading) {
-                                                    Text(label)
-                                                        .foregroundColor(.white)
-                                                        .onReceive(timer) { (_) in
-                                                            label = timetable.timetableTime(hour)
-                                                        }
-                                                    timeFieldAlertView(
-                                                        text: $text,
-                                                        isShowingAlert: $isShowingAlert,
-                                                        isShowingPicker: $isShowingPicker,
-                                                        title: DialogTitle.adddeletime.rawValue.localized,
-                                                        message: timetable.timetableAlertMessage(hour),
-                                                        key: timetable.timetableKey(hour),
-                                                        maxnumber: 59
-                                                    )
-                                                    .actionSheet(isPresented: $isShowingPicker) {
-                                                        timetable.copyTimetableSheet(hour)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    Color.white.frame(width: 1)
-                                }
-                            }
-                        }
+                        TimetableEachGridView(goorback, weekflag, num, hour)
                     }
                     Color.white.frame(height: 0)
                 }

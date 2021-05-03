@@ -23,8 +23,8 @@ struct routeInfoView: View {
         let goorback2 = mainviewmodel.goorback2
         let weekflag = mainviewmodel.weekFlag
         let currenttime = mainviewmodel.currentHHmmssFromTime
-        let departuretime1 = weekflag.departureTime(goorback1, currenttime)
-        let departuretime2 = weekflag.departureTime(goorback2, currenttime)
+        let departuretime1 = CalcTime(goorback1, weekflag).departureTime(currenttime)
+        let departuretime2 = CalcTime(goorback2, weekflag).departureTime(currenttime)
         let width = (goorback2.route2Flag) ? UIScreen.screenWidth/2 - 40: UIScreen.screenWidth - 80
 
         ScrollView {
