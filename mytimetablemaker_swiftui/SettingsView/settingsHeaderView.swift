@@ -20,33 +20,37 @@ struct settingsHeaderView: View {
     let primary = Color(DefaultColor.primary.rawValue.colorInt)
     
     var body: some View {
+
+        let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+        let statusBarHeight = window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+
         ZStack{
-            primary
-            Button(action: {
-                self.loginviewmodel.isMoveSettings = false
-            }) {
-                VStack {
-                    Spacer()
-                    ZStack {
-                        Text("Settings".localized)
-                            .foregroundColor(.white)
-                            .fontWeight(.bold)
-                        HStack {
-                            Image("arrow_back_ios")
-                                .resizable()
-                                .frame(width: 10, height: 18)
-                                .padding(.leading, 20)
-                            Text("back".localized)
-                                .foregroundColor(.white)
-                            Spacer()
+            primary.edgesIgnoringSafeArea(.top)
+            VStack {
+                Spacer()
+                ZStack {
+                    Text("Settings".localized)
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                    HStack {
+                        Button(action: {
+                            self.loginviewmodel.isMoveSettings = false
+                        }) {
+                            HStack {
+                                Image("arrow_back_ios")
+                                    .resizable()
+                                    .frame(width: 10, height: 18)
+                                    .padding(.leading, 20)
+                            
+                                Text("back".localized)
+                                    .foregroundColor(.white)
+                            }
                         }
+                        Spacer()
                     }
                 }.padding(.bottom, 12)
             }
-        }.frame(
-            width: .screenwidth,
-            height: UIApplication.shared.statusBarFrame.size.height + 60
-        )
+        }.frame(height: statusBarHeight + 60)
     }
 }
 

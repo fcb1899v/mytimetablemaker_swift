@@ -29,6 +29,10 @@ struct SettingsContentView: View {
     }
     
     var body: some View {
+        
+        let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+        let statusBarHeight = window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+        
         NavigationView {
             VStack(spacing: 0) {
                 settingsHeaderView(loginviewmodel)
@@ -78,12 +82,11 @@ struct SettingsContentView: View {
                     }
                 }
                 Spacer()
-            }.padding(.top, -1 * UIApplication.shared.statusBarFrame.size.height - 20)
+            }.padding(.top, -20 - statusBarHeight)
         }
-        .navigationBarBackButtonHidden(true)
         .navigationBarHidden(true)
         .edgesIgnoringSafeArea(.all)
-        .navigationViewStyle(.stack)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 

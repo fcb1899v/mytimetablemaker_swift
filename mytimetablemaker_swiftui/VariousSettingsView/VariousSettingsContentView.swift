@@ -27,7 +27,7 @@ struct VariousSettingsContentView: View {
                 header: Text("\n" + DialogTitle.stationname.rawValue.localized)
                             .fontWeight(.bold)
             ) {
-                ForEach(1..<2 * goorback.changeLineInt + 4) { num in
+                ForEach(1..<2 * goorback.changeLineInt + 4, id: \.self) { num in
                     settingsStations(goorback, num)
                 }
                 settingsStations(goorback, 0)
@@ -36,7 +36,7 @@ struct VariousSettingsContentView: View {
                 header: Text(DialogTitle.linename.rawValue.localized)
                             .fontWeight(.bold)
             ) {
-                ForEach(0..<goorback.changeLineInt + 1) { num in
+                ForEach(0..<goorback.changeLineInt + 1, id: \.self) { num in
                     settingsLineName(goorback, num)
                 }
             }
@@ -44,7 +44,7 @@ struct VariousSettingsContentView: View {
                 header: Text(DialogTitle.ridetime.rawValue.localized)
                             .fontWeight(.bold)
             ) {
-                ForEach(0..<goorback.changeLineInt + 1) { num in
+                ForEach(0..<goorback.changeLineInt + 1, id: \.self) { num in
                     settingsRideTime(goorback, num)
                 }
             }
@@ -53,7 +53,7 @@ struct VariousSettingsContentView: View {
                             .fontWeight(.bold)
 
             ) {
-                ForEach(1..<goorback.changeLineInt + 2) { num in
+                ForEach(1..<goorback.changeLineInt + 2, id: \.self) { num in
                     settingsTransportation(goorback, num)
                 }
                 settingsTransportation(goorback, 0)
@@ -62,7 +62,7 @@ struct VariousSettingsContentView: View {
                 header: Text(DialogTitle.transittime.rawValue.localized)                                .fontWeight(.bold)
 
             ) {
-                ForEach(1..<goorback.changeLineInt + 2) { num in
+                ForEach(1..<goorback.changeLineInt + 2, id: \.self) { num in
                     settingsTransitTime(goorback, num)
                 }
                 settingsTransitTime(goorback, 0)

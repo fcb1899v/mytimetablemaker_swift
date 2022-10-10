@@ -26,6 +26,10 @@ struct MainHeaderView: View {
     let primary = Color(DefaultColor.primary.rawValue.colorInt)
     
     var body: some View {
+        
+        let window = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+        let statusBarHeight = window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
+
         ZStack{
             primary
             VStack(spacing: 10) {
@@ -72,10 +76,7 @@ struct MainHeaderView: View {
                     Spacer()
                 }.padding(.bottom, 15)
             }
-        }.frame(
-            width: .screenwidth,
-            height: UIApplication.shared.statusBarFrame.size.height + 90
-        )
+        }.frame(height: statusBarHeight + 90)
     }
 }
 
