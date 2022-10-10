@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  mytimetablemaker_swiftui
+
+  Created by 中島正雄 on 2021/04/24.
+  
+*/
+
+CFBundleDisplayName = "My Transit Makers";
+NSUserTrackingUsageDescription = "This app is privately developed and is supported solely by advertising revenue. If you agree, please tap 'Allow Tracking'. You will be able to see ads that match your preferences.";

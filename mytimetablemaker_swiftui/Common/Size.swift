@@ -43,5 +43,4 @@ extension CGFloat {
     var timetableeachwidth: CGFloat {
         return (CGFloat.screenwidth > 600) ? 600: CGFloat.screenwidth - 31
     }
-
 }

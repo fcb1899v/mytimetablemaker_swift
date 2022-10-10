@@ -41,16 +41,9 @@ struct TimetableContentView: View {
                     Spacer()
                     AdMobView()
                 }
-                .navigationTitle(DialogTitle.timetable.rawValue.localized)
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarBackButtonHidden(true)
+                .navigationBarHidden(true)
                 .navigationBarColor(backgroundColor: UIColor(Color.myprimary), titleColor: .white)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading){
-                        variousSettingsBackButton()
-                    }
-                }
-            }
+            }.edgesIgnoringSafeArea(.bottom)
         }.navigationViewStyle(StackNavigationViewStyle())
     }
 }

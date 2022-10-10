@@ -25,18 +25,15 @@ struct signUpView: View {
     var body: some View {
         ZStack(alignment: .top){
             Color.myaccent
-            VStack(spacing: 35) {
+            VStack(spacing: 30) {
                 loginTitleView(MainTitle.signup.rawValue.localized)
                 emailPlusTextField(loginviewmodel)
                 signUpButton(loginviewmodel, firestoreviewmodel)
                 termsLinkView(loginviewmodel)
                 Spacer()
-                Spacer()
-                Spacer()
-                Spacer()
                 AdMobView()
             }
-        }
+        }.edgesIgnoringSafeArea(.all)
     }
 }
 

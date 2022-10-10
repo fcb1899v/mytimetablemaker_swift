@@ -30,8 +30,8 @@ struct datePickerLabelView: View {
                     displayedComponents: .date
                 )
                 .labelsHidden()
-                .accentColor(.clear)
-                .frame(height: 20)
+                .opacity(0.1)
+                .frame(width: 1, height: 20)
                 .onReceive(timer) { _ in
                     mainviewmodel.datelabel = "\(mainviewmodel.selectdate.setDate)"
                 }
@@ -47,8 +47,8 @@ struct datePickerLabelView: View {
                     displayedComponents: .hourAndMinute
                 )
                 .labelsHidden()
-                .accentColor(.clear)
-                .frame(height: 20)
+                .opacity(0.1)
+                .frame(width: 1, height: 20)
                 .onReceive(timer) { _ in
                     mainviewmodel.timelabel = "\(mainviewmodel.selectdate.setTime)"
                 }

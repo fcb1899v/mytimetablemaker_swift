@@ -39,12 +39,9 @@ struct LoginContentView: View {
                 moveSignUpButton(loginviewmodel, firestoreviewmodel)
                 passwordResetView(loginviewmodel)
                 Spacer()
-                Spacer()
-                Spacer()
-                Spacer()
                 AdMobView()
             }
-            .edgesIgnoringSafeArea(.all)
+            .edgesIgnoringSafeArea(.top)
             .opacity(isShowSplash ? 0 : 1)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

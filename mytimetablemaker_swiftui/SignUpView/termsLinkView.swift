@@ -18,35 +18,36 @@ struct termsLinkView: View {
     }
 
     var body: some View {
-        Button(action: {
-            termsLink()
-        }) {
-            HStack {
-                
-                //チェックボックス
-                Button(action: toggle) {
-                    if(loginviewmodel.isTermsAgree) {
-                        Image(systemName: "checkmark.square.fill")
-                            .foregroundColor(.myprimary)
-                            .padding(10)
-                    } else {
-                        Image(systemName: "square")
-                            .foregroundColor(.white)
-                            .padding(10)
-                    }
+        
+        HStack {
+            //チェックボックス
+            Button(action: toggle) {
+                if(loginviewmodel.isTermsAgree) {
+                    Image(systemName: "checkmark.square.fill")
+                        .foregroundColor(.myprimary)
+                        .padding(10)
+                } else {
+                    Image(systemName: "square")
+                        .foregroundColor(.white)
+                        .padding(10)
                 }
+            }
                 
-                //利用規約へのリンク付きテキスト
+            //利用規約へのリンク付きテキスト
+            Button(action: {
+                termsLink()
+            }) {
                 (
                     Text("I have read and agree to the ".localized)
                     + Text("terms and privacy policy".localized).underline(color: Color.white)
-                        + Text("kakunin".localized)
+                    + Text("kakunin".localized)
                 )
-                    .font(.subheadline)
-                    .foregroundColor(.white)
-                
-            }.frame(width: .loginbuttonwidth, height: 40 ,alignment: .topLeading)
+                .font(.subheadline)
+                .foregroundColor(.white)
+            }
         }
+        .frame(width: .loginbuttonwidth, height: 40 ,alignment: .topLeading)
+        .padding(.trailing, 10)
     }
     
     // タップ時の状態の切り替え

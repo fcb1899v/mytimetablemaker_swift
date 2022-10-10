@@ -29,30 +29,41 @@ struct TimetableTitleView: View {
     var body: some View {
         
         let timetable = Timetable(goorback, weekflag, num)
-        
-        HStack {
+
+        VStack(spacing: 0) {
             
-            VStack(alignment: .leading, spacing: 5) {
-                Text(goorback.stationArray[2 * num + 2])
-                    .font(.title3)
-                    .foregroundColor(.white)
-                Text(timetable.timetableTitle)
-                    .font(.callout)
-                    .foregroundColor(.white)
-            }.padding(10)
-            
-            Spacer()
-            
-            Button(action: action){
-                Text(timetable.revWeekLabelText)
-                    .font(.subheadline)
+            HStack {
+                Spacer()
+                Text(DialogTitle.timetable.rawValue.localized)
                     .fontWeight(.bold)
-                    .frame(width: .statebuttonwidth, height: 35)
-                    .foregroundColor(timetable.weekButtonLabelColor)
-                    .background(timetable.weekButtonBackColor)
-                    .cornerRadius(15)
-            }
-        }.frame(width: CGFloat().timetablewidth)
+                    .foregroundColor(.white)
+                Spacer()
+            }.padding(.top, 20)
+
+            HStack {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(goorback.stationArray[2 * num + 2])
+                        .font(.title3)
+                        .foregroundColor(.white)
+                    Text(timetable.timetableTitle)
+                        .font(.callout)
+                        .foregroundColor(.white)
+                }.padding(5)
+
+                Spacer()
+                
+                Button(action: action){
+                    Text(timetable.revWeekLabelText)
+                        .font(.subheadline)
+                        .fontWeight(.bold)
+                        .frame(width: 100, height: 35)
+                        .foregroundColor(timetable.weekButtonLabelColor)
+                        .background(timetable.weekButtonBackColor)
+                        .cornerRadius(15)
+                }.padding(5)
+            }.frame(width: CGFloat().timetablewidth)
+
+        }
     }
 }
 

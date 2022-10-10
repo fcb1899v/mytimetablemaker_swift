@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct lineInfoAlertLabel: View {
+struct lineInfoAlertView: View {
 
     @State private var isShowingRideTimeAlert = false
     @State private var isShowingTimetableAlert = false
@@ -109,6 +109,6 @@ struct lineInfoAlertLabel: View {
 struct lineInfoAlertLabel_Previews: PreviewProvider {
     static var previews: some View {
         let mainviewmodel = MainViewModel()
-        lineInfoAlertLabel(mainviewmodel.goorback1, true, 0)
+        lineInfoAlertView(mainviewmodel.goorback1, true, 0)
     }
 }

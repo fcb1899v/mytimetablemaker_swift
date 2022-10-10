@@ -30,61 +30,60 @@ struct SettingsContentView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section(
-                    header: Text("\n" + "Display route 2".localized)
-                        .fontWeight(.bold)
-                ) {
-                    settingsSwitchRoute2("back2")
-                    settingsSwitchRoute2("go2")
-                }
-                Section(
-                    header: Text("Change line".localized)
-                        .fontWeight(.bold)
-                ) {
-                    ForEach(goorbackarray, id: \.self) { goorback in
-                        if goorback.route2Flag {
-                            settingsChangeLine(goorback)
+            VStack(spacing: 0) {
+                settingsHeaderView(loginviewmodel)
+                Form {
+                    Section(
+                        header: Text("\n" + "Display route 2".localized)
+                            .fontWeight(.bold)
+                    ) {
+                        settingsSwitchRoute2("back2")
+                        settingsSwitchRoute2("go2")
+                    }
+                    Section(
+                        header: Text("Change line".localized)
+                            .fontWeight(.bold)
+                    ) {
+                        ForEach(goorbackarray, id: \.self) { goorback in
+                            if goorback.route2Flag {
+                                settingsChangeLine(goorback)
+                            }
                         }
                     }
-                }
-                Section(
-                    header: Text("Various settings".localized)
-                        .fontWeight(.bold)
-                ) {
-                    ForEach(goorbackarray, id: \.self) { goorback in
-                        if goorback.route2Flag {
-                            SettingsViewModel(goorback).VariousSettingsEachView
+                    Section(
+                        header: Text("Various settings".localized)
+                            .fontWeight(.bold)
+                    ) {
+                        ForEach(goorbackarray, id: \.self) { goorback in
+                            if goorback.route2Flag {
+                                SettingsViewModel(goorback).VariousSettingsEachView
+                            }
                         }
                     }
+                    Section(
+                        header: Text("Account".localized)
+                            .fontWeight(.bold)
+                    ) {
+                        getDataButton(firestoreviewmodel)
+                        setDataButton(firestoreviewmodel)
+                        logOutButton(loginviewmodel, firestoreviewmodel)
+                        deleteAccountButton(loginviewmodel, firestoreviewmodel)
+                    }
+                    Section(
+                        header: Text("About".localized)
+                            .fontWeight(.bold)
+                    ) {
+                        settingsVersion()
+                        settingsLinkView()
+                    }
                 }
-                Section(
-                    header: Text("Account".localized)
-                        .fontWeight(.bold)
-                ) {
-                    getDataButton(firestoreviewmodel)
-                    setDataButton(firestoreviewmodel)
-                    logOutButton(loginviewmodel, firestoreviewmodel)
-                    deleteAccountButton(loginviewmodel, firestoreviewmodel)
-                }
-                Section(
-                    header: Text("About".localized)
-                        .fontWeight(.bold)
-                ) {
-                    settingsVersion()
-                    settingsLinkView()
-                }
-            }
-            .navigationTitle("Settings".localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarColor(backgroundColor: UIColor(Color.myprimary), titleColor: .white)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading){
-                    settingsBackButton(loginviewmodel)
-                }
-            }
-        }.navigationViewStyle(StackNavigationViewStyle())
+                Spacer()
+            }.padding(.top, -1 * UIApplication.shared.statusBarFrame.size.height - 20)
+        }
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)
+        .edgesIgnoringSafeArea(.all)
+        .navigationViewStyle(.stack)
     }
 }
 

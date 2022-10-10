@@ -9,11 +9,12 @@ import UIKit
 import SwiftUI
 import Firebase
 
+
 @main
 struct mytimetablemaker_swiftuiApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
+    
     var body: some Scene {
         
         let loginviewmodel = LoginViewModel()

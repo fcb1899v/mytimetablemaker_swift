@@ -15,7 +15,6 @@ class FirestoreViewModel: ObservableObject {
     @Published var title = ""
     @Published var message = ""
     @Published var isFirstLogin = false
-    @Published var isFirstLogout = false
     
     //UserDefaultsに保存されているデータを、Firestoreサーバーに保存
     func setFirestore() {

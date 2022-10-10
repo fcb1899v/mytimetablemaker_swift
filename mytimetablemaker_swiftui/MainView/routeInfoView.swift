@@ -47,7 +47,7 @@ struct routeInfoView: View {
                         ForEach(1...goorback1.changeLineInt + 1, id: \.self) { num in
                             transitInfoAlertView(goorback1, num)
                             stationAndTime(goorback1, weekflag, currenttime, 2 * num)
-                            lineInfoAlertLabel(goorback1, weekflag, num - 1)
+                            lineInfoAlertView(goorback1, weekflag, num - 1)
                             stationAndTime(goorback1, weekflag, currenttime, 2 * num + 1)
                         }
                         
@@ -60,7 +60,7 @@ struct routeInfoView: View {
                 if (mainviewmodel.goorback2.route2Flag) {
                     
                     Divider()
-                        .frame(width: 1.5, height: .screenheight)
+                        .frame(width: 1.5, height: 560)
                         .background(Color.myprimary)
                         .padding(.leading, 10.0)
                         .padding(.trailing, 10.0)
@@ -82,7 +82,7 @@ struct routeInfoView: View {
                             ForEach(1...goorback2.changeLineInt + 1, id: \.self) { num in
                                 transitInfoAlertView(goorback2, num)
                                 stationAndTime(goorback2, weekflag, currenttime, 2 * num)
-                                lineInfoAlertLabel(goorback2, weekflag, num - 1)
+                                lineInfoAlertView(goorback2, weekflag, num - 1)
                                 stationAndTime(goorback2, weekflag, currenttime, 2 * num + 1)
                             }
                             

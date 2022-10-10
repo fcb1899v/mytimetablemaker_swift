@@ -30,6 +30,8 @@ struct MainHeaderView: View {
             primary
             VStack(spacing: 10) {
                 
+                Spacer()
+                
                 HStack{
                     Spacer(minLength: 30)
                     if (mainviewmodel.timeflag) {
@@ -68,10 +70,12 @@ struct MainHeaderView: View {
                         action: mainviewmodel.stopButtonChangeData
                     )
                     Spacer()
-                }
-
-            }.offset(y: 20)
-        }.frame(width: .screenwidth, height: 130)
+                }.padding(.bottom, 15)
+            }
+        }.frame(
+            width: .screenwidth,
+            height: UIApplication.shared.statusBarFrame.size.height + 90
+        )
     }
 }
 

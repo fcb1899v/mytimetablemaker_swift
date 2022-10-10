@@ -56,7 +56,8 @@ struct MainContentView: View {
             .navigationBarBackButtonHidden(true)
             .navigationBarHidden(true)
             .edgesIgnoringSafeArea(.all)
-        }.navigationViewStyle(StackNavigationViewStyle())
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -68,3 +69,5 @@ struct MainContentView_Previews: PreviewProvider {
         MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
     }
 }
+
+

@@ -10,7 +10,7 @@ import SwiftUI
 class SettingsViewModel: ObservableObject {
     
     private let goorback: String
-
+    
     @Published var route2flag: Bool {
         didSet {
             UserDefaults.standard.set(route2flag, forKey: goorback + "route2flag")

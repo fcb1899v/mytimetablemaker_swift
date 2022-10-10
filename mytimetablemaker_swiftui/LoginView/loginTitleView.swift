@@ -21,8 +21,8 @@ struct loginTitleView: View {
         Text(title)
             .font(.title)
             .foregroundColor(.myprimary)
-            .frame(height: 180)
-            .offset(y: 50)
+            .frame(height: 50)
+            .padding(.top, UIApplication.shared.statusBarFrame.size.height + 50)
     }
 }
 

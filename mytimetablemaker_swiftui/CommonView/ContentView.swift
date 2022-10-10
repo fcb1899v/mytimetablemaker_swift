@@ -7,7 +7,9 @@
 
 import SwiftUI
 import FirebaseAuth
-
+import AppTrackingTransparency
+import AdSupport
+import GoogleMobileAds
 
 struct ContentView: View {
     
@@ -23,16 +25,30 @@ struct ContentView: View {
         self.loginviewmodel = loginviewmodel
         self.mainviewmodel = mainviewmodel
         self.firestoreviewmodel = firestoreviewmodel
+        self.toTracking()
     }
 
     var body: some View {
         if "Login".userDefaultsBool(false) {
             MainContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
                 .preferredColorScheme(.light)
-            
         } else {
             LoginContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
                 .preferredColorScheme(.light)
+        }
+    }
+    
+    private func toTracking(){
+        
+        if #available(iOS 14, *) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
+                    GADMobileAds.sharedInstance().start(completionHandler: nil)
+                })
+            }
+        } else {
+            // Fallback on earlier versions
+            GADMobileAds.sharedInstance().start(completionHandler: nil)
         }
     }
 }
@@ -43,12 +59,6 @@ struct ContentView_Previews: PreviewProvider {
         let loginviewmodel = LoginViewModel()
         let mainviewmodel = MainViewModel()
         let firestoreviewmodel = FirestoreViewModel()
-        Group {
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
-        }
+        ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
     }
 }
