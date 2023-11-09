@@ -9,20 +9,14 @@ import Foundation
 import SwiftUI
 
 
+//色をRGCの16進数数字で指定
 extension Color {
+    
     static let accentColor = Color("myaccent")
     static let primaryColor = Color("myprimary")
     static let grayColor = Color("mygray")
     static let redColor = Color("myred")
     static let yellowColor = Color("myyellow")
-}
-
-extension UIColor {
-        static let headerColor = UIColor(red: 49/255, green: 4/255, blue: 172/255, alpha: 1)
-}
-
-//色をRGCの16進数数字で指定
-extension Color {
     
     init(
         _ hex: Int,
@@ -45,16 +39,51 @@ extension Color {
     }    
 }
 
-//String型ColorをInt型に変換
+extension UIColor {
+        static let headerColor = UIColor(red: 49/255, green: 4/255, blue: 172/255, alpha: 1)
+}
+
+let primaryColorString = "#3700B3"
+let accentColorString  = "#03DAC5"
+let redColorString     = "#FF0000"
+let yellowColorString  = "#FFFF00"
+let grayColorString    = "#AAAAAA"
+let blackColorString   = "#000000"
+let whiteColorString   = "#FFFFFF"
+
 extension String {
+        
+    //String型ColorをInt型に変換
     var colorInt: Int {
         return Int(self.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 000000
     }
+    
+    //Not set color
+    var settingsColor: Color {
+        return (self == textNotSet) ? Color.grayColor: Color.black
+    }
+    
 }
 
-//<>
-extension String {
-    var settingsColor: Color {
-        return (self == Unit.notset.rawValue.localized) ? Color.grayColor: Color.black
+extension Int {
+    
+    //self is countdown
+    func countdownColor(_ departtime:Int) -> Color {
+        return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdownColor
     }
+
+    var countdownColor: Color { return (self % 2 == 1) ? Color.grayColor:
+        (1000...9999 ~= self) ? Color.accentColor:
+        (500...999 ~= self) ? Color.yellowColor:
+        (0...499 ~= self) ? Color.redColor:
+        Color.grayColor
+    }
+}
+
+extension Bool {
+    
+    //self is isWeekday
+    var weekLabelColor: Color { return self ? Color.white: Color.redColor }
+    var weekButtonColor: Color { return self ? Color.redColor: Color.white }
+    var weekButtonLabelColor: Color { return self ? Color.white: Color.primaryColor }
 }

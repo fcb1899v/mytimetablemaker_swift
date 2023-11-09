@@ -9,23 +9,22 @@ import SwiftUI
 
 struct settingsChangeLine: View {
     
-    private let goorback: String
-    @ObservedObject private var settings: Settings
+    @ObservedObject private var myTransit: MyTransit
     @State private var label: String
     @State private var isShowingAlert = false
 
-    /// 値を指定して生成する
+    private let goorback: String
+
     init(
-        _ goorback: String
+        _ myTransit: MyTransit,
+        goorback: String
     ){
+        self.myTransit = myTransit
         self.goorback = goorback
-        self.settings = Settings(goorback)
         self.label = goorback.changeLineString
     }
 
     var body: some View {
-
-        //Setting change line button
         Button (action: {
             self.isShowingAlert = true
         }) {
@@ -33,19 +32,23 @@ struct settingsChangeLine: View {
                 Text(goorback.routeTitle).padding(5)
                 Spacer()
                 Text(label).padding(5)
-                    .onChange(of: goorback.changeLineString) { newValue in label = newValue }
+                    .onChange(of: goorback.changeLineString) {
+                        newValue in label = newValue
+                    }
             }
-            .font(.subheadline)
             .foregroundColor(.black)
             //Setting change line action sheet
             .actionSheet(isPresented: $isShowingAlert) {
                 ActionSheet(
-                    title: Text(DialogTitle.numtransit.rawValue.localized),
+                    title: Text(changeLineAlertTitle),
                     message: Text(goorback.routeTitle),
                     buttons: TransitTime.allCases.map{$0.rawValue.localized}.indices.map { i in
                         .default(Text(TransitTime.allCases.map{$0.rawValue.localized}[i])) {
-                            UserDefaults.standard.set(TransitTime.allCases.map{$0.Number}[i], forKey: goorback.changeLineKey)
-                            settings.getChangeLine()
+                            UserDefaults.standard.set(
+                                TransitTime.allCases.map{$0.Number}[i],
+                                forKey: goorback.changeLineKey
+                            )
+                            myTransit.setChangeLine()
                         }
                     } + [.cancel()]
                 )
@@ -56,6 +59,7 @@ struct settingsChangeLine: View {
 
 struct settingsChangeLine_Previews: PreviewProvider {
     static var previews: some View {
-        settingsChangeLine("back1")
+        let myTransit = MyTransit()
+        settingsChangeLine(myTransit, goorback: "back1")
     }
 }

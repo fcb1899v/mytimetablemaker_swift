@@ -13,31 +13,21 @@ import FirebaseAuth
 class MyLogin : ObservableObject {
 
     @Environment(\.presentationMode) var presentationMode
-
-    enum AlertType {
-        case empty
-        case select
-        case complete
-    }
-
     @Published var email: String = ""
     @Published var password: String = ""
     @Published var passwordConfirm: String = ""
+    @Published var isTermsAgree = false
     @Published var resetEmail: String = ""
+    @Published var isLoading = false
+    @Published var isShowAlert = false
+    @Published var isShowMessage = false
     @Published var alertTitle: String = "Input error".localized
     @Published var alertMessage: String = "Enter your email".localized
-    @Published var alertType: AlertType = .empty
-    @Published var isShowMessage = false
-    @Published var isLoading = false
-    @Published var isLoginAlert = false
+    @Published var isValidLogin: Bool = false
+    @Published var isValidSignUp: Bool = false
     @Published var isLoginSuccess = "Login".userDefaultsBool(false)
-    @Published var isFistLogin = "firstlogin".userDefaultsBool(false)
-    @Published var isSignUpAlert = false
     @Published var isSignUpSuccess = false
-    @Published var isResetAlert = false
-    @Published var isResetSuccess = false
-    @Published var isTermsAgree = false
-    
+
     func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegex)
@@ -50,30 +40,56 @@ class MyLogin : ObservableObject {
         return passwordTest.evaluate(with: password)
     }
     
+    func logOut() {
+        isShowAlert = false
+        isShowMessage = false
+        alertTitle = "Logout error".localized
+        alertMessage = ""
+        if (isLoginSuccess) {
+            isLoading = true
+            do {
+                try Auth.auth().signOut()
+                alertTitle = "Logged out successfully".localized
+                UserDefaults.standard.set(false, forKey: "Login")
+                isLoginSuccess = false
+                isLoading = false
+                isShowMessage = true
+                presentationMode.wrappedValue.dismiss()
+            } catch {
+                UserDefaults.standard.set(true, forKey: "Login")
+                isLoginSuccess = true
+                isLoading = false
+                isShowMessage = true
+            }
+        } else {
+            isShowMessage = true
+        }
+    }
+    
     func loginCheck() {
         alertTitle = ""
         alertMessage = ""
-        alertType = .empty
+        isValidLogin = false
         if email.isEmpty {
             alertTitle = "Input error".localized
             alertMessage = "Enter your email".localized
         } else if !isValidEmail(email) {
             alertTitle = "Input error".localized
-            alertMessage = "Confirm your email".localized
+            alertMessage = "Incorrect email format".localized
         } else if password.isEmpty {
             alertTitle = "Input error".localized
             alertMessage = "Enter your password".localized
         } else if !isValidPassword(password) {
             alertTitle = "Input error".localized
-            alertMessage = "Confirm your password".localized
+            alertMessage = "Incorrect password format".localized
         } else {
-            alertType = .select
+            isValidLogin = true
         }
     }
     
     func login() {
         isShowMessage = false
-        if alertType == .select {
+        if isValidLogin {
             alertTitle = ""
             alertMessage = ""
             isLoginSuccess = false
@@ -82,12 +98,14 @@ class MyLogin : ObservableObject {
                 if let user = authResult?.user {
                     if user.isEmailVerified {
                         alertTitle = "Login successfully".localized
-                        alertType = .complete
+                        UserDefaults.standard.set(true, forKey: "Login")
                         isLoginSuccess = true
+                        isLoading = false
                         isShowMessage = true
                     } else {
                         alertTitle = "Not verified account".localized
-                        alertMessage = "Check your email".localized
+                        alertMessage = "Confirm your email".localized
+                        isLoading = false
                         isShowMessage = true
                     }
                 } else {
@@ -100,10 +118,10 @@ class MyLogin : ObservableObject {
                             case .userDisabled: alertMessage = "This account is disabled".localized
                             default: alertMessage = ""
                         }
+                        isLoading = false
                         isShowMessage = true
                     }
                 }
-                isLoading = false
             }
         } else {
             isShowMessage = true
@@ -113,16 +131,16 @@ class MyLogin : ObservableObject {
     func signUpCheck() {
         alertTitle = ""
         alertMessage = ""
-        alertType = .empty
+        isValidSignUp = false
         if !isTermsAgree {
             alertTitle = "Check error".localized
-            alertMessage = "Please check the terms and privacy policy".localized
+            alertMessage = "Check the terms and privacy policy".localized
         } else if email.isEmpty {
             alertTitle = "Input error".localized
             alertMessage = "Enter your email".localized
         } else if !isValidEmail(email) {
             alertTitle = "Input error".localized
-            alertMessage = "Confirm your email".localized
+            alertMessage = "Incorrect email format".localized
         } else if password.isEmpty {
             alertTitle = "Input error".localized
             alertMessage = "Enter your password".localized
@@ -131,29 +149,30 @@ class MyLogin : ObservableObject {
             alertMessage = "Enter your confirm password".localized
         } else if !isValidPassword(password) {
             alertTitle = "Input error".localized
-            alertMessage = "Confirm your password".localized
+            alertMessage = "Incorrect password format".localized
         } else if password.compare(passwordConfirm) != .orderedSame {
             alertTitle = "Input error".localized
             alertMessage = "Confirm password don't match".localized
         } else {
-            alertType = .select
+            isValidSignUp = true
         }
     }
 
     func signUp() {
-        isShowMessage = false
-        if alertType == .select {
+        isShowAlert = false
+        if isValidSignUp {
             alertTitle = ""
             alertMessage = ""
             isSignUpSuccess = false
             isLoading = true
+            isShowMessage = false
             Auth.auth().createUser(withEmail: email, password: password) { [self] authResult, error in
                 if let user = authResult?.user {
                     user.sendEmailVerification(completion: { [self] error in
                         alertTitle = "Signup successfully".localized
                         alertMessage = "Verification email Sent successfully".localized
-                        alertType = .empty
                         isSignUpSuccess = true
+                        isLoading = false
                         isShowMessage = true
                     })
                 } else {
@@ -162,13 +181,13 @@ class MyLogin : ObservableObject {
                         switch errorCode {
                             case .invalidEmail: alertMessage = "Incorrect email format".localized
                             case .emailAlreadyInUse: alertMessage = "This email has already been registered".localized
-                            case .weakPassword: alertMessage = "Password must be at least 6 characters".localized
+                            case .weakPassword: alertMessage = "Incorrect password format".localized
                             default: alertMessage = error.domain
                         }
+                        isLoading = false
                         isShowMessage = true
                     }
                 }
-                isLoading = false
             }
         } else {
             isShowMessage = true
@@ -176,12 +195,12 @@ class MyLogin : ObservableObject {
     }
     
     func reset() {
-        isShowMessage = false
+        isShowAlert = false
         if (isValidEmail(resetEmail)) {
             alertTitle = ""
             alertMessage = ""
-            isResetSuccess = false
             isLoading = true
+            isShowMessage = false
             Auth.auth().sendPasswordReset(withEmail: resetEmail) { [self] error in
                 if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
                     alertTitle = "Password reset error".localized
@@ -191,28 +210,44 @@ class MyLogin : ObservableObject {
                         case .userDisabled: alertMessage = "This account is disabled".localized
                         default: alertMessage = "Password reset email could not be sent".localized
                     }
+                    isLoading = false
                     isShowMessage = true
                 } else {
                     alertTitle = "Password Reset".localized
                     alertMessage = "Password reset email Sent successfully".localized
-                    alertType = .empty
-                    isResetSuccess = true
+                    isLoading = false
                     isShowMessage = true
-                    isResetAlert = false
                 }
-                isLoading = false
             }
         } else {
             alertTitle = "Input error".localized
             alertMessage = "Enter your email again".localized
+            isLoading = false
             isShowMessage = true
         }
     }
 
-   func toggle() -> Void {
-       isTermsAgree = !isTermsAgree
-       UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-       signUpCheck()
-   }
-
+    func toggle() {
+        isTermsAgree = !isTermsAgree
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        signUpCheck()
+    }
+    
+    func delete() {
+        isShowAlert = false
+        isShowMessage = false
+        isLoading = true
+        alertTitle = "Delete account error".localized
+        alertMessage = "Account could not be deleted".localized
+        Auth.auth().currentUser?.delete { [self] error in
+            if error != nil {
+                isLoading = false
+                isShowMessage = true
+            } else {
+                alertTitle = "Delete account successfully".localized
+                alertMessage = "Account deleted successfully".localized
+                logOut()
+            }
+        }
+    }
 }

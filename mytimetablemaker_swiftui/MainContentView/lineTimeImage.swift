@@ -11,7 +11,6 @@ struct lineTimeImage: View {
     
     private let color: Color
     
-    /// 値を指定して生成する
     init(
         color: Color
     ){
@@ -19,7 +18,6 @@ struct lineTimeImage: View {
     }
     
     var body: some View {
-        
         ZStack(alignment: .leading) {
             Rectangle()
                 .frame(width: routeLineImageBackgroundWidth, height: routeLineImageBackgroundHeight)

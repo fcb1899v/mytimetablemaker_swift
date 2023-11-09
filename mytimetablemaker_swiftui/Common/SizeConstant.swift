@@ -23,20 +23,15 @@ var statusBarHeight: CGFloat {
     return  window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0
 }
 
-// LoginContentView
-
-//Login
-let loginButtonWidth: CGFloat = customWidth * 0.8
-let loginButtonHeight: CGFloat = 40.0
-let loginButtonCornerRadius: CGFloat = 20.0
-let loginTextHeight: CGFloat = 40.0
-let loginTextCornerRadius: CGFloat = 5.0
+//Splash
+let splashTitleFontSize: CGFloat = customWidth / 12
+let splashIconSize: CGFloat = customWidth / 3
 
 //MainContentView
 
 //Header Date
 let headerTopMargin: CGFloat = statusBarHeight + 5
-let headerHeight: CGFloat = statusBarHeight + operationButtonWidth + 5
+let headerHeight: CGFloat = statusBarHeight + operationButtonWidth + 10
 let headerDateFontSize: CGFloat = customWidth / 20
 let headerDateHeight: CGFloat = customWidth / 30
 let headerSpace: CGFloat = customWidth / 60
@@ -44,8 +39,7 @@ let headerSpace: CGFloat = customWidth / 60
 //Header Operation Button
 let operationButtonWidth: CGFloat = customWidth / 6
 let operationButtonHeight: CGFloat = customWidth / 12
-let operationButtonCornerRadius: CGFloat = customWidth / 24
-let operationButtonSidePadding: CGFloat = customWidth / 24
+let operationButtonCornerRadius: CGFloat = customWidth / 28
 let operationButtonMargin: CGFloat = customWidth / 24
 let operationButtonFontSize: CGFloat = customWidth / 24
 let operationSettingsBottonSize: CGFloat = customWidth / 20
@@ -61,13 +55,12 @@ extension Bool {
 }
 let routeHeight: CGFloat = screenHeight - admobBannerHeight - headerHeight
 let routeSidePadding: CGFloat = customWidth / 40
-let routeBottomSpace: CGFloat = routeHeight / 180
+let routeBottomSpace: CGFloat = routeHeight / 150
 
 //Route Countdown
 let routeCountdownFontSize: CGFloat = customWidth / 12
-let routeCountdownAdditionalPadding: CGFloat = (routeHeight > 600) ? ((routeHeight - 600) / 10): 0
 let routeCountdownTopSpace: CGFloat = (routeHeight > 600) ? ((routeHeight - 600) / 20 + 5): 5
-let routeCountdownPadding: CGFloat = customWidth / 50 + routeCountdownAdditionalPadding
+let routeCountdownPadding: CGFloat = customWidth / 50 + ((routeHeight > 600) ? ((routeHeight - 600) / 10): 0)
 
 //Route
 let routeStationFontSize: CGFloat = customWidth / 27
@@ -80,20 +73,24 @@ let routeLineImageBackgroundHeight: CGFloat = customWidth / 15
 let routeLineImageBackgroundPadding: CGFloat = customWidth / 200
 let routeLineImageLeftPadding: CGFloat = customWidth / 200
 
+// LoginContentView
+
+//Login
+let loginTitleFontSize: CGFloat = customWidth / 15
+let loginTitleTopMargin: CGFloat = statusBarHeight + 20 + routeHeight / 10
+let loginTitleBottomMargin: CGFloat = routeHeight / 40
+let loginButtonWidth: CGFloat = customWidth * 0.8
+let loginButtonHeight: CGFloat = 40.0
+let loginButtonCornerRadius: CGFloat = 20.0
+let loginTextHeight: CGFloat = 40.0
+let loginTextCornerRadius: CGFloat = 5.0
+let loginMargin: CGFloat = customWidth / 30
 
 //TimetabelContentView
-
-//Week button
-let timetableWeekButtonWidth: CGFloat = 100
-let timetableWeekButtonHeight: CGFloat = 35.0
-let timetableWeekButtonCornerRadius: CGFloat = 17.5
-//Image Picker button
+let timetableButtonWidth: CGFloat = operationButtonWidth * 1.5
 let ImagePickerButtonWidth: CGFloat = customWidth * 0.8
-let ImagePickerButtonHeight: CGFloat = 40.0
-let ImagePickerCornerRadius: CGFloat = 20.0
 
 
 let admobBannerWidth: CGFloat = screenWidth - 100
 let admobBannerMinWidth: CGFloat = 320
-let admobBannerHeight: CGFloat = 50
-
+let admobBannerHeight: CGFloat = ((screenHeight - headerHeight - 75) < 500) ? 50: (screenHeight - headerHeight - 75) / 10

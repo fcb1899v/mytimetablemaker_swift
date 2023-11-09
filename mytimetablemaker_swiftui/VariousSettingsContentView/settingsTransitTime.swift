@@ -17,7 +17,6 @@ struct settingsTransitTime: View {
     private let goorback: String
     private let num: Int
     
-    /// 値を指定して生成する
     init(
         _ goorback: String,
         _ num: Int
@@ -29,47 +28,41 @@ struct settingsTransitTime: View {
     }
 
     var body: some View {
-        
-        let alertTitle = DialogTitle.transittime.rawValue.localized
-        let alertMessage = goorback.transportationMessage(num)
-        let key = goorback.transitTimeKey(num)
-        let placeHolder = Hint.to99min.rawValue.localized
-        
         Button (action: {
             self.isShowingAlert = true
+            inputText = ""
         }) {
             HStack {
-                Text(title)
-                    .foregroundColor(.black)
-                    .padding(5)
-                    .onChange(of: goorback.transportationLabel(num)) { newValue in title = newValue }
+                Text(title).foregroundColor(.black)
+                    .onChange(of: goorback.transportationLabel(num)) {
+                        newValue in title = newValue
+                    }
                 Spacer()
-                Text(label)
+                Text(label).foregroundColor(label.settingsColor)
                     .lineLimit(1)
-                    .foregroundColor(label.settingsColor)
-                    .padding(5)
-                    .onChange(of: goorback.transitTimeStringArray[num]) { newValue in label = newValue }
-            }.font(.subheadline)
+                    .onChange(of: goorback.transitTimeStringArray[num]) {
+                        newValue in label = newValue
+                    }
+            }
             //Setting transit time alert
-            .alert(alertTitle, isPresented: $isShowingAlert) {
-                TextField(placeHolder, text: $inputText)
+            .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
+                TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    let inputTextInt: Int = inputText.intText(min: 1, max: 99)
-                    if (inputTextInt > 0) { UserDefaults.standard.set(inputText, forKey: key) }
+                Button(textOk, role: .none){
+                    if (inputText.intText(min: 1, max: 99) > 0) {
+                        UserDefaults.standard.set(inputText, forKey: goorback.transitTimeKey(num))
+                    }
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(alertMessage)
+                Text(goorback.transportationMessage(num))
             }
         }
     }

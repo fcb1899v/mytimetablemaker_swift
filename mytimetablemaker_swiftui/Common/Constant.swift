@@ -1,5 +1,5 @@
 //
-//  DataConstant.swift
+//  Constant.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by 中島正雄 on 2023/11/03.
@@ -9,7 +9,8 @@ import SwiftUI
 import Foundation
 import Combine
 
-let goorbackarray: [String] = ["back1", "go1", "back2", "go2"]
+let appTitle = "My Transit Makers".localized
+let goorbackarray = ["back1", "go1", "back2", "go2"]
 
 //Default data
 func departStationDefault(_ num: Int) -> String { return "\("Dep. St. ".localized)\(num + 1)" }
@@ -46,11 +47,30 @@ func choiceCopyTimeList(_ isWeekday: Bool, _ hour: Int) -> [String] {
     ]
 }
 
+//Settings
+let textNotSet = "Not set".localized
+let textHome = "Home".localized
+let textOffice = "Office".localized
+let textDestination = "Destination".localized
+let textDepartPoint = "Departure place".localized
+
+//Button
+let textOk = "OK".localized
+let textCancel = "Cancel".localized
+let textAdd = "Add".localized
+let textDelete = "Delete".localized
+let textBack = "Back".localized
+let textGo = "Go".localized
+let textStart = "Start".localized
+let textStop = "Stop".localized
+let timetablePictureButtonText = "Select your timetable picture".localized
+
+
+
 //PlaceHolder
 let placeHolder = "Maximum 20 Charactors".localized
 let numberPlaceHolder = "Enter 0~99 [min]".localized
 let minutePlaceHolder = "Enter 0~59 [min]".localized
-
 
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized

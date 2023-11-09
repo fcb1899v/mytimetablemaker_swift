@@ -27,46 +27,37 @@ struct settingsStations: View {
     }
     
     var body: some View {
-
-        let title = goorback.stationAlertLabelArray[num]
-        let alertTitle = goorback.stationAlertTitleArray[num]
-        let alertMessage = goorback.stationAlertMessageArray[num]
-        let key = goorback.stationKeyArray[num]
-        let placeHolder = Hint.maxchar.rawValue.localized
-        
-        //Setting station name button
         Button (action: {
             self.isShowingAlert = true
+            inputText = ""
         }) {
             HStack {
-                Text(title)
-                    .foregroundColor(.black)
-                    .padding(5)
+                Text(goorback.stationLabelArray[num]).foregroundColor(.black)
                 Spacer()
-                Text(label)
+                Text(label).foregroundColor(label.settingsColor)
                     .lineLimit(1)
-                    .foregroundColor(label.settingsColor)
-                    .padding(5)
-                    .onChange(of: goorback.stationSettingsArray[num]) { newValue in label = newValue }
-            }.font(.subheadline)
+                    .onChange(of: goorback.stationSettingsArray[num]) {
+                        newValue in label = newValue
+                    }
+            }
             //Setting station name alert
-            .alert(alertTitle, isPresented: $isShowingAlert) {
+            .alert(stationAlertTitleArray[num], isPresented: $isShowingAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    if (inputText != "") { UserDefaults.standard.set(inputText, forKey: key) }
+                Button(textOk, role: .none){
+                    if (inputText != "") {
+                        UserDefaults.standard.set(inputText, forKey: goorback.stationKeyArray[num])
+                    }
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(alertMessage)
+                Text(stationAlertMessageArray[num])
             }
         }
     }

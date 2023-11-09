@@ -1,5 +1,5 @@
 //
-//  GetDataButton.swift
+//  GetFirestoreButton.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by 中島正雄 on 2023/10/09.
@@ -7,55 +7,47 @@
 
 import SwiftUI
 
-struct GetFirestoreDaButton: View {
+struct GetFirestoreButton: View {
     
     @Environment(\.presentationMode) var presentationMode
-    private let isGetFirestore: Bool
     @ObservedObject private var myTransit: MyTransit
     @ObservedObject private var myFirestore: MyFirestore
+    @State private var isShowAlert = false
     
     init(
         myTransit: MyTransit,
-        myFirestore: MyFirestore,
-        isGetFirestore: Bool
+        myFirestore: MyFirestore
     ) {
         self.myTransit = myTransit
         self.myFirestore = myFirestore
-        self.isGetFirestore = isGetFirestore
     }
     
     var body: some View {
-
-        let label = isGetFirestore ? "Get saved data".localized: "Save current data".localized
-        let message = isGetFirestore ? "Overwritten current data?".localized: "Overwritten saved data?".localized
-        
         Button(action: {
-            myFirestore.isShowAlert = true
+            isShowAlert = true
         }) {
-            Text(label).foregroundColor(.black)
+            Text("Get saved data".localized).foregroundColor(.black)
         }
-        .alert(label, isPresented: $myFirestore.isShowAlert) {
+        .alert("Get saved data".localized, isPresented: $isShowAlert) {
             //Ok button
-            Button("OK".localized, role: .none) {
-                isGetFirestore ? myFirestore.getFirestore(): myFirestore.setFirestore()
+            Button(textOk, role: .destructive) {
+                myFirestore.getFirestore()
             }
             //Cancel button
-            Button("Cancel".localized, role: .cancel){
-                myFirestore.isShowAlert = false
+            Button(textCancel, role: .cancel){
+                isShowAlert = false
             }
         } message: {
-            Text(message)
+            Text("Overwritten current data?".localized)
         }
         .alert(myFirestore.title, isPresented: $myFirestore.isShowMessage) {
-            Button("OK".localized, role: .none) {
+            Button(textOk, role: .none) {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
-                    if (isGetFirestore) {
-                        myTransit.setRoute2()
-                        myTransit.setChangeLine()
-                    }
-                    presentationMode.wrappedValue.dismiss()
+                    myTransit.setRoute2()
+                    myTransit.setChangeLine()
                 }
+                presentationMode.wrappedValue.dismiss()
             }
         } message: {
             Text(myFirestore.message)
@@ -63,11 +55,11 @@ struct GetFirestoreDaButton: View {
     }
 }
 
-struct firestoreButton_Previews: PreviewProvider {
+struct GetFirestoreButton_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()
         let myFirestore = MyFirestore()
-        firestoreButton(myTransit: myTransit, myFirestore: myFirestore, isGetFirestore: true)
+        GetFirestoreButton(myTransit: myTransit, myFirestore: myFirestore)
     }
 }
 

@@ -6,24 +6,181 @@
   
 */
 
-//Action
-"Register" = "登録";
-"Cancel" = "キャンセル";
-"Add" = "追加";
-"Delete" = "削除";
-"Copy" = "コピー";
-"Reset" = "リセット";
-"OK" = "OK";
-"Yes" = "はい";
-"No" = "いいえ";
-"back" = "戻る";
+//Title
+"My Transit Makers" = "マイ乗換ルートメーカー";
 
-//Button
+//MainContentView.swift
 "Back" = "帰宅";
 "Go" = "外出";
 "Start" = "開始";
 "Stop" = "停止";
+"OK" = "OK";
+"Cancel" = "キャンセル";
+"Maximum 20 Charactors" = "全角10文字以内";
+"Enter 0~99 [min]" = "0〜99[分]を入力";
+"Enter 0~59 [min]" = "0〜59[分]を入力";
 
+//DataExtension.swift
+"Office" = "オフィス";
+"Home" = "自宅";
+"Dep. St. " = "発車駅";
+"Arr. St. " = "降車駅";
+"Departure place" = "出発地";
+"Destination" = "目的地";
+"Line " = "路線";
+"line " = "路線";
+"of departure station " = "発車駅";
+"of arrival station " = "降車駅";
+"of " = "";
+"from " = "";
+"From " = "";
+" to " = "から";
+"To " = "";
+"he" = "へ";
+"on " = "";
+"Going home route 1" = "帰宅ルート1";
+"Going home route 2" = "帰宅ルート2";
+"Outgoing route 1" = "外出ルート1";
+"Outgoing route 2" = "外出ルート2";
+"[min]" = " [分]";
+"Not set" = "未設定";
+
+//TimeExtension.swift
+"weekend" = "土日";
+"weekday" = "平日";
+"E, MMM d, yyyy" = "yyyy/M/d (E)";
+
+
+//SettingsContentView
+"Back" = "戻る";
+"Settings" = "設定";
+"Display route 2" = "ルート2の表示";
+"Change line" = "乗換回数";
+"Various settings" = "各種設定";
+"Get data" = "データの取得";
+"Save data" = "データの保存";
+"Account" = "アカウント";
+"Get your data after login" = "ログインして保管データを取得";
+"Save your data after login" = "ログインしてデータを保管";
+"About" = "このアプリについて";
+"Version" = "バージョン";
+"Terms and privacy policy" = "利用規約・プライバシーポリシー";
+"https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/ja/terms";
+"Setting your number of transfers" = "乗換回数の設定";
+"Setting your departure place" = "出発地の設定";
+"Setting your station name" = "駅名の設定";
+"Setting your destination" = "目的地の設定";
+"Setting your line name" = "路線名の設定";
+"Setting your line color" = "路線カラーの設定";
+"Setting your ride time [min]" = "乗車時間の設定 [分]";
+"Setting your transportation" = "移動手段の設定";
+"Setting your transit time [min]" = "移動時間の設定 [分]";
+"Setting your timetable" = "時刻表設定";
+
+
+//GetDataButton
+"Get saved data" = "保存データの取得";
+"Overwritten current data?" = "現在のデータが上書きされます";
+"Get data error" = "データ取得エラー";
+"Data got successfully" = "データの取得成功";
+"Data could not be got" = "データの取得失敗";
+
+//SaveDataButton
+"Save current data" = "データの保存";
+"Overwritten saved data?" = "保存データが上書きされます";
+"Save data error" = "データ保存エラー";
+"Data saved successfully" = "データの保存成功";
+"Data could not be saved" = "データの保存失敗";
+
+//logOutButton
+"Logout" = "ログアウト";
+"Logout your account?" = "ログアウトしますか？";
+"Logout error" = "ログアウトエラー";
+"Logged out successfully" = "ログアウトしました";
+"Failed to Log out" = "ログアウトに失敗しました";
+
+//Delete Account
+"Delete Account" = "アカウント削除";
+"Delete your account?" = "アカウントを削除しますか？";
+"Delete account error" = "アカウント削除エラー";
+"Account deleted successfully" = "アカウントの削除成功";
+"Account could not be deleted" = "アカウントの削除失敗";
+
+
+//TimetableContentView
+"Add" = "追加";
+"Delete" = "削除";
+"Add and delete departure time [min]" = "時刻の追加と削除 [分]";
+"Copying your timetable" = "発車時刻のコピー";
+"Copying all the time?" = "全時刻をコピーしますか？";
+"Select your timetable picture" =  "時刻表写真の選択";
+
+//Timetable.swift
+"Weekday" = "平日";
+"Weekend" = "土日";
+"Hour" = "時台";
+" for " = "：";
+"houmen" = "方面";
+"Other route of line 1" = "別ルートの路線1";
+"Other route of line 2" = "別ルートの路線2";
+"Other route of line 3" = "別ルートの路線3";
+
+
+//LoginContentView
+"Email" = "Eメールアドレス";
+"Password (8+ chars: alnum & !@#$&~)" = "パスワード(8字以上：半角英数字記号!@#$&~)";
+"Login" = "ログイン";
+"Signup" = "アカウント登録";
+"Forgot Password?" = "パスワードを忘れた場合";
+"Reset your password?" = "パスワードリセットしますか？";
+"Password Reset" = "パスワードリセット";
+
+
+//SignUpContentView
+"Create Account" = "アカウント登録";
+"Confirm Password" = "確認用パスワード";
+"I have read and agree to the " = "";
+"terms and privacy policy" = "利用規約・プライバシーポリシー";
+"kakunin" = "を確認しました";
+
+
+//MyLogin.swift
+
+//Input
+"Input error" = "入力エラー";
+"Enter your email" = "Eメールアドレスを入力してください";
+"Enter your password" = "パスワードを入力してください";
+"Enter your confirm password" = "確認用パスワードを入力してください";
+"Enter your email again" = "もう一度Eメールアドレスを入力してください";
+"Check your email" = "メールを確認してください";
+"Incorrect email" = "メールアドレスが正しくありません";
+"Incorrect email format" = "メールアドレスの形式が正しくありません";
+"Incorrect password format"= "パスワードの形式が正しくありません";
+"Incorrect email or password" = "メールアドレスまたはパスワードが正しくありません";
+"Confirm password don't match" = "確認用パスワードが一致しません";
+
+//Login
+"Login successfully" = "ログイン成功";
+"Login error" = "ログインエラー";
+"Not verified account" = "認証が完了していません";
+"This account is disabled" = "このアカウントは無効になっています";
+"Check error" = "チェックエラー";
+"Check the terms and privacy policy" = "利用規約およびプライバシーポリシーにチェックしてください";
+
+//Sign up
+"Signup successfully" = "アカウント登録成功";
+"Signup error" = "アカウント登録エラー";
+"Verification email Sent successfully" = "認証用メールの送信成功";
+"This email has already been registered" = "このメールアドレスは登録されています";
+
+//Password reset
+"Password reset successfully" = "パスワードリセット成功";
+"Password reset error" = "パスワードリセットエラー";
+"Password reset email Sent successfully" = "パスワードリセット用メールの送信成功";
+"Password reset email could not be sent" = "パスワードリセット用メールの送信失敗";
+
+
+//EnumSetting.swift
 
 //TransitTime
 "Zero" = "なし";
@@ -53,171 +210,3 @@
 "GOLD" = "ゴールド";
 "SILVER" = "シルバー";
 "BLACK" = "黒";
-
-//Unit
-"[min]" = " [分]";
-"Not set" = "未設定";
-"Not use" = "未利用";
-"E, MMM d, yyyy" = "yyyy/M/d (E)";
-"maxchar" = "10";
-
-//SettingTitle
-"Setting your number of transfers" = "乗換回数の設定";
-"Setting your departure place" = "出発地の設定";
-"Setting your station name" = "駅名の設定";
-"Setting your destination" = "目的地の設定";
-"Setting your line name" = "路線名の設定";
-"Setting your line color" = "路線カラーの設定";
-"Setting your ride time [min]" = "乗車時間の設定 [分]";
-"Setting your transportation" = "移動手段の設定";
-"Setting your transit time [min]" = "移動時間の設定 [分]";
-"Setting your timetable" = "時刻表設定";
-"Add and delete departure time [min]" = "時刻の追加と削除 [分]";
-"Copying your timetable" = "発車時刻のコピー";
-"Copying all the time?" = "全時刻をコピーしますか？";
-
-
-//Hint
-"Maximum 20 Charactors" = "全角10文字以内";
-"Enter 0~99 [min]" = "0〜99[分]を入力";
-"Enter 0~59 [min]" = "0〜59[分]を入力";
-
-//SettingsTitle
-"Settings" = "設定";
-"Display route 2" = "ルート2の表示";
-"Change line" = "乗換回数";
-"Various settings" = "各種設定";
-"Terms and privacy policy" = "利用規約・プライバシーポリシー";
-"About" = "このアプリについて";
-"Version" = "バージョン";
-"Going home route 1" = "帰宅ルート1";
-"Going home route 2" = "帰宅ルート2";
-"Outgoing route 1" = "外出ルート1";
-"Outgoing route 2" = "外出ルート2";
-
-
-//VariousSettingTitle
-"Various settings on route home 1" = "帰宅ルート1の各種設定";
-"Various settings on outgoing route 1" = "外出ルート1の各種設定";
-"Various settings on route home 2" = "帰宅ルート2の各種設定";
-"Various settings on outgoing route 2" = "外出ルート2の各種設定";
-
-//その他
-"Office" = "オフィス";
-"Home" = "自宅";
-"Dep. St. " = "発車駅";
-"Arr. St. " = "降車駅";
-"Departure place" = "出発地";
-"Destination" = "目的地";
-"Departure station " = "発車駅";
-"Arrival station " = "降車駅";
-"Line " = "路線";
-"line " = "路線";
-"of departure station " = "発車駅";
-"of arrival station " = "降車駅";
-"Other route of line 1" = "別ルートの路線1";
-"Other route of line 2" = "別ルートの路線2";
-"Other route of line 3" = "別ルートの路線3";
-"Weekday" = "平日";
-"Weekend" = "土日";
-"of " = "";
-"from " = "";
-"From " = "";
-"kara" = "から";
-" to " = "から";
-"To " = "";
-"he" = "へ";
-"on " = "";
-" for " = "：";
-"houmen" = "方面";
-"Hour" = "時台";
-"terms" = "利用規約・プライバシーポリシー";
-"I have read and agree to the " = "";
-"terms and privacy policy" = "利用規約・プライバシーポリシー";
-"Terms and privacy policy" = "利用規約・プライバシーポリシー";
-"kakunin" = "を確認しました";
-"https://nakajimamasao-appstudio.web.app/privacypolicy.html" = "https://nakajimamasao-appstudio.web.app/ja/privacypolicy.html";
-"Select your timetable picture" =  "時刻表写真の選択";
-
-//FirebaseAuth
-"My Transit Makers" = "マイ乗換ルートメーカー";
-"Account" = "アカウント";
-"Email" = "Eメールアドレス";
-"Password" = "パスワード";
-"Confirm Password" = "確認用パスワード";
-"Enter your email" = "Eメールアドレスを入力してください";
-"Enter your password" = "パスワードを入力してください";
-"Enter your confirm password" = "確認用パスワードを入力してください";
-
-//Login
-"Login" = "ログイン";
-"Login successfully" = "ログイン成功";
-"Login error" = "ログインエラー";
-"Not verified account" = "認証が完了していません";
-"Check your email" = "メールを確認してください";
-
-
-//Sign Up
-"Create Account" = "アカウント登録";
-"Signup" = "アカウント登録";
-"Signup successfully" = "アカウント登録成功";
-"Signup error" = "アカウント登録エラー";
-"Send an verification email?" = "認証用メールを送信しますか？";
-"Verification email Sent successfully" = "認証用メールの送信成功";
-"Verification email could not be sent" = "認証用メールの送信失敗";
-
-//Password Reset
-"Forgot Password?" = "パスワードを忘れた場合";
-"Reset your password?" = "パスワードリセットしますか？";
-"Password Reset" = "パスワードリセット";
-"Password reset successfully" = "パスワードリセット成功";
-"Password reset error" = "パスワードリセットエラー";
-"Password reset email Sent successfully" = "パスワードリセット用メールの送信成功";
-"Password reset email could not be sent" = "パスワードリセット用メールの送信失敗";
-
-//Input Error
-"Incorrect email" = "メールアドレスが正しくありません";
-"Incorrect password" = "パスワードが正しくありません";
-"Incorrect email or password" = "メールアドレスまたはパスワードが正しくありません";
-"Incorrect email format" = "メールアドレスの形式が正しくありません";
-"Confirm password don't match" = "確認用パスワードが一致しません";
-
-//Auth Error
-"This email is not registered" = "このメールアドレスは登録されていません";
-"This account is disabled" = "このアカウントは無効になっています";
-"This email has already been registered" = "このメールアドレスは登録されています";
-"Password must be at least 6 characters" = "パスワードは6文字以上にしてください";
-
-//Logout
-"Logout" = "ログアウト";
-"Logout your account?" = "ログアウトしますか？";
-"Logged out" = "ログアウトしました";
-"Logout error" = "ログアウトエラー";
-
-//Delete Account
-"Delete Account" = "アカウント削除";
-"Delete your account?" = "アカウントを削除しますか？";
-"Delete account error" = "アカウント削除エラー";
-"Account deleted successfully" = "アカウントの削除成功";
-"Account could not be deleted" = "アカウントの削除失敗";
-
-//Get data from Firestore
-"Get saved data" = "保存データの取得";
-"Overwritten current data?" = "現在のデータが上書きされます";
-"Data got error" = "データ取得エラー";
-"Data got successfully" = "データの取得成功";
-"Data could not be got" = "データの取得失敗";
-
-//Save data to Firestore
-"Save current data" = "データの保存";
-"Overwritten saved data?" = "保存データが上書きされます";
-"Data saved error" = "データ保存エラー";
-"Data saved successfully" = "データの保存成功";
-"Data could not be saved" = "データの保存失敗";
-
-//Delete data in Firestore
-"Deleted saved data" = "保存データの削除";
-"Data deleted error" = "データ削除エラー";
-"Data deleted successfully" = "データの削除成功";
-"Data could not be deleted" = "データの削除失敗";
-

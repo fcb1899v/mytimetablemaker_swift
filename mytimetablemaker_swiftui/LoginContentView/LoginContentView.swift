@@ -16,6 +16,7 @@ struct LoginContentView: View {
     @ObservedObject private var myFirestore: MyFirestore
 
     @State private var isShowSignUp = false
+    @State private var isShowReset = false
     @State private var isShowSplash = true
 
     init(
@@ -28,21 +29,30 @@ struct LoginContentView: View {
         self.myFirestore = myFirestore
     }
 
-
     var body: some View {
-
         ZStack(alignment: .top) {
-
-            Color.accentColor
-            
-            VStack(spacing: 20) {
-
-                Text(MainTitle.main.rawValue.localized)
-                    .font(.title)
+            VStack {
+                Spacer()
+                Image("splash")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(0)
+                    .frame(width: screenWidth)
+                //Admob
+                AdMobBannerView()
+                    .frame(minWidth: admobBannerMinWidth)
+                    .frame(width: admobBannerWidth, height: admobBannerHeight)
+                    .background(.white)
+            }.background(Color.accentColor)
+            VStack(spacing: loginMargin) {
+                //Title
+                Text("Login".localized)
+                    .font(.system(size: loginTitleFontSize))
+                    .fontWeight(.bold)
                     .foregroundColor(Color.primaryColor)
-                    .frame(height: 50)
-                    .padding(.top, statusBarHeight + 50)
-
+                    .padding(.top, loginTitleTopMargin)
+                    .padding(.bottom, loginTitleBottomMargin)
+                //Email textfield
                 ZStack {
                     Rectangle()
                         .foregroundColor(Color.white)
@@ -54,7 +64,7 @@ struct LoginContentView: View {
                         .padding()
                         .onChange(of: myLogin.email) { _ in myLogin.loginCheck() }
                 }.frame(width: loginButtonWidth)
-
+                //Password textfield
                 ZStack {
                     Rectangle()
                         .foregroundColor(Color.white)
@@ -66,7 +76,6 @@ struct LoginContentView: View {
                         .padding()
                         .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
                 }.frame(width: loginButtonWidth).padding(.bottom, 6)
-
                 //Login Button
                 Button(action: myLogin.login) {
                     ZStack {
@@ -74,29 +83,20 @@ struct LoginContentView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .frame(width: loginButtonWidth, height: loginButtonHeight)
-                            .background(myLogin.alertType == .select ? Color.primaryColor: Color.grayColor)
+                            .background(myLogin.isValidLogin ? Color.primaryColor: Color.grayColor)
                             .cornerRadius(loginButtonCornerRadius)
-                        if myLogin.isLoading {
-                            ProgressView().progressViewStyle(CircularProgressViewStyle())
-                        }
                     }.padding(.bottom, 6)
                 }
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                    Button(Action.ok.rawValue.localized, role: .none){
-                        if myLogin.isLoginSuccess {
-                            if "firstlogin".userDefaultsBool(false) {
-                                myFirestore.getFirestore()
-                            } else {
-                                UserDefaults.standard.set(true, forKey: "firstlogin")
-                            }
-                            UserDefaults.standard.set(true, forKey: "Login")
-                        }
+                    Button(textOk, role: .none){
                         myLogin.isShowMessage = false
+                        if myLogin.isLoginSuccess {
+                            presentationMode.wrappedValue.dismiss()
+                        }
                     }
                 } message: {
                     Text(myLogin.alertMessage)
                 }
-
                 //Show sign up
                 Button(action: { isShowSignUp = true }) {
                     Text("Signup".localized)
@@ -109,52 +109,54 @@ struct LoginContentView: View {
                 }.sheet(isPresented: $isShowSignUp) {
                     SignUpContentView(myLogin)
                 }
-
                 //Password reset button
-                Button(action: { myLogin.isResetAlert = true }) {
+                Button(action: { isShowReset = true }) {
                     Text("Forgot Password?".localized)
                         .underline(color: .white)
                         .font(.headline)
                         .foregroundColor(.white)
                 }
-                //Password Reset
-                .alert("Password Reset".localized, isPresented: $myLogin.isResetAlert) {
-                    TextField(Hint.email.rawValue.localized, text: $myLogin.resetEmail)
+                //Password Reset alert
+                .alert("Password Reset".localized, isPresented: $isShowReset) {
+                    TextField("Email".localized, text: $myLogin.resetEmail)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                     //OK button
-                    Button(Action.ok.rawValue.localized, role: .none){
+                    Button(textOk, role: .none){
                         myLogin.reset()
                     }
                     //Cancel button
-                    Button(Action.cancel.rawValue.localized, role: .cancel){
-                        myLogin.isResetAlert = false
+                    Button(textCancel, role: .cancel){
+                        isShowReset = false
                     }
                 } message: {
                     Text("Reset your password?".localized)
                 }
                 //Message alert
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                    Button(Action.ok.rawValue.localized, role: .none){
+                    Button(textOk, role: .none){
                         myLogin.isShowMessage = false
-                        myLogin.isResetAlert = false
                     }
                 } message: {
                     Text(myLogin.alertMessage)
                 }
-
                 Spacer()
-                AdMobView()
+                Spacer()
             }
-            .opacity(isShowSplash ? 0 : 1)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation() {
-                        self.isShowSplash = false
-                    }
+            if myLogin.isLoading {
+                ZStack {
+                    Color.grayColor.opacity(0.3)
+                        .edgesIgnoringSafeArea(.all)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(10)
                 }
             }
-        }.edgesIgnoringSafeArea(.top)
+        }
+        .navigationBarHidden(true)
+        .edgesIgnoringSafeArea(.all)
     }
 }
 

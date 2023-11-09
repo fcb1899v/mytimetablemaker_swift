@@ -17,12 +17,12 @@ struct mytimetablemaker_swiftuiApp: App {
     
     var body: some Scene {
         
-        let loginviewmodel = LoginViewModel()
-        let mainviewmodel = MainViewModel()
-        let firestoreviewmodel = FirestoreViewModel()
+        let myTransit = MyTransit()
+        let myLogin = MyLogin()
+        let myFirestore = MyFirestore()
         
         WindowGroup {
-            ContentView(loginviewmodel, mainviewmodel, firestoreviewmodel)
+            ContentView(myTransit, myLogin, myFirestore)
         }
     }
 }

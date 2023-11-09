@@ -13,7 +13,7 @@ struct transitInfomation: View {
     @State private var isShowingPicker = false
     @State private var inputText = ""
     @State private var label: String
-    
+
     private let goorback: String
     private let num: Int
     
@@ -28,42 +28,33 @@ struct transitInfomation: View {
     }
 
     var body: some View {
-        
-        let alertTitle = DialogTitle.transittime.rawValue.localized
-        let alertMessage = goorback.transportationMessage(num)
-        let alertKey = goorback.transitTimeKey(num)
-        let actionTitle = DialogTitle.transport.rawValue.localized
-        let actionMessage = goorback.transportationMessage(num)
-        let actionKey = goorback.transportationKey(num)
-        let placeHolder = Hint.to99min.rawValue.localized
-
         HStack {
             Button (action: {
                 self.isShowingAlert = true
+                inputText = ""
             }) {
                 lineTimeImage(color: Color.grayColor)
-            }            //Setting transit time alert
-            .alert(alertTitle, isPresented: $isShowingAlert) {
-                TextField(placeHolder, text: $inputText)
+            }
+            //Setting transit time alert
+            .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
+                TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    let inputTextInt: Int = inputText.intText(min: 1, max: 99)
-                    if (inputTextInt > 0) { UserDefaults.standard.set(inputText, forKey: alertKey) }
+                Button(textOk, role: .none){
+                    if (inputText.intText(min: 1, max: 99) > 0) {
+                        UserDefaults.standard.set(inputText, forKey:goorback.transitTimeKey(num))
+                    }
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(alertMessage)
+                Text(goorback.transportationMessage(num))
             }
-
             Button(action: {
                 self.isShowingPicker = true
             }) {
@@ -71,16 +62,22 @@ struct transitInfomation: View {
                     .font(.system(size: routeLineFontSize))
                     .foregroundColor(Color.grayColor)
                     .lineLimit(1)
-                    .onChange(of: goorback.transportationArray[num]) { newValue in label = newValue }
+                    .onChange(of: goorback.transportationArray[num]) {
+                        newValue in label = newValue
+                    }
             }
             .padding(.leading, routeLineImageLeftPadding)
+            //Setting transportation action sheet
             .actionSheet(isPresented: $isShowingPicker) {
                 ActionSheet(
-                    title: Text(actionTitle),
-                    message: Text(actionMessage),
+                    title: Text(transportationAlertTitle),
+                    message: Text(goorback.transportationMessage(num)),
                     buttons: Transportation.allCases.map{$0.rawValue.localized}.indices.map { i in
                         .default(Text(Transportation.allCases.map{$0.rawValue.localized}[i])) {
-                            UserDefaults.standard.set(Transportation.allCases.map{$0.rawValue.localized}[i], forKey: actionKey)
+                            UserDefaults.standard.set(
+                                Transportation.allCases.map{$0.rawValue.localized}[i],
+                                forKey: goorback.transportationKey(num)
+                            )
                         }
                     } + [.cancel()]
                 )

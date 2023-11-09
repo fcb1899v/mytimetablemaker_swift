@@ -19,7 +19,6 @@ struct settingsRideTime: View {
     private let goorback: String
     private let num: Int
     
-    /// 値を指定して生成する
     init(
         _ goorback: String,
         _ num: Int
@@ -27,63 +26,54 @@ struct settingsRideTime: View {
         self.goorback = goorback
         self.num = num
         self.title = goorback.lineNameArray[num]
-        self.label = goorback.rideTimeStringArray[num]
-        self.color = goorback.rideTimeSettingsColor(num)
+        self.label = goorback.rideTimeStringSettingsArray[num]
+        self.color = goorback.rideTimeColorSettingsArray[num]
     }
     
-    
     var body: some View {
-
-        let alertTitle = DialogTitle.ridetime.rawValue.localized
-        let alertMessage = goorback.rideTimeAlertMessage(num)
-        let key = goorback.rideTimeKey(num)
-        let nextTitle = DialogTitle.timetable.rawValue.localized
-        let placeHolder = Hint.to99min.rawValue.localized
-
-        //Setting ride time button
         Button (action: {
             self.isShowingAlert = true
+            inputText = ""
         }) {
             HStack {
-                Text(title)
-                    .foregroundColor(.black)
-                    .padding(5)
-                    .onChange(of: goorback.lineNameArray[num]) { newValue in title = newValue }
+                Text(title).foregroundColor(.black)
+                    .onChange(of: goorback.lineNameArray[num]) {
+                        newValue in title = newValue
+                    }
                 Spacer()
-                Text(label)
+                Text(label).foregroundColor(label.settingsColor)
                     .lineLimit(1)
-                    .foregroundColor(label.settingsColor)
-                    .padding(5)
-                    .onChange(of: goorback.rideTimeStringArray[num]) { newValue in label = newValue }
-            }.font(.subheadline)
+                    .onChange(of: goorback.rideTimeStringSettingsArray[num]) {
+                        newValue in label = newValue
+                    }
+            }
             //Setting ride time alert
-            .alert(alertTitle, isPresented: $isShowingAlert) {
-                TextField(placeHolder, text: $inputText)
+            .alert(rideTimeAlertTitle, isPresented: $isShowingAlert) {
+                TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    let inputTextInt: Int = inputText.intText(min: 1, max: 99)
-                    if (inputTextInt > 0) { UserDefaults.standard.set(inputTextInt, forKey: key) }
+                Button(textOk, role: .none){
+                    if (inputText.intText(min: 1, max: 99) > 0) {
+                        UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
+                    }
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Change Timetable button
-                Button(nextTitle, role: .destructive){
-                    let inputTextInt: Int = (Int(inputText)! > 0 && Int(inputText)! < 100) ? Int(inputText)!: 0
-                    if (inputTextInt > 0) { UserDefaults.standard.set(inputText, forKey: key) }
+                Button(timetableAlertTitle, role: .destructive){
+                    if (inputText.intText(min: 1, max: 99) > 0) {
+                        UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
+                    }
                     isShowingNextAlert = true
                     isShowingAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(alertMessage)
+                Text(goorback.rideTimeAlertMessage(num))
             }
         }
         //Setting timetable

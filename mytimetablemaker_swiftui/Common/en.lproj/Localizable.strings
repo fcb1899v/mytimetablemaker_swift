@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   mytimetablemaker_swiftui
 
@@ -6,23 +6,180 @@
   
 */
 
-//Action
-"Register" = "Register";
-"Cancel" = "Cancel";
-"Add" = "Add";
-"Delete" = "Delete";
-"Copy" = "Copy";
-"Reset" = "Reset";
-"OK" = "OK";
-"Yes" = "Yes";
-"No" = "No";
-"back" = "Back";
+//Title
+"My Transit Makers" = "My Transit Makers";
 
-//Button
+//MainContentView.swift
 "Back" = "Back";
 "Go" = "Go";
 "Start" = "Start";
 "Stop" = "Stop";
+"OK" = "OK";
+"Cancel" = "Cancel";
+"Maximum 20 Charactors" = "Maximum 20 Charactors";
+"Enter 0~99 [min]" = "Enter 0~99 [min]";
+"Enter 0~59 [min]" = "Enter 0~59 [min]";
+
+//DataExtension.swift
+"Office" = "Office";
+"Home" = "Home";
+"Dep. St. " = "Dep. St.";
+"Arr. St. " = "Arr. St.";
+"Departure place" = "Departure place";
+"Destination" = "Destination";
+"Line " = "Line ";
+"line " = "line ";
+"of departure station " = "of departure station ";
+"of arrival station " = "of arrival station ";
+"of " = "of ";
+"from " = "from ";
+"From " = "From ";
+" to " = "to ";
+"To " = "To ";
+"he" = "";
+"on " = "on ";
+"Going home route 1" = "Going home route 1";
+"Going home route 2" = "Going home route 2";
+"Outgoing route 1" = "Outgoing route 1";
+"Outgoing route 2" = "Outgoing route 2";
+"[min]" = " [min]";
+"Not set" = "Not set";
+
+//TimeExtension.swift
+"weekend" = "weekend";
+"weekday" = "weekday";
+"E, MMM d, yyyy" = "E, MMM d, yyyy";
+
+
+//SettingsContentView
+"Back" = "Back";
+"Settings" = "Settings";
+"Display route 2" = "Display route 2";
+"Change line" = "Change line";
+"Various settings" = "Various settings";
+"Get data" = "Get data";
+"Save data" = "Save data";
+"Account" = "Account";
+"Get your data after login" = "Get your data after login";
+"Save your data after login" = "Save your data after login";
+"About" = "About";
+"Version" = "Version";
+"Terms and privacy policy" = "Terms and privacy policy";
+"https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/terms";
+"Setting your number of transfers" = "Setting your number of transfers";
+"Setting your departure place" = "Setting your departure place";
+"Setting your station name" = "Setting your station name";
+"Setting your destination" = "Setting your destination";
+"Setting your line name" = "Setting your line name";
+"Setting your line color" = "Setting your line color";
+"Setting your ride time [min]" = "Setting your ride time [min]";
+"Setting your transportation" = "Setting your transportation";
+"Setting your transit time [min]" = "Setting your transit time [min]";
+"Setting your timetable" = "Setting your timetable";
+
+//GetDataButton
+"Get saved data" = "Get saved data";
+"Overwritten current data?" = "Overwritten current data?";
+"Data got error" = "Data got error";
+"Data got successfully" = "Data got successfully";
+"Data could not be got" = "Data could not be got";
+
+//SaveDataButton
+"Save current data" = "Save current data";
+"Overwritten saved data?" = "Overwritten saved data?";
+"Data saved error" = "Data saved error";
+"Data saved successfully" = "Data saved successfully";
+"Data could not be saved" = "Data could not be saved";
+
+//Logout
+"Logout" = "Logout";
+"Logout your account?" = "Logout your account?";
+"Logout error" = "Logout error";
+"Logged out" = "Logged out successfully";
+"Failed to Log out" = "Failed to Log out";
+
+//Delete Account
+"Delete Account" = "Delete Account";
+"Delete your account?" = "Delete your account?";
+"Delete account error" = "Delete account error";
+"Account deleted successfully" = "Account deleted successfully";
+"Account could not be deleted" = "Account could not be deleted";
+
+
+//TimetableContentView
+"Add" = "Add";
+"Delete" = "Delete";
+"Add and delete departure time [min]" = "Add and delete departure time [min]";
+"Copying your timetable" = "Copying your timetable";
+"Copying all the time?" = "Copying all the time?";
+"Select your timetable picture" =  "Select your timetable picture";
+
+//Timetable.swift
+"Weekday" = "Weekday";
+"Weekend" = "Weekend";
+"Hour" = ":00-";
+" for " = " for ";
+"houmen" = "";
+"Other route of line 1" = "Other route of line 1";
+"Other route of line 2" = "Other route of line 2";
+"Other route of line 3" = "Other route of line 3";
+
+
+//LoginContentView
+"Email" = "Email";
+"Password (8+ chars: alnum & !@#$&~)" = "Password (8+ chars: alnum & !@#$&~)";
+"Login" = "Login";
+"Signup" = "Sign up";
+"Forgot Password?" = "Forgot Password?";
+"Reset your password?" = "Reset your password?";
+"Password Reset" = "Password Reset";
+
+
+//SignUpContentView
+"Create Account" = "Create Account";
+"Confirm Password" = "Confirm Password";
+"I have read and agree to the " = "I have read and agree to the ";
+"terms and privacy policy" = "terms and privacy policy";
+"kakunin" = "";
+
+
+////MyLogin.swift
+
+//Input
+"Input error" = "Input error";
+"Enter your email" = "Enter your email";
+"Enter your password" = "Enter your password";
+"Enter your confirm password" = "Enter your confirm password";
+"Enter your email again" = "Enter your email again";
+"Check your email" = "Check your email";
+"Incorrect email" = "Incorrect email";
+"Incorrect email format" = "Incorrect email format";
+"Incorrect password format" = "Incorrect password format";
+"Incorrect email or password" = "Incorrect email or password";
+"Confirm password don't match" = "Confirm password don't match";
+
+//Login
+"Login successfully" = "Login successfully";
+"Login error" = "Login error";
+"Not verified account" = "Not verified account";
+"This account is disabled" = "This account is disabled";
+"Check error" = "Check error";
+"Check the terms and privacy policy" = "Check the terms and privacy policy";
+
+//Sign up
+"Signup successfully" = "Signup successfully";
+"Signup error" = "Sign up error";
+"Verification email Sent successfully" = "Verification email Sent successfully";
+"This email has already been registered" = "This email has already been registered";
+
+//Password reset
+"Password reset successfully" = "Password reset successfully";
+"Password reset error" = "Password reset error";
+"Password reset email Sent successfully" = "Password reset email Sent successfully";
+"Password reset email could not be sent" = "Password reset email could not be sent";
+
+
+//EnumSetting.swift
 
 //TransitTime
 "Zero" = "Zero";
@@ -52,170 +209,3 @@
 "GOLD" = "GOLD";
 "SILVER" = "SILVER";
 "BLACK" = "BLACK";
-
-//Unit
-"[min]" = " [min]";
-"Not set" = "Not set";
-"Not use" = "Not use";
-"E, MMM d, yyyy" = "E, MMM d, yyyy";
-"maxchar" = "20";
-
-//Hint
-"Maximum 20 Charactors" = "Maximum 20 Charactors";
-"Enter 0~99 [min]" = "Enter 0~99 [min]";
-"Enter 0~59 [min]" = "Enter 0~59 [min]";
-
-//DialogTitle
-"Setting your number of transfers" = "Setting your number of transfers";
-"Setting your departure place" = "Setting your departure place";
-"Setting your station name" = "Setting your station name";
-"Setting your destination" = "Setting your destination";
-"Setting your line name" = "Setting your line name";
-"Setting your line color" = "Setting your line color";
-"Setting your ride time [min]" = "Setting your ride time [min]";
-"Setting your transportation" = "Setting your transportation";
-"Setting your transit time [min]" = "Setting your transit time [min]";
-"Setting your timetable" = "Setting your timetable";
-"Add and delete departure time [min]" = "Add and delete departure time [min]";
-"Copying your timetable" = "Copying your timetable";
-"Copying all the time?" = "Copying all the time?";
-
-//SettingsTitle
-"Settings" = "Settings";
-"Display route 2" = "Display route 2";
-"Change line" = "Change line";
-"Various settings" = "Various settings";
-"I have read and agree to the " = "I have read and agree to the ";
-"terms and privacy policy" = "terms and privacy policy";
-"Terms and privacy policy" = "Terms and privacy policy";
-"kakunin" = "";
-"About" = "About";
-"Version" = "Version";
-"Going home route 1" = "Going home route 1";
-"Going home route 2" = "Going home route 2";
-"Outgoing route 1" = "Outgoing route 1";
-"Outgoing route 2" = "Outgoing route 2";
-
-//VariousSettingsTitle
-"Various settings on route home 1" = "Various settings on route home 1";
-"Various settings on outgoing route 1" = "Various settings on outgoing route 1";
-"Various settings on route home 2" = "Various settings on route home 2";
-"Various settings on outgoing route 2" = "Various settings on outgoing route 2";
-
-//その他
-"Office" = "Office";
-"Home" = "Home";
-"Dep. St. " = "Dep. St.";
-"Arr. St. " = "Arr. St.";
-"Line " = "Line ";
-"line " = "line ";
-"Departure place" = "Departure place";
-"departure place" = "departure place";
-"Destination" = "Destination";
-"destination" = "destination";
-"Departure station" = "Departure station";
-"departure station" = "departure station";
-"arrival station" = "arrival station";
-"Arrival station" = "Arrival station";
-"of departure station " = "of departure station ";
-"of arrival station " = "of arrival station ";
-"Other route of line 1" = "Other route of line 1";
-"Other route of line 2" = "Other route of line 2";
-"Other route of line 3" = "Other route of line 3";
-"Weekday" = "Weekday";
-"Weekend" = "Weekend";
-"of " = "of ";
-"from " = "from ";
-"From " = "From ";
-"kara" = "";
-" to " = " to ";
-"To " = "To ";
-"he" = "";
-"on " = "on ";
-" for " = " for ";
-"houmen" = "";
-"Hour" = ":00-";
-"terms" = "Terms and privacy policy";
-"https://nakajimamasao-appstudio.web.app/privacypolicy.html" = "https://nakajimamasao-appstudio.web.app/privacypolicy.html";
-"Select your timetable picture" =  "Select your timetable picture";
-
-//FirebaseAuth
-"My Transit Makers" = "My Transit Makers";
-"Account" = "Account";
-"Email" = "Email";
-"Password" = "Password";
-"Confirm Password" = "Confirm Password";
-"Enter your email" = "Enter your email";
-"Enter your password" = "Enter your password";
-"Enter your confirm password" = "Enter your confirm password";
-
-//Login
-"Login" = "Login";
-"Login successfully" = "Login successfully";
-"Login error" = "Login error";
-"Not verified account" = "Not verified account";
-"Check your email" = "Check your email";
-
-//Sign Up
-"Create Account" = "Create Account";
-"Signup" = "Signup";
-"Signup successfully" = "Signup successfully";
-"Signup error" = "Sign up error";
-"Send an verification email?" = "Send an verification email?";
-"Verification email Sent successfully" = "Verification email Sent successfully";
-"Verification email could not be sent" = "Verification email could not be sent";
-
-//Password Reset
-"Forgot Password?" = "Forgot Password?";
-"Reset your password?" = "Reset your password?";
-"Password Reset" = "Password Reset";
-"Password reset successfully" = "Password reset successfully";
-"Password reset error" = "Password reset error";
-"Password reset email Sent successfully" = "Password reset email Sent successfully";
-"Password reset email could not be sent" = "Password reset email could not be sent";
-
-//Input Error
-"Incorrect email" = "Incorrect email";
-"Incorrect password" = "Incorrect password";
-"Incorrect email format" = "Incorrect email format";
-"Incorrect email or password" = "Incorrect email or password";
-"Confirm password don't match" = "Confirm password don't match";
-
-//Auth Error
-"This email is not registered" = "This email is not registered";
-"This account is disabled" = "This account is disabled";
-"This email has already been registered" = "This email has already been registered";
-"Password must be at least 6 characters" = "Password must be at least 6 characters";
-
-//Logout
-"Logout" = "Logout";
-"Logout your account?" = "Logout your account?";
-"Logged out" = "Logged out";
-"Logout error" = "Logout error";
-
-//Delete Account
-"Delete Account" = "Delete Account";
-"Delete your account?" = "Delete your account?";
-"Delete account error" = "Delete account error";
-"Account deleted successfully" = "Account deleted successfully";
-"Account could not be deleted" = "Account could not be deleted";
-
-//Get data from Firestore
-"Get saved data" = "Get saved data";
-"Overwritten current data?" = "Overwritten current data?";
-"Data got error" = "Data got error";
-"Data got successfully" = "Data got successfully";
-"Data could not be got" = "Data could not be got";
-
-//Save data to Firestore
-"Save current data" = "Save current data";
-"Overwritten saved data?" = "Overwritten saved data?";
-"Data saved error" = "Data saved error";
-"Data saved successfully" = "Data saved successfully";
-"Data could not be saved" = "Data could not be saved";
-
-//Delete data in Firestore
-"Deleted saved data" = "Deleted saved data";
-"Data deleted error" = "Data deleted error";
-"Data deleted successfully" = "Data deleted successfully";
-"Data could not be deleted" = "Data could not be deleted";

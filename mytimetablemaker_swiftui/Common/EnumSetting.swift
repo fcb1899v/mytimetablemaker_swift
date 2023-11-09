@@ -7,22 +7,6 @@
 
 import SwiftUI
 
-enum MainTitle: String {
-    case main = "My Transit Makers"
-    case signup = "Create Account"
-}
-
-enum Action: String {
-    case register = "Register"
-    case cancel = "Cancel"
-    case add = "Add"
-    case delete = "Delete"
-    case copy = "Copy"
-    case reset = "Reset"
-    case ok = "OK"
-    case yes = "Yes"
-    case No = "No"
-}
 
 //TransitTime
 enum TransitTime: String, CaseIterable {
@@ -86,67 +70,3 @@ enum CustomColor: String, CaseIterable {
         }
     }
 }
-
-//CustomColor
-enum DefaultColor: String {
-    case primary = "#3700B3"
-    case accent  = "#03DAC5"
-    case red     = "#FF0000"
-    case yellow  = "#FFFF00"
-    case gray    = "#AAAAAA"
-    case black   = "#000000"
-    case white   = "#FFFFFF"
-}
-
-//Unit
-enum Unit: String {
-    case minites = "[min]"
-    case notset = "Not set"
-    case notuse = "Not use"
-    case customdate = "E, MMM d, yyyy"
-    case customHHmmss = "HH:mm:ss"
-    case customHHmm = "HH:mm"
-}
-
-//DialogTitle
-enum DialogTitle: String {
-    case numtransit  = "Setting your number of transfers"
-    case departplace = "Setting your departure place"
-    case stationname = "Setting your station name"
-    case destination = "Setting your destination"
-    case linename    = "Setting your line name"
-    case linecolor   = "Setting your line color"
-    case ridetime    = "Setting your ride time [min]"
-    case transport   = "Setting your transportation"
-    case transittime = "Setting your transit time [min]"
-    case timetable   = "Setting your timetable"
-    case adddeletime = "Add and delete departure time [min]"
-    case copytime    = "Copying your timetable"
-    case allcopytime = "Copying all the time?"
-    case selectpicture = "Select your timetable picture"
-}
-
-//Hint
-enum Hint: String {
-    case maxchar = "Maximum 20 Charactors"
-    case to99min = "Enter 0~99 [min]"
-    case to59min = "Enter 0~59 [min]"
-    case email = "Enter your email"
-}
-
-//EachRouteTitle
-enum EachRouteTitle: String {
-    case back1 = "Going home route 1"
-    case go1   = "Outgoing route 1"
-    case back2 = "Going home route 2"
-    case go2   = "Outgoing route 2"
-}
-
-//VariousSettingsTitle
-enum VariousSettingsTitle: String {
-    case back1 = "Various settings on going home route 1"
-    case go1   = "Various settings on outgoing route 1"
-    case back2 = "Various settings on going home route 2"
-    case go2   = "Various settings on outgoing route 2"
-}
-

@@ -27,10 +27,6 @@ struct TimetableContentView: View {
     }
     
     var body: some View {
-
-        
-        let timetable = Timetable(goorback, weekflag, num)
-        
         NavigationView {
             ZStack {
                 Color.primaryColor
@@ -38,7 +34,7 @@ struct TimetableContentView: View {
                     VStack {
                         HStack {
                             Spacer()
-                            Text(DialogTitle.timetable.rawValue.localized)
+                            Text(timetableAlertTitle)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
                                 .padding(.top, 20)
@@ -47,7 +43,7 @@ struct TimetableContentView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 5) {
                                 Text(goorback.stationArray[2 * num + 2]).font(.title3)
-                                Text(timetable.timetableTitle).font(.callout)
+                                Text(goorback.timetableAlertTitle(num)).font(.callout)
                             }
                             .foregroundColor(.white)
                             .padding(.leading, 10)
@@ -55,13 +51,13 @@ struct TimetableContentView: View {
                             Button(action: {
                                 weekflag = !weekflag
                             }){
-                                Text(timetable.revWeekLabelText)
+                                Text(weekflag.weekendLabel)
                                     .font(.body)
-                                    .fontWeight(.bold)
-                                    .frame(width: timetableWeekButtonWidth, height: timetableWeekButtonHeight)
-                                    .foregroundColor(timetable.weekButtonLabelColor)
-                                    .background(timetable.weekButtonBackColor)
-                                    .cornerRadius(timetableWeekButtonCornerRadius)
+                                    .fontWeight(.semibold)
+                                    .frame(width: timetableButtonWidth, height: operationButtonHeight)
+                                    .foregroundColor(weekflag.weekButtonLabelColor)
+                                    .background(weekflag.weekButtonColor)
+                                    .cornerRadius(operationButtonCornerRadius)
                                     .padding(.top, 10)
                                     .padding(.trailing, 10)
                             }
@@ -75,8 +71,8 @@ struct TimetableContentView: View {
                                     Color.white.frame(width: 1)
                                     ZStack(alignment: .center) {
                                         Color.primaryColor
-                                        Text(timetable.weekLabelText)
-                                            .foregroundColor(timetable.weekLabelColor)
+                                        Text(weekflag.weekdayLabel)
+                                            .foregroundColor(weekflag.weekLabelColor)
                                             .fontWeight(.bold)
                                     }.frame(height: 25)
                                     Color.white.frame(width: 1)
@@ -90,13 +86,13 @@ struct TimetableContentView: View {
                             Button(action: {
                                 self.isShowImagePicker = true
                             }, label: {
-                                Text(DialogTitle.selectpicture.rawValue.localized)
+                                Text(timetablePictureButtonText)
                                     .font(.body)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.white)
-                                    .frame(width: ImagePickerButtonWidth, height: ImagePickerButtonHeight)
+                                    .frame(width: ImagePickerButtonWidth, height: operationButtonHeight)
                                     .background(Color.accentColor)
-                                    .cornerRadius(ImagePickerCornerRadius)
+                                    .cornerRadius(operationButtonCornerRadius)
                             }).sheet(isPresented: $isShowImagePicker, content: {
                                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
                             })
@@ -107,8 +103,6 @@ struct TimetableContentView: View {
                                 .frame(width: customWidth)
                         }
                     }
-                    Spacer()
-                    AdMobView()
                 }
                 .navigationBarHidden(true)
                 .navigationBarColor(backgroundColor: UIColor(Color.primaryColor), titleColor: .white)

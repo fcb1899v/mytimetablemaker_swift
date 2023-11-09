@@ -9,498 +9,205 @@ import SwiftUI
 import Foundation
 import Combine
 
-
-//UserDefaults: self is goorback
-extension String{
-
-    //UserDefaultsに保存された文字列を取得
-    func userDefaultsValue(_ defaultvalue: String?) -> String {
-        let defaultstring = (defaultvalue != nil) ? defaultvalue: ""
-        return UserDefaults.standard.string(forKey: self) ?? defaultstring!
-    }
-    
-    //UserDefaultsに保存された文字列を取得
-    func userDefaultsInt(_ defaultvalue: Int?) -> Int {
-        let defaultint = (defaultvalue != nil) ? defaultvalue: 0
-        return (UserDefaults.standard.object(forKey: self) != nil) ?
-            UserDefaults.standard.integer(forKey: self):
-            defaultint!
-    }
-   
-    //UserDefaultsに保存されたBoolを取得
-    func userDefaultsBool(_ defaultvalue: Bool?) -> Bool {
-        let defaultbool = (defaultvalue != nil) ? defaultvalue: false
-        return (UserDefaults.standard.object(forKey: self) != nil) ?
-            UserDefaults.standard.bool(forKey: self):
-            defaultbool!
-    }
-    
-    //UserDefaultsに保存された色データを取得
-    func userDefaultsColor(_ defaultvalue: String?) -> Color {
-        return Color(userDefaultsValue(defaultvalue).colorInt)
-    }
-
-    //goorbackに応じて異なるString値を返す
-    func stringGoOrBack(_ backstring: String, _ gostring: String) -> String {
-        return (self == "back1" || self == "back2") ? backstring: gostring
-    }
-
-    //
-    var departurePointKey: String {
-        return self.stringGoOrBack("destination", "departurepoint")
-    }
-    
-    //
-    var destinationKey: String {
-        return self.stringGoOrBack("departurepoint", "destination")
-    }
-    
-    var departurePointDefault: String {
-        return (self == "back1" || self == "back2") ? "Home".localized: "Office".localized
-    }
-    
-    var destinationDefault: String {
-        return (self == "back1" || self == "back2") ? "Office".localized: "Home".localized
-    }
-    
-    //UserDefaultsに保存された目的地を取得
-    var departurePoint: String {
-        return departurePointKey.userDefaultsValue(departurePointDefault)
-    }
-
-    //UserDefaultsに保存された出発地を取得する関数
-    var destinationPoint: String {
-        return destinationKey.userDefaultsValue(destinationDefault)
-    }
-
-    //UserDefaultsに保存された目的地を取得
-    var settingsDeparturePoint: String {
-        return departurePointKey.userDefaultsValue(Unit.notset.rawValue.localized)
-    }
-
-    //UserDefaultsに保存された出発地を取得する関数
-    var settingsDestination: String {
-        return destinationKey.userDefaultsValue(Unit.notset.rawValue.localized)
-    }
-
-    //
-    func departStationKey(_ num: Int) -> String {
-        return "\(self)departstation\(num + 1)"
-    }
-    
-    func departStationDefault(_ num: Int) -> String {
-        return "\("Dep. St. ".localized)\(num + 1)"
-    }
-    
-    //UserDefaultsに保存された発車駅名を取得
-    func departStation(_ num: Int, _ depstadefault: String) -> String {
-        return departStationKey(num).userDefaultsValue(depstadefault)
-    }
-
-    //
-    func arriveStationKey(_ num: Int) -> String {
-        return "\(self)arrivestation\(num + 1)"
-    }
-    
-    func arriveStationDefault(_ num: Int) -> String {
-        return "\("Arr. St. ".localized)\(num + 1)"
-    }
-
-    //UserDefaultsに保存された降車駅名を取得
-    func arriveStation(_ num: Int, _ arrstadefault: String) -> String {
-        return arriveStationKey(num).userDefaultsValue(arrstadefault)
-    }
-
-    //
-    var departStationArray: Array<String> {
-        return [
-            self.departStation(0, departStationDefault(0)),
-            self.departStation(1, departStationDefault(1)),
-            self.departStation(2, departStationDefault(2)),
-        ]
-    }
-
-    //
-    var departStationSettingsArray: Array<String> {
-        return [
-            self.departStation(0, Unit.notset.rawValue.localized),
-            self.departStation(1, Unit.notset.rawValue.localized),
-            self.departStation(2, Unit.notset.rawValue.localized),
-        ]
-    }
-    
-    //
-    var arriveStationArray: Array<String> {
-        return [
-            self.arriveStation(0, arriveStationDefault(0)),
-            self.arriveStation(1, arriveStationDefault(1)),
-            self.arriveStation(2, arriveStationDefault(2))
-        ]
-    }
-
-    //
-    var arriveStationSettingsArray: Array<String> {
-        return [
-            self.arriveStation(0, Unit.notset.rawValue.localized),
-            self.arriveStation(1, Unit.notset.rawValue.localized),
-            self.arriveStation(2, Unit.notset.rawValue.localized)
-        ]
-    }
-
-    //
-    var stationArray: Array<String> {
-        return [
-            self.destinationPoint,
-            self.departurePoint,
-            self.departStationArray[0],
-            self.arriveStationArray[0],
-            self.departStationArray[1],
-            self.arriveStationArray[1],
-            self.departStationArray[2],
-            self.arriveStationArray[2]
-        ]
-    }
-
-    //
-    var stationSettingsArray: Array<String> {
-        return [
-            self.settingsDestination,
-            self.settingsDeparturePoint,
-            self.departStationSettingsArray[0],
-            self.arriveStationSettingsArray[0],
-            self.departStationSettingsArray[1],
-            self.arriveStationSettingsArray[1],
-            self.departStationSettingsArray[2],
-            self.arriveStationSettingsArray[2]
-        ]
-    }
-    
-    //
-    var stationAlertLabelArray: Array<String> {
-        return [
-            (self == "back1" || self == "back2") ? "Destination".localized: "Departure place".localized,
-            (self == "back1" || self == "back2") ? "Departure place".localized: "Destination".localized,
-            "\("Dep. St. ".localized)1",
-            "\("Arr. St. ".localized)1",
-            "\("Dep. St. ".localized)2",
-            "\("Arr. St. ".localized)2",
-            "\("Dep. St. ".localized)3",
-            "\("Arr. St. ".localized)3"
-        ]
-    }
-
-    //
-    var stationAlertTitleArray: Array<String> {
-        return [
-            DialogTitle.destination.rawValue.localized,
-            DialogTitle.departplace.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized,
-            DialogTitle.stationname.rawValue.localized
-        ]
-    }
-    
-    //
-    var stationAlertMessageArray: Array<String> {
-        return [
-            "",
-            "",
-            "\("of departure station ".localized)1",
-            "\("of arrival station ".localized)1",
-            "\("of departure station ".localized)2",
-            "\("of arrival station ".localized)2",
-            "\("of departure station ".localized)3",
-            "\("of arrival station ".localized)3"
-        ]
-    }
-
-    //
-    var stationKeyArray: Array<String> {
-        return [
-            (self == "back1" || self == "back2") ? "departurepoint": "destination",
-            (self == "back1" || self == "back2") ? "destination": "departurepoint",
-            "\(self)departstation1",
-            "\(self)arrivestation1",
-            "\(self)departstation2",
-            "\(self)arrivestation2",
-            "\(self)departstation3",
-            "\(self)arrivestation3"
-        ]
-    }
-
-    //UserDefaultsに保存する路線名のkeyを取得
-    func lineNameKey(_ num: Int) -> String {
-        return "\(self)linename\(num + 1)"
-    }
-
-    //UserDefaultsに保存する前の路線名の初期値を取得
-    func lineNameDefault(_ num: Int) -> String {
-        return "\("Line ".localized)\(num + 1)"
-    }
-
-    //UserDefaultsに保存された路線名を取得 :
-    func lineName(_ num: Int, _ linedefault: String) -> String {
-        return lineNameKey(num).userDefaultsValue(linedefault)
-    }
-
-    //UserDefaultsに保存された路線名を配列で取得 :
-    var lineNameArray: Array<String> {
-        return [
-            self.lineName(0, lineNameDefault(0)),
-            self.lineName(1, lineNameDefault(1)),
-            self.lineName(2, lineNameDefault(2))
-        ]
-    }
-
-    //UserDefaultsに保存された路線名を配列で取得 :
-    var lineNameSettingsArray: Array<String> {
-        return [
-            self.lineName(0, Unit.notset.rawValue.localized),
-            self.lineName(1, Unit.notset.rawValue.localized),
-            self.lineName(2, Unit.notset.rawValue.localized)
-        ]
-    }
-
-    //UserDefaultsに保存する路線カラーのkeyを取得
-    func lineColorKey(_ num: Int) -> String {
-        return "\(self)linecolor\(num + 1)"
-    }
-
-    //UserDefaultsに保存された路線カラーを取得
-    func lineColor(_ num: Int, _ colordefault: String) -> Color {
-        return lineColorKey(num).userDefaultsColor(colordefault)
-    }
-
-    //UserDefaultsに保存された路線カラーを文字列で取得
-    func lineColorString(_ num: Int, _ colordefault: String) -> String {
-        return lineColorKey(num).userDefaultsValue(colordefault)
-    }
-    
-    //UserDefaultsに保存された路線カラーを配列で取得
-    var lineColorArray: Array<Color> {
-        return [
-            self.lineColor(0, DefaultColor.accent.rawValue),
-            self.lineColor(1, DefaultColor.accent.rawValue),
-            self.lineColor(2, DefaultColor.accent.rawValue)
-        ]
-    }
-    
-    var lineColorSettingsArray: Array<Color> {
-        return [
-            self.lineColor(0, DefaultColor.gray.rawValue),
-            self.lineColor(1, DefaultColor.gray.rawValue),
-            self.lineColor(2, DefaultColor.gray.rawValue)
-        ]
-    }
-
-    //UserDefaultsに保存された路線カラーを文字列配列で取得
-    var lineColorStringArray: Array<String> {
-        return [
-            self.lineColorString(0, DefaultColor.accent.rawValue),
-            self.lineColorString(1, DefaultColor.accent.rawValue),
-            self.lineColorString(2, DefaultColor.accent.rawValue)
-        ]
-    }
-
-    //
-    func lineNameAlertMessage(_ num: Int) -> String {
-        return "\("of ".localized)\("line ".localized)\(num + 1)"
-    }
-        
-    func rideTimeKey(_ num: Int) -> String {
-        return "\(self)ridetime\(num + 1)"
-    }
-    
-    //UserDefaultsに保存された乗車時間を取得
-    func rideTime(_ num: Int) -> Int {
-        return rideTimeKey(num).userDefaultsInt(0)
-    }
-
-    //
-    var rideTimeArray: Array<Int> {
-        return [
-            self.rideTime(0),
-            self.rideTime(1),
-            self.rideTime(2)
-        ]
-    }
-
-    //UserDefaultsに保存された乗車時間をString型で取得(設定画面用)
-    func rideTimeString(_ num: Int) -> String {
-        return (self.rideTime(num) == 0) ? Unit.notset.rawValue.localized:
-            "\(String(self.rideTime(num)))\(Unit.minites.rawValue.localized)"
-    }
-
-    //
-    func rideTimeSettingsColor(_ num: Int) -> Color {
-        return (self.rideTime(num) == 0) ? Color.grayColor: lineColorArray[num]
-    }
-    
-    //
-    var rideTimeStringArray: Array<String> {
-        return [
-            self.rideTimeString(0),
-            self.rideTimeString(1),
-            self.rideTimeString(2)
-        ]
-    }
-
-    //
-    func rideTimeAlertMessage(_ num: Int) -> String {
-        return  "\("on ".localized)\(self.lineNameArray[num])"
-    }
-    
-    //
-    func transportationKey(_ num: Int) ->  String {
-        return (num == 0) ? "\(self)transporte": "\(self)transport\(num)"
-    }
-
-    //UserDefaultsに保存された移動手段を取得
-    func transportation(_ num: Int, _ transportdefalut: String) -> String {
-        return transportationKey(num).userDefaultsValue(transportdefalut)
-    }
-
-    //
-    var transportationArray: Array<String> {
-        return [
-            self.transportation(0, Transportation.walking.rawValue.localized),
-            self.transportation(1, Transportation.walking.rawValue.localized),
-            self.transportation(2, Transportation.walking.rawValue.localized),
-            self.transportation(3, Transportation.walking.rawValue.localized)
-        ]
-    }
-
-    //
-    var transportationSettingsArray: Array<String> {
-        return [
-            self.transportation(0, Unit.notset.rawValue.localized),
-            self.transportation(1, Unit.notset.rawValue.localized),
-            self.transportation(2, Unit.notset.rawValue.localized),
-            self.transportation(3, Unit.notset.rawValue.localized)
-        ]
-    }
-
-    //UserDefaultsに保存された乗換出発駅を取得する関数
-    func transitDepartStation(_ num: Int) -> String {
-        let keytag = (num == 0) ? "\(self.changeLineInt + 1)": "\(num - 1)"
-        return (num == 1) ? self.departurePoint:
-            "\(self)arrivestation\(keytag)".userDefaultsValue("\("Arr. St. ".localized)\(keytag)")
-    }
-
-    //UserDefaultsに保存された乗換到着駅を取得する関数
-    func transitArriveStation(_ num: Int) -> String {
-        return (num == 0) ? self.destinationPoint:
-            "\(self)departstation\(num)".userDefaultsValue("\("Dep. St. ".localized)\(num)")
-    }
-    
-    //
-    func transportationMessage(_ num: Int) -> String {
-        let transdepsta = self.transitDepartStation(num).localized
-        let transarrsta = self.transitArriveStation(num).localized
-        return "\("from ".localized)\(transdepsta)\(" to ".localized)\(transarrsta)"
-    }
-
-    //
-    func transportationLabel(_ num: Int) -> String {
-        let transdepsta = self.transitDepartStation(num).localized
-        let transarrsta = self.transitArriveStation(num).localized
-        return (num == 1) ? "\("From ".localized)\(transdepsta)\(" to ".localized)":
-            "\("To ".localized)\(transarrsta)\("he".localized)"
-    }
-
-    //
-    func transitTimeKey(_ num: Int) ->  String {
-        return (num == 0) ? "\(self)transittimee": "\(self)transittime\(num)"
-    }
-
-    //UserDefaultsに保存された移動時間を取得
-    func transitTime(_ num: Int) -> Int {
-        return transitTimeKey(num).userDefaultsInt(0)
-    }
-
-    //
-    var transitTimeArray: Array<Int> {
-        return [
-            self.transitTime(0),
-            self.transitTime(1),
-            self.transitTime(2),
-            self.transitTime(3)
-        ]
-    }
-
-    //UserDefaultsに保存された移動時間をString型で取得(設定画面用)
-    func transitTimeString(_ num: Int) -> String {
-        return (self.transitTime(num) == 0) ? Unit.notset.rawValue.localized:
-            "\(String(self.transitTime(num)))\(Unit.minites.rawValue.localized)"
-    }
-
-    //
-    var transitTimeStringArray: Array<String> {
-        return [
-            self.transitTimeString(0),
-            self.transitTimeString(1),
-            self.transitTimeString(2),
-            self.transitTimeString(3)
-        ]
-    }
-    
-    var route2FlagKey: String {
-        return "\(self)route2flag"
-    }
-    
-    //UserDefaultsに保存されたスイッチの状態を取得
-    var route2Flag: Bool {
-        return (self == "back1" || self == "go1") ? true: route2FlagKey.userDefaultsBool(true)
-    }
-    
-    var changeLineKey: String {
-        return "\(self)changeline"
-    }
-
-    //UserDefaultsに保存された乗換回数の取得
-    var changeLineInt: Int {
-        return changeLineKey.userDefaultsInt(0)
-    }
-
-    //乗換回数の取得(String型)
-    var changeLineString: String {
-        return changeLineInt.stringChangeLine
-    }
-
-    //
-    var routeTitle: String {
-        switch (self) {
-            case "go1": return EachRouteTitle.go1.rawValue.localized
-            case "back2": return EachRouteTitle.back2.rawValue.localized
-            case "go2": return EachRouteTitle.go2.rawValue.localized
-            default: return EachRouteTitle.back1.rawValue.localized
-        }
-    }
-
-    //Various Settingsのタイトルを取得する関数
-    var variousSettingsTitle: String {
-        switch (self) {
-            case "go1": return VariousSettingsTitle.go1.rawValue.localized
-            case "back2": return VariousSettingsTitle.back2.rawValue.localized
-            case "go2": return VariousSettingsTitle.go2.rawValue.localized
-            default: return VariousSettingsTitle.back1.rawValue.localized
-        }
+// 多言語対応
+extension String {
+    var localized: String {
+        return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
     }
 }
 
-//
-extension Int {
-    //
-    var stringChangeLine: String {
-        switch(self) {
+//self is goorback
+extension String{
+    
+    //Get UserDefaults data
+    func userDefaultsValue(_ defaultValue: String) -> String? { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.string(forKey: self): defaultValue }
+    func userDefaultsInt(_ defaultValue: Int) -> Int { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.integer(forKey: self): defaultValue }
+    func userDefaultsBool(_ defaultValue: Bool) -> Bool { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.bool(forKey: self): defaultValue }
+    func userDefaultsColor(_ defaultValue: String) -> Color { return Color(userDefaultsValue(defaultValue)!.colorInt) }
+    
+    
+    //Key for UserDefault
+    var isBack: Bool { return (self == "back1" || self == "back2") }
+    var isRoute1: Bool { return (self == "back1" || self == "go1") }
+    var isShowRoute2Key: String { return "\(self)route2flag" }
+    var changeLineKey: String { return "\(self)changeline" }
+    var departurePointKey: String { return isBack ? "destination": "departurepoint" }
+    var destinationKey: String { return isBack ? "departurepoint" : "destination" }
+    func departStationKey(_ num: Int) -> String { return "\(self)departstation\(num + 1)" }
+    func arriveStationKey(_ num: Int) -> String { return "\(self)arrivestation\(num + 1)" }
+    var stationKeyArray: Array<String> { return [departurePointKey, destinationKey] + (0..<3).flatMap { i in [departStationKey(i), arriveStationKey(i)] } }
+    func lineNameKey(_ num: Int) -> String { return "\(self)linename\(num + 1)" }
+    func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
+    func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
+    func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
+    func transitTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transittimee": "\(self)transittime\(num)" }
+    func timetableKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)" }
+    func choiceCopyTimeKeyArray(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [String] {
+        return [
+            "\(lineNameKey(num))\(isWeekday.weekdayTag)\((hour - 1).addZeroTime)",
+            "\(lineNameKey(num))\(isWeekday.weekdayTag)\((hour + 1).addZeroTime)",
+            "\(lineNameKey(num))\(isWeekday.weekendTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(0))\(isWeekday.weekdayTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(1))\(isWeekday.weekdayTag)\(hour.addZeroTime)",
+            "\(otherroute.lineNameKey(2))\(isWeekday.weekdayTag)\(hour.addZeroTime)"
+        ]
+    }
+
+
+    //Define default data
+    var departurePointDefault: String { return isBack ? textHome: textOffice }
+    var destinationDefault: String { return isBack ? textOffice: textHome }
+    
+    
+    //Get date in UserDefaults for Main
+    var isShowRoute2: Bool { return isShowRoute2Key.userDefaultsBool(false) }
+    var changeLineInt: Int { return changeLineKey.userDefaultsInt(0) }
+    var departurePoint: String { return departurePointKey.userDefaultsValue(departurePointDefault)! }
+    var destination: String { return destinationKey.userDefaultsValue(destinationDefault)! }
+    func departStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(departStationDefault(num))! }
+    func arriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(arriveStationDefault(num))! }
+    func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(lineNameDefault(num))! }
+    func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(accentColorString) }
+    func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
+    func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
+    func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(Transportation.walking.rawValue.localized)! }
+    func transitTime(_ num: Int) -> Int { return transitTimeKey(num).userDefaultsInt(0) }
+    func timetableTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
+    func choiceCopyTime(_ isWeekday: Bool, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(isWeekday, num, hour)[i].userDefaultsValue("")! }
+
+
+    //Get date in UserDefaults for Settings
+    var settingsDeparturePoint: String { return departurePointKey.userDefaultsValue(textNotSet)! }
+    var settingsDestination: String { return destinationKey.userDefaultsValue(textNotSet)! }
+    func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(textNotSet)! }
+    func settingsArriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(textNotSet)! }
+    func settingsLineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(textNotSet)! }
+    func settingsLineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(grayColorString) }
+    func settingsLineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(grayColorString)! }
+    func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? textNotSet: "\(String(rideTime(num)))\("[min]".localized)"}
+    func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? Color.grayColor: lineColorArray[num] }
+    func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(textNotSet)! }
+    func settingsTransitTime(_ num: Int) -> String { return (transitTime(num) == 0) ? textNotSet: "\(transitTime(num))\("[min]".localized)"}
+    
+    
+    //Get data array for Main
+    var departStationArray: Array<String> { return (0..<3).map { i in departStation(i)} }
+    var arriveStationArray: Array<String> { return (0..<3).map { i in arriveStation(i)} }
+    var stationArray: Array<String> { return [destination, departurePoint] + (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
+    var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
+    var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
+    var lineColorStringArray: Array<String> { return (0..<3).map { i in lineColorString(i)} }
+    var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
+    var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }
+    var transitTimeArray: Array<Int> { return (0..<4).map { i in transitTime(i) } }
+    var transitTimeStringArray: Array<String> { return (0..<4).map { i in settingsTransitTime(i) } }
+    
+    
+    //Get data array for Settings
+    var departStationSettingsArray: Array<String> { return (0..<3).map {i in settingsDepartStation(i)} }
+    var arriveStationSettingsArray: Array<String> { return (0..<3).map {i in settingsArriveStation(i)} }
+    var stationSettingsArray: Array<String> { return [settingsDestination, settingsDeparturePoint] + (0..<3).flatMap { i in [settingsDepartStation(i), settingsArriveStation(i)] } }
+    var lineNameSettingsArray: Array<String> { return (0..<3).map { i in settingsLineName(i) } }
+    var lineColorSettingsArray: Array<Color> { return (0..<3).map {i in settingsLineColor(i)} }
+    var lineColorStringSettingsArray: Array<String> { return (0..<3).map {i in settingsLineColorString(i)} }
+    var rideTimeStringSettingsArray: Array<String> { return (0..<3).map { i in settingsRideTime(i) } }
+    var rideTimeColorSettingsArray: Array<Color> { return (0..<3).map { i in settingsRideTimeColor(i) } }
+    var transportationSettingsArray: Array<String> { return (0..<4).map { i in settingsTransportation(i) } }
+    
+    
+    //Get label
+    var departurePointLabel: String { return isBack ? textDestination: textDepartPoint }
+    var destinationLabel: String { return isBack ? textDepartPoint: textDestination }
+    var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [departStationDefault(i), arriveStationDefault(i)] } }
+    func transitDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
+    func transitDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transitDepartNum(num)).localized }
+    func transitArriveStation(_ num: Int) -> String { return (num == 0) ? destination.localized: departStation(num - 1).localized }
+    func transitFromDepartStation(_ num: Int) -> String { return "\("From ".localized)\(transitDepartStation(num))\(" to ".localized)"}
+    func transitToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transitArriveStation(num))\("he".localized)" }
+    func transportationLabel(_ num: Int) -> String { return (num == 1) ? transitFromDepartStation(num): transitToArriveStation(num) }
+    
+    
+    //Get Alert title and message
+    func rideTimeAlertMessage(_ num: Int) -> String { return  "\("on ".localized)\(lineNameArray[num])" }
+    func transportationMessage(_ num: Int) -> String { return "\(transitFromDepartStation(num))\(transitArriveStation(num))" }
+    func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
+    func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 3])\("houmen".localized))"}
+    var routeTitle: String { return
+        (self == "back1") ? "Going home route 1".localized:
+        (self == "back2") ? "Going home route 2".localized:
+        (self == "go1") ? "Outgoing route 1".localized:
+        "Outgoing route 2".localized
+    }
+    var changeLineString: String {
+        switch(changeLineInt) {
             case 0: return TransitTime.zero.rawValue.localized
             case 1: return TransitTime.once.rawValue.localized
             case 2: return TransitTime.twice.rawValue.localized
-            default: return Unit.notset.rawValue.localized
+            default: return textNotSet
         }
+    }
+    var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
+
+    
+    //Timetable
+    func timetable(_ isWeekday: Bool, _ num: Int) -> [Int] { 
+        return  (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
+            .components(separatedBy: CharacterSet(charactersIn: " "))
+            .compactMap { Int($0) }
+            .map { $0 + hour * 100 }
+            .filter { $0 >= 0 && $0 < 2700 }
+            .sorted()
+        }
+    }
+    func timetableArray(_ isWeekday: Bool) -> [[Int]] {
+        return (0...2).map { num in timetable(isWeekday, num) }
+    }
+    //Get each departure and arrive time
+    func timeArray(_ isWeekday: Bool, _ currenttime: Int) -> [Int] {
+        //Depart time of line 1
+        var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transitTimeArray[1]) } ?? 2700]
+        //Arrive time of line 1
+        timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
+        //Depart time from depart point
+        timeArray.insert(timeArray[0].minusHHMM(transitTimeArray[1]).overTime(timeArray[0]), at: 0)
+        if (changeLineInt > 0) {
+            for i in 1...changeLineInt {
+                //Depart time of line i
+                timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transitTimeArray[i + 1]) } ?? 2700)
+                //Arrive time of line 1
+                timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
+            }
+        }
+        //Arrive time to destination
+        timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transitTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
+        return timeArray
+    }
+    //Add time to timetable
+    func addTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
+        return timetableTime(isWeekday, num, hour)
+            .addInputTime(inputText)
+            .timeSorting(charactersin: " ")
+            .joined(separator: " ")
+    }
+    //Delete time to timetable
+    func deleteTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
+        return timetableTime(isWeekday, num, hour)
+            .trimmingCharacters(in: .whitespaces)
+            .timeSorting(charactersin: " ")
+            .filter{$0 != inputText}
+            .joined(separator: " ")
     }
 }
 
+extension Bool {
+    
+    //self = isBack
+    var goOrBack1: String { return self ? "back1": "go1" }
+    var goOrBack2: String { return self ? "back2": "go2" }
+
+    //self = isWeekDay
+    var weekdayTag: String { return self ? "weekday": "weekend" }
+    var weekendTag: String { return self ? "weekend": "weekday" }
+    var weekdayLabel: String { return self ? "Weekday".localized: "Weekend".localized }
+    var weekendLabel: String { return self ? "Weekend".localized: "Weekday".localized }
+}

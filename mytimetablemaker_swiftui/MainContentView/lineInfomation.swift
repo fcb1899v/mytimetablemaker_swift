@@ -35,23 +35,10 @@ struct lineInfomation: View {
     }
 
     var body: some View {
-        
-        let rideTimeTitle = DialogTitle.ridetime.rawValue.localized
-        let rideTimeMessage = goorback.rideTimeAlertMessage(num)
-        let rideTimeKey = goorback.rideTimeKey(num)
-        let timetableTitle = DialogTitle.timetable.rawValue.localized
-        let lineNameTitle = DialogTitle.linename.rawValue.localized
-        let lineNameMessage = goorback.lineNameAlertMessage(num)
-        let lineNameKey = goorback.lineNameKey(num)
-        let lineColorTitle = DialogTitle.linecolor.rawValue.localized
-        let lineColorMessage = goorback.lineNameArray[num]
-        let lineColorKey = goorback.lineColorKey(num)
-        let numberPlaceHolder = Hint.to99min.rawValue.localized
-        let placeHolder = Hint.maxchar.rawValue.localized
-        
         HStack {
             Button (action: {
                 self.isShowingRideTimeAlert = true
+                inputText = ""
             }) {
                 lineTimeImage(color: color)
                     .sheet(isPresented: $isShowingTimetableAlert) {
@@ -59,77 +46,83 @@ struct lineInfomation: View {
                     }
             }
             //Setting ride time alert
-            .alert(rideTimeTitle, isPresented: $isShowingRideTimeAlert) {
+            .alert(rideTimeAlertTitle, isPresented: $isShowingRideTimeAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none) {
-                    let inputTextInt: Int = inputText.intText(min: 1, max: 99)
-                    if (inputTextInt > 0) { UserDefaults.standard.set(inputText, forKey: rideTimeKey) }
+                Button(textOk, role: .none) {
+                    if (inputText.intText(min: 1, max: 99) > 0) {
+                        UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
+                    }
                     isShowingRideTimeAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingRideTimeAlert = false
-                    inputText = ""
                 }
                 //Change Timetable button
-                Button(timetableTitle, role: .destructive) {
+                Button(timetableAlertTitle, role: .destructive) {
                     isShowingTimetableAlert = true
                     isShowingRideTimeAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(rideTimeMessage)
+                Text(goorback.rideTimeAlertMessage(num))
             }
-
             Button (action: {
                 isShowingLineNameAlert = true
+                inputText = ""
             }) {
                 Text(label)
                     .font(.system(size: routeLineFontSize))
                     .foregroundColor(color)
                     .lineLimit(1)
-                    .onChange(of: goorback.lineNameArray[num]) { newValue in label = newValue }
-                    .onChange(of: goorback.lineColorArray[num]) { newColor in color = newColor }
+                    .onChange(of: goorback.lineNameArray[num]) {
+                        newValue in label = newValue
+                    }
+                    .onChange(of: goorback.lineColorArray[num]) {
+                        newColor in color = newColor
+                    }
             }
             //Setting line name alert
-            .alert(lineNameTitle, isPresented: $isShowingLineNameAlert) {
+            .alert(lineNameAlertTitle, isPresented: $isShowingLineNameAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    if (inputText != "") { UserDefaults.standard.set(inputText, forKey: lineNameKey) }
+                Button(textOk, role: .none){
+                    if (inputText != "") {
+                        UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
+                    }
                     isShowingLineNameAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingLineNameAlert = false
-                    inputText = ""
                 }
                 //Setting line color button
-                Button(DialogTitle.linecolor.rawValue.localized, role: .destructive){
-                    if (inputText != "") { UserDefaults.standard.set(inputText, forKey: lineNameKey) }
+                Button(lineColorAlertTitle, role: .destructive){
+                    if (inputText != "") {
+                        UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
+                    }
                     isShowingLineColorAlert = true
                     isShowingLineNameAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(lineNameMessage)
+                Text(lineNameAlertMessage(num))
             }
             .padding(.leading, routeLineImageLeftPadding)
             .actionSheet(isPresented: $isShowingLineColorAlert) {
                 ActionSheet(
-                    title: Text(lineColorTitle),
-                    message: Text(lineColorMessage),
+                    title: Text(lineColorAlertTitle),
+                    message: Text(goorback.lineNameArray[num]),
                     buttons: CustomColor.allCases.map{$0.rawValue.localized}.indices.map { i in
                         .default(Text(CustomColor.allCases.map{$0.rawValue.localized}[i])) {
-                            UserDefaults.standard.set(CustomColor.allCases.map{$0.RGB}[i], forKey: lineColorKey)
+                            UserDefaults.standard.set(
+                                CustomColor.allCases.map{$0.RGB}[i],
+                                forKey: goorback.lineColorKey(num)
+                            )
                         }
                     } + [.cancel()]
                 )

@@ -11,9 +11,8 @@ struct VariousSettingsContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
     private let goorback: String
-    private let weekflag = Date().weekFlag
+    private let weekflag = Date().isWeekday
 
-    /// 値を指定して生成する
     init(
         _ goorback: String
     ){
@@ -21,44 +20,33 @@ struct VariousSettingsContentView: View {
     }
 
     var body: some View {
-        
         Form {
             Section(
-                header: Text("\n" + DialogTitle.stationname.rawValue.localized).fontWeight(.bold)
+                header: Text(stationAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(1..<2 * goorback.changeLineInt + 4, id: \.self) { num in
-                    settingsStations(goorback, num)
-                }
+                ForEach(1...2 * goorback.changeLineInt + 3, id: \.self) { num in settingsStations(goorback, num) }
                 settingsStations(goorback, 0)
             }
             Section(
-                header: Text(DialogTitle.linename.rawValue.localized).fontWeight(.bold)
+                header: Text(lineNameAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(0..<goorback.changeLineInt + 1, id: \.self) { num in
-                    settingsLineName(goorback, num)
-                }
+                ForEach(0...goorback.changeLineInt, id: \.self) { num in settingsLineName(goorback, num) }
             }
             Section(
-                header: Text(DialogTitle.ridetime.rawValue.localized).fontWeight(.bold)
+                header: Text(rideTimeAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(0..<goorback.changeLineInt + 1, id: \.self) { num in
-                    settingsRideTime(goorback, num)
-                }
+                ForEach(0...goorback.changeLineInt, id: \.self) { num in settingsRideTime(goorback, num) }
             }
             Section(
-                header: Text(DialogTitle.transport.rawValue.localized).fontWeight(.bold)
+                header: Text(transportationAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(1..<goorback.changeLineInt + 2, id: \.self) { num in
-                    settingsTransportation(goorback, num)
-                }
+                ForEach(1...goorback.changeLineInt + 1, id: \.self) { num in settingsTransportation(goorback, num) }
                 settingsTransportation(goorback, 0)
             }
             Section(
-                header: Text(DialogTitle.transittime.rawValue.localized).fontWeight(.bold)
+                header: Text(transitTimeAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(1..<goorback.changeLineInt + 2, id: \.self) { num in
-                    settingsTransitTime(goorback, num)
-                }
+                ForEach(1...goorback.changeLineInt + 1, id: \.self) { num in settingsTransitTime(goorback, num) }
                 settingsTransitTime(goorback, 0)
             }
         }.navigationBarHidden(true)

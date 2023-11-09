@@ -13,7 +13,6 @@ struct operationButton: View {
     private let label: String
     private let action: () -> Void
 
-    /// 値を指定して生成する
     init(
         isOn: Bool,
         label: String,
@@ -28,7 +27,7 @@ struct operationButton: View {
         Button(action: action) {
             Text(label)
                 .font(.system(size: operationButtonFontSize))
-                .fontWeight(.bold)
+                .fontWeight(.semibold)
                 .frame(width: operationButtonWidth, height: operationButtonHeight)
                 .foregroundColor(.white)
                 .background(isOn ? Color.accentColor: Color.grayColor)

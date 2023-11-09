@@ -30,67 +30,61 @@ struct settingsLineName: View {
     }
     
     var body: some View {
-        
-        let title = goorback.lineNameDefault(num)
-        let alertTitle = DialogTitle.linename.rawValue.localized
-        let alertMessage = goorback.lineNameAlertMessage(num)
-        let key = goorback.lineNameKey(num)
-        let nextTitle = DialogTitle.linecolor.rawValue.localized
-        let nextMessage = goorback.lineNameArray[num]
-        let nextKey = goorback.lineColorKey(num)
-        let placeHolder = Hint.maxchar.rawValue.localized
-        
         Button (action: {
             self.isShowingAlert = true
+            inputText = ""
         }) {
             HStack {
-                //Setting line name button
-                Text(title)
-                    .foregroundColor(.black)
-                    .padding(5)
+                Text(lineNameDefault(num)).foregroundColor(.black)
                 Spacer()
-                Text(label)
+                Text(label).foregroundColor(color)
                     .lineLimit(1)
-                    .foregroundColor(color)
-                    .padding(5)
-                    .onChange(of: goorback.lineNameSettingsArray[num]) { newValue in label = newValue }
-                    .onChange(of: goorback.lineColorSettingsArray[num] ) { newValue in color = newValue }
-            }.font(.subheadline)
+                    .onChange(of: goorback.lineNameSettingsArray[num]) {
+                        newValue in label = newValue
+                    }
+                    .onChange(of: goorback.lineColorSettingsArray[num] ) {
+                        newValue in color = newValue
+                    }
+            }
             //Setting line name alert
-            .alert(alertTitle, isPresented: $isShowingAlert) {
+            .alert(lineNameAlertTitle, isPresented: $isShowingAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
                 //OK button
-                Button(Action.ok.rawValue.localized, role: .none){
-                    if (inputText != "") { UserDefaults.standard.set(inputText, forKey: key) }
+                Button(textOk, role: .none){
+                    if (inputText != "") {
+                        UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
+                    }
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Cancel button
-                Button(Action.cancel.rawValue.localized, role: .cancel){
+                Button(textCancel, role: .cancel){
                     isShowingAlert = false
-                    inputText = ""
                 }
                 //Setting line color button
-                Button(DialogTitle.linecolor.rawValue.localized, role: .destructive){
-                    if (inputText != "") { UserDefaults.standard.set(inputText, forKey: key) }
+                Button(lineColorAlertTitle, role: .destructive){
+                    if (inputText != "") {
+                        UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
+                    }
                     isShowingNextAlert = true
                     isShowingAlert = false
-                    inputText = ""
                 }
             } message: {
-                Text(alertMessage)
+                Text(lineNameAlertMessage(num))
             }
         }
         //Setting line color action sheet
         .actionSheet(isPresented: $isShowingNextAlert) {
             ActionSheet(
-                title: Text(nextTitle),
-                message: Text(nextMessage),
+                title: Text(lineColorAlertTitle),
+                message: Text(goorback.lineNameArray[num]),
                 buttons: CustomColor.allCases.map{$0.rawValue.localized}.indices.map { i in
                     .default(Text(CustomColor.allCases.map{$0.rawValue.localized}[i])) {
-                        UserDefaults.standard.set(CustomColor.allCases.map{$0.RGB}[i], forKey: nextKey)
+                        UserDefaults.standard.set(
+                            CustomColor.allCases.map{$0.RGB}[i],
+                            forKey: goorback.lineColorKey(num)
+                        )
                     }
                 } + [.cancel()]
             )
