@@ -2,12 +2,14 @@
 //  TimetableContentView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/02.
+//  Created by Masao Nakajima on 2021/03/02.
 //
 
 import SwiftUI
 import GoogleMobileAds
 
+// MARK: - Timetable Content View
+// Main timetable editing screen with grid view and image picker
 struct TimetableContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
@@ -31,6 +33,7 @@ struct TimetableContentView: View {
             ZStack {
                 Color.primaryColor
                 VStack {
+                    // MARK: - Header Section
                     VStack {
                         HStack {
                             Spacer()
@@ -48,6 +51,7 @@ struct TimetableContentView: View {
                             .foregroundColor(.white)
                             .padding(.leading, 10)
                             Spacer()
+                            // MARK: - Weekday/Weekend Toggle Button
                             Button(action: {
                                 weekflag = !weekflag
                             }){
@@ -63,6 +67,8 @@ struct TimetableContentView: View {
                             }
                         }.frame(width: customWidth)
                     }
+                    
+                    // MARK: - Timetable Grid
                     ScrollView {
                         VStack(spacing: 30) {
                             VStack(spacing: 0) {
@@ -83,6 +89,8 @@ struct TimetableContentView: View {
                                 }
                                 Color.white.frame(width: customWidth, height: 0.5)
                             }
+                            
+                            // MARK: - Image Picker Button
                             Button(action: {
                                 self.isShowImagePicker = true
                             }, label: {
@@ -96,6 +104,8 @@ struct TimetableContentView: View {
                             }).sheet(isPresented: $isShowImagePicker, content: {
                                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
                             })
+                            
+                            // MARK: - Selected Image Display
                             Image(uiImage: self.image)
                                 .resizable()
                                 .scaledToFit()
@@ -111,6 +121,8 @@ struct TimetableContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct TimetableContentView_Previews: PreviewProvider {
     static var previews: some View {
         TimetableContentView("back1", 0)

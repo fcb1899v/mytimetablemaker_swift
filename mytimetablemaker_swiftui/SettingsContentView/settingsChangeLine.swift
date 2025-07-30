@@ -2,11 +2,13 @@
 //  settingsChangeLine.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/02/16.
+//  Created by Masao Nakajima on 2021/02/16.
 //
 
 import SwiftUI
 
+// MARK: - Settings Change Line View
+// Component for configuring the number of line changes for each route
 struct settingsChangeLine: View {
     
     @ObservedObject private var myTransit: MyTransit
@@ -37,7 +39,7 @@ struct settingsChangeLine: View {
                     }
             }
             .foregroundColor(.black)
-            //Setting change line action sheet
+            // MARK: - Change Line Action Sheet
             .actionSheet(isPresented: $isShowingAlert) {
                 ActionSheet(
                     title: Text(changeLineAlertTitle),
@@ -57,6 +59,8 @@ struct settingsChangeLine: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsChangeLine_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()

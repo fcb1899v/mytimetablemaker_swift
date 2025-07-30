@@ -2,11 +2,13 @@
 //  settingsTransportation.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/02.
+//  Created by Masao Nakajima on 2021/03/02.
 //
 
 import SwiftUI
 
+// MARK: - Settings Transportation View
+// Component for selecting transportation modes in route configuration
 struct settingsTransportation: View {
 
     @State private var isShowingAlert = false
@@ -43,7 +45,7 @@ struct settingsTransportation: View {
                         newValue in label = newValue
                     }
             }
-            //Setting transportation action sheet
+            // MARK: - Transportation Selection Action Sheet
             .actionSheet(isPresented: $isShowingAlert) {
                 ActionSheet(
                     title: Text(transportationAlertTitle),
@@ -62,6 +64,8 @@ struct settingsTransportation: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsTransportation_Previews: PreviewProvider {
     static var previews: some View {
         settingsTransportation("back1", 0)

@@ -2,13 +2,13 @@
 //  EnumSetting.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2020/12/27.
+//  Created by Masao Nakajima on 2020/12/27.
 //
 
 import SwiftUI
 
-
-//TransitTime
+// MARK: - Transit Time Enumeration
+// Defines the number of transfers for transit routes
 enum TransitTime: String, CaseIterable {
     case zero = "Zero";
     case once = "Once";
@@ -22,14 +22,16 @@ enum TransitTime: String, CaseIterable {
     }
 }
 
-//Transportation
+// MARK: - Transportation Enumeration
+// Defines available transportation modes for transit segments
 enum Transportation: String, CaseIterable {
     case walking = "Walking"
     case bicycle = "Bicycle"
     case car = "Car"
 }
 
-//CustomColor
+// MARK: - Custom Color Enumeration
+// Defines color options for line customization with RGB values
 enum CustomColor: String, CaseIterable {
     case accent = "DEFAULT"
     case red    = "RED"

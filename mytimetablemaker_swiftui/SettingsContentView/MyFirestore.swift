@@ -2,7 +2,7 @@
 //  FirestoreViewModel.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/03/16.
+//  Created by Masao Nakajima on 2021/03/16.
 //
 
 import Foundation
@@ -10,6 +10,8 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
 
+// MARK: - Firestore Data Manager
+// Handles data synchronization between UserDefaults and Firestore database
 class MyFirestore: ObservableObject {
   
     @Published var title = ""
@@ -19,6 +21,8 @@ class MyFirestore: ObservableObject {
     @Published var isFirestoreSuccess = false
     @Published var isLoading = false
 
+    // MARK: - Firestore Reference Helper
+    // Creates Firestore document reference for current user and route
     private func getRef(_ goorback: String) -> DocumentReference {
         let db = Firestore.firestore()
         let userid = Auth.auth().currentUser!.uid
@@ -26,7 +30,8 @@ class MyFirestore: ObservableObject {
         return userdb.collection("goorback").document(goorback)
     }
  
-    //UserDefaultsに保存されているデータを、Firestoreサーバーに保存
+    // MARK: - Data Upload
+    // Uploads all UserDefaults data to Firestore server
     func setFirestore() {
         isLoading = true
         isShowAlert = false
@@ -43,7 +48,8 @@ class MyFirestore: ObservableObject {
         }
     }
 
-    //Firestoreサーバーに、UserDefaultsに保存された時刻表データを保存
+    // MARK: - Timetable Upload
+    // Uploads timetable data for specific route, line, and day to Firestore
     private func setTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int){
         let nextref = getRef(goorback).collection("timetable").document("timetable\(num + 1)\(day.isWeekday.weekdayTag)")
         let batch = Firestore.firestore().batch()
@@ -75,15 +81,10 @@ class MyFirestore: ObservableObject {
             forDocument: nextref
         )
         batch.commit()
-//        { [self] error in
-//            if error != nil {
-//                title = "Save data error".localized
-//                message = "Data could not be saved".localized
-//            }
-//        }
     }
 
-    //Firestoreサーバーに、UserDefaultsに保存された路線データを保存
+    // MARK: - Line Information Upload
+    // Uploads line information (stations, colors, times) to Firestore
     private func setLineInfoFirestore(_ goorback: String){
         let batch = Firestore.firestore().batch()
         batch.setData(
@@ -137,7 +138,8 @@ class MyFirestore: ObservableObject {
     }
         
 
-    //Firestoreサーバーからデータを取得し、UserDefaultsに保存
+    // MARK: - Data Download
+    // Downloads all data from Firestore server to UserDefaults
     func getFirestore() {
         isLoading = true
         isShowAlert = false
@@ -156,7 +158,8 @@ class MyFirestore: ObservableObject {
         }
     }
     
-    //Firestoreサーバーから路線データを取得し、UserDefaultsに保存
+    // MARK: - Line Information Download
+    // Downloads line information from Firestore and saves to UserDefaults
     private func getLineInfoFirestore(_ goorback: String) {
         getRef(goorback).getDocument { [self] (document, error) in
             if let document = document, document.exists, let data = document.data() {
@@ -192,7 +195,8 @@ class MyFirestore: ObservableObject {
         }
     }
     
-    //Firestoreサーバーから時刻表データを取得し、UserDefaultsに保存
+    // MARK: - Timetable Download
+    // Downloads timetable data for specific route, line, day, and hour from Firestore
     private func getTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int, _ hour: Int) {
         let nextref = getRef(goorback).collection("timetable").document("timetable\(num + 1)\(day.isWeekday.weekdayTag)")
         nextref.getDocument { (document, error) in

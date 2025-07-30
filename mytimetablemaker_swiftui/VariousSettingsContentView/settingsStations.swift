@@ -2,11 +2,13 @@
 //  settingsStations.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/04/30.
+//  Created by Masao Nakajima on 2021/04/30.
 //
 
 import SwiftUI
 
+// MARK: - Settings Stations View
+// Component for editing station names in route configuration
 struct settingsStations: View {
     
     @State private var isShowingAlert = false
@@ -16,7 +18,8 @@ struct settingsStations: View {
     private let goorback: String
     private let num: Int
 
-    /// 値を指定して生成する
+    // MARK: - Initialization
+    // Initialize with route identifier and station number
     init(
         _ goorback: String,
         _ num: Int
@@ -40,19 +43,19 @@ struct settingsStations: View {
                         newValue in label = newValue
                     }
             }
-            //Setting station name alert
+            // MARK: - Station Name Edit Alert
             .alert(stationAlertTitleArray[num], isPresented: $isShowingAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.stationKeyArray[num])
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
@@ -63,6 +66,8 @@ struct settingsStations: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsStations_Previews: PreviewProvider {
     static var previews: some View {
         settingsStations("back1", 0)

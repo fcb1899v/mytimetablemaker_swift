@@ -2,11 +2,13 @@
 //  settingsTransitTime.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/02.
+//  Created by Masao Nakajima on 2021/03/02.
 //
 
 import SwiftUI
 
+// MARK: - Settings Transit Time View
+// Component for editing transit times between transportation segments
 struct settingsTransitTime: View {
     
     @State private var isShowingAlert = false
@@ -44,20 +46,20 @@ struct settingsTransitTime: View {
                         newValue in label = newValue
                     }
             }
-            //Setting transit time alert
+            // MARK: - Transit Time Edit Alert
             .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText.intText(min: 1, max: 99) > 0) {
                         UserDefaults.standard.set(inputText, forKey: goorback.transitTimeKey(num))
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
@@ -68,6 +70,8 @@ struct settingsTransitTime: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsTransitTime_Previews: PreviewProvider {
     static var previews: some View {
         settingsTransitTime("back1", 0)

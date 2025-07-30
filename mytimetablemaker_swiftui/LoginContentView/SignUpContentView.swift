@@ -2,13 +2,15 @@
 //  signUpView.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/03/12.
+//  Created by Masao Nakajima on 2021/03/12.
 //
 
 import SwiftUI
 import FirebaseAuth
 import GoogleMobileAds
 
+// MARK: - Sign Up Content View
+// User registration screen with form validation and terms agreement
 struct SignUpContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
@@ -23,14 +25,15 @@ struct SignUpContentView: View {
 
     var body: some View {
         VStack(spacing: loginMargin) {
-            //Title
+            // MARK: - Title
             Text("Create Account".localized)
                 .font(.system(size: loginTitleFontSize))
                 .fontWeight(.bold)
                 .foregroundColor(Color.primaryColor)
                 .padding(.top, loginTitleTopMargin)
                 .padding(.bottom, loginTitleBottomMargin)
-            //Email textfield
+            
+            // MARK: - Email Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
@@ -42,7 +45,8 @@ struct SignUpContentView: View {
                     .padding()
                     .onChange(of: myLogin.email) { _ in myLogin.signUpCheck() }
             }.frame(width: loginButtonWidth)
-            //Password textfield
+            
+            // MARK: - Password Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
@@ -54,7 +58,8 @@ struct SignUpContentView: View {
                     .padding()
                     .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
             }.frame(width: loginButtonWidth)
-            //Confirm password textfield
+            
+            // MARK: - Confirm Password Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
@@ -66,7 +71,8 @@ struct SignUpContentView: View {
                     .padding()
                     .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
             }.frame(width: loginButtonWidth).padding(.bottom, 6)
-            //Sign up button
+            
+            // MARK: - Sign Up Button
             Button(action: myLogin.signUp) {
                 ZStack {
                     Text("Signup".localized)
@@ -89,15 +95,16 @@ struct SignUpContentView: View {
             } message: {
                 Text(myLogin.alertMessage)
             }
-            //Terms checkbox
+            
+            // MARK: - Terms and Conditions Agreement
             HStack {
-                //Checkbox
+                // Checkbox for terms agreement
                 Button(action: myLogin.toggle) {
                     Image(systemName: myLogin.isTermsAgree ? "checkmark.square.fill": "square")
                         .foregroundColor(myLogin.isTermsAgree ? Color.primaryColor: .white)
                         .padding(10)
                 }
-                //Terms link
+                // Terms and privacy policy link
                 Button(action: {
                     if let termsURL = URL(string: termslink) {
                         UIApplication.shared.open(termsURL, options: [:], completionHandler: nil)
@@ -116,7 +123,7 @@ struct SignUpContentView: View {
 
             Spacer()
 
-            //Admob
+            // MARK: - Ad Banner
             AdMobBannerView()
         }
         .edgesIgnoringSafeArea(.all)
@@ -124,6 +131,8 @@ struct SignUpContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
         let myLogin = MyLogin()

@@ -2,11 +2,13 @@
 //  settingsRideTime.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/01.
+//  Created by Masao Nakajima on 2021/03/01.
 //
 
 import SwiftUI
 
+// MARK: - Settings Ride Time View
+// Component for editing ride times and accessing timetable configuration
 struct settingsRideTime: View {
     
     @State private var isShowingAlert = false
@@ -47,24 +49,24 @@ struct settingsRideTime: View {
                         newValue in label = newValue
                     }
             }
-            //Setting ride time alert
+            // MARK: - Ride Time Edit Alert
             .alert(rideTimeAlertTitle, isPresented: $isShowingAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText.intText(min: 1, max: 99) > 0) {
                         UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
-                //Change Timetable button
+                // Change Timetable button
                 Button(timetableAlertTitle, role: .destructive){
                     if (inputText.intText(min: 1, max: 99) > 0) {
                         UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
@@ -76,13 +78,15 @@ struct settingsRideTime: View {
                 Text(goorback.rideTimeAlertMessage(num))
             }
         }
-        //Setting timetable
+        // MARK: - Timetable Configuration Sheet
         .sheet(isPresented: $isShowingNextAlert) {
             TimetableContentView(goorback, num)
         }
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsRideTime_Previews: PreviewProvider {
     static var previews: some View {
         settingsRideTime("back1", 0)
