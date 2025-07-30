@@ -2,11 +2,13 @@
 //  imagePicker.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/08.
+//  Created by Masao Nakajima on 2021/03/08.
 //
 
 import SwiftUI
 
+// MARK: - Image Picker
+// SwiftUI wrapper for UIImagePickerController to select images from photo library
 struct ImagePicker: UIViewControllerRepresentable {
     // MARK: - Working with UIViewControllerRepresentable
     var sourceType: UIImagePickerController.SourceType = .photoLibrary
@@ -15,7 +17,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = false
         imagePicker.sourceType = sourceType
-        imagePicker.delegate = context.coordinator  // Coordinater to adopt UIImagePickerControllerDelegate Protcol.
+        imagePicker.delegate = context.coordinator  // Coordinator to adopt UIImagePickerControllerDelegate Protocol.
         return imagePicker
     }
 
@@ -31,6 +33,8 @@ struct ImagePicker: UIViewControllerRepresentable {
         Coordinator(self)
     }
 
+    // MARK: - Coordinator Class
+    // Handles UIImagePickerController delegate methods
     final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         var parent: ImagePicker
 

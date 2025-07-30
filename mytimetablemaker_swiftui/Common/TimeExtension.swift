@@ -2,58 +2,70 @@
 //  DateAndTime.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2020/12/27.
+//  Created by Masao Nakajima on 2020/12/27.
 //
 
 import SwiftUI
 
-//＜時刻の変換＞
+// MARK: - Time Conversion Extensions
+// Extensions for time format conversions and calculations
 extension Int {
     
-    var HHMMtoMM: Int { return self / 100 * 60 + self % 100 }   //Int型時刻HHMMをMMに変換する関数
-    var MMtoHHMM: Int { return self / 60 * 100 + self % 60 }    //Int型時刻MMをHHMMに変換する関数
-    var MMSStoSS: Int { return self / 100 * 60 + self % 100 }   //Int型時刻MMSSをSSに変換する関数
-    var SStoMMSS: Int { return self / 60 * 100 + self % 60 }    //Int型時刻SSをMMSSに変換する関数
-    var HHMMSStoSS: Int { return self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         //Int型時刻HHMMSSをSSに変換する関数
-    var SStoHHMMSS: Int { return self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           //Int型時刻SSをHHMMSSに変換する関数
-    var HHMMSStoMMSS: Int { return (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      //Int型時刻HHMMSSをMMSSに変換する関数
-    var MMSStoHHMMSS: Int { return (self / 100 / 60) * 10000 + (self / 100 % 60) * 100 + self % 100 }   //Int型時刻MMSSをHHMMSSに変換する関数
+    // MARK: - Time Format Conversions
+    // Convert between different time formats (HHMM, MM, HHMMSS, etc.)
+    var HHMMtoMM: Int { return self / 100 * 60 + self % 100 }   // Convert HHMM format to minutes
+    var MMtoHHMM: Int { return self / 60 * 100 + self % 60 }    // Convert minutes to HHMM format
+    var MMSStoSS: Int { return self / 100 * 60 + self % 100 }   // Convert MMSS format to seconds
+    var SStoMMSS: Int { return self / 60 * 100 + self % 60 }    // Convert seconds to MMSS format
+    var HHMMSStoSS: Int { return self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         // Convert HHMMSS format to seconds
+    var SStoHHMMSS: Int { return self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           // Convert seconds to HHMMSS format
+    var HHMMSStoMMSS: Int { return (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      // Convert HHMMSS format to MMSS format
+    var MMSStoHHMMSS: Int { return (self / 100 / 60) * 10000 + (self / 100 % 60) * 100 + self % 100 }   // Convert MMSS format to HHMMSS format
     
-    func plusHHMM(_ time: Int) -> Int { return (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }            //Int型時刻HHMMの足し算
-    func plusHHMMSS(_ time: Int) -> Int { return (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }    //Int型時刻HHMMSSの足し算
-    func plusMMSS(_ time: Int) -> Int { return (MMSStoSS + time.MMSStoSS).SStoMMSS }            //Int型時刻MMSSの足し算
+    // MARK: - Time Arithmetic Operations
+    // Addition operations for different time formats
+    func plusHHMM(_ time: Int) -> Int { return (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }            // Add HHMM format times
+    func plusHHMMSS(_ time: Int) -> Int { return (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }    // Add HHMMSS format times
+    func plusMMSS(_ time: Int) -> Int { return (MMSStoSS + time.MMSStoSS).SStoMMSS }            // Add MMSS format times
     
-    func minusHHMM(_ time: Int) -> Int { return (HHMMtoMM < time.HHMMtoMM) ?                    //Int型時刻HHMMの引き算をする関数
+    // MARK: - Time Subtraction Operations
+    // Subtraction operations for different time formats
+    func minusHHMM(_ time: Int) -> Int { return (HHMMtoMM < time.HHMMtoMM) ?                    // Subtract HHMM format times
         ((self + 2400).HHMMtoMM - time.HHMMtoMM).MMtoHHMM:
         (HHMMtoMM - time.HHMMtoMM).MMtoHHMM }
-    func minusHHMMSS(_ time: Int) -> Int { return (self.HHMMSStoSS < time.HHMMSStoSS) ?         //Int型時刻HHMMSSの引き算をする関数
+    func minusHHMMSS(_ time: Int) -> Int { return (self.HHMMSStoSS < time.HHMMSStoSS) ?         // Subtract HHMMSS format times
         ((self + 240000).HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS:
         (HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS }
-    func minusMMSS(_ time: Int) -> Int { return (self.MMSStoSS - time.MMSStoSS).SStoMMSS }      //Int型時刻HHMMの引き算をする関数
+    func minusMMSS(_ time: Int) -> Int { return (self.MMSStoSS - time.MMSStoSS).SStoMMSS }      // Subtract MMSS format times
     
-    var addZeroTime: String { return (0...9 ~= self) ? "0\(self)": "\(self)" }                              //1桁のときに0を追加
+    // MARK: - Time Display Formatting
+    // Format time for display purposes
+    var addZeroTime: String { return (0...9 ~= self) ? "0\(self)": "\(self)" }                              // Add leading zero for single digits
     func overTime(_ beforeTime: Int) -> Int { return (beforeTime == 2700) ? 2700: (self > 2700) ? 2700: self }
 
     var timeHH: String { return (self / 100 + (self % 100) / 60).addZeroTime }
     var timeMM: String { return (self % 100 % 60).addZeroTime }
-    var stringTime: String { return ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }   //Int型時刻HHMMから表示時刻に変換
+    var stringTime: String { return ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }   // Convert HHMM format to display time
 
     
-    //Countdown
+    // MARK: - Countdown Functions
+    // Countdown timer formatting and calculations
     var countdownMM: String { return (self / 100).addZeroTime }
     var countdownSS: String { return (self % 100).addZeroTime }
-    var countdown: String{ return (0...9999 ~= self) ? "\(countdownMM):\(countdownSS)": "--:--" }           //Int型時刻MMSSからカウントダウンに変換
+    var countdown: String{ return (0...9999 ~= self) ? "\(countdownMM):\(countdownSS)": "--:--" }           // Convert MMSS format to countdown display
     func countdownTime(_ departtime: Int) -> String {
         return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown
     }
 
-    //Weekday
+    // MARK: - Weekday Detection
+    // Determine if time represents weekday or weekend
     var isWeekend: Bool { return (self == 0 || self == 6) }
     var isWeekday: Bool { return !isWeekend }
 }
 
 
-//Date型の変換
+// MARK: - Date Extensions
+// Extensions for Date formatting and weekday detection
 extension Date {
 
     var setDate: String {
@@ -78,6 +90,8 @@ extension Date {
     }
 }
 
+// MARK: - String Time Extensions
+// Extensions for string-based time operations and parsing
 extension String {
     
     func intText(min: Int, max: Int) -> Int {
@@ -92,7 +106,8 @@ extension String {
         return formatter.date(from: self)!
     }
 
-    //表示されている時刻を取得する関数
+    // MARK: - Current Time Parsing
+    // Parse current time from string format
     var currentTime: Int {
         let timeHH = Int(self.components(separatedBy: ":")[0]) ?? 0
         let timemm = Int(self.components(separatedBy: ":")[1]) ?? 0
@@ -100,7 +115,8 @@ extension String {
         return timeHH * 10000 + timemm * 100 + timess
     }
     
-    //self is timeText
+    // MARK: - Time String Processing
+    // Process time strings for timetable operations
     var timeString: String { return (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
     func addInputTime(_ inputText: String) -> String { return (self != "") ? "\(self) \(inputText)": inputText}
     func timeSorting(charactersin: String) -> [String] {

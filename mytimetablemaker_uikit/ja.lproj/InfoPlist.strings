@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  mytimetablemaker
+
+  Created by Masao Nakajima on 2020/10/19.
+  Copyright © 2020 com.nakajimamasao. All rights reserved.
+*/
+
+CFBundleDisplayName = "マイ乗換メーカー";

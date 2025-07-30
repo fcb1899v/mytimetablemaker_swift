@@ -2,11 +2,13 @@
 //  NavigationBarModifier.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/03/04.
+//  Created by Masao Nakajima on 2021/03/04.
 //
 
 import SwiftUI
 
+// MARK: - Navigation Bar Modifier
+// Custom view modifier for styling navigation bar appearance
 struct NavigationBarModifier: ViewModifier {
 
     var backgroundColor: UIColor?
@@ -39,12 +41,16 @@ struct NavigationBarModifier: ViewModifier {
     }
 }
 
+// MARK: - View Extension
+// Convenience extension for applying navigation bar styling
 extension View {
     func navigationBarColor(backgroundColor: UIColor?, titleColor: UIColor?) -> some View {
         self.modifier(NavigationBarModifier(backgroundColor: backgroundColor, titleColor: titleColor))
     }
 }
 
+// MARK: - UIColor Extension
+// Extension to convert UIColor to SwiftUI Color
 extension UIColor {
     var color: Color {
         return Color(self)

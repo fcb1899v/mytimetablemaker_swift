@@ -2,11 +2,13 @@
 //  mainAlertPlusLabel.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/04.
+//  Created by Masao Nakajima on 2021/03/04.
 //
 
 import SwiftUI
 
+// MARK: - Line Information View
+// Displays line information with ride time, name, and color editing capabilities
 struct lineInfomation: View {
     
     @State private var isShowingRideTimeAlert = false
@@ -21,7 +23,8 @@ struct lineInfomation: View {
     private let weekflag: Bool
     private let num: Int
     
-    /// 値を指定して生成する
+    // MARK: - Initialization
+    // Initialize with route identifier, weekday flag, and line number
     init(
         _ goorback: String,
         _ weekflag: Bool,
@@ -36,6 +39,7 @@ struct lineInfomation: View {
 
     var body: some View {
         HStack {
+            // MARK: - Ride Time Button
             Button (action: {
                 self.isShowingRideTimeAlert = true
                 inputText = ""
@@ -45,24 +49,24 @@ struct lineInfomation: View {
                         TimetableContentView(goorback, num)
                     }
             }
-            //Setting ride time alert
+            // MARK: - Ride Time Edit Alert
             .alert(rideTimeAlertTitle, isPresented: $isShowingRideTimeAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none) {
                     if (inputText.intText(min: 1, max: 99) > 0) {
                         UserDefaults.standard.set(inputText, forKey: goorback.rideTimeKey(num))
                     }
                     isShowingRideTimeAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingRideTimeAlert = false
                 }
-                //Change Timetable button
+                // Change Timetable button
                 Button(timetableAlertTitle, role: .destructive) {
                     isShowingTimetableAlert = true
                     isShowingRideTimeAlert = false
@@ -70,6 +74,8 @@ struct lineInfomation: View {
             } message: {
                 Text(goorback.rideTimeAlertMessage(num))
             }
+            
+            // MARK: - Line Name Button
             Button (action: {
                 isShowingLineNameAlert = true
                 inputText = ""
@@ -85,23 +91,23 @@ struct lineInfomation: View {
                         newColor in color = newColor
                     }
             }
-            //Setting line name alert
+            // MARK: - Line Name Edit Alert
             .alert(lineNameAlertTitle, isPresented: $isShowingLineNameAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
                     }
                     isShowingLineNameAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingLineNameAlert = false
                 }
-                //Setting line color button
+                // Setting line color button
                 Button(lineColorAlertTitle, role: .destructive){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
@@ -113,6 +119,8 @@ struct lineInfomation: View {
                 Text(lineNameAlertMessage(num))
             }
             .padding(.leading, routeLineImageLeftPadding)
+            
+            // MARK: - Line Color Action Sheet
             .actionSheet(isPresented: $isShowingLineColorAlert) {
                 ActionSheet(
                     title: Text(lineColorAlertTitle),
@@ -132,6 +140,8 @@ struct lineInfomation: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct lineInfomation_Previews: PreviewProvider {
     static var previews: some View {
         lineInfomation("back1", true, 0)

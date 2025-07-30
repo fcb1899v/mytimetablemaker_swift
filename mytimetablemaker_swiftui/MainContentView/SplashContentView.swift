@@ -1,13 +1,15 @@
 //
 //  MainContentView.swift
 //  mytimetablemaker_swiftui
-//  Created by Nakajima Masao on 2020/12/25.
+//  Created by Masao Nakajima on 2020/12/25.
 //
 
 import SwiftUI
 import GoogleMobileAds
 import AppTrackingTransparency
 
+// MARK: - Splash Content View
+// Initial splash screen displayed when app launches
 struct SplashContentView: View {
 
     @ObservedObject private var myTransit: MyTransit
@@ -30,6 +32,7 @@ struct SplashContentView: View {
         
         NavigationView {
             ZStack {
+                // MARK: - Background and Content
                 Color.accentColor
                 VStack {
                     Spacer()
@@ -53,6 +56,8 @@ struct SplashContentView: View {
                         .scaledToFit()
                         .frame(width: screenWidth)
                 }
+                
+                // MARK: - Navigation to Main Content
                 NavigationLink(
                     destination: MainContentView(myTransit, myLogin, myFirestore),
                     isActive: $isFinishSplash
@@ -62,6 +67,7 @@ struct SplashContentView: View {
             }
             .frame(width: screenWidth, height: screenHeight)
             .onAppear {
+                // Auto-navigate to main content after 2 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation() {
                         isFinishSplash = true
@@ -72,6 +78,8 @@ struct SplashContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct SplashContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()
@@ -81,11 +89,13 @@ struct SplashContentView_Previews: PreviewProvider {
     }
 }
 
+// MARK: - App Tracking Transparency Helper
+// Requests app tracking transparency authorization
 private func requestAppTrackingTransparencyAuthorization() {
     guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
         ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
-            // リクエスト後の状態に応じた処理を行う
+            // Handle post-request state processing
         })
     }
 }

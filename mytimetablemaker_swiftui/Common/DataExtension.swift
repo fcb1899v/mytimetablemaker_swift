@@ -2,31 +2,35 @@
 //  LineData.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2020/12/27.
+//  Created by Masao Nakajima on 2020/12/27.
 //
 
 import SwiftUI
 import Foundation
 import Combine
 
-// 多言語対応
+// MARK: - Localization Extension
+// Multi-language support for string localization
 extension String {
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
     }
 }
 
-//self is goorback
+// MARK: - Route Data Extension
+// Extension for managing route-specific data and UserDefaults operations
 extension String{
     
-    //Get UserDefaults data
+    // MARK: - UserDefaults Data Access
+    // Helper methods for retrieving UserDefaults values with default fallbacks
     func userDefaultsValue(_ defaultValue: String) -> String? { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.string(forKey: self): defaultValue }
     func userDefaultsInt(_ defaultValue: Int) -> Int { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.integer(forKey: self): defaultValue }
     func userDefaultsBool(_ defaultValue: Bool) -> Bool { return (UserDefaults.standard.object(forKey: self) != nil) ? UserDefaults.standard.bool(forKey: self): defaultValue }
     func userDefaultsColor(_ defaultValue: String) -> Color { return Color(userDefaultsValue(defaultValue)!.colorInt) }
     
     
-    //Key for UserDefault
+    // MARK: - UserDefaults Key Generation
+    // Route-specific key generation for UserDefaults storage
     var isBack: Bool { return (self == "back1" || self == "back2") }
     var isRoute1: Bool { return (self == "back1" || self == "go1") }
     var isShowRoute2Key: String { return "\(self)route2flag" }
@@ -54,12 +58,14 @@ extension String{
     }
 
 
-    //Define default data
+    // MARK: - Default Data Definitions
+    // Default values for route configuration
     var departurePointDefault: String { return isBack ? textHome: textOffice }
     var destinationDefault: String { return isBack ? textOffice: textHome }
     
     
-    //Get date in UserDefaults for Main
+    // MARK: - Main View Data Access
+    // UserDefaults data retrieval for main view display
     var isShowRoute2: Bool { return isShowRoute2Key.userDefaultsBool(false) }
     var changeLineInt: Int { return changeLineKey.userDefaultsInt(0) }
     var departurePoint: String { return departurePointKey.userDefaultsValue(departurePointDefault)! }
@@ -76,7 +82,8 @@ extension String{
     func choiceCopyTime(_ isWeekday: Bool, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(isWeekday, num, hour)[i].userDefaultsValue("")! }
 
 
-    //Get date in UserDefaults for Settings
+    // MARK: - Settings View Data Access
+    // UserDefaults data retrieval for settings view display
     var settingsDeparturePoint: String { return departurePointKey.userDefaultsValue(textNotSet)! }
     var settingsDestination: String { return destinationKey.userDefaultsValue(textNotSet)! }
     func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(textNotSet)! }
@@ -90,7 +97,8 @@ extension String{
     func settingsTransitTime(_ num: Int) -> String { return (transitTime(num) == 0) ? textNotSet: "\(transitTime(num))\("[min]".localized)"}
     
     
-    //Get data array for Main
+    // MARK: - Main View Data Arrays
+    // Array generation for main view display
     var departStationArray: Array<String> { return (0..<3).map { i in departStation(i)} }
     var arriveStationArray: Array<String> { return (0..<3).map { i in arriveStation(i)} }
     var stationArray: Array<String> { return [destination, departurePoint] + (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
@@ -103,7 +111,8 @@ extension String{
     var transitTimeStringArray: Array<String> { return (0..<4).map { i in settingsTransitTime(i) } }
     
     
-    //Get data array for Settings
+    // MARK: - Settings View Data Arrays
+    // Array generation for settings view display
     var departStationSettingsArray: Array<String> { return (0..<3).map {i in settingsDepartStation(i)} }
     var arriveStationSettingsArray: Array<String> { return (0..<3).map {i in settingsArriveStation(i)} }
     var stationSettingsArray: Array<String> { return [settingsDestination, settingsDeparturePoint] + (0..<3).flatMap { i in [settingsDepartStation(i), settingsArriveStation(i)] } }
@@ -115,7 +124,8 @@ extension String{
     var transportationSettingsArray: Array<String> { return (0..<4).map { i in settingsTransportation(i) } }
     
     
-    //Get label
+    // MARK: - Label Generation
+    // Dynamic label generation for UI display
     var departurePointLabel: String { return isBack ? textDestination: textDepartPoint }
     var destinationLabel: String { return isBack ? textDepartPoint: textDestination }
     var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [departStationDefault(i), arriveStationDefault(i)] } }
@@ -127,7 +137,8 @@ extension String{
     func transportationLabel(_ num: Int) -> String { return (num == 1) ? transitFromDepartStation(num): transitToArriveStation(num) }
     
     
-    //Get Alert title and message
+    // MARK: - Alert Message Generation
+    // Dynamic alert title and message generation
     func rideTimeAlertMessage(_ num: Int) -> String { return  "\("on ".localized)\(lineNameArray[num])" }
     func transportationMessage(_ num: Int) -> String { return "\(transitFromDepartStation(num))\(transitArriveStation(num))" }
     func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
@@ -149,7 +160,8 @@ extension String{
     var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
     
-    //Timetable
+    // MARK: - Timetable Management
+    // Timetable data processing and manipulation
     func timetable(_ isWeekday: Bool, _ num: Int) -> [Int] { 
         return  (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
             .components(separatedBy: CharacterSet(charactersIn: " "))
@@ -162,34 +174,36 @@ extension String{
     func timetableArray(_ isWeekday: Bool) -> [[Int]] {
         return (0...2).map { num in timetable(isWeekday, num) }
     }
-    //Get each departure and arrive time
+    // MARK: - Time Array Generation
+    // Generate departure and arrival times for current route
     func timeArray(_ isWeekday: Bool, _ currenttime: Int) -> [Int] {
-        //Depart time of line 1
+        // Depart time of line 1
         var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transitTimeArray[1]) } ?? 2700]
-        //Arrive time of line 1
+        // Arrive time of line 1
         timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
-        //Depart time from depart point
+        // Depart time from depart point
         timeArray.insert(timeArray[0].minusHHMM(transitTimeArray[1]).overTime(timeArray[0]), at: 0)
         if (changeLineInt > 0) {
             for i in 1...changeLineInt {
-                //Depart time of line i
+                // Depart time of line i
                 timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transitTimeArray[i + 1]) } ?? 2700)
-                //Arrive time of line 1
+                // Arrive time of line 1
                 timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
             }
         }
-        //Arrive time to destination
+        // Arrive time to destination
         timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transitTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
         return timeArray
     }
-    //Add time to timetable
+    // MARK: - Timetable Modification
+    // Add time to timetable
     func addTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
         return timetableTime(isWeekday, num, hour)
             .addInputTime(inputText)
             .timeSorting(charactersin: " ")
             .joined(separator: " ")
     }
-    //Delete time to timetable
+    // Delete time from timetable
     func deleteTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
         return timetableTime(isWeekday, num, hour)
             .trimmingCharacters(in: .whitespaces)
@@ -199,13 +213,17 @@ extension String{
     }
 }
 
+// MARK: - Boolean Extensions
+// Extensions for boolean values to provide route and weekday information
 extension Bool {
     
-    //self = isBack
+    // MARK: - Route Direction Extensions
+    // self = isBack
     var goOrBack1: String { return self ? "back1": "go1" }
     var goOrBack2: String { return self ? "back2": "go2" }
 
-    //self = isWeekDay
+    // MARK: - Weekday Extensions
+    // self = isWeekDay
     var weekdayTag: String { return self ? "weekday": "weekend" }
     var weekendTag: String { return self ? "weekend": "weekday" }
     var weekdayLabel: String { return self ? "Weekday".localized: "Weekend".localized }

@@ -2,11 +2,13 @@
 //  SetFirestoreButton.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2023/10/09.
+//  Created by Masao Nakajima on 2023/10/09.
 //
 
 import SwiftUI
 
+// MARK: - Save Firestore Button
+// Button component for saving current data to Firestore database
 struct SetFirestoreButton: View {
     
     @Environment(\.presentationMode) var presentationMode
@@ -28,19 +30,21 @@ struct SetFirestoreButton: View {
         }) {
             Text("Save current data".localized).foregroundColor(.black)
         }
+        // MARK: - Save Confirmation Alert
         .alert("Save current data".localized, isPresented: $isShowAlert) {
-            //Ok button
+            // OK button
             Button(textOk, role: .destructive) {
                 myFirestore.setFirestore()
                 isShowAlert = false
             }
-            //Cancel button
+            // Cancel button
             Button(textCancel, role: .cancel){
                 isShowAlert = false
             }
         } message: {
             Text("Overwritten saved data?".localized)
         }
+        // MARK: - Save Result Alert
         .alert(myFirestore.title, isPresented: $myFirestore.isShowMessage) {
             Button(textOk, role: .none) {
                 myFirestore.isShowMessage = false
@@ -54,6 +58,8 @@ struct SetFirestoreButton: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct SetFirestoreButton_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()

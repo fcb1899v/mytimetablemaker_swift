@@ -2,11 +2,13 @@
 //  SettingsContentView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/02/11.
+//  Created by Masao Nakajima on 2021/02/11.
 //
 
 import SwiftUI
 
+// MARK: - Settings Content View
+// Main settings screen with route configuration, account management, and app information
 struct SettingsContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
@@ -30,30 +32,35 @@ struct SettingsContentView: View {
         NavigationView {
             ZStack {
                 Form {
+                    // MARK: - Route Display Settings
                     Section(
                         header: Text("Display route 2".localized).fontWeight(.bold)
                     ) {
-                        //Display or not going home route 2
+                        // Display or not going home route 2
                         Toggle(isOn: $myTransit.isShowBackRoute2){
                             Text("Going home route 2".localized)
                         }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
-                        //Display or not outgoing route 2
+                        // Display or not outgoing route 2
                         Toggle(isOn: $myTransit.isShowGoRoute2){
                             Text("Outgoing route 2".localized)
                         }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                     }
+                    
+                    // MARK: - Line Change Settings
                     Section(
                         header: Text("Change line".localized).fontWeight(.bold)
                     ) {
-                        //Setting change line of going home route 1
+                        // Setting change line of going home route 1
                         settingsChangeLine(myTransit, goorback: "back1")
-                        //Setting change line of going home route 2
+                        // Setting change line of going home route 2
                         if (myTransit.isShowBackRoute2) {settingsChangeLine(myTransit, goorback: "back2")}
-                        //Setting change line of outgoing route 1
+                        // Setting change line of outgoing route 1
                         settingsChangeLine(myTransit, goorback: "go1")
-                        //Setting change line of outgoing route 2
+                        // Setting change line of outgoing route 2
                         if (myTransit.isShowGoRoute2) {settingsChangeLine(myTransit, goorback: "go2")}
                     }
+                    
+                    // MARK: - Various Settings
                     Section(
                         header: Text("Various settings".localized).fontWeight(.bold)
                     ) {
@@ -74,6 +81,8 @@ struct SettingsContentView: View {
                             }
                         }
                     }
+                    
+                    // MARK: - Account Management
                     Section(
                         header: Text("Account".localized).fontWeight(.bold)
                     ) {
@@ -91,16 +100,18 @@ struct SettingsContentView: View {
                             }
                         }
                     }
+                    
+                    // MARK: - About Section
                     Section(
                         header: Text("About".localized).fontWeight(.bold)
                     ) {
-                        //Version
+                        // Version information
                         HStack {
                             Text("Version".localized)
                             Spacer()
                             Text(version).foregroundColor(Color.grayColor)
                         }
-                        //Privacy Policy
+                        // Privacy Policy link
                         Button(action: {
                             if let yourURL = URL(string: termslink) {
                                 UIApplication.shared.open(yourURL, options: [:], completionHandler: nil)
@@ -110,6 +121,8 @@ struct SettingsContentView: View {
                         }
                     }
                 }
+                
+                // MARK: - Loading Indicator
                 if myFirestore.isLoading {
                     Color.grayColor.opacity(0.8)
                         .edgesIgnoringSafeArea(.all)
@@ -128,7 +141,7 @@ struct SettingsContentView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){
-                //Back button
+                // Back button
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
@@ -142,6 +155,8 @@ struct SettingsContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct SettingsContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()

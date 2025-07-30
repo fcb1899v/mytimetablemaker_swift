@@ -2,11 +2,13 @@
 //  transitTimeAlertView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/02/25.
+//  Created by Masao Nakajima on 2021/02/25.
 //
 
 import SwiftUI
 
+// MARK: - Transit Information View
+// Displays transit time and transportation mode with editing capabilities
 struct transitInfomation: View {
     
     @State private var isShowingAlert = false
@@ -17,7 +19,8 @@ struct transitInfomation: View {
     private let goorback: String
     private let num: Int
     
-    /// 値を指定して生成する
+    // MARK: - Initialization
+    // Initialize with route identifier and transit segment number
     init(
         _ goorback: String,
         _ num: Int
@@ -29,32 +32,35 @@ struct transitInfomation: View {
 
     var body: some View {
         HStack {
+            // MARK: - Transit Time Button
             Button (action: {
                 self.isShowingAlert = true
                 inputText = ""
             }) {
                 lineTimeImage(color: Color.grayColor)
             }
-            //Setting transit time alert
+            // MARK: - Transit Time Edit Alert
             .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText.intText(min: 1, max: 99) > 0) {
                         UserDefaults.standard.set(inputText, forKey:goorback.transitTimeKey(num))
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
             } message: {
                 Text(goorback.transportationMessage(num))
             }
+            
+            // MARK: - Transportation Mode Button
             Button(action: {
                 self.isShowingPicker = true
             }) {
@@ -67,7 +73,7 @@ struct transitInfomation: View {
                     }
             }
             .padding(.leading, routeLineImageLeftPadding)
-            //Setting transportation action sheet
+            // MARK: - Transportation Mode Action Sheet
             .actionSheet(isPresented: $isShowingPicker) {
                 ActionSheet(
                     title: Text(transportationAlertTitle),
@@ -87,6 +93,8 @@ struct transitInfomation: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct transitInfomation_Previews: PreviewProvider {
     static var previews: some View {
         transitInfomation("back1", 0)

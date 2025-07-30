@@ -2,11 +2,13 @@
 //  TimetableBackButton.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/04/27.
+//  Created by Masao Nakajima on 2021/04/27.
 //
 
 import SwiftUI
 
+// MARK: - Timetable Back Button
+// Navigation button to return to main content view from timetable screen
 struct TimetableBackButton: View {
         
     @State var isBackMainView = false
@@ -30,6 +32,8 @@ struct TimetableBackButton: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct TimetableBackButton_Previews: PreviewProvider {
     static var previews: some View {
         TimetableBackButton()

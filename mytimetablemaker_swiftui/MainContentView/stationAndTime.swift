@@ -2,13 +2,15 @@
 //  stationAndTime.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/05/01.
+//  Created by Masao Nakajima on 2021/05/01.
 //
 
 import SwiftUI
 import Foundation
 import Combine
 
+// MARK: - Station and Time View
+// Displays station name and departure time with editing capability
 struct stationAndTime: View {
     
     private var cancellable: AnyCancellable?
@@ -21,7 +23,8 @@ struct stationAndTime: View {
     private let num: Int
     private let time: String
 
-    /// 値を指定して生成する
+    // MARK: - Initialization
+    // Initialize with route identifier, station number, and time
     init(
         _ goorback: String,
         _ num: Int,
@@ -35,6 +38,7 @@ struct stationAndTime: View {
 
     var body: some View {
         HStack {
+            // MARK: - Station Name Button
             Button (action: {
                 self.isShowingAlert = true
                 inputText = ""
@@ -46,19 +50,19 @@ struct stationAndTime: View {
                         newValue in label = newValue
                     }
             }
-            //Setting station name alert
+            // MARK: - Station Name Edit Alert
             .alert(stationAlertTitleArray[num], isPresented: $isShowingAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.stationKeyArray[num])
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
@@ -66,12 +70,15 @@ struct stationAndTime: View {
                 Text(stationAlertMessageArray[num])
             }
             Spacer()
+            // MARK: - Time Display
             Text(time)
                 .font(.custom("GenEiGothicN-Regular", size: routeTimeFontSize))
         }.foregroundColor(Color.primaryColor)
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct stationAndTime_Previews: PreviewProvider {
     static var previews: some View {
         stationAndTime("back1", 0, "0800")

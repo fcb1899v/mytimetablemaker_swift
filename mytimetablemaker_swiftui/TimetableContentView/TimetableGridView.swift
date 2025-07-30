@@ -2,11 +2,13 @@
 //  TimetableEachGridView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/02.
+//  Created by Masao Nakajima on 2021/03/02.
 //
 
 import SwiftUI
 
+// MARK: - Timetable Grid View
+// Individual grid cell for editing timetable times with add/delete/copy functionality
 struct TimetableGridView: View {
 
     @State private var isShowingAlert = false
@@ -38,10 +40,13 @@ struct TimetableGridView: View {
             LazyVGrid(columns: [GridItem(.flexible())], spacing: 2) {
                 HStack(spacing: 1) {
                     Color.white.frame(width: 0)
+                    // MARK: - Hour Display
                     ZStack {
                         Color.primaryColor.frame(width: 30)
                         Text(hour.addZeroTime).foregroundColor(Color.accentColor)
                     }
+                    
+                    // MARK: - Time Edit Button
                     Button (action: {
                         self.isShowingAlert = true
                         inputText = ""
@@ -55,13 +60,13 @@ struct TimetableGridView: View {
                                     newValue in label = newValue
                                 }
                         }
-                        //Setting time alert
+                        // MARK: - Time Edit Alert
                         .alert(addAndDeleteTimeTitle, isPresented: $isShowingAlert) {
                             TextField(minutePlaceHolder, text: $inputText)
                                 .multilineTextAlignment(.center)
                                 .keyboardType(.numberPad)
                                 .lineLimit(1)
-                            //Add button
+                            // Add button
                             Button(textAdd, role: .none){
                                 if (inputText.intText(min: 0, max: 59) > -1) {
                                     UserDefaults.standard.set(
@@ -71,12 +76,12 @@ struct TimetableGridView: View {
                                 }
                                 isShowingAlert = false
                             }
-                            //Copy button
+                            // Copy button
                             Button(choiceCopyTimeTitle, role: .none) {
                                 isShowingNextAlert = true
                                 isShowingAlert = false
                             }
-                            //Delete button
+                            // Delete button
                             Button(textDelete, role: .destructive) {
                                 if (inputText.intText(min: 0, max: 59) > -1) {
                                     UserDefaults.standard.set(
@@ -86,13 +91,15 @@ struct TimetableGridView: View {
                                 }
                                 isShowingAlert = false
                             }
-                            //Cancel button
+                            // Cancel button
                             Button(textCancel, role: .cancel){
                                 isShowingAlert = false
                             }
                         } message: {
                             Text(goorback.timetableAlertMessage(num, hour))
                         }
+                        
+                        // MARK: - Copy Time Action Sheet
                         .actionSheet(isPresented: $isShowingNextAlert) {
                             ActionSheet(
                                 title: Text(choiceCopyTimeTitle),
@@ -118,6 +125,8 @@ struct TimetableGridView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct TimetableGridView_Previews: PreviewProvider {
     static var previews: some View {
         TimetableGridView("back1", !Date().isWeekday, 0, 4)

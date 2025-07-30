@@ -1,0 +1,115 @@
+/* 
+  Localizable.strings
+  mytimetablemaker
+
+  Created by Masao Nakajima on 2020/10/04.
+  Copyright © 2020 com.nakajimamasao. All rights reserved.
+*/
+
+//Action
+"Register" = "Register";
+"Cancel" = "Cancel";
+"Add" = "Add";
+"Delete" = "Delete";
+"Copy" = "Copy";
+"OK" = "OK";
+"Yes" = "Yes";
+"No" = "No";
+
+//TransitTime
+"Zero" = "Zero";
+"Once" = "Once";
+"Twice" = "Twice";
+
+//Transportation
+"Walking" = "Walking";
+"Bicycle" = "Bicycle";
+"Car" = "Car";
+
+//CustomColor
+"DEFAULT" = "DEFAULT";
+"RED" = "RED";
+"ORANGE" = "ORANGE";
+"YELLOW" = "YELLOW";
+"YELLOW GREEN" = "YELLOW GREEN";
+"GREEN" = "GREEN";
+"BLUE GREEN" = "BLUE GREEN";
+"LIGHT BLUE" = "LIGHT BLUE";
+"BLUE" = "BLUE";
+"NAVY BLUE" = "NAVY BLUE";
+"PURPLE" = "PURPLE";
+"PINK" = "PINK";
+"DARK RED" = "DARK RED";
+"BROWN" = "BROWN";
+"GOLD" = "GOLD";
+"SILVER" = "SILVER";
+"BLACK" = "BLACK";
+
+//Unit
+"[min]" = " [min]";
+"Not set" = "Not set";
+"Not use" = "Not use";
+"E, MMM d, yyyy" = "E, MMM d, yyyy";
+"maxchar" = "20";
+
+//Hint
+"Maximum 20 Charactors" = "Maximum 20 Charactors";
+"Enter 0~99 [min]" = "Enter 0~99 [min]";
+"Enter 0~59 [min]" = "Enter 0~59 [min]";
+
+//DialogTitle
+"Setting your number of transfers" = "Setting your number of transfers";
+"Setting your departure place" = "Setting your departure place";
+"Setting your station name" = "Setting your station name";
+"Setting your destination" = "Setting your destination";
+"Setting your line name" = "Setting your line name";
+"Setting your line color" = "Setting your line color";
+"Setting your ride time [min]" = "Setting your ride time [min]";
+"Setting your transportation" = "Setting your transportation";
+"Setting your transit time [min]" = "Setting your transit time [min]";
+"Setting your timetable" = "Setting your timetable";
+"Add and delete your time [min]" = "Add and delete your time [min]";
+"Copying your time" = "Copying your time";
+"Copying all the time" = "Copying all the time?";
+
+
+//VariousSettingsTitle
+"Various settings on route home 1" = "Various settings on route home 1";
+"Various settings on outgoing route 1" = "Various settings on outgoing route 1";
+"Various settings on route home 2" = "Various settings on route home 2";
+"Various settings on outgoing route 2" = "Various settings on outgoing route 2";
+
+//その他
+"Office" = "Office";
+"Home" = "Home";
+"Dep. St." = "Dep. St.";
+"Arr. St." = "Arr. St.";
+"Line " = "Line ";
+"line " = "line ";
+"Departure place" = "Departure place";
+"departure place" = "departure place";
+"Destination" = "Destination";
+"destination" = "destination";
+"Departure station" = "Departure station";
+"departure station" = "departure station";
+"arrival station" = "arrival station";
+"Arrival station" = "Arrival station";
+"of departure station " = "of departure station ";
+"of arrival station " = "of arrival station ";
+"Other route of line 1" = "Other route of line 1";
+"Other route of line 2" = "Other route of line 2";
+"Other route of line 3" = "Other route of line 3";
+"Weekday" = "Weekday";
+"Weekend" = "Weekend";
+"of " = "of ";
+"from " = "from ";
+"From " = "From ";
+"kara" = "";
+" to " = " to ";
+"To " = "To ";
+"he" = "";
+"on " = "on ";
+" for " = " for ";
+"houmen" = "";
+"Hour" = ":00-";
+"terms" = "Terms and privacy policy";

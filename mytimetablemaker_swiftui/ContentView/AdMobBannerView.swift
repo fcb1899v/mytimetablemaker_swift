@@ -2,18 +2,21 @@
 //  AdMobBannerView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2023/10/01.
+//  Created by Masao Nakajima on 2023/10/01.
 //
 
 import Foundation
 import SwiftUI
 import GoogleMobileAds
 
-// Delegate methods for receiving width update messages.
+// MARK: - Banner Width Delegate Protocol
+// Delegate methods for receiving width update messages from banner view controller
 protocol BannerViewControllerWidthDelegate: AnyObject {
   func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat)
 }
 
+// MARK: - Banner View Controller
+// Manages banner view lifecycle and width updates for adaptive banner ads
 class BannerViewController: UIViewController {
     
   weak var delegate: BannerViewControllerWidthDelegate?
@@ -38,12 +41,13 @@ class BannerViewController: UIViewController {
   }
 }
 
-
+// MARK: - SwiftUI AdMob Banner View
+// SwiftUI wrapper for Google Mobile Ads adaptive banner view
 struct AdMobBannerView: UIViewControllerRepresentable {
 
     @State private var viewWidth: CGFloat = .zero
     private let bannerView = GADBannerView()
-    private let adUnitID = "ca-app-pub-1585283309075901/1821605177"
+    private let adUnitID = "ca-app-pub-3940256099942544/2435281174" // Test ad unit ID
     
     func makeUIViewController(context: Context) -> some UIViewController {
         let bannerViewController = BannerViewController()

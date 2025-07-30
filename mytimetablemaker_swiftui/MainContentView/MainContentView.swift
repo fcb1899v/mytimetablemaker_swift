@@ -1,13 +1,15 @@
 //
 //  MainContentView.swift
 //  mytimetablemaker_swiftui
-//  Created by Nakajima Masao on 2020/12/25.
+//  Created by Masao Nakajima on 2020/12/25.
 //
 
 import SwiftUI
 import GoogleMobileAds
 import AppTrackingTransparency
 
+// MARK: - Main Content View
+// Primary view displaying transit information, timetables, and navigation controls
 struct MainContentView: View {
 
     @ObservedObject private var myTransit: MyTransit
@@ -27,6 +29,8 @@ struct MainContentView: View {
         self.myFirestore = myFirestore
     }
 
+    // MARK: - App Tracking Transparency
+    // Handles app tracking transparency authorization requests
     private func applicationDidBecomeActive(_ application: UIApplication) {
         requestAppTrackingTransparencyAuthorization()
     }
@@ -45,15 +49,15 @@ struct MainContentView: View {
     
     var body: some View {
         NavigationView {
-            //MainView
+            // MARK: - Main View Layout
             VStack {
-                //Header
+                // MARK: - Header Section
                 VStack(spacing: headerSpace) {
                     HStack{
                         Spacer()
                         HStack {
                             Spacer()
-                            //Date
+                            // MARK: - Date Display
                             ZStack {
                                 Text(myTransit.dateLabel)
                                     .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
@@ -70,7 +74,7 @@ struct MainContentView: View {
                                 }
                             }
                             Spacer()
-                            //Time
+                            // MARK: - Time Display
                             if (myTransit.isTimeStop) {
                                 ZStack {
                                     Text(myTransit.timeLabel)
@@ -98,18 +102,19 @@ struct MainContentView: View {
                     .font(.system(size: headerDateFontSize))
                     .foregroundColor(Color.white)
                     .padding(.top, headerTopMargin)
-                    //Operation buttoms
+                    
+                    // MARK: - Operation Buttons
                     HStack {
                         HStack(spacing: operationButtonMargin) {
-                            //Display going home route button
+                            // Display going home route button
                             operationButton(isOn: myTransit.isBack, label: textBack, action: myTransit.backButton)
-                            //Display outgoing route button
+                            // Display outgoing route button
                             operationButton(isOn: !myTransit.isBack, label: textGo, action: myTransit.goButton)
-                            //Time Start Button
+                            // Time Start Button
                             operationButton(isOn: !myTransit.isTimeStop, label: textStart, action: myTransit.startButton)
-                            //Time Stop Button
+                            // Time Stop Button
                             operationButton(isOn: myTransit.isTimeStop, label: textStop, action: myTransit.stopButton)
-                            //To Settings Button
+                            // To Settings Button
                             Button(action: {
                                 isMoveSettings = true
                             }) {
@@ -131,7 +136,8 @@ struct MainContentView: View {
                 }
                 .background(Color.primaryColor)
                 .frame(height: headerHeight)
-                //My Transit
+                
+                // MARK: - Transit Information Display
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
                         if(screenWidth > 600) { Spacer() }
@@ -154,6 +160,8 @@ struct MainContentView: View {
                         }
                         .frame(width: myTransit.routeWidth, alignment: .top)
                         .padding(.horizontal, routeSidePadding)
+                        
+                        // MARK: - Second Route Display (if enabled)
                         if (myTransit.isShowRoute2) {
                             if(screenWidth > 600) { Spacer() }
                             Divider()
@@ -185,7 +193,8 @@ struct MainContentView: View {
                     Rectangle()
                         .foregroundColor(Color.primary)
                         .frame(width: screenWidth, height: 1.5)
-                    //Admob
+                    
+                    // MARK: - Ad Banner
                     AdMobBannerView()
                         .frame(minWidth: admobBannerMinWidth)
                         .frame(width: admobBannerWidth, height: admobBannerHeight)
@@ -200,6 +209,8 @@ struct MainContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct MainContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myTransit = MyTransit()

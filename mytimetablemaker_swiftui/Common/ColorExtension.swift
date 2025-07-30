@@ -2,22 +2,26 @@
 //  Color.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/05/02.
+//  Created by Masao Nakajima on 2021/05/02.
 //
 
 import Foundation
 import SwiftUI
 
-
-//色をRGCの16進数数字で指定
+// MARK: - Color Extensions
+// Extensions for color management and hex color support
 extension Color {
     
+    // MARK: - Custom Color Definitions
+    // Predefined custom colors for the application
     static let accentColor = Color("myaccent")
     static let primaryColor = Color("myprimary")
     static let grayColor = Color("mygray")
     static let redColor = Color("myred")
     static let yellowColor = Color("myyellow")
     
+    // MARK: - Hex Color Initializer
+    // Initialize color from hex integer value
     init(
         _ hex: Int,
         opacity: Double = 1.0
@@ -28,6 +32,8 @@ extension Color {
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
     }
 
+    // MARK: - Hex String Conversion
+    // Convert color to hex string representation
     func hex(withHash hash: Bool = false, uppercase up: Bool = false) -> String {
         if let components = self.cgColor?.components {
             let r = ("0" + String(Int(components[0] * 255.0), radix: 16, uppercase: up)).suffix(2)
@@ -39,10 +45,14 @@ extension Color {
     }    
 }
 
+// MARK: - UIColor Extensions
+// UIKit color extensions for header styling
 extension UIColor {
         static let headerColor = UIColor(red: 49/255, green: 4/255, blue: 172/255, alpha: 1)
 }
 
+// MARK: - Color String Constants
+// Hex string constants for color definitions
 let primaryColorString = "#3700B3"
 let accentColorString  = "#03DAC5"
 let redColorString     = "#FF0000"
@@ -51,27 +61,36 @@ let grayColorString    = "#AAAAAA"
 let blackColorString   = "#000000"
 let whiteColorString   = "#FFFFFF"
 
+// MARK: - String Color Extensions
+// Extensions for string-based color operations
 extension String {
         
-    //String型ColorをInt型に変換
+    // MARK: - Hex String to Int Conversion
+    // Convert hex color string to integer value
     var colorInt: Int {
         return Int(self.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 000000
     }
     
-    //Not set color
+    // MARK: - Settings Color Logic
+    // Determine color for settings display based on text value
     var settingsColor: Color {
         return (self == textNotSet) ? Color.grayColor: Color.black
     }
     
 }
 
+// MARK: - Integer Color Extensions
+// Extensions for countdown color calculations
 extension Int {
     
-    //self is countdown
+    // MARK: - Countdown Color Calculation
+    // Calculate color based on countdown time relative to departure time
     func countdownColor(_ departtime:Int) -> Color {
         return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdownColor
     }
 
+    // MARK: - Countdown Color Logic
+    // Determine color based on countdown time ranges
     var countdownColor: Color { return (self % 2 == 1) ? Color.grayColor:
         (1000...9999 ~= self) ? Color.accentColor:
         (500...999 ~= self) ? Color.yellowColor:
@@ -80,9 +99,12 @@ extension Int {
     }
 }
 
+// MARK: - Boolean Color Extensions
+// Extensions for weekday-based color logic
 extension Bool {
     
-    //self is isWeekday
+    // MARK: - Weekday Color Logic
+    // self is isWeekday
     var weekLabelColor: Color { return self ? Color.white: Color.redColor }
     var weekButtonColor: Color { return self ? Color.redColor: Color.white }
     var weekButtonLabelColor: Color { return self ? Color.white: Color.primaryColor }

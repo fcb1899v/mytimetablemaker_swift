@@ -2,11 +2,13 @@
 //  stateButton.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/02/06.
+//  Created by Masao Nakajima on 2021/02/06.
 //
 
 import SwiftUI
 
+// MARK: - Operation Button
+// Custom button component for header operation controls
 struct operationButton: View {
     
     private let isOn: Bool
@@ -36,6 +38,8 @@ struct operationButton: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct stateButton_Previews: PreviewProvider {
     static var previews: some View {
         operationButton(

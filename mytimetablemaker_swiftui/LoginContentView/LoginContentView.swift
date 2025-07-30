@@ -2,12 +2,14 @@
 //  LoginContentView.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/03/09.
+//  Created by Masao Nakajima on 2021/03/09.
 //
 import Foundation
 import SwiftUI
 import FirebaseAuth
 
+// MARK: - Login Content View
+// Main login screen with authentication form and navigation
 struct LoginContentView: View {
 
     @Environment(\.presentationMode) var presentationMode
@@ -31,6 +33,7 @@ struct LoginContentView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
+            // MARK: - Background and Ad Banner
             VStack {
                 Spacer()
                 Image("splash")
@@ -38,21 +41,24 @@ struct LoginContentView: View {
                     .aspectRatio(contentMode: .fit)
                     .padding(0)
                     .frame(width: screenWidth)
-                //Admob
+                // AdMob banner at bottom
                 AdMobBannerView()
                     .frame(minWidth: admobBannerMinWidth)
                     .frame(width: admobBannerWidth, height: admobBannerHeight)
                     .background(.white)
             }.background(Color.accentColor)
+            
+            // MARK: - Login Form
             VStack(spacing: loginMargin) {
-                //Title
+                // Title
                 Text("Login".localized)
                     .font(.system(size: loginTitleFontSize))
                     .fontWeight(.bold)
                     .foregroundColor(Color.primaryColor)
                     .padding(.top, loginTitleTopMargin)
                     .padding(.bottom, loginTitleBottomMargin)
-                //Email textfield
+                
+                // Email text field
                 ZStack {
                     Rectangle()
                         .foregroundColor(Color.white)
@@ -64,7 +70,8 @@ struct LoginContentView: View {
                         .padding()
                         .onChange(of: myLogin.email) { _ in myLogin.loginCheck() }
                 }.frame(width: loginButtonWidth)
-                //Password textfield
+                
+                // Password text field
                 ZStack {
                     Rectangle()
                         .foregroundColor(Color.white)
@@ -76,7 +83,8 @@ struct LoginContentView: View {
                         .padding()
                         .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
                 }.frame(width: loginButtonWidth).padding(.bottom, 6)
-                //Login Button
+                
+                // MARK: - Login Button
                 Button(action: myLogin.login) {
                     ZStack {
                         Text("Login".localized)
@@ -97,7 +105,8 @@ struct LoginContentView: View {
                 } message: {
                     Text(myLogin.alertMessage)
                 }
-                //Show sign up
+                
+                // MARK: - Sign Up Button
                 Button(action: { isShowSignUp = true }) {
                     Text("Signup".localized)
                         .font(.headline)
@@ -109,30 +118,31 @@ struct LoginContentView: View {
                 }.sheet(isPresented: $isShowSignUp) {
                     SignUpContentView(myLogin)
                 }
-                //Password reset button
+                
+                // MARK: - Password Reset Button
                 Button(action: { isShowReset = true }) {
                     Text("Forgot Password?".localized)
                         .underline(color: .white)
                         .font(.headline)
                         .foregroundColor(.white)
                 }
-                //Password Reset alert
+                // Password Reset alert
                 .alert("Password Reset".localized, isPresented: $isShowReset) {
                     TextField("Email".localized, text: $myLogin.resetEmail)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
-                    //OK button
+                    // OK button
                     Button(textOk, role: .none){
                         myLogin.reset()
                     }
-                    //Cancel button
+                    // Cancel button
                     Button(textCancel, role: .cancel){
                         isShowReset = false
                     }
                 } message: {
                     Text("Reset your password?".localized)
                 }
-                //Message alert
+                // Message alert
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                     Button(textOk, role: .none){
                         myLogin.isShowMessage = false
@@ -143,6 +153,8 @@ struct LoginContentView: View {
                 Spacer()
                 Spacer()
             }
+            
+            // MARK: - Loading Indicator
             if myLogin.isLoading {
                 ZStack {
                     Color.grayColor.opacity(0.3)
@@ -160,6 +172,8 @@ struct LoginContentView: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct LoginContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myLogin = MyLogin()

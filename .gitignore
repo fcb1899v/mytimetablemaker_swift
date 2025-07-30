@@ -41,6 +41,12 @@ iOSInjectionProject/
 GoogleService-Info.plist
 GoogleService-Info-*.plist
 
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
 # User-specific files
 *.xcuserdatad/
 xcuserdata/

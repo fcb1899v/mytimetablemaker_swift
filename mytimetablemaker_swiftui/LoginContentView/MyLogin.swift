@@ -2,14 +2,15 @@
 //  LoginViewModel.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by 中島正雄 on 2021/03/15.
+//  Created by Masao Nakajima on 2021/03/15.
 //
 
 import Foundation
 import SwiftUI
 import FirebaseAuth
 
-/// ログイン画面のViewModel
+// MARK: - Authentication View Model
+// Handles user authentication, registration, and account management
 class MyLogin : ObservableObject {
 
     @Environment(\.presentationMode) var presentationMode
@@ -28,18 +29,24 @@ class MyLogin : ObservableObject {
     @Published var isLoginSuccess = "Login".userDefaultsBool(false)
     @Published var isSignUpSuccess = false
 
+    // MARK: - Email Validation
+    // Validates email format using regex pattern
     func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
         let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegex)
         return emailTest.evaluate(with: email)
      }
     
+    // MARK: - Password Validation
+    // Validates password strength (minimum 8 characters with special characters)
     func isValidPassword(_ password: String) -> Bool {
         let passwordRegex = "^(?=.*[A-Za-z0-9])(?=.*[!@#$&~]).{8,}$"
         let passwordTest = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
         return passwordTest.evaluate(with: password)
     }
     
+    // MARK: - Logout Function
+    // Signs out current user and updates login state
     func logOut() {
         isShowAlert = false
         isShowMessage = false
@@ -66,6 +73,8 @@ class MyLogin : ObservableObject {
         }
     }
     
+    // MARK: - Login Validation
+    // Validates login form inputs before authentication
     func loginCheck() {
         alertTitle = ""
         alertMessage = ""
@@ -87,6 +96,8 @@ class MyLogin : ObservableObject {
         }
     }
     
+    // MARK: - Login Authentication
+    // Authenticates user with Firebase Auth
     func login() {
         isShowMessage = false
         if isValidLogin {
@@ -128,6 +139,8 @@ class MyLogin : ObservableObject {
         }
     }
 
+    // MARK: - Sign Up Validation
+    // Validates sign up form inputs including terms agreement
     func signUpCheck() {
         alertTitle = ""
         alertMessage = ""
@@ -158,6 +171,8 @@ class MyLogin : ObservableObject {
         }
     }
 
+    // MARK: - Sign Up Authentication
+    // Creates new user account with Firebase Auth and sends verification email
     func signUp() {
         isShowAlert = false
         if isValidSignUp {
@@ -194,6 +209,8 @@ class MyLogin : ObservableObject {
         }
     }
     
+    // MARK: - Password Reset
+    // Sends password reset email to user's email address
     func reset() {
         isShowAlert = false
         if (isValidEmail(resetEmail)) {
@@ -227,12 +244,16 @@ class MyLogin : ObservableObject {
         }
     }
 
+    // MARK: - Terms Agreement Toggle
+    // Toggles terms agreement state with haptic feedback
     func toggle() {
         isTermsAgree = !isTermsAgree
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         signUpCheck()
     }
     
+    // MARK: - Account Deletion
+    // Deletes current user account from Firebase Auth
     func delete() {
         isShowAlert = false
         isShowMessage = false

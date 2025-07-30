@@ -2,11 +2,13 @@
 //  settingsLineName.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2021/03/01.
+//  Created by Masao Nakajima on 2021/03/01.
 //
 
 import SwiftUI
 
+// MARK: - Settings Line Name View
+// Component for editing line names and colors in route configuration
 struct settingsLineName: View {
     
     @State private var isShowingAlert = false
@@ -18,7 +20,8 @@ struct settingsLineName: View {
     private let goorback: String
     private let num: Int
 
-    /// 値を指定して生成する
+    // MARK: - Initialization
+    // Initialize with route identifier and line number
     init(
         _ goorback: String,
         _ num: Int
@@ -46,23 +49,23 @@ struct settingsLineName: View {
                         newValue in color = newValue
                     }
             }
-            //Setting line name alert
+            // MARK: - Line Name Edit Alert
             .alert(lineNameAlertTitle, isPresented: $isShowingAlert) {
                 TextField(placeHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .lineLimit(1)
-                //OK button
+                // OK button
                 Button(textOk, role: .none){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
                     }
                     isShowingAlert = false
                 }
-                //Cancel button
+                // Cancel button
                 Button(textCancel, role: .cancel){
                     isShowingAlert = false
                 }
-                //Setting line color button
+                // Setting line color button
                 Button(lineColorAlertTitle, role: .destructive){
                     if (inputText != "") {
                         UserDefaults.standard.set(inputText, forKey: goorback.lineNameKey(num))
@@ -74,7 +77,7 @@ struct settingsLineName: View {
                 Text(lineNameAlertMessage(num))
             }
         }
-        //Setting line color action sheet
+        // MARK: - Line Color Action Sheet
         .actionSheet(isPresented: $isShowingNextAlert) {
             ActionSheet(
                 title: Text(lineColorAlertTitle),
@@ -92,6 +95,8 @@ struct settingsLineName: View {
     }
 }
 
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
 struct settingsLineName_Previews: PreviewProvider {
     static var previews: some View {
         settingsLineName("back1", 0)
