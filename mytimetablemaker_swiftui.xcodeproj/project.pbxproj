@@ -36,9 +36,7 @@
 		027F24162ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
 		027F24172ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
 		027F24182ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
-		027F24192ACB686300852C89 /* readme_説明書.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24062ACB686300852C89 /* readme_説明書.txt */; };
-		027F241A2ACB686300852C89 /* readme_説明書.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24062ACB686300852C89 /* readme_説明書.txt */; };
-		027F241B2ACB686300852C89 /* readme_説明書.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24062ACB686300852C89 /* readme_説明書.txt */; };
+
 		027F241C2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
 		027F241D2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
 		027F241E2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
@@ -128,7 +126,7 @@
 		027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Regular.otf"; sourceTree = "<group>"; };
 		027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-SemiBold.otf"; sourceTree = "<group>"; };
 		027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Bold.otf"; sourceTree = "<group>"; };
-		027F24062ACB686300852C89 /* readme_説明書.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "readme_説明書.txt"; sourceTree = "<group>"; };
+
 		027F24072ACB686300852C89 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Ligh.otf"; sourceTree = "<group>"; };
 		027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-ExtraLigh.otf"; sourceTree = "<group>"; };
@@ -230,7 +228,7 @@
 				027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */,
 				027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */,
 				027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */,
-				027F24062ACB686300852C89 /* readme_説明書.txt */,
+
 				027F24072ACB686300852C89 /* LICENSE.txt */,
 				027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */,
 				027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */,
@@ -507,7 +505,7 @@
 				027F241F2ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
 				027F24162ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24102ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
-				027F24192ACB686300852C89 /* readme_説明書.txt in Resources */,
+
 				02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */,
 				027F24222ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */,
 				027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */,
@@ -524,7 +522,7 @@
 			files = (
 				027F24142ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
 				027F24202ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
-				027F241A2ACB686300852C89 /* readme_説明書.txt in Resources */,
+
 				027F240E2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
 				027F24172ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24112ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
@@ -540,7 +538,7 @@
 			files = (
 				027F24152ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
 				027F24212ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
-				027F241B2ACB686300852C89 /* readme_説明書.txt in Resources */,
+
 				027F240F2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
 				027F24182ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24122ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
