@@ -9,7 +9,6 @@ import SwiftUI
 import FirebaseAuth
 import AppTrackingTransparency
 import AdSupport
-import GoogleMobileAds
 
 // MARK: - Main Content View
 // Main view that manages app navigation and core functionality
@@ -39,12 +38,11 @@ struct ContentView: View {
     }
     
     // MARK: - Tracking Authorization
-    // Request app tracking transparency permission and initialize mobile ads
+    // Request app tracking transparency permission
     private func toTracking(){
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
-                // Initialize Google Mobile Ads after tracking permission is granted
-                GADMobileAds.sharedInstance().start(completionHandler: nil)
+                print("🔍 AdMob Debug: App tracking transparency status: \(status.rawValue)")
             })
         }
     }

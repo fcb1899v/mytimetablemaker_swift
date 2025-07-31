@@ -1,0 +1,9 @@
+// Debug Configuration
+// This file contains debug-specific build settings
+
+// AdMob Configuration
+ADMOB_BANNER_UNIT_ID = ca-app-pub-3940256099942544/6300978111
+
+// Other configuration variables can be added here
+// ROLLBAR_KEY = debug-rollbar-key
+// REVENUECAT_KEY = debug-revenuecat-key 

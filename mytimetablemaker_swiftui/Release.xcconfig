@@ -1,0 +1,9 @@
+// Release Configuration
+// This file contains release-specific build settings
+
+// AdMob Configuration
+ADMOB_BANNER_UNIT_ID = ca-app-pub-1585283309075901/1821605177
+
+// Other configuration variables can be added here
+// ROLLBAR_KEY = release-rollbar-key
+// REVENUECAT_KEY = release-revenuecat-key 

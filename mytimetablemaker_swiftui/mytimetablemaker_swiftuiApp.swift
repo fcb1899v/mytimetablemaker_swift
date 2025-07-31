@@ -8,6 +8,7 @@
 import UIKit
 import SwiftUI
 import Firebase
+import GoogleMobileAds
 
 // MARK: - Main App Structure
 // Main entry point for the SwiftUI timetable maker application
@@ -42,6 +43,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         // Initialize Firebase services when app launches
         FirebaseApp.configure()
+        
+        // Initialize Google Mobile Ads
+        print("🔍 AdMob Debug: Starting Google Mobile Ads initialization...")
+        GADMobileAds.sharedInstance().start { status in
+            print("🔍 AdMob Debug: Google Mobile Ads initialization completed with status: \(status)")
+        }
+        
         return true
     }
 }
