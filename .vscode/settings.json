@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "*.pbxproj": "xml",
+        "*.xcconfig": "properties"
+    },
+    "files.watcherExclude": {
+        "**/DerivedData/**": true,
+        "**/build/**": true,
+        "**/.git/**": true
+    },
+    "files.exclude": {
+        "**/DerivedData": true,
+        "**/build": true,
+        "**/.git": true
+    },
+    "swift.path": "/usr/bin/swift",
+    "swift.buildPath": "./build",
+    "swift.targetBuildPath": "./build",
+    "swift.debuggerPath": "/usr/bin/lldb",
+    "swift.swiftEnvironmentVariables": {
+        "SWIFT_PACKAGE_RESOURCES_TESTS": "1"
+    }
+} 

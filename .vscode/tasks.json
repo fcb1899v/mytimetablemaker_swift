@@ -1,0 +1,66 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Add File to Xcode Project",
+            "type": "shell",
+            "command": "./add_files_to_xcode.sh",
+            "args": ["${file}"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Xcode Project",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "-project",
+                "mytimetablemaker_swiftui.xcodeproj",
+                "-scheme",
+                "mytimetablemaker_swiftui",
+                "-destination",
+                "platform=iOS Simulator,name=iPhone 16"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Xcode Project",
+            "type": "shell",
+            "command": "xcodebuild",
+            "args": [
+                "clean",
+                "-project",
+                "mytimetablemaker_swiftui.xcodeproj",
+                "-scheme",
+                "mytimetablemaker_swiftui"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": []
+        }
+    ]
+} 

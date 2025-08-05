@@ -95,7 +95,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         bannerView.rootViewController = bannerViewController
         
         // Log the ad unit ID after setting it
-        print("🔍 AdMob Debug: Ad unit ID after setting: \(bannerView.adUnitID)")
+        print("🔍 AdMob Debug: Ad unit ID after setting: \(String(describing: bannerView.adUnitID))")
         
         bannerViewController.view.addSubview(bannerView)
         
@@ -154,7 +154,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             print("🔍 AdMob Debug: Ad loaded successfully")
             print("🔍 AdMob Debug: Ad size: \(bannerView.adSize)")
             print("🔍 AdMob Debug: Ad frame: \(bannerView.frame)")
-            print("🔍 AdMob Debug: Ad unit ID: \(bannerView.adUnitID)")
+            print("🔍 AdMob Debug: Ad unit ID: \(String(describing: bannerView.adUnitID))")
         }
         
         func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {

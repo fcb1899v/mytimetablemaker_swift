@@ -41,6 +41,10 @@ iOSInjectionProject/
 GoogleService-Info.plist
 GoogleService-Info-*.plist
 
+# Security - API configuration files
+APIConfig.plist
+*APIConfig*.plist
+
 # Environment variables
 .env
 .env.local

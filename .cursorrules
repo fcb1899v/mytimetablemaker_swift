@@ -1,0 +1,38 @@
+# Cursor Rules for Xcode Project
+
+## File Creation Rules
+When creating new files in the project:
+1. If creating a Swift file (.swift), automatically add it to the Xcode project
+2. If creating a configuration file (.xcconfig), automatically add it to the Xcode project
+3. If creating a property list file (.plist), automatically add it to the Xcode project
+4. If creating a strings file (.strings), automatically add it to the Xcode project
+5. If creating an entitlements file (.entitlements), automatically add it to the Xcode project
+
+## Project Structure
+- Keep files organized in appropriate groups
+- Use meaningful file names
+- Follow Swift naming conventions
+- Add files to the correct target
+
+## Build Configuration
+- Use Debug.xcconfig for debug builds
+- Use Release.xcconfig for release builds
+- Maintain consistent build settings across configurations
+
+## File Types
+- Swift files: sourcecode.swift
+- Configuration files: text.xcconfiguration
+- Property lists: text.plist.xml
+- String files: text.plist.strings
+- Entitlements: text.plist.entitlements
+- Storyboards: file.storyboard
+- XIB files: file.xib
+- Asset catalogs: folder.assetcatalog
+- Data models: wrapper.xcdatamodel
+- Font files: file
+
+## Automation
+- Run add_files_to_xcode.sh when new files are created
+- Update project.pbxproj automatically
+- Generate unique UUIDs for new file references
+- Add files to appropriate build phases 

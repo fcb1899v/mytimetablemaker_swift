@@ -51,16 +51,6 @@ extension UIColor {
         static let headerColor = UIColor(red: 49/255, green: 4/255, blue: 172/255, alpha: 1)
 }
 
-// MARK: - Color String Constants
-// Hex string constants for color definitions
-let primaryColorString = "#3700B3"
-let accentColorString  = "#03DAC5"
-let redColorString     = "#FF0000"
-let yellowColorString  = "#FFFF00"
-let grayColorString    = "#AAAAAA"
-let blackColorString   = "#000000"
-let whiteColorString   = "#FFFFFF"
-
 // MARK: - String Color Extensions
 // Extensions for string-based color operations
 extension String {

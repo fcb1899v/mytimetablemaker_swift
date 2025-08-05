@@ -83,3 +83,15 @@ let minutePlaceHolder = "Enter 0~59 [min]".localized
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized
 
+// MARK: - Color String Constants
+// Hex string constants for color definitions
+let primaryColorString = "#3700B3"
+let accentColorString  = "#03DAC5"
+let redColorString     = "#FF0000"
+let yellowColorString  = "#FFFF00"
+let grayColorString    = "#AAAAAA"
+let blackColorString   = "#000000"
+let whiteColorString   = "#FFFFFF"
+
+
+
