@@ -45,6 +45,9 @@ GoogleService-Info-*.plist
 APIConfig.plist
 *APIConfig*.plist
 
+# Security - Release configuration files
+Release.xcconfig
+
 # Environment variables
 .env
 .env.local

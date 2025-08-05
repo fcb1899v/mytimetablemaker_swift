@@ -30,7 +30,7 @@ My Time Table Maker is a SwiftUI-based iOS application that helps users create a
 - **SwiftUI**: Modern declarative UI framework
 - **Firebase**: Authentication, Firestore, Analytics, Core
 - **Google Mobile Ads**: Advertisement display
-- **CocoaPods**: Dependency management
+- **Swift Package Manager**: Dependency management
 
 ### Core Features
 - **Authentication**: Firebase Auth for user management
@@ -46,7 +46,7 @@ My Time Table Maker is a SwiftUI-based iOS application that helps users create a
 
 - Xcode 14.0+
 - iOS 15.6+
-- CocoaPods
+- Swift Package Manager
 - Firebase project setup
 - Google Mobile Ads account
 
@@ -58,24 +58,25 @@ git clone https://github.com/fcb1899v/mytimetablemaker_swift.git
 cd mytimetablemaker_swiftui
 ```
 
-### 2. Install Dependencies
+### 2. Configuration Files Setup
+
+#### Release.xcconfig Configuration
+The release configuration file contains sensitive information and is not included in Git.
+
+1. Copy `mytimetablemaker_swiftui/Release.xcconfig.template`
+2. Save as `mytimetablemaker_swiftui/Release.xcconfig`
+3. Update the following values with your actual values:
+   - `ADMOB_BANNER_UNIT_ID`: Your actual AdMob Banner Unit ID
+
 ```bash
-pod install
+cp mytimetablemaker_swiftui/Release.xcconfig.template mytimetablemaker_swiftui/Release.xcconfig
 ```
 
-### 3. Environment Variables Setup
-Create `.env` file in the project root and configure required environment variables:
-
-```env
-# AdMob Configuration
-ADMOB_BANNER_UNIT_ID=your-admob-banner-unit-id
+### 3. Install Dependencies
+```bash
+# Resolve Swift Package Manager dependencies
+xcodebuild -resolvePackageDependencies
 ```
-
-**Note**: 
-- **Debug builds**: Use test ad ID if no environment variable is set
-- **Release builds**: Use production ad ID if no environment variable is set
-- The app reads environment variables in this order: system environment → .env file → build-specific default
-- For production, ensure to set the correct AdMob banner unit ID in .env file
 
 ### 4. Firebase Configuration
 1. Create a Firebase project
@@ -85,10 +86,10 @@ ADMOB_BANNER_UNIT_ID=your-admob-banner-unit-id
 ### 5. Run the Application
 ```bash
 # Open in Xcode
-open mytimetablemaker_swiftui.xcworkspace
+open mytimetablemaker_swiftui.xcodeproj
 
 # Or build from command line
-xcodebuild -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 14' build
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 ## 🎮 Application Structure
@@ -190,34 +191,34 @@ mytimetablemaker_swiftui/
 swiftlint
 
 # Xcode build analysis
-xcodebuild analyze -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui
+xcodebuild analyze -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui
 ```
 
 ### Run Tests
 ```bash
 # Unit Tests
-xcodebuild test -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 14'
+xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 16'
 
 # UI Tests
-xcodebuild test -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftuiUITests -destination 'platform=iOS Simulator,name=iPhone 14'
+xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftuiUITests -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 ### Build
 ```bash
 # Debug Build
-xcodebuild build -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui -configuration Debug
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Debug
 
 # Release Build
-xcodebuild build -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui -configuration Release
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Release
 
 # Archive for App Store
-xcodebuild archive -workspace mytimetablemaker_swiftui.xcworkspace -scheme mytimetablemaker_swiftui -archivePath build/mytimetablemaker_swiftui.xcarchive
+xcodebuild archive -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -archivePath build/mytimetablemaker_swiftui.xcarchive
 ```
 
 ## 🔒 Security
 
 This project includes comprehensive security measures to protect sensitive information:
-- **Environment Variables**: API keys and sensitive data stored in `.env` files
+- **Environment Variables**: API keys and sensitive data stored in configuration files
 - **Git Exclusions**: Firebase configuration files excluded from version control
 - **Secure Storage**: UserDefaults for local data storage
 - **Firebase Security**: App Check and Authentication integration
@@ -248,7 +249,6 @@ We welcome contributions! Please feel free to submit pull requests or create iss
 ## 📞 Support
 
 If you have any problems or questions, please create an issue on GitHub or contact the development team.
-
 ## 🚀 Getting Started
 
 For new developers:
@@ -283,7 +283,7 @@ This app uses the following open-source libraries and frameworks:
   - firebase_firestore
   - firebase_analytics
 - **Google Mobile Ads** (Apache License 2.0)
-- **CocoaPods** (MIT License)
+- **Swift Package Manager** (Apple License)
 
 ### Font Licenses
 - **GenEiGothicN Font Family** (SIL Open Font License 1.1)
@@ -298,3 +298,4 @@ For details of each license, please refer to the respective documentation or LIC
 - Open source community for various tools and libraries
 
 ---
+

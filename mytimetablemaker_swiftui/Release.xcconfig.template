@@ -1,0 +1,11 @@
+// Release Configuration Template
+// This file contains release-specific build settings
+// Copy this file to Release.xcconfig and update with your actual values
+
+// AdMob Configuration
+// Replace with your actual AdMob Banner Unit ID
+ADMOB_BANNER_UNIT_ID = ca-app-pub-XXXXXXXXXX/XXXXXXXXXX
+
+// Other configuration variables can be added here
+// ROLLBAR_KEY = your-release-rollbar-key
+// REVENUECAT_KEY = your-release-revenuecat-key 
