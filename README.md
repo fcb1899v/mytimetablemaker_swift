@@ -77,7 +77,6 @@ cp mytimetablemaker_swiftui/Release.xcconfig.template mytimetablemaker_swiftui/R
 # Resolve Swift Package Manager dependencies
 xcodebuild -resolvePackageDependencies
 ```
-
 ### 4. Firebase Configuration
 1. Create a Firebase project
 2. Place `GoogleService-Info.plist` in `mytimetablemaker_swiftui/` directory
@@ -249,6 +248,10 @@ We welcome contributions! Please feel free to submit pull requests or create iss
 ## 📞 Support
 
 If you have any problems or questions, please create an issue on GitHub or contact the development team.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 62ded4e0371b7659ed61348b05e40bcbe2a94148
 ## 🚀 Getting Started
 
 For new developers:
@@ -298,4 +301,3 @@ For details of each license, please refer to the respective documentation or LIC
 - Open source community for various tools and libraries
 
 ---
-
