@@ -29,7 +29,7 @@ struct TimetableContentView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Color.primaryColor
                 VStack {
@@ -114,10 +114,19 @@ struct TimetableContentView: View {
                         }
                     }
                 }
-                .navigationBarHidden(true)
                 .navigationBarColor(backgroundColor: UIColor(Color.primaryColor), titleColor: .white)
-            }.edgesIgnoringSafeArea(.bottom)
-        }.navigationViewStyle(StackNavigationViewStyle())
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("キャンセル") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        .foregroundColor(.white)
+                    }
+                }
+                .edgesIgnoringSafeArea(.bottom)
+            }
+        }
     }
 }
 

@@ -30,7 +30,7 @@ struct SplashContentView: View {
 
     var body: some View {
         
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // MARK: - Background and Content
                 Color.accentColor
@@ -56,14 +56,6 @@ struct SplashContentView: View {
                         .scaledToFit()
                         .frame(width: screenWidth)
                 }
-                
-                // MARK: - Navigation to Main Content
-                NavigationLink(
-                    destination: MainContentView(myTransit, myLogin, myFirestore),
-                    isActive: $isFinishSplash
-                ) {
-                    EmptyView()
-                }
             }
             .frame(width: screenWidth, height: screenHeight)
             .onAppear {
@@ -73,8 +65,12 @@ struct SplashContentView: View {
                         isFinishSplash = true
                     }
                 }
-            }.edgesIgnoringSafeArea(.all)
-        }.navigationViewStyle(StackNavigationViewStyle())
+            }
+            .edgesIgnoringSafeArea(.all)
+            .navigationDestination(isPresented: $isFinishSplash) {
+                MainContentView(myTransit, myLogin, myFirestore)
+            }
+        }
     }
 }
 

@@ -48,7 +48,7 @@ struct MainContentView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             // MARK: - Main View Layout
             VStack {
                 // MARK: - Header Section
@@ -123,11 +123,6 @@ struct MainContentView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: operationSettingsBottonSize)
-                                    NavigationLink(
-                                        destination: SettingsContentView(myTransit, myLogin, myFirestore),
-                                        isActive: $isMoveSettings,
-                                        label: {}
-                                    )
                                 }.frame(width: operationSettingsBottonSize, height: operationSettingsBottonSize)
                             }
                         }
@@ -150,9 +145,8 @@ struct MainContentView: View {
                             stationAndTime(myTransit.goOrBack1, 1, myTransit.timeArrayString1[1])
                             ForEach(0...myTransit.changeLine1, id: \.self) { num in
                                 transitInfomation(myTransit.goOrBack1, num + 1)
-                                stationAndTime(myTransit.goOrBack1, 2 * num + 2, myTransit.timeArrayString1[2 * num + 2])
-                                lineInfomation(myTransit.goOrBack1, myTransit.isWeekday, num)
-                                stationAndTime(myTransit.goOrBack1, 2 * num + 3, myTransit.timeArrayString1[2 * num + 3])
+                                // StationLineViewを使用して出発駅、路線情報、到着駅を統合表示
+                                LineAndStation(myTransit.goOrBack1, myTransit.isWeekday, num, myTransit.timeArrayString1[2 * num + 2], myTransit.timeArrayString1[2 * num + 3])
                             }
                             transitInfomation(myTransit.goOrBack1, 0)
                             stationAndTime(myTransit.goOrBack1, 0, myTransit.timeArrayString1[0])
@@ -177,9 +171,8 @@ struct MainContentView: View {
                                 stationAndTime(myTransit.goOrBack2, 1, myTransit.timeArrayString2[1])
                                 ForEach(0...myTransit.changeLine2, id: \.self) { num in
                                     transitInfomation(myTransit.goOrBack2, num + 1)
-                                    stationAndTime(myTransit.goOrBack2, 2 * num + 2, myTransit.timeArrayString2[2 * num + 2])
-                                    lineInfomation(myTransit.goOrBack2, myTransit.isWeekday, num)
-                                    stationAndTime(myTransit.goOrBack2, 2 * num + 3, myTransit.timeArrayString2[2 * num + 3])
+                                    // StationLineViewを使用して出発駅、路線情報、到着駅を統合表示
+                                    LineAndStation(myTransit.goOrBack2, myTransit.isWeekday, num, myTransit.timeArrayString2[2 * num + 2], myTransit.timeArrayString2[2 * num + 3])
                                 }
                                 transitInfomation(myTransit.goOrBack2, 0)
                                 stationAndTime(myTransit.goOrBack2, 0, myTransit.timeArrayString2[0])
@@ -191,7 +184,7 @@ struct MainContentView: View {
                         if(screenWidth > 600) { Spacer() }
                     }
                     Rectangle()
-                        .foregroundColor(Color.primary)
+                        .foregroundColor(Color.primaryColor)
                         .frame(width: screenWidth, height: 1.5)
                     
                     // MARK: - Ad Banner
@@ -204,7 +197,9 @@ struct MainContentView: View {
             .background(.white)
             .edgesIgnoringSafeArea(.all)
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationDestination(isPresented: $isMoveSettings) {
+            SettingsContentView(myTransit, myLogin, myFirestore)
+        }
         .navigationBarBackButtonHidden(true)
     }
 }

@@ -41,6 +41,7 @@ extension String{
     func arriveStationKey(_ num: Int) -> String { return "\(self)arrivestation\(num + 1)" }
     var stationKeyArray: Array<String> { return [departurePointKey, destinationKey] + (0..<3).flatMap { i in [departStationKey(i), arriveStationKey(i)] } }
     func lineNameKey(_ num: Int) -> String { return "\(self)linename\(num + 1)" }
+    func lineSelectedKey(_ num: Int) -> String { return "\(self)lineSelected\(num + 1)" }
     func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }

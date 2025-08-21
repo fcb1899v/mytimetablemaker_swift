@@ -42,6 +42,7 @@
 "Going home route 2" = "Going home route 2";
 "Outgoing route 1" = "Outgoing route 1";
 "Outgoing route 2" = "Outgoing route 2";
+" min" = " min";
 "[min]" = " [min]";
 "Not set" = "Not set";
 
@@ -197,6 +198,7 @@
 "ORANGE" = "ORANGE";
 "YELLOW" = "YELLOW";
 "YELLOW GREEN" = "YELLOW GREEN";
+"ORIVE" = "ORIVE";
 "GREEN" = "GREEN";
 "BLUE GREEN" = "BLUE GREEN";
 "LIGHT BLUE" = "LIGHT BLUE";
@@ -204,8 +206,13 @@
 "NAVY BLUE" = "NAVY BLUE";
 "PURPLE" = "PURPLE";
 "PINK" = "PINK";
+"BEIGE" = "BEIGE";
 "DARK RED" = "DARK RED";
 "BROWN" = "BROWN";
 "GOLD" = "GOLD";
 "SILVER" = "SILVER";
+"GRAY" = "GRAY";
 "BLACK" = "BLACK";
+
+//SelectLineView
+"Line Color" = "Line Color";

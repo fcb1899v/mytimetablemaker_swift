@@ -42,6 +42,7 @@
 "Going home route 2" = "帰宅ルート2";
 "Outgoing route 1" = "外出ルート1";
 "Outgoing route 2" = "外出ルート2";
+" min" = " 分";
 "[min]" = " [分]";
 "Not set" = "未設定";
 
@@ -198,6 +199,7 @@
 "ORANGE" = "オレンジ";
 "YELLOW" = "黄";
 "YELLOW GREEN" = "黄緑";
+"ORIVE" = "オリーブ";
 "GREEN" = "緑";
 "BLUE GREEN" = "青緑";
 "LIGHT BLUE" = "水色";
@@ -205,8 +207,13 @@
 "NAVY BLUE" = "紺";
 "PURPLE" = "紫";
 "PINK" = "ピンク";
+"BEIGE" = "ベージュ";
 "DARK RED" = "えんじ";
 "BROWN" = "茶";
 "GOLD" = "ゴールド";
 "SILVER" = "シルバー";
+"GRAY" = "グレー";
 "BLACK" = "黒";
+
+//SelectLineView
+"Line Color" = "路線カラー";

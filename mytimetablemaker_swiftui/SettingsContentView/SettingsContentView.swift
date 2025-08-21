@@ -29,7 +29,7 @@ struct SettingsContentView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Form {
                     // MARK: - Route Display Settings

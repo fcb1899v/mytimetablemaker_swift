@@ -75,11 +75,11 @@ let routeStationFontSize: CGFloat = customWidth / 27
 let routeLineFontSize: CGFloat = customWidth / 27
 let routeTimeFontSize: CGFloat = customWidth / 18
 let routeLineImageForegroundSize: CGFloat = customWidth / 25
-let routeLineImageForegroundLeftPadding: CGFloat = customWidth / 30
+let routeLineImageForegroundLeftPadding: CGFloat = customWidth / 100
 let routeLineImageBackgroundWidth: CGFloat = customWidth / 20
 let routeLineImageBackgroundHeight: CGFloat = customWidth / 15
 let routeLineImageBackgroundPadding: CGFloat = customWidth / 200
-let routeLineImageLeftPadding: CGFloat = customWidth / 200
+let routeLineImageLeftPadding: CGFloat = customWidth / 300
 
 // MARK: - Login Content View Constants
 

@@ -20,7 +20,7 @@ struct lineTimeImage: View {
     }
     
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .center) {
             // MARK: - Background Rectangle
             Rectangle()
                 .frame(width: routeLineImageBackgroundWidth, height: routeLineImageBackgroundHeight)
@@ -32,12 +32,8 @@ struct lineTimeImage: View {
                 .scaledToFit()
                 .frame(width: routeLineImageForegroundSize)
                 .foregroundColor(.white)
-                .padding(.leading, routeLineImageLeftPadding)
         }
         .padding(.leading, routeLineImageForegroundLeftPadding)
-        .padding(.trailing, routeLineImageBackgroundPadding)
-        .padding(.top, routeLineImageBackgroundPadding)
-        .padding(.bottom, routeLineImageBackgroundPadding)
     }
 }
     
