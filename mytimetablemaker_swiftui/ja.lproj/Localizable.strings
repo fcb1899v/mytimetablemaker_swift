@@ -78,6 +78,8 @@
 "Setting your transit time [min]" = "移動時間の設定 [分]";
 "Setting your timetable" = "時刻表設定";
 
+//SettingsLineSheet
+"Last Updated" = "前回の更新";
 
 //GetDataButton
 "Get saved data" = "保存データの取得";
@@ -217,3 +219,41 @@
 
 //SelectLineView
 "Line Color" = "路線カラー";
+
+// Railway Operator Names
+"JR-East" = "JR東";
+"Keikyu" = "京急";
+"TokyoMetro" = "東京メトロ";
+"Toei" = "都営";
+"Odakyu" = "小田急";
+"Yurikamome" = "ゆりかもめ";
+"TWR" = "TWR";
+"Seibu" = "西武";
+"Sotetsu" = "相鉄";
+"Tama" = "多摩";
+"Tobu" = "東武";
+"Tokyu" = "東急";
+"TX" = "TX";
+"Yokohama" = "横浜市営";
+
+//SettingsLineSheet
+"Select Line Color" = "路線カラーの選択";
+"Timetable Settings" = "時刻表の設定";
+"Update Data" = "データ更新";
+"Save" = "保存";
+"Updated: " = "更新: ";
+"Clear" = "クリア";
+"Ride Time" = "乗車時間";
+"Line Name" = "路線名";
+"Enter line name or bus route name" = "路線名・バス路線名を入力";
+"Line Input" = "路線の入力";
+": " = "：";
+" to " = "〜";
+"Select Color" = "色を選択";
+"Station Input" = "駅の入力";
+"Departure Station" = "乗車駅";
+"Enter departure station" = "乗車駅を入力";
+"Arrival Station" = "降車駅";
+"Enter arrival station" = "降車駅を入力";
+"Railway" = "鉄道";
+"Bus" = "バス";

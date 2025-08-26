@@ -6,34 +6,81 @@
 //
 
 import SwiftUI
+import Foundation
 
 // MARK: - Line Time Image View
-// Custom view component displaying a clock icon with colored background
+// Custom view component displaying different icons based on line type and transit information
 struct lineTimeImage: View {
     
-    private let color: Color
+    // MARK: - Properties
+    private let lineColor: Color
+    private let lineCode: String
+    private let isTransit: Bool
+    private let transportation: String
     
+    // MARK: - Initialization
     init(
-        color: Color
+        lineColor: Color,
+        lineCode: String,
+        isTransit: Bool,
+        transportation: String
     ){
-        self.color = color
+        self.lineColor = lineColor
+        self.lineCode = lineCode
+        self.isTransit = isTransit
+        self.transportation = transportation
     }
     
+    // MARK: - Body
     var body: some View {
         ZStack(alignment: .center) {
             // MARK: - Background Rectangle
             Rectangle()
-                .frame(width: routeLineImageBackgroundWidth, height: routeLineImageBackgroundHeight)
-                .foregroundColor(color)
+                .frame(width: lineImageBackgroundSize, height: lineImageBackgroundSize)
+                .foregroundColor(lineColor)
             
-            // MARK: - Clock Icon
-            Image(uiImage: UIImage(named: "ic_clock2.png")!)
-                .resizable()
-                .scaledToFit()
-                .frame(width: routeLineImageForegroundSize)
-                .foregroundColor(.white)
+            // MARK: - Icon Content
+            Group {
+                if isTransit {
+                    // MARK: - Transit Icon
+                    // Displays transportation method icon for transit scenarios
+                    Image(systemName: transportation != "" ? getTransportationType(label: transportation).iconName: "figure.walk")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: lineImageForegroundSize,
+                            height: lineImageForegroundSize
+                        )
+                } else {
+                    // MARK: - Lightrail Icon
+                    // Default icon for lines without specific line codes
+                    Image(systemName: "lightrail")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            width: lineImageForegroundSize,
+                            height: lineImageForegroundSize
+                        )
+                }
+            }
+            .foregroundColor(Color.white)
+            
+            // MARK: - Line Code Text
+            // Displays line code as text with appropriate styling
+            Text(lineCode)
+                .font(.system(size: 14, weight: .bold, design: .default))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .foregroundColor(Color.white)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: 0)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: 0)
+                .shadow(color: .secondary, radius: 0, x: 0, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: 0, y: -0.5)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: -0.5)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: -0.5)
         }
-        .padding(.leading, routeLineImageForegroundLeftPadding)
     }
 }
     
@@ -41,7 +88,14 @@ struct lineTimeImage: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct lineTimeImage_Previews: PreviewProvider {
     static var previews: some View {
-        lineTimeImage(color: Color.grayColor)
+        VStack(spacing: 20) {
+            // Transit example
+            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransit: true, transportation: "walking")
+            // Line code example (JK for 京浜東北線)
+            lineTimeImage(lineColor: Color.green, lineCode: "JK", isTransit: false, transportation: "")
+            // Default lightrail example
+            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransit: true, transportation: "walking")
+        }
     }
 }
 

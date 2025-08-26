@@ -93,5 +93,40 @@ let grayColorString    = "#AAAAAA"
 let blackColorString   = "#000000"
 let whiteColorString   = "#FFFFFF"
 
+// MARK: - Hiragana to Kanji Mapping
+// Common hiragana to kanji mappings for railway lines
+let hiraganaMappings: [String: [String]] = [
+    "けいきゅう": ["京急", "keikyu"],
+    "けいひん": ["京浜", "keihin"],
+    "とうきょうめとろ": ["東京メトロ", "tokyometro"],
+    "とえい": ["都営", "toei"],
+    "おだきゅう": ["小田急", "odakyu"],
+    "ゆりかもめ": ["ゆりかもめ", "yurikamome"],
+    "せいぶ": ["西武", "seibu"],
+    "そうてつ": ["相鉄", "sotetsu"],
+    "たま": ["多摩", "tama"],
+    "とうぶ": ["東武", "tobu"],
+    "とうきゅう": ["東急", "tokyu"],
+    "よこはましえい": ["横浜市営", "yokohama"]
+]
+
+// MARK: - Station Data Files
+// List of available station data files for railway operators
+let stationDataFiles: [String] = [
+    "jreast.json", 
+    "tokyometro.json", 
+    "toeimetro.json", 
+    "keikyu.json", 
+    "odakyu.json", 
+    "yurikamome.json", 
+    "rinkai.json", 
+    "seibu.json", 
+    "sotetsu.json", 
+    "tama.json", 
+    "tobu.json", 
+    "tokyu.json",
+    "tsukuba.json", 
+    "yokohamametro.json"
+]
 
 

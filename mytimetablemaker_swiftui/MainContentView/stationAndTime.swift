@@ -44,7 +44,7 @@ struct stationAndTime: View {
                 inputText = ""
             }) {
                 Text(label)
-                    .font(.system(size: routeStationFontSize))
+                    .font(.system(size: stationFontSize))
                     .lineLimit(1)
                     .onChange(of: goorback.stationArray[num]) {
                         newValue in label = newValue
@@ -72,7 +72,7 @@ struct stationAndTime: View {
             Spacer()
             // MARK: - Time Display
             Text(time)
-                .font(.custom("GenEiGothicN-Regular", size: routeTimeFontSize))
+                .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
         }.foregroundColor(Color.primaryColor)
     }
 }

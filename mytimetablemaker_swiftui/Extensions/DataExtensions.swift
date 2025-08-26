@@ -15,6 +15,23 @@ extension String {
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
     }
+    
+    /// Check if string contains hiragana characters
+    var containsHiragana: Bool {
+        return self.range(of: "[ぁ-ん]", options: .regularExpression) != nil
+    }
+    
+    var normalizedForSearch: String {
+        var s = self.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Absorb variations in katakana and fullwidth characters (adjust as needed)
+        if let t = s.applyingTransform(.hiraganaToKatakana, reverse: false) { s = t }
+        if let t = s.applyingTransform(.fullwidthToHalfwidth, reverse: false) { s = t }
+        return s.lowercased()
+    }
+
+    /// Extract the last component from ODPT identifiers
+    /// Example: odpt:Operator:JR-East → JR-East
+    var odptTail: String { self.components(separatedBy: ":").last ?? self }
 }
 
 // MARK: - Route Data Extension
@@ -43,6 +60,8 @@ extension String{
     func lineNameKey(_ num: Int) -> String { return "\(self)linename\(num + 1)" }
     func lineSelectedKey(_ num: Int) -> String { return "\(self)lineSelected\(num + 1)" }
     func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
+    func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
+    func lastUpdatedKey(_ num: Int) -> String { return "\(self)lastupdated\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
     func transitTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transittimee": "\(self)transittime\(num)" }
@@ -75,6 +94,8 @@ extension String{
     func arriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(arriveStationDefault(num))! }
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(lineNameDefault(num))! }
     func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(accentColorString) }
+    func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
+
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(Transportation.walking.rawValue.localized)! }
@@ -105,6 +126,7 @@ extension String{
     var stationArray: Array<String> { return [destination, departurePoint] + (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
     var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
     var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
+    var lineCodeArray: Array<String> { return (0..<3).map { i in lineCode(i) } }
     var lineColorStringArray: Array<String> { return (0..<3).map { i in lineColorString(i)} }
     var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
     var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }

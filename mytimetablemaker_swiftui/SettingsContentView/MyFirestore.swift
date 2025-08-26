@@ -172,6 +172,7 @@ class MyFirestore: ObservableObject {
                     UserDefaults.standard.set(data["arrivalstation\(num + 1)"], forKey: goorback.arriveStationKey(num))
                     UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))
                     UserDefaults.standard.set(data["linecolor\(num + 1)"], forKey: goorback.lineColorKey(num))
+                    UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
                     UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
                     UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
                     UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transitTimeKey(num + 1))

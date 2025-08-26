@@ -71,15 +71,14 @@ let routeCountdownPadding: CGFloat = customWidth / 50 + ((routeHeight > 600) ? (
 
 // MARK: - Route Content Styling
 // Route information display sizing and typography
-let routeStationFontSize: CGFloat = customWidth / 27
-let routeLineFontSize: CGFloat = customWidth / 27
-let routeTimeFontSize: CGFloat = customWidth / 18
-let routeLineImageForegroundSize: CGFloat = customWidth / 25
-let routeLineImageForegroundLeftPadding: CGFloat = customWidth / 100
-let routeLineImageBackgroundWidth: CGFloat = customWidth / 20
-let routeLineImageBackgroundHeight: CGFloat = customWidth / 15
-let routeLineImageBackgroundPadding: CGFloat = customWidth / 200
-let routeLineImageLeftPadding: CGFloat = customWidth / 300
+let stationFontSize: CGFloat = customWidth / 27
+let lineFontSize: CGFloat = customWidth / 27
+let lineImageForegroundSize: CGFloat = customWidth / 20
+let lineImageForegroundPadding: CGFloat = customWidth / 80
+let lineImageBackgroundSize: CGFloat = customWidth / 15
+let lineImageBackgroundPadding: CGFloat = customWidth / 200
+let lineImagePadding: CGFloat = customWidth / 300
+let timeFontSize: CGFloat = customWidth / 18
 
 // MARK: - Login Content View Constants
 

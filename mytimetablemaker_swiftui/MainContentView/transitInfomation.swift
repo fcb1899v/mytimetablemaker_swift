@@ -11,10 +11,10 @@ import SwiftUI
 // Displays transit time and transportation mode with editing capabilities
 struct transitInfomation: View {
     
-    @State private var isShowingAlert = false
     @State private var isShowingPicker = false
-    @State private var inputText = ""
-    @State private var label: String
+    @State private var transportation: String
+    @State private var showSettingsTransitSheet = false
+    @State private var transitTime: Int = 0
 
     private let goorback: String
     private let num: Int
@@ -23,73 +23,48 @@ struct transitInfomation: View {
     // Initialize with route identifier and transit segment number
     init(
         _ goorback: String,
-        _ num: Int
+        _ num: Int,
     ){
         self.goorback = goorback
         self.num = num
-        self.label = goorback.transportationArray[num]
+        self.transportation = goorback.transportationArray[num]
     }
 
     var body: some View {
         HStack {
             // MARK: - Transit Time Button
             Button (action: {
-                self.isShowingAlert = true
-                inputText = ""
+                showSettingsTransitSheet = true
             }) {
-                lineTimeImage(color: Color.grayColor)
-            }
-            // MARK: - Transit Time Edit Alert
-            .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
-                TextField(numberPlaceHolder, text: $inputText)
-                    .multilineTextAlignment(.center)
-                    .keyboardType(.numberPad)
-                    .lineLimit(1)
-                // OK button
-                Button(textOk, role: .none){
-                    if (inputText.intText(min: 1, max: 99) > 0) {
-                        UserDefaults.standard.set(inputText, forKey:goorback.transitTimeKey(num))
-                    }
-                    isShowingAlert = false
-                }
-                // Cancel button
-                Button(textCancel, role: .cancel){
-                    isShowingAlert = false
-                }
-            } message: {
-                Text(goorback.transportationMessage(num))
-            }
-            
-            // MARK: - Transportation Mode Button
-            Button(action: {
-                self.isShowingPicker = true
-            }) {
-                Text(label)
-                    .font(.system(size: routeLineFontSize))
-                    .foregroundColor(Color.grayColor)
-                    .lineLimit(1)
-                    .onChange(of: goorback.transportationArray[num]) {
-                        newValue in label = newValue
-                    }
-            }
-            .padding(.leading, routeLineImageLeftPadding)
-            // MARK: - Transportation Mode Action Sheet
-            .actionSheet(isPresented: $isShowingPicker) {
-                ActionSheet(
-                    title: Text(transportationAlertTitle),
-                    message: Text(goorback.transportationMessage(num)),
-                    buttons: Transportation.allCases.map{$0.rawValue.localized}.indices.map { i in
-                        .default(Text(Transportation.allCases.map{$0.rawValue.localized}[i])) {
-                            UserDefaults.standard.set(
-                                Transportation.allCases.map{$0.rawValue.localized}[i],
-                                forKey: goorback.transportationKey(num)
-                            )
-                        }
-                    } + [.cancel()]
+                lineTimeImage(
+                    lineColor: Color.grayColor,
+                    lineCode: "",
+                    isTransit: true,
+                    transportation: transportation
                 )
             }
             Spacer()
         }
+        .sheet(isPresented: $showSettingsTransitSheet) {
+            SettingsTransitSheet(goorback: goorback, lineIndex: num)
+        }
+        .onAppear {
+            updateData()
+        }
+        .onChange(of: showSettingsTransitSheet) { isPresented in
+            if !isPresented {
+                // SettingsTransitSheetが閉じられた後にデータを更新
+                updateData()
+            }
+        }
+    }
+    
+    // MARK: - Data Update
+    // Update display data from UserDefaults
+    private func updateData() {
+        // Update transit time
+        transitTime = goorback.transitTimeArray[num]
+        transportation = goorback.transportationArray[num]
     }
 }
 

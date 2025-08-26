@@ -78,6 +78,9 @@
 "Setting your transit time [min]" = "Setting your transit time [min]";
 "Setting your timetable" = "Setting your timetable";
 
+//SettingsLineSheet
+"Last Updated" = "Last Updated";
+
 //GetDataButton
 "Get saved data" = "Get saved data";
 "Overwritten current data?" = "Overwritten current data?";
@@ -216,3 +219,41 @@
 
 //SelectLineView
 "Line Color" = "Line Color";
+
+// Railway Operator Names
+"JR-East" = "JR-East";
+"Keikyu" = "Keikyu";
+"TokyoMetro" = "TokyoMetro";
+"Toei" = "Toei";
+"Odakyu" = "Odakyu";
+"Yurikamome" = "Yurikamome";
+"TWR" = "TWR";
+"Seibu" = "Seibu";
+"Sotetsu" = "Sotetsu";
+"Tama" = "Tama";
+"Tobu" = "Tobu";
+"Tokyu" = "Tokyu";
+"TX" = "TX";
+"Yokohama" = "Yokohama";
+
+//SettingsLineSheet
+"Select Line Color" = "Select Line Color";
+"Timetable Settings" = "Timetable Settings";
+"Update Data" = "Update Data";
+"Updated: " = "Updated: ";
+"Clear" = "Clear";
+"Save" = "Save";
+"Ride Time" = "Ride Time";
+"Line Name" = "Line Name";
+"Enter line name or bus route name" = "Enter line name or bus route name";
+"Line Input" = "Line Input";
+": " = ": ";
+" to " = " to ";
+"Select Color" = "Select Color";
+"Station Input" = "Station Input";
+"Departure Station" = "Departure Station";
+"Enter departure station" = "Enter departure station";
+"Arrival Station" = "Arrival Station";
+"Enter arrival station" = "Enter arrival station";
+"Railway" = "Railway";
+"Bus" = "Bus";

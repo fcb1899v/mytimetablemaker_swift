@@ -15,9 +15,10 @@ struct LineAndStation: View {
     @State private var isShowingLineSelection = false
     @State private var inputText = ""
     @State private var lineName: String
+    @State private var lineColor : Color
+    @State private var lineCode: String
     @State private var departureStation: String
     @State private var arrivalStation: String
-    @State private var color : Color
 
     private let goorback: String
     private let weekflag: Bool
@@ -41,9 +42,10 @@ struct LineAndStation: View {
         self.departureTime = departureTime
         self.arrivalTime = arrivalTime
         self.lineName = goorback.lineNameArray[num]
+        self.lineColor = goorback.lineColorArray[num]
+        self.lineCode = goorback.lineCodeArray[num]
         self.departureStation = goorback.stationArray[2 * num + 2]
         self.arrivalStation = goorback.stationArray[2 * num + 3]
-        self.color = goorback.lineColorArray[num]
     }
 
     var body: some View {
@@ -51,17 +53,12 @@ struct LineAndStation: View {
 
             HStack {
                 Text(departureStation)
-                    .font(.system(size: routeStationFontSize))
+                    .font(.system(size: stationFontSize))
                     .lineLimit(1)
-                    .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-                        // UserDefaultsが変更された時に色を更新
-                        departureStation = goorback.stationArray[2 * num + 2]
-                    }
                 Spacer()
                 // MARK: - Time Display
                 Text(departureTime)
-                    .font(.custom("GenEiGothicN-Regular", size: routeTimeFontSize))
-
+                    .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
             }.foregroundColor(Color.primaryColor)
 
             HStack {
@@ -69,14 +66,19 @@ struct LineAndStation: View {
                 Button (action: {
                     isShowingLineSelection = true
                 }) {
-                    lineTimeImage(color: color)
-                        .sheet(isPresented: $isShowingTimetableAlert) {
-                            TimetableContentView(goorback, num)
-                        }
+                    lineTimeImage(
+                        lineColor: lineColor,
+                        lineCode: lineCode,
+                        isTransit: false,
+                        transportation: ""
+                    )
+                    .sheet(isPresented: $isShowingTimetableAlert) {
+                        TimetableContentView(goorback, num)
+                    }
                 }
                 .sheet(isPresented: $isShowingLineSelection) {
                     NavigationStack {
-                        SelectLineView(goorback: goorback, lineIndex: num)
+                        SettingsLineSheet(goorback: goorback, lineIndex: num)
                             .navigationBarTitleDisplayMode(.inline)
                             .toolbar {
                                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -88,33 +90,49 @@ struct LineAndStation: View {
                             }
                     }
                 }
-                .padding(.leading, routeLineImageLeftPadding)
 
                 Text(lineName)
-                    .font(.system(size: routeLineFontSize))
-                    .foregroundColor(color)
+                    .font(.system(size: lineFontSize))
+                    .foregroundColor(lineColor)
                     .lineLimit(1)
-                    .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-                        // UserDefaultsが変更された時に色を更新
-                        lineName = goorback.lineName(num)
-                        color = goorback.lineColorArray[num]
-                    }
             }
             
             HStack {
                 Text(arrivalStation)
-                    .font(.system(size: routeStationFontSize))
+                    .font(.system(size: stationFontSize))
                     .lineLimit(1)
-                    .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-                        // UserDefaultsが変更された時に色を更新
-                        arrivalStation = goorback.stationArray[2 * num + 3]
-                    }
                 Spacer()
                 // MARK: - Time Display
                 Text(arrivalTime)
-                    .font(.custom("GenEiGothicN-Regular", size: routeTimeFontSize))
+                    .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
             }.foregroundColor(Color.primaryColor)
         }
+        .onChange(of: isShowingLineSelection) { isPresented in
+            if !isPresented {
+                updateLineData()
+            }
+        }
+        // UserDefaultsが変更された時にデータを更新
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            updateLineData()
+        }
+        // 初期データの読み込み
+        .onAppear {
+            updateLineData()
+        }
+
+    }
+    
+    
+    // MARK: - Helper Methods
+    // Update line data from UserDefaults
+    private func updateLineData() {
+        departureStation = goorback.stationArray[2 * num + 2]
+        arrivalStation = goorback.stationArray[2 * num + 3]
+        lineName = goorback.lineName(num)
+        lineColor = goorback.lineColorArray[num]
+        lineCode = goorback.lineCodeArray[num]
+        print("Updated line data: lineName: \(lineName), color: \(lineColor), lineCode: \(lineCode), departureStation: \(departureStation), arrivalStation: \(arrivalStation)")
     }
 }
 
@@ -123,12 +141,5 @@ struct LineAndStation: View {
 struct StationAndLine_Previews: PreviewProvider {
     static var previews: some View {
         LineAndStation("back1", true, 0, "0800", "0830")
-            .onAppear {
-                // プレビュー用のテストデータを設定
-                UserDefaults.standard.set("東京駅", forKey: "station_2")
-                UserDefaults.standard.set("新宿駅", forKey: "station_3")
-                UserDefaults.standard.set("テスト路線", forKey: "lineName_0")
-                UserDefaults.standard.set("#FF0000", forKey: "lineColor_0")
-            }
     }
 }
