@@ -12,15 +12,15 @@ import SwiftUI
 struct GetFirestoreButton: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myFirestore: MyFirestore
     @State private var isShowAlert = false
     
     init(
-        myTransit: MyTransit,
+        myTransfer: MyTransfer,
         myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myFirestore = myFirestore
     }
     
@@ -48,8 +48,8 @@ struct GetFirestoreButton: View {
             Button(textOk, role: .none) {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
-                    myTransit.setRoute2()
-                    myTransit.setChangeLine()
+                    myTransfer.setRoute2()
+                    myTransfer.setChangeLine()
                 }
                 presentationMode.wrappedValue.dismiss()
             }
@@ -63,9 +63,9 @@ struct GetFirestoreButton: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct GetFirestoreButton_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myFirestore = MyFirestore()
-        GetFirestoreButton(myTransit: myTransit, myFirestore: myFirestore)
+        GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
     }
 }
 

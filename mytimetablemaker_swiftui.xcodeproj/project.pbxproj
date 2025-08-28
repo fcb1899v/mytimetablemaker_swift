@@ -61,11 +61,11 @@
 		02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */; };
 		02E7F714262083A000C00545 /* settingsLineName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F713262083A000C00545 /* settingsLineName.swift */; };
 		02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7182620840700C00545 /* settingsRideTime.swift */; };
-		02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F71D2620848D00C00545 /* settingsTransitTime.swift */; };
+		02E7F71E2620848D00C00545 /* settingsTransferTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F71D2620848D00C00545 /* settingsTransferTime.swift */; };
 		02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F722262084FA00C00545 /* settingsTransportation.swift */; };
 		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
 		02EBD0FD2E51500E00450D16 /* stationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD0FC2E51500E00450D16 /* stationAndTime.swift */; };
-		02EBD1182E56E98300450D16 /* SettingsTransitSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransitSheet.swift */; };
+		02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */; };
 		02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */; };
 		02EBD4A22E5ABF0B00450D16 /* CommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */; };
 		02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A62E5B023400450D16 /* RailwayModels.swift */; };
@@ -73,6 +73,7 @@
 		02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B12E5B080300450D16 /* LocalDataService.swift */; };
 		02EBD4B82E5B087400450D16 /* ODPTDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B72E5B087200450D16 /* ODPTDataService.swift */; };
 		02EBD4BA2E5B088400450D16 /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B92E5B088200450D16 /* CacheService.swift */; };
+		02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4BD2E5D770700450D16 /* TransportationModels.swift */; };
 		02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */; };
 		02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F0257F261BDD7F00655E54 /* Assets.xcassets */; };
 		02F02583261BDD7F00655E54 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 02F02582261BDD7F00655E54 /* Preview Assets.xcassets */; };
@@ -84,14 +85,14 @@
 		02F025CA261BDF0600655E54 /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025C9261BDF0600655E54 /* DataExtensions.swift */; };
 		02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */; };
 		02F025E7261BE54700655E54 /* MyLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025E6261BE54700655E54 /* MyLogin.swift */; };
-		02F025ED261BE5A500655E54 /* MyTransit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025EC261BE5A500655E54 /* MyTransit.swift */; };
+		02F025ED261BE5A500655E54 /* MyTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025EC261BE5A500655E54 /* MyTransfer.swift */; };
 		02F02623261C935A00655E54 /* MyFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02622261C935A00655E54 /* MyFirestore.swift */; };
 		02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0262C261C94E600655E54 /* LoginContentView.swift */; };
 		02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* SignUpContentView.swift */; };
 		02F02678261C99F400655E54 /* AdMobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02677261C99F400655E54 /* AdMobView.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
 		02F026E2261DEC7100655E54 /* operationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E1261DEC7100655E54 /* operationButton.swift */; };
-		02F026F1261DED0400655E54 /* transitInfomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* transitInfomation.swift */; };
+		02F026F1261DED0400655E54 /* TransferInfomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* TransferInfomation.swift */; };
 		E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -147,11 +148,11 @@
 		02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsContentView.swift; sourceTree = "<group>"; };
 		02E7F713262083A000C00545 /* settingsLineName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsLineName.swift; sourceTree = "<group>"; };
 		02E7F7182620840700C00545 /* settingsRideTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsRideTime.swift; sourceTree = "<group>"; };
-		02E7F71D2620848D00C00545 /* settingsTransitTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransitTime.swift; sourceTree = "<group>"; };
+		02E7F71D2620848D00C00545 /* settingsTransferTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransferTime.swift; sourceTree = "<group>"; };
 		02E7F722262084FA00C00545 /* settingsTransportation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransportation.swift; sourceTree = "<group>"; };
 		02E7F7272620856100C00545 /* TimetableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableContentView.swift; sourceTree = "<group>"; };
 		02EBD0FC2E51500E00450D16 /* stationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stationAndTime.swift; sourceTree = "<group>"; };
-		02EBD1172E56E97800450D16 /* SettingsTransitSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransitSheet.swift; sourceTree = "<group>"; };
+		02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransferSheet.swift; sourceTree = "<group>"; };
 		02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineViewModel.swift; sourceTree = "<group>"; };
 		02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonComponents.swift; sourceTree = "<group>"; };
 		02EBD4A62E5B023400450D16 /* RailwayModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RailwayModels.swift; sourceTree = "<group>"; };
@@ -159,6 +160,7 @@
 		02EBD4B12E5B080300450D16 /* LocalDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDataService.swift; sourceTree = "<group>"; };
 		02EBD4B72E5B087200450D16 /* ODPTDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ODPTDataService.swift; sourceTree = "<group>"; };
 		02EBD4B92E5B088200450D16 /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		02EBD4BD2E5D770700450D16 /* TransportationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportationModels.swift; sourceTree = "<group>"; };
 		02F02578261BDD7E00655E54 /* mytimetablemaker_swiftui.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mytimetablemaker_swiftui.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mytimetablemaker_swiftuiApp.swift; sourceTree = "<group>"; };
 		02F0257F261BDD7F00655E54 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -176,14 +178,14 @@
 		02F025C9261BDF0600655E54 /* DataExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
 		02F025E6261BE54700655E54 /* MyLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyLogin.swift; sourceTree = "<group>"; };
-		02F025EC261BE5A500655E54 /* MyTransit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTransit.swift; sourceTree = "<group>"; };
+		02F025EC261BE5A500655E54 /* MyTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTransfer.swift; sourceTree = "<group>"; };
 		02F02622261C935A00655E54 /* MyFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFirestore.swift; sourceTree = "<group>"; };
 		02F0262C261C94E600655E54 /* LoginContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginContentView.swift; sourceTree = "<group>"; };
 		02F0263F261C95E400655E54 /* SignUpContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpContentView.swift; sourceTree = "<group>"; };
 		02F02677261C99F400655E54 /* AdMobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobView.swift; sourceTree = "<group>"; };
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		02F026E1261DEC7100655E54 /* operationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = operationButton.swift; sourceTree = "<group>"; };
-		02F026F0261DED0400655E54 /* transitInfomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = transitInfomation.swift; sourceTree = "<group>"; };
+		02F026F0261DED0400655E54 /* TransferInfomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferInfomation.swift; sourceTree = "<group>"; };
 		02F026F1261DED0500655E54 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Debug.xcconfig; sourceTree = "<group>"; };
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
 		E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineSheet.swift; sourceTree = "<group>"; };
@@ -232,7 +234,7 @@
 				027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */,
 				E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */,
 				02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */,
-				02EBD1172E56E97800450D16 /* SettingsTransitSheet.swift */,
+				02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */,
 			);
 			path = ContentView;
 			sourceTree = "<group>";
@@ -387,14 +389,14 @@
 		02F025AF261BDDB700655E54 /* MainContentView */ = {
 			isa = PBXGroup;
 			children = (
-				02F025EC261BE5A500655E54 /* MyTransit.swift */,
+				02F025EC261BE5A500655E54 /* MyTransfer.swift */,
 				02F026C8261D38F900655E54 /* MainContentView.swift */,
 				027F24292ACEB7B500852C89 /* SplashContentView.swift */,
 				02F026E1261DEC7100655E54 /* operationButton.swift */,
 				02EBD0FC2E51500E00450D16 /* stationAndTime.swift */,
 				027F23FC2AC9852800852C89 /* lineTimeImage.swift */,
 				02D9765D2E50AC68003C3766 /* StationLineView.swift */,
-				02F026F0261DED0400655E54 /* transitInfomation.swift */,
+				02F026F0261DED0400655E54 /* TransferInfomation.swift */,
 			);
 			path = MainContentView;
 			sourceTree = "<group>";
@@ -421,7 +423,7 @@
 				02E7F713262083A000C00545 /* settingsLineName.swift */,
 				02E7F7182620840700C00545 /* settingsRideTime.swift */,
 				02E7F722262084FA00C00545 /* settingsTransportation.swift */,
-				02E7F71D2620848D00C00545 /* settingsTransitTime.swift */,
+				02E7F71D2620848D00C00545 /* settingsTransferTime.swift */,
 			);
 			path = VariousSettingsContentView;
 			sourceTree = "<group>";
@@ -432,6 +434,7 @@
 				02F025C4261BDED100655E54 /* Enums.swift */,
 				02EBD4A62E5B023400450D16 /* RailwayModels.swift */,
 				02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */,
+				02EBD4BD2E5D770700450D16 /* TransportationModels.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -634,7 +637,7 @@
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
 				02F026E2261DEC7100655E54 /* operationButton.swift in Sources */,
 				02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */,
-				02F026F1261DED0400655E54 /* transitInfomation.swift in Sources */,
+				02F026F1261DED0400655E54 /* TransferInfomation.swift in Sources */,
 				02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */,
 				0220F1B2263FE1120007EDC8 /* SizeConstants.swift in Sources */,
 				02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */,
@@ -642,13 +645,14 @@
 				02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */,
 				02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */,
 				026257D32AD3E366001CF251 /* GetFirestoreButton.swift in Sources */,
+				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
 				0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */,
 				027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */,
 				0212A534263C35C600627363 /* settingsStations.swift in Sources */,
 				02C15511262BC9170037EEC0 /* ContentView.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */,
-				02E7F71E2620848D00C00545 /* settingsTransitTime.swift in Sources */,
+				02E7F71E2620848D00C00545 /* settingsTransferTime.swift in Sources */,
 				0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */,
 				02EBD4B82E5B087400450D16 /* ODPTDataService.swift in Sources */,
 				02F025CA261BDF0600655E54 /* DataExtensions.swift in Sources */,
@@ -657,7 +661,7 @@
 				02E7F714262083A000C00545 /* settingsLineName.swift in Sources */,
 				026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */,
 				02F025BD261BDEA000655E54 /* TimeExtensions.swift in Sources */,
-				02EBD1182E56E98300450D16 /* SettingsTransitSheet.swift in Sources */,
+				02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */,
 				E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */,
 				026257D72AD3E515001CF251 /* LogOutButton.swift in Sources */,
 				02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */,
@@ -665,7 +669,7 @@
 				02F025C5261BDED100655E54 /* Enums.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
 				02EBD0FD2E51500E00450D16 /* stationAndTime.swift in Sources */,
-				02F025ED261BE5A500655E54 /* MyTransit.swift in Sources */,
+				02F025ED261BE5A500655E54 /* MyTransfer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

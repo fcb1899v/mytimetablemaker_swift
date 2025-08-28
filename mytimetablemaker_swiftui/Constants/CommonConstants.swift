@@ -11,7 +11,7 @@ import Combine
 
 // MARK: - App Constants
 // Core application constants and localized strings
-let appTitle = "My Transit Makers".localized
+let appTitle = "My Transfer Makers".localized
 let goorbackarray = ["back1", "go1", "back2", "go2"]
 
 // MARK: - Default Data Functions
@@ -30,7 +30,7 @@ let lineNameAlertTitle = "Setting your line name".localized
 let lineColorAlertTitle = "Setting your line color".localized
 let stationAlertTitleArray = [destinationAlertTitle, departPointAlertTitle] + (0..<6).flatMap { _ in [stationAlertTitle] }
 let rideTimeAlertTitle = "Setting your ride time [min]".localized
-let transitTimeAlertTitle = "Setting your transit time [min]".localized
+let transferTimeAlertTitle = "Setting your transfer time [min]".localized
 let transportationAlertTitle = "Setting your transportation".localized
 let timetableAlertTitle = "Setting your timetable".localized
 let addAndDeleteTimeTitle = "Add and delete departure time [min]".localized

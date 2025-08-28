@@ -9,25 +9,25 @@ import SwiftUI
 import Foundation
 
 // MARK: - Line Time Image View
-// Custom view component displaying different icons based on line type and transit information
+// Custom view component displaying different icons based on line type and transfer information
 struct lineTimeImage: View {
     
     // MARK: - Properties
     private let lineColor: Color
     private let lineCode: String
-    private let isTransit: Bool
+    private let isTransfer: Bool
     private let transportation: String
     
     // MARK: - Initialization
     init(
         lineColor: Color,
         lineCode: String,
-        isTransit: Bool,
+        isTransfer: Bool,
         transportation: String
     ){
         self.lineColor = lineColor
         self.lineCode = lineCode
-        self.isTransit = isTransit
+        self.isTransfer = isTransfer
         self.transportation = transportation
     }
     
@@ -41,9 +41,9 @@ struct lineTimeImage: View {
             
             // MARK: - Icon Content
             Group {
-                if isTransit {
-                    // MARK: - Transit Icon
-                    // Displays transportation method icon for transit scenarios
+                if isTransfer {
+                    // MARK: - Transfer Icon
+                    // Displays transportation method icon for transfer scenarios
                     Image(systemName: transportation != "" ? getTransportationType(label: transportation).iconName: "figure.walk")
                         .resizable()
                         .scaledToFit()
@@ -89,12 +89,12 @@ struct lineTimeImage: View {
 struct lineTimeImage_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
-            // Transit example
-            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransit: true, transportation: "walking")
+            // Transfer example
+            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
             // Line code example (JK for 京浜東北線)
-            lineTimeImage(lineColor: Color.green, lineCode: "JK", isTransit: false, transportation: "")
+            lineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "")
             // Default lightrail example
-            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransit: true, transportation: "walking")
+            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
         }
     }
 }

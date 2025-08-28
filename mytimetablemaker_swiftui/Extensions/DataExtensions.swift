@@ -64,7 +64,7 @@ extension String{
     func lastUpdatedKey(_ num: Int) -> String { return "\(self)lastupdated\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
-    func transitTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transittimee": "\(self)transittime\(num)" }
+    func transferTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transfertimee": "\(self)transfertime\(num)" }
     func timetableKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)" }
     func choiceCopyTimeKeyArray(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [String] {
         return [
@@ -98,8 +98,8 @@ extension String{
 
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
-    func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(Transportation.walking.rawValue.localized)! }
-    func transitTime(_ num: Int) -> Int { return transitTimeKey(num).userDefaultsInt(0) }
+    func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
+    func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
     func timetableTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
     func choiceCopyTime(_ isWeekday: Bool, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(isWeekday, num, hour)[i].userDefaultsValue("")! }
 
@@ -116,7 +116,7 @@ extension String{
     func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? textNotSet: "\(String(rideTime(num)))\("[min]".localized)"}
     func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? Color.grayColor: lineColorArray[num] }
     func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(textNotSet)! }
-    func settingsTransitTime(_ num: Int) -> String { return (transitTime(num) == 0) ? textNotSet: "\(transitTime(num))\("[min]".localized)"}
+    func settingsTransferTime(_ num: Int) -> String { return (transferTime(num) == 0) ? textNotSet: "\(transferTime(num))\("[min]".localized)"}
     
     
     // MARK: - Main View Data Arrays
@@ -130,8 +130,8 @@ extension String{
     var lineColorStringArray: Array<String> { return (0..<3).map { i in lineColorString(i)} }
     var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
     var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }
-    var transitTimeArray: Array<Int> { return (0..<4).map { i in transitTime(i) } }
-    var transitTimeStringArray: Array<String> { return (0..<4).map { i in settingsTransitTime(i) } }
+    var transferTimeArray: Array<Int> { return (0..<4).map { i in transferTime(i) } }
+    var transferTimeStringArray: Array<String> { return (0..<4).map { i in settingsTransferTime(i) } }
     
     
     // MARK: - Settings View Data Arrays
@@ -152,18 +152,18 @@ extension String{
     var departurePointLabel: String { return isBack ? textDestination: textDepartPoint }
     var destinationLabel: String { return isBack ? textDepartPoint: textDestination }
     var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [departStationDefault(i), arriveStationDefault(i)] } }
-    func transitDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
-    func transitDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transitDepartNum(num)).localized }
-    func transitArriveStation(_ num: Int) -> String { return (num == 0) ? destination.localized: departStation(num - 1).localized }
-    func transitFromDepartStation(_ num: Int) -> String { return "\("From ".localized)\(transitDepartStation(num))\(" to ".localized)"}
-    func transitToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transitArriveStation(num))\("he".localized)" }
-    func transportationLabel(_ num: Int) -> String { return (num == 1) ? transitFromDepartStation(num): transitToArriveStation(num) }
+    func transferDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
+    func transferDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transferDepartNum(num)).localized }
+    func transferArriveStation(_ num: Int) -> String { return (num == 0) ? destination.localized: departStation(num - 1).localized }
+    func transferFromDepartStation(_ num: Int) -> String { return "\("From ".localized)\(transferDepartStation(num))\(" to ".localized)"}
+    func transferToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transferArriveStation(num))\("he".localized)" }
+    func transportationLabel(_ num: Int) -> String { return (num == 1) ? transferFromDepartStation(num): transferToArriveStation(num) }
     
     
     // MARK: - Alert Message Generation
     // Dynamic alert title and message generation
     func rideTimeAlertMessage(_ num: Int) -> String { return  "\("on ".localized)\(lineNameArray[num])" }
-    func transportationMessage(_ num: Int) -> String { return "\(transitFromDepartStation(num))\(transitArriveStation(num))" }
+    func transportationMessage(_ num: Int) -> String { return "\(transferFromDepartStation(num))\(transferArriveStation(num))" }
     func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
     func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 3])\("houmen".localized))"}
     var routeTitle: String { return
@@ -174,9 +174,9 @@ extension String{
     }
     var changeLineString: String {
         switch(changeLineInt) {
-            case 0: return TransitTime.zero.rawValue.localized
-            case 1: return TransitTime.once.rawValue.localized
-            case 2: return TransitTime.twice.rawValue.localized
+            case 0: return TransferTime.zero.rawValue.localized
+            case 1: return TransferTime.once.rawValue.localized
+            case 2: return TransferTime.twice.rawValue.localized
             default: return textNotSet
         }
     }
@@ -201,21 +201,21 @@ extension String{
     // Generate departure and arrival times for current route
     func timeArray(_ isWeekday: Bool, _ currenttime: Int) -> [Int] {
         // Depart time of line 1
-        var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transitTimeArray[1]) } ?? 2700]
+        var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
         // Arrive time of line 1
         timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
         // Depart time from depart point
-        timeArray.insert(timeArray[0].minusHHMM(transitTimeArray[1]).overTime(timeArray[0]), at: 0)
+        timeArray.insert(timeArray[0].minusHHMM(transferTimeArray[1]).overTime(timeArray[0]), at: 0)
         if (changeLineInt > 0) {
             for i in 1...changeLineInt {
                 // Depart time of line i
-                timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transitTimeArray[i + 1]) } ?? 2700)
+                timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
                 // Arrive time of line 1
                 timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
             }
         }
         // Arrive time to destination
-        timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transitTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
+        timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transferTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
         return timeArray
     }
     // MARK: - Timetable Modification

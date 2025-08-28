@@ -11,17 +11,17 @@ import SwiftUI
 // Component for configuring the number of line changes for each route
 struct settingsChangeLine: View {
     
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @State private var label: String
     @State private var isShowingAlert = false
 
     private let goorback: String
 
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         goorback: String
     ){
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.goorback = goorback
         self.label = goorback.changeLineString
     }
@@ -44,13 +44,16 @@ struct settingsChangeLine: View {
                 ActionSheet(
                     title: Text(changeLineAlertTitle),
                     message: Text(goorback.routeTitle),
-                    buttons: TransitTime.allCases.map{$0.rawValue.localized}.indices.map { i in
-                        .default(Text(TransitTime.allCases.map{$0.rawValue.localized}[i])) {
+                    buttons: TransferTime.allCases.map{$0.rawValue.localized}.indices.map { i in
+                        .default(Text(TransferTime.allCases.map{$0.rawValue.localized}[i])) {
                             UserDefaults.standard.set(
-                                TransitTime.allCases.map{$0.Number}[i],
+                                TransferTime.allCases.map{$0.Number}[i],
                                 forKey: goorback.changeLineKey
                             )
-                            myTransit.setChangeLine()
+                            myTransfer.setChangeLine()
+                            
+                            // Post notification to update line selection dropdowns
+                            NotificationCenter.default.post(name: NSNotification.Name("ChangeLineUpdated"), object: nil)
                         }
                     } + [.cancel()]
                 )
@@ -63,7 +66,7 @@ struct settingsChangeLine: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct settingsChangeLine_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
-        settingsChangeLine(myTransit, goorback: "back1")
+        let myTransfer = MyTransfer()
+        settingsChangeLine(myTransfer, goorback: "back1")
     }
 }

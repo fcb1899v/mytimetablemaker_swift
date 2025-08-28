@@ -73,7 +73,12 @@ struct stationAndTime: View {
             // MARK: - Time Display
             Text(time)
                 .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
-        }.foregroundColor(Color.primaryColor)
+        }
+        .foregroundColor(Color.primaryColor)
+        // UserDefaultsの変更を監視して駅名を更新
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            label = goorback.stationArray[num]
+        }
     }
 }
 

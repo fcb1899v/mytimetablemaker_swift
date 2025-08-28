@@ -72,7 +72,7 @@ struct RailwayDTO: Decodable {
 // MARK: - Local Station DTO
 // Station data structure for local JSON files (JR East Japan specific).
 // Contains station information and ordering within railway lines.
-struct LocalStationDTO: Decodable {
+private struct LocalStationDTO: Decodable {
     let title: String
     let sameAs: String
     let operatorCode: String?

@@ -53,12 +53,12 @@ struct VariousSettingsContentView: View {
                 settingsTransportation(goorback, 0)
             }
             
-            // MARK: - Transit Time Settings Section
+            // MARK: - Transfer Time Settings Section
             Section(
-                header: Text(transitTimeAlertTitle).fontWeight(.bold)
+                header: Text(transferTimeAlertTitle).fontWeight(.bold)
             ) {
-                ForEach(1...goorback.changeLineInt + 1, id: \.self) { num in settingsTransitTime(goorback, num) }
-                settingsTransitTime(goorback, 0)
+                ForEach(1...goorback.changeLineInt + 1, id: \.self) { num in settingsTransferTime(goorback, num) }
+                settingsTransferTime(goorback, 0)
             }
         }.navigationBarHidden(true)
     }

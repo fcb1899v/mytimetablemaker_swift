@@ -50,11 +50,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var showArrivalSuggestions: Bool = false       // Arrival station suggestions visibility
     @Published var arrivalSuggestions: [Station] = []         // Arrival station search results
     @Published var isArrivalFieldFocused: Bool = false        // Arrival field focus state
+    @Published var showLineSuggestions: Bool = false          // Line suggestions visibility
     
     // MARK: - Station Selection Flags
     // Flags to prevent re-display of suggestions after selection
     @Published var departureStationSelected: Bool = false     // Flag to prevent departure suggestions re-display
     @Published var arrivalStationSelected: Bool = false       // Flag to prevent arrival suggestions re-display
+    @Published var lineSelected: Bool = false                 // Flag to prevent line suggestions re-display
     
     // MARK: - Computed Properties
     // Convenience properties for UI state checking
@@ -88,6 +90,35 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // User preference for line color customization
     @Published var selectedLineColor: String? = nil            // Selected line color hex value for display
     
+    // MARK: - Transfer Settings State
+    // Transfer configuration properties
+    @Published var selectedTransferTime: Int = 5               // Acceptable transfer time in minutes
+    @Published var selectedTransportation: String = "none"     // Selected transportation method (default: none)
+    
+    // MARK: - Line Selection State
+    // Line selection dropdown state management
+    @Published var selectedLineNumber: Int = 1                 // Currently selected line number (1-3)
+    @Published var availableLineNumbers: [Int] = [1]           // Available line numbers based on changeLine
+    @Published var isLineNumberChanging: Bool = false          // Flag to indicate line number is being changed
+    
+    // MARK: - Goorback Selection State
+    // Route direction selection state management
+    @Published var selectedGoorback: String = "back1"          // Currently selected route direction
+    let goorbackOptions: [String] = ["back1", "back2", "go1", "go2"]  // Available route options
+    let goorbackDisplayNames: [String: String] = [            // Display names for route options
+        "back1": "帰宅ルート1",
+        "back2": "帰宅ルート2", 
+        "go1": "外出ルート1",
+        "go2": "外出ルート2"
+    ]
+    
+    // MARK: - Goorback Selection Methods
+    // Handle goorback selection changes
+    func selectGoorback(_ newGoorback: String) {
+        selectedGoorback = newGoorback
+        // TODO: Implement additional logic for goorback changes if needed
+    }
+    
     // MARK: - Initialization
     // Initialize view model with direction and line index
     init(goorback: String = "back1", lineIndex: Int = 0) {
@@ -107,6 +138,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
             .sink { [weak self] q in Task { await self?.filter(q) } }
             .store(in: &cancellables)
         
+        // MARK: - ChangeLine Monitoring Setup
+        // Monitor changeLine changes to update available line numbers
+        NotificationCenter.default.publisher(for: NSNotification.Name("ChangeLineUpdated"))
+            .sink { [weak self] _ in
+                self?.updateAvailableLineNumbers()
+            }
+            .store(in: &cancellables)
+        
             // MARK: - UserDefaults Initialization
     // Restore user preferences and previous selections from persistent storage
     
@@ -115,31 +154,25 @@ final class SettingsLineSheetViewModel: ObservableObject {
         self.lastUpdated = savedLastUpdated
     }
     
-    // Restore line color preference
-    let userDefaultsKey = goorback.lineColorKey(lineIndex)
-    self.selectedLineColor = UserDefaults.standard.string(forKey: userDefaultsKey)
+        // MARK: - Line Selection Initialization
+        // Set selectedLineNumber to match the lineIndex passed during initialization
+        selectedLineNumber = lineIndex + 1
         
-        // Restore line name preference
-        let lineNameKey = goorback.lineNameKey(lineIndex)
-        if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
-            self.query = savedLineName
+        // Initialize transfer count if not set
+        if UserDefaults.standard.object(forKey: goorback.changeLineKey) == nil {
+            UserDefaults.standard.set(0, forKey: goorback.changeLineKey)
         }
         
-        // Restore departure station preference
-        let departureKey = goorback.departStationKey(lineIndex)
-        if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            self.departureStationInput = savedDeparture
-        }
+        // Initialize line selection based on changeLine setting
+        updateAvailableLineNumbers()
         
-        // Restore arrival station preference
-        let arrivalKey = goorback.arriveStationKey(lineIndex)
-        if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            self.arrivalStationInput = savedArrival
-        }
-        
-        // Restore ride time preference
-        let rideTimeKey = goorback.rideTimeKey(lineIndex)
-        self.selectedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
+        // MARK: - Settings Initialization
+        // Load all settings from UserDefaults
+        loadLineColorSettings()
+        loadLineNameSettings()
+        loadStationSettings()
+        loadRideTimeSettings()
+        loadTransferSettings()
         
         // MARK: - Initial Data Loading
         // Load data on initialization and start background updates
@@ -338,7 +371,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Filter railway lines based on search query with intelligent matching, implements normalized search for improved matching with hiragana support
     func filter(_ q: String) async {
         let t = q.normalizedForSearch
-        guard !t.isEmpty else { lineSuggestions = []; nameCounts = [:]; return }
+        guard !t.isEmpty else { 
+            lineSuggestions = []
+            nameCounts = [:]
+            showLineSuggestions = false
+            return 
+        }
+        
+        // Don't show suggestions if line number is being changed or line is already selected
+        if isLineNumberChanging || lineSelected {
+            return
+        }
         
         // MARK: - Search Key Generation Helper
         // Helper function to generate search key for each line
@@ -383,6 +426,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let hiraganaMatches = all.filter { !key($0).hasPrefix(t) && !key($0).contains(t) && matchesQuery($0) }
         
         lineSuggestions = starts + contains + hiraganaMatches
+        
+        // MARK: - Show Line Suggestions
+        // Show line suggestions if there are results and line suggestions should be shown
+        showLineSuggestions = !lineSuggestions.isEmpty
         
         // MARK: - Duplicate Counting
         // Count duplicates for display purposes to show frequency information
@@ -449,47 +496,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         } ?? filtered
     }
     
-    // MARK: - Line Code Based Station Parsing
-    // Parse station information for a given line code, searches for stations using ODPT line code for precise identification
-    private func parseStationsForLine(_ data: Data, lineCode: String) -> [Station]? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            
-            if let array = json as? [[String: Any]] {               
-                // MARK: - Line Code Search
-                // Search for lines matching the given line code
-                return array.first { railway in
-                    railway["odpt:lineCode"] as? String == lineCode
-                }.flatMap { railway in
-                    // MARK: - Station Order Extraction
-                    // Get station order information for the matching line
-                    (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
-                        // MARK: - Station Object Creation
-                        // Build station information based on station order
-                        (stationInfo["odpt:stationTitle"] as? [String: Any]).map { stationTitle in
-                            let jaName = stationTitle["ja"] as? String
-                            let enName = stationTitle["en"] as? String
-                            
-                            // MARK: - Name Priority Logic
-                            // Use Japanese name first, then English name if no Japanese name exists
-                            let stationName = jaName ?? enName ?? "Unknown station"
-                            
-                            return Station(
-                                name: stationName,
-                                code: nil,
-                                title: StationTitle(ja: jaName, en: enName)
-                            )
-                        }
-                    }
-                }
-            }
-        } catch {
-            // MARK: - Error Handling
-            // Handle JSON parsing errors silently
-            return nil
-        }
-        return nil
-    }
+
     
     // MARK: - Line Name Based Station Parsing
     // Parse station information for a given line name, searches for stations using line name instead of line code
@@ -599,56 +606,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         return stations?.isEmpty == false ? stations : nil
     }
     
-    // MARK: - Railway Type Based Station Parsing
-    // Parse station information for a given railway type, searches for stations based on railway classification (JR, private, etc.)
-    func parseStationsByRailwayType(_ data: Data, railwayType: String?) -> [Station]? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            
-            if let array = json as? [[String: Any]] {
-                // MARK: - Railway Type Search
-                // Search for lines matching the given railway type
-                for railway in array {
-                    if let rt = railway["odpt:railwayType"] as? String,
-                       rt == railwayType {
-                        // MARK: - Station Order Extraction
-                        // Get station order information for the matching railway type
-                        if let stationOrder = railway["odpt:stationOrder"] as? [[String: Any]] {
-                            var stations: [Station] = []
-                            
-                            // MARK: - Station Object Creation
-                            // Build station information based on station order
-                            for stationInfo in stationOrder {
-                                if let stationTitle = stationInfo["odpt:stationTitle"] as? [String: Any] {
-                                    let jaName = stationTitle["ja"] as? String
-                                    let enName = stationTitle["en"] as? String
-                                    
-                                    // MARK: - Localized Name Selection
-                                    // Use Japanese name first, then English name if no Japanese name exists
-                                    let stationName = jaName ?? enName ?? "Unknown station"
-                                    
-                                    let station = Station(
-                                        name: stationName,
-                                        code: nil,
-                                        title: StationTitle(ja: jaName, en: enName)
-                                    )
-                                    stations.append(station)
-                                }
-                            }
-                            return stations
-                        }
-                    }
-                }
-                return nil
-            }
-        } catch {
-            // MARK: - Error Handling
-            // Handle JSON parsing errors silently
-            return nil
-        }
-        return nil
-    }
-        
     // MARK: - Line Name Based Station Retrieval
     // Get station information based on line name, searches across multiple data sources to find stations for a specific line
     func getStationsForLineName(_ lineName: String) -> [Station] {
@@ -751,6 +708,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
     func handleLineSave(dismiss: DismissAction) {
         saveAllDataToUserDefaults()
         updateDisplay()
+        
+        // Post notification to update MainContentView
+        NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
+        
         dismiss()
     }
     
@@ -789,6 +750,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // MARK: - Line Information Persistence
         // Line information is already set in the UI input fields, save line name and lineCode (only if not empty)
+        // Use selectedLineNumber - 1 as the actual lineIndex for UserDefaults keys
+        let lineIndex = selectedLineNumber - 1
+        
         if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let lineNameKey = goorback.lineNameKey(lineIndex)
             UserDefaults.standard.set(query, forKey: lineNameKey)
@@ -835,6 +799,34 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let rideTimeKey = goorback.rideTimeKey(lineIndex)
         UserDefaults.standard.set(selectedRideTime, forKey: rideTimeKey)
         savedItems.append("Ride time: \(selectedRideTime) minutes")
+        
+        // MARK: - Transfer Settings Persistence
+        // Save transfer transportation preference and calculate transfer count
+        let changeLineKey = goorback.changeLineKey
+        let transportationKey = goorback.transportationKey(lineIndex + 2)        
+        // Calculate and save transfer count
+        let currentChangeLine = UserDefaults.standard.integer(forKey: changeLineKey)
+        let currentTransportation = UserDefaults.standard.string(forKey: transportationKey)
+        
+        if currentTransportation != "none" && selectedTransportation == "none" {
+            let newChangeLine = lineIndex
+            UserDefaults.standard.set(newChangeLine, forKey: changeLineKey)
+            savedItems.append("Change line updated: \(newChangeLine)")
+        } else if currentTransportation == "none" && selectedTransportation != "none" {
+            let newChangeLine = min(2, currentChangeLine + 1)
+            UserDefaults.standard.set(min(2, currentChangeLine + 1), forKey: changeLineKey)
+            savedItems.append("Change line updated: \(newChangeLine)")
+        }
+
+                // Save transportation method
+        UserDefaults.standard.set(selectedTransportation, forKey: transportationKey)
+        savedItems.append("Transfer transportation: \(selectedTransportation)")
+        
+        // Save transfer time preference
+        let transferTimeKey = goorback.transferTimeKey(lineIndex + 2)
+        UserDefaults.standard.set(selectedTransferTime, forKey: transferTimeKey)
+        savedItems.append("Transfer time: \(selectedTransferTime) minutes")
+
     }
     
     // MARK: - Station Data Retrieval
@@ -894,5 +886,198 @@ final class SettingsLineSheetViewModel: ObservableObject {
             return nil
         }
         return nil
+    }
+    
+    // MARK: - Settings Loading Functions
+    // Load line color settings from UserDefaults
+    private func loadLineColorSettings() {
+        // Load settings for the specific line index passed during initialization
+        let userDefaultsKey = goorback.lineColorKey(lineIndex)
+        self.selectedLineColor = UserDefaults.standard.string(forKey: userDefaultsKey)
+    }
+    
+    // Load line name settings from UserDefaults
+    private func loadLineNameSettings() {
+        // Load settings for the specific line index passed during initialization
+        let lineNameKey = goorback.lineNameKey(lineIndex)
+        if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
+            self.query = savedLineName
+        }
+    }
+    
+    // Load station settings from UserDefaults
+    private func loadStationSettings() {
+        // Load departure station
+        let departureKey = goorback.departStationKey(lineIndex)
+        if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
+            self.departureStationInput = savedDeparture
+            // Try to find and set the corresponding station object
+            self.selectedDepartureStation = findStationByName(savedDeparture)
+        } else {
+            self.departureStationInput = ""
+            self.selectedDepartureStation = nil
+        }
+        
+        // Load arrival station
+        let arrivalKey = goorback.arriveStationKey(lineIndex)
+        if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
+            self.arrivalStationInput = savedArrival
+            // Try to find and set the corresponding station object
+            self.selectedArrivalStation = findStationByName(savedArrival)
+        } else {
+            self.arrivalStationInput = ""
+            self.selectedArrivalStation = nil
+        }
+    }
+    
+    // Load ride time settings from UserDefaults
+    private func loadRideTimeSettings() {
+        // Load settings for the specific line index passed during initialization
+        let rideTimeKey = goorback.rideTimeKey(lineIndex)
+        self.selectedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
+    }
+    
+    // Load transfer settings from UserDefaults
+    private func loadTransferSettings() {
+        // Check if this is line 3 (lineIndex == 2)
+        if lineIndex < 2 {
+            // For lines 1 and 2, load transfer settings
+            let transportationKey = goorback.transportationKey(lineIndex + 2)
+            if let savedTransportation = UserDefaults.standard.string(forKey: transportationKey), !savedTransportation.isEmpty {
+                self.selectedTransportation = savedTransportation
+            } else {
+                // Default to "none" if no transportation is set
+                self.selectedTransportation = "none"
+            }
+            
+            // Load transfer time preference
+            let transferTimeKey = goorback.transferTimeKey(lineIndex + 2)
+            let savedTransferTime = UserDefaults.standard.integer(forKey: transferTimeKey)
+            if savedTransferTime > 0 {
+                self.selectedTransferTime = savedTransferTime
+            } else {
+                // Default to 5 minutes if no saved transfer time
+                self.selectedTransferTime = 5
+            }
+        } else {
+            // For line 3, set transfer settings to none
+            self.selectedTransportation = "none"
+            self.selectedTransferTime = 5
+        }
+    }
+    
+    // MARK: - Line Selection Management
+    // Update available line numbers based on changeLine setting
+    func updateAvailableLineNumbers() {
+        let changeLineValue = UserDefaults.standard.integer(forKey: goorback.changeLineKey)
+        
+        // Set available line numbers based on changeLine value
+        // changeLine=0: only line 1, changeLine=1: lines 1-2, changeLine=2: lines 1-3
+        availableLineNumbers = Array(1...min(changeLineValue + 1, 3))
+        
+        // Reset transportation settings for lines beyond the current transfer count
+        for i in (changeLineValue + 2)...4 {
+            let transportationKey = goorback.transportationKey(i)
+            UserDefaults.standard.set("none", forKey: transportationKey)
+        }
+        
+        // Ensure selected line number is within available range
+        // Only update selectedLineNumber if it's not already set during initialization
+        if selectedLineNumber == 1 && lineIndex > 0 {
+            selectedLineNumber = min(lineIndex + 1, availableLineNumbers.last ?? 1)
+        }
+    }
+    
+    // MARK: - Line Number Selection
+    // Handle line number selection and update lineIndex accordingly
+    func selectLineNumber(_ lineNumber: Int) {
+        isLineNumberChanging = true
+        
+        // Hide all suggestions during line number change
+        showDepartureSuggestions = false
+        showArrivalSuggestions = false
+        showLineSuggestions = false
+        isDepartureFieldFocused = false
+        isArrivalFieldFocused = false
+        lineSuggestions = [] // Clear line suggestions
+        
+        selectedLineNumber = lineNumber
+        
+        // Reload settings for the newly selected line number
+        loadSettingsForSelectedLine()
+        // Reset flag after a short delay to allow UI updates
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.isLineNumberChanging = false
+        }
+    }
+    
+    // MARK: - Settings Loading for Selected Line
+    // Load settings for the currently selected line number
+    private func loadSettingsForSelectedLine() {
+        let currentLineIndex = selectedLineNumber - 1
+        
+        // Load line color settings
+        let colorKey = goorback.lineColorKey(currentLineIndex)
+        self.selectedLineColor = UserDefaults.standard.string(forKey: colorKey)
+        
+        // Load line name settings
+        let lineNameKey = goorback.lineNameKey(currentLineIndex)
+        if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
+            self.query = savedLineName
+        }
+        
+        // Load station settings
+        let departureKey = goorback.departStationKey(currentLineIndex)
+        if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
+            self.departureStationInput = savedDeparture
+            self.selectedDepartureStation = findStationByName(savedDeparture)
+        } else {
+            self.departureStationInput = ""
+            self.selectedDepartureStation = nil
+        }
+        
+        let arrivalKey = goorback.arriveStationKey(currentLineIndex)
+        if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
+            self.arrivalStationInput = savedArrival
+            self.selectedArrivalStation = findStationByName(savedArrival)
+        } else {
+            self.arrivalStationInput = ""
+            self.selectedArrivalStation = nil
+        }
+        
+        // Load ride time settings
+        let rideTimeKey = goorback.rideTimeKey(currentLineIndex)
+        self.selectedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
+        
+        // Load transfer settings
+        if selectedLineNumber < 3 {
+            // For lines 1 and 2, load transfer settings
+            let transportationKey = goorback.transportationKey(currentLineIndex + 2)
+            if let savedTransportation = UserDefaults.standard.string(forKey: transportationKey), !savedTransportation.isEmpty {
+                self.selectedTransportation = savedTransportation
+            } else {
+                self.selectedTransportation = "none"
+            }
+            
+            let transferTimeKey = goorback.transferTimeKey(currentLineIndex + 2)
+            let savedTransferTime = UserDefaults.standard.integer(forKey: transferTimeKey)
+            if savedTransferTime > 0 {
+                self.selectedTransferTime = savedTransferTime
+            } else {
+                self.selectedTransferTime = 5
+            }
+        } else {
+            // For line 3, reset transfer settings to none
+            self.selectedTransportation = "none"
+            self.selectedTransferTime = 5
+        }
+    }
+    
+    // MARK: - Station Search Helper
+    // Find station object by name from all available stations
+    private func findStationByName(_ stationName: String) -> Station? {
+        return getAllAvailableStations().first { station in
+            station.getLocalizedName() == stationName
+        }
     }
 }

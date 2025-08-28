@@ -9,10 +9,10 @@ import GoogleMobileAds
 import AppTrackingTransparency
 
 // MARK: - Main Content View
-// Primary view displaying transit information, timetables, and navigation controls
+// Primary view displaying transfer information, timetables, and navigation controls
 struct MainContentView: View {
 
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myLogin: MyLogin
     @ObservedObject private var myFirestore: MyFirestore
 
@@ -20,11 +20,11 @@ struct MainContentView: View {
     @State private var isMoveSettings = false
 
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         _ myLogin: MyLogin,
         _ myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -59,13 +59,13 @@ struct MainContentView: View {
                             Spacer()
                             // MARK: - Date Display
                             ZStack {
-                                Text(myTransit.dateLabel)
+                                Text(myTransfer.dateLabel)
                                     .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                    .onChange(of: myTransit.selectDate) {
-                                        newValue in myTransit.dateLabel = "\(newValue.setDate)"
+                                    .onChange(of: myTransfer.selectDate) {
+                                        newValue in myTransfer.dateLabel = "\(newValue.setDate)"
                                     }
-                                if (myTransit.isTimeStop) {
-                                    DatePicker("datepicker", selection: $myTransit.selectDate,
+                                if (myTransfer.isTimeStop) {
+                                    DatePicker("datepicker", selection: $myTransfer.selectDate,
                                         displayedComponents: .date
                                     )
                                     .labelsHidden()
@@ -75,14 +75,14 @@ struct MainContentView: View {
                             }
                             Spacer()
                             // MARK: - Time Display
-                            if (myTransit.isTimeStop) {
+                            if (myTransfer.isTimeStop) {
                                 ZStack {
-                                    Text(myTransit.timeLabel)
+                                    Text(myTransfer.timeLabel)
                                         .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                        .onChange(of: myTransit.selectDate) {
-                                            newValue in myTransit.timeLabel = "\(newValue.setTime)"
+                                        .onChange(of: myTransfer.selectDate) {
+                                            newValue in myTransfer.timeLabel = "\(newValue.setTime)"
                                         }
-                                    DatePicker("datepicker", selection: $myTransit.selectDate,
+                                    DatePicker("datepicker", selection: $myTransfer.selectDate,
                                         displayedComponents: .hourAndMinute
                                     )
                                     .labelsHidden()
@@ -90,10 +90,10 @@ struct MainContentView: View {
                                     .frame(width: headerDateHeight, height: headerDateHeight)
                                 }
                             } else {
-                                Text(myTransit.timeLabel)
+                                Text(myTransfer.timeLabel)
                                     .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                    .onAppear { myTransit.startButton() }
-                                    .onDisappear { myTransit.stopButton() }
+                                    .onAppear { myTransfer.startButton() }
+                                    .onDisappear { myTransfer.stopButton() }
                             }
                             Spacer()
                         }
@@ -107,13 +107,13 @@ struct MainContentView: View {
                     HStack {
                         HStack(spacing: operationButtonMargin) {
                             // Display going home route button
-                            operationButton(isOn: myTransit.isBack, label: textBack, action: myTransit.backButton)
+                            operationButton(isOn: myTransfer.isBack, label: textBack, action: myTransfer.backButton)
                             // Display outgoing route button
-                            operationButton(isOn: !myTransit.isBack, label: textGo, action: myTransit.goButton)
+                            operationButton(isOn: !myTransfer.isBack, label: textGo, action: myTransfer.goButton)
                             // Time Start Button
-                            operationButton(isOn: !myTransit.isTimeStop, label: textStart, action: myTransit.startButton)
+                            operationButton(isOn: !myTransfer.isTimeStop, label: textStart, action: myTransfer.startButton)
                             // Time Stop Button
-                            operationButton(isOn: myTransit.isTimeStop, label: textStop, action: myTransit.stopButton)
+                            operationButton(isOn: myTransfer.isTimeStop, label: textStop, action: myTransfer.stopButton)
                             // To Settings Button
                             Button(action: {
                                 isMoveSettings = true
@@ -132,31 +132,30 @@ struct MainContentView: View {
                 .background(Color.primaryColor)
                 .frame(height: headerHeight)
                 
-                // MARK: - Transit Information Display
+                // MARK: - Transfer Information Display
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
                         if(screenWidth > 600) { Spacer() }
                         VStack(alignment: .center, spacing: routeBottomSpace) {
                             Spacer().frame(height: routeCountdownTopSpace)
-                            Text(myTransit.countdownTime1)
+                            Text(myTransfer.countdownTime1)
                                 .font(.custom("GenEiGothicN-Regular", size: routeCountdownFontSize))
-                                .foregroundColor(myTransit.countdownColor1)
+                                .foregroundColor(myTransfer.countdownColor1)
                                 .padding(.vertical, routeCountdownPadding)
-                            stationAndTime(myTransit.goOrBack1, 1, myTransit.timeArrayString1[1])
-                            ForEach(0...myTransit.changeLine1, id: \.self) { num in
-                                transitInfomation(myTransit.goOrBack1, num + 1)
-                                // StationLineViewを使用して出発駅、路線情報、到着駅を統合表示
-                                LineAndStation(myTransit.goOrBack1, myTransit.isWeekday, num, myTransit.timeArrayString1[2 * num + 2], myTransit.timeArrayString1[2 * num + 3])
+                            stationAndTime(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
+                            ForEach(0...myTransfer.changeLine1, id: \.self) { num in
+                                TransferInfomation(myTransfer.goOrBack1, num + 1)
+                                LineAndStation(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
                             }
-                            transitInfomation(myTransit.goOrBack1, 0)
-                            stationAndTime(myTransit.goOrBack1, 0, myTransit.timeArrayString1[0])
+                            TransferInfomation(myTransfer.goOrBack1, 0)
+                            stationAndTime(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
                             Spacer()
                         }
-                        .frame(width: myTransit.routeWidth, alignment: .top)
+                        .frame(width: myTransfer.routeWidth, alignment: .top)
                         .padding(.horizontal, routeSidePadding)
                         
                         // MARK: - Second Route Display (if enabled)
-                        if (myTransit.isShowRoute2) {
+                        if (myTransfer.isShowRoute2) {
                             if(screenWidth > 600) { Spacer() }
                             Divider()
                                 .frame(width: 1.5, height: routeHeight)
@@ -164,21 +163,20 @@ struct MainContentView: View {
                             if(screenWidth > 600) { Spacer() }
                             VStack(alignment: .center, spacing: routeBottomSpace) {
                                 Spacer().frame(height: routeCountdownTopSpace)
-                                Text(myTransit.countdownTime2)
+                                Text(myTransfer.countdownTime2)
                                     .font(.system(size: routeCountdownFontSize))
-                                    .foregroundColor(myTransit.countdownColor2)
+                                    .foregroundColor(myTransfer.countdownColor2)
                                     .padding(.vertical, routeCountdownPadding)
-                                stationAndTime(myTransit.goOrBack2, 1, myTransit.timeArrayString2[1])
-                                ForEach(0...myTransit.changeLine2, id: \.self) { num in
-                                    transitInfomation(myTransit.goOrBack2, num + 1)
-                                    // StationLineViewを使用して出発駅、路線情報、到着駅を統合表示
-                                    LineAndStation(myTransit.goOrBack2, myTransit.isWeekday, num, myTransit.timeArrayString2[2 * num + 2], myTransit.timeArrayString2[2 * num + 3])
+                                stationAndTime(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
+                                ForEach(0...myTransfer.changeLine2, id: \.self) { num in
+                                    TransferInfomation(myTransfer.goOrBack2, num + 1)
+                                    LineAndStation(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
                                 }
-                                transitInfomation(myTransit.goOrBack2, 0)
-                                stationAndTime(myTransit.goOrBack2, 0, myTransit.timeArrayString2[0])
+                                TransferInfomation(myTransfer.goOrBack2, 0)
+                                stationAndTime(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
                                 Spacer()
                             }
-                            .frame(width: myTransit.routeWidth)
+                            .frame(width: myTransfer.routeWidth)
                             .padding(.horizontal, routeSidePadding)
                         }
                         if(screenWidth > 600) { Spacer() }
@@ -198,9 +196,13 @@ struct MainContentView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .navigationDestination(isPresented: $isMoveSettings) {
-            SettingsContentView(myTransit, myLogin, myFirestore)
+            SettingsContentView(myTransfer, myLogin, myFirestore)
         }
         .navigationBarBackButtonHidden(true)
+        // SettingsLineSheetの保存完了を監視してMyTransferのデータを更新
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsLineUpdated"))) { _ in
+            myTransfer.updateAllDataFromUserDefaults()
+        }
     }
 }
 
@@ -208,10 +210,10 @@ struct MainContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct MainContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myLogin = MyLogin()
         let myFirestore = MyFirestore()
-        MainContentView(myTransit, myLogin, myFirestore)
+        MainContentView(myTransfer, myLogin, myFirestore)
     }
 }
 

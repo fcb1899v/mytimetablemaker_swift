@@ -112,10 +112,10 @@ class MyFirestore: ObservableObject {
                 "transportation2" : goorback.transportationArray[2],
                 "transportation3" : goorback.transportationArray[3],
                 "transportatione" : goorback.transportationArray[0],
-                "transittime1" : "\(goorback.transitTimeArray[1])",
-                "transittime2" : "\(goorback.transitTimeArray[2])",
-                "transittime3" : "\(goorback.transitTimeArray[3])",
-                "transittimee" : "\(goorback.transitTimeArray[0])"
+                "transittime1" : "\(goorback.transferTimeArray[1])",
+                "transittime2" : "\(goorback.transferTimeArray[2])",
+                "transittime3" : "\(goorback.transferTimeArray[3])",
+                "transittimee" : "\(goorback.transferTimeArray[0])"
             ],
             forDocument: getRef(goorback)
         )
@@ -175,10 +175,10 @@ class MyFirestore: ObservableObject {
                     UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
                     UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
                     UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
-                    UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transitTimeKey(num + 1))
+                    UserDefaults.standard.set(data["transfertime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))
                 }
                 UserDefaults.standard.set(data["transportatione"], forKey: goorback.transportationKey(0))
-                UserDefaults.standard.set(data["transittimee"], forKey: goorback.transitTimeKey(0))
+                UserDefaults.standard.set(data["transfertimee"], forKey: goorback.transferTimeKey(0))
                 if (goorback == "go2") {
                     title = "Data got successfully".localized
                     message = ""

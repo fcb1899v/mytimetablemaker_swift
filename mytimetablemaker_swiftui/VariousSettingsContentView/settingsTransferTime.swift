@@ -1,5 +1,5 @@
 //
-//  settingsTransitTime.swift
+//  settingsTransferTime.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by Masao Nakajima on 2021/03/02.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-// MARK: - Settings Transit Time View
-// Component for editing transit times between transportation segments
-struct settingsTransitTime: View {
+// MARK: - Settings Transfer Time View
+// Component for editing transfer times between transportation segments
+struct settingsTransferTime: View {
     
     @State private var isShowingAlert = false
     @State private var inputText = ""
@@ -26,7 +26,7 @@ struct settingsTransitTime: View {
         self.goorback = goorback
         self.num = num
         self.title = goorback.transportationLabel(num)
-        self.label = goorback.transitTimeStringArray[num]
+        self.label = goorback.transferTimeStringArray[num]
     }
 
     var body: some View {
@@ -42,12 +42,12 @@ struct settingsTransitTime: View {
                 Spacer()
                 Text(label).foregroundColor(label.settingsColor)
                     .lineLimit(1)
-                    .onChange(of: goorback.transitTimeStringArray[num]) {
+                    .onChange(of: goorback.transferTimeStringArray[num]) {
                         newValue in label = newValue
                     }
             }
-            // MARK: - Transit Time Edit Alert
-            .alert(transitTimeAlertTitle, isPresented: $isShowingAlert) {
+            // MARK: - Transfer Time Edit Alert
+            .alert(transferTimeAlertTitle, isPresented: $isShowingAlert) {
                 TextField(numberPlaceHolder, text: $inputText)
                     .multilineTextAlignment(.center)
                     .keyboardType(.numberPad)
@@ -55,7 +55,7 @@ struct settingsTransitTime: View {
                 // OK button
                 Button(textOk, role: .none){
                     if (inputText.intText(min: 1, max: 99) > 0) {
-                        UserDefaults.standard.set(inputText, forKey: goorback.transitTimeKey(num))
+                        UserDefaults.standard.set(inputText, forKey: goorback.transferTimeKey(num))
                     }
                     isShowingAlert = false
                 }
@@ -72,8 +72,8 @@ struct settingsTransitTime: View {
 
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode
-struct settingsTransitTime_Previews: PreviewProvider {
+struct settingsTransferTime_Previews: PreviewProvider {
     static var previews: some View {
-        settingsTransitTime("back1", 0)
+        settingsTransferTime("back1", 0)
     }
 }

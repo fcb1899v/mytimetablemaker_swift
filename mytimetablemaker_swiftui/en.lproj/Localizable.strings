@@ -7,7 +7,7 @@
 */
 
 //Title
-"My Transit Makers" = "My Transit Makers";
+"My Transfer Makers" = "My Transfer Makers";
 
 //MainContentView.swift
 "Back" = "Back";
@@ -75,7 +75,7 @@
 "Setting your line color" = "Setting your line color";
 "Setting your ride time [min]" = "Setting your ride time [min]";
 "Setting your transportation" = "Setting your transportation";
-"Setting your transit time [min]" = "Setting your transit time [min]";
+"Setting your transfer time [min]" = "Setting your transfer time [min]";
 "Setting your timetable" = "Setting your timetable";
 
 //SettingsLineSheet
@@ -185,7 +185,7 @@
 
 //EnumSetting.swift
 
-//TransitTime
+//TransferTime
 "Zero" = "Zero";
 "Once" = "Once";
 "Twice" = "Twice";
@@ -246,7 +246,8 @@
 "Ride Time" = "Ride Time";
 "Line Name" = "Line Name";
 "Enter line name or bus route name" = "Enter line name or bus route name";
-"Line Input" = "Line Input";
+"Line" = "Line";
+"Input" = "Input";
 ": " = ": ";
 " to " = " to ";
 "Select Color" = "Select Color";
@@ -257,3 +258,7 @@
 "Enter arrival station" = "Enter arrival station";
 "Railway" = "Railway";
 "Bus" = "Bus";
+"Next Transfer" = "Next Transfer";
+"Transfer Time" = "Transfer Time";
+"None" = "None";
+"Time Settings" = "Time Settings";

@@ -7,7 +7,7 @@
 */
 
 //Title
-"My Transit Makers" = "マイ乗換ルートメーカー";
+"My Transfer Makers" = "マイ乗換ルートメーカー";
 
 //MainContentView.swift
 "Back" = "帰宅";
@@ -75,7 +75,7 @@
 "Setting your line color" = "路線カラーの設定";
 "Setting your ride time [min]" = "乗車時間の設定 [分]";
 "Setting your transportation" = "移動手段の設定";
-"Setting your transit time [min]" = "移動時間の設定 [分]";
+"Setting your transfer time [min]" = "乗換時間の設定 [分]";
 "Setting your timetable" = "時刻表設定";
 
 //SettingsLineSheet
@@ -185,7 +185,7 @@
 
 //EnumSetting.swift
 
-//TransitTime
+//TransferTime
 "Zero" = "なし";
 "Once" = "1回";
 "Twice" = "2回";
@@ -246,7 +246,8 @@
 "Ride Time" = "乗車時間";
 "Line Name" = "路線名";
 "Enter line name or bus route name" = "路線名・バス路線名を入力";
-"Line Input" = "路線の入力";
+"Line" = "路線";
+"Input" = "の入力";
 ": " = "：";
 " to " = "〜";
 "Select Color" = "色を選択";
@@ -257,3 +258,7 @@
 "Enter arrival station" = "降車駅を入力";
 "Railway" = "鉄道";
 "Bus" = "バス";
+"Next Transfer" = "次の乗換";
+"Transfer Time" = "乗換時間";
+"None" = "なし";
+"Time Settings" = "時間設定";

@@ -9,9 +9,9 @@ import Foundation
 import Combine
 import SwiftUI
 
-// MARK: - Transit Data Model
-// Manages transit information, timetables, and real-time updates
-class MyTransit: ObservableObject {
+// MARK: - Transfer Data Model
+// Manages transfer information, timetables, and real-time updates
+class MyTransfer: ObservableObject {
     
     // Timer for real-time updates
     private var cancellable: AnyCancellable?
@@ -23,28 +23,12 @@ class MyTransit: ObservableObject {
     @Published var isBack: Bool
     
     // Route visibility settings with UserDefaults persistence
-    @Published var isShowBackRoute2: Bool {
-        didSet {
-            UserDefaults.standard.set(isShowBackRoute2, forKey: "back2".isShowRoute2Key)
-        }
-    }
-    @Published var isShowGoRoute2: Bool {
-        didSet {
-            UserDefaults.standard.set(isShowGoRoute2, forKey: "go2".isShowRoute2Key)
-        }
-    }
+    @Published var isShowBackRoute2: Bool
+    @Published var isShowGoRoute2: Bool
     
     // Line change settings with UserDefaults persistence
-    @Published var changeLine1: Int {
-        didSet {
-            UserDefaults.standard.set(changeLine1, forKey: isBack.goOrBack1.changeLineKey)
-        }
-    }
-    @Published var changeLine2: Int {
-        didSet {
-            UserDefaults.standard.set(changeLine2, forKey: isBack.goOrBack2.changeLineKey)
-        }
-    }
+    @Published var changeLine1: Int
+    @Published var changeLine2: Int
     
     // MARK: - Initialization
     init() {
@@ -70,6 +54,32 @@ class MyTransit: ObservableObject {
     func setChangeLine() {
         changeLine1 = isBack.goOrBack1.changeLineInt
         changeLine2 = isBack.goOrBack2.changeLineInt
+    }
+    
+    // MARK: - UserDefaults Persistence
+    // Save route visibility settings to UserDefaults
+    func saveRoute2Settings() {
+        UserDefaults.standard.set(isShowBackRoute2, forKey: "back2".isShowRoute2Key)
+        UserDefaults.standard.set(isShowGoRoute2, forKey: "go2".isShowRoute2Key)
+    }
+    
+    // Save line change settings to UserDefaults
+    func saveChangeLineSettings() {
+        UserDefaults.standard.set(changeLine1, forKey: isBack.goOrBack1.changeLineKey)
+        UserDefaults.standard.set(changeLine2, forKey: isBack.goOrBack2.changeLineKey)
+    }
+    
+    // MARK: - UserDefaults Data Update
+    // Updates all data from UserDefaults when changes are detected
+    func updateAllDataFromUserDefaults() {
+        // Update route visibility settings
+        setRoute2()
+        
+        // Update line change settings
+        setChangeLine()
+        
+        // Force UI update by triggering objectWillChange
+        objectWillChange.send()
     }
     
     // MARK: - Direction Control

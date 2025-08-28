@@ -69,7 +69,7 @@ struct LineAndStation: View {
                     lineTimeImage(
                         lineColor: lineColor,
                         lineCode: lineCode,
-                        isTransit: false,
+                        isTransfer: false,
                         transportation: ""
                     )
                     .sheet(isPresented: $isShowingTimetableAlert) {

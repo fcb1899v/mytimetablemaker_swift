@@ -104,3 +104,44 @@ let ImagePickerButtonWidth: CGFloat = customWidth * 0.8
 let admobBannerWidth: CGFloat = screenWidth - 100
 let admobBannerMinWidth: CGFloat = 320
 let admobBannerHeight: CGFloat = ((screenHeight - headerHeight - 75) < 500) ? 50: (screenHeight - headerHeight - 75) / 10
+
+// MARK: - Settings Line Sheet
+// Basic Layout
+let settingsLineSheetSpacing: CGFloat = screenHeight * 0.012
+let settingsLineSheetPadding: CGFloat = screenWidth * 0.03
+let settingsLineSheetCornerRadius: CGFloat = screenHeight * 0.01
+let settingsLineSheetButtonCornerRadius: CGFloat = screenHeight * 0.020
+// Typography
+let settingsLineSheetTitleFontSize: CGFloat = screenHeight * 0.018
+let settingsLineSheetInputFontSize: CGFloat = screenHeight * 0.018
+let settingsLineSheetButtonFontSize: CGFloat = screenHeight * 0.018
+let settingsLineSheetHeadlineFontSize: CGFloat = screenHeight * 0.016
+let settingsLineSheetCaptionFontSize: CGFloat = screenHeight * 0.012
+// Component Heights
+let settingsLineSheetTextFieldHeight: CGFloat = screenHeight * 0.040
+let settingsLineSheetButtonHeight: CGFloat = screenHeight * 0.044
+let settingsLineSheetSuggestionItemHeight: CGFloat = screenHeight * 0.056
+let settingsLineSheetMaxSuggestionHeight: CGFloat = screenHeight * 0.4
+// Color Elements
+let settingsLineSheetColorCircleSize: CGFloat = screenHeight * 0.03
+let settingsLineSheetColorCircleSmallSize: CGFloat = screenHeight * 0.02
+let settingsLineSheetColorPaddingHorizontal: CGFloat = screenWidth * 0.04
+let settingsLineSheetColorPaddingVertical: CGFloat = screenHeight * 0.008
+// Input Elements
+let settingsLineSheetInputPaddingHorizontal: CGFloat = screenWidth * 0.04
+let settingsLineSheetInputPaddingVertical: CGFloat = screenHeight * 0.008
+// Tags and Icons
+let settingsLineSheetTagPaddingHorizontal: CGFloat = screenHeight * 0.006
+let settingsLineSheetTagPaddingVertical: CGFloat = screenHeight * 0.003
+let settingsLineSheetIconSize: CGFloat = screenWidth * 0.04
+// Grid and Spacing
+let settingsLineSheetGridSpacing: CGFloat = screenHeight * 0.02
+let settingsLineSheetHStackSpacing: CGFloat = screenHeight * 0.008
+// Visual Effects
+let settingsLineSheetShadowRadius: CGFloat = screenHeight * 0.006
+let settingsLineSheetStrokeLineWidth: CGFloat = screenHeight * 0.001
+// Sheet Offsets
+let settingsLineSheetDepartureOffset: CGFloat = screenHeight * 0.21
+let settingsLineSheetArrivalOffset: CGFloat = screenHeight * 0.26
+let settingsLineSheetLineOffset: CGFloat = screenHeight * 0.06
+let settingsLineSheetColorOffset: CGFloat = screenHeight * 0.13

@@ -1,4 +1,4 @@
-# My Transit Maker
+# My Transfer Maker
 
 <div align="center">
   <img src="mytimetablemaker_swiftui/Common/Assets.xcassets/icon.imageset/icon.png" alt="My Time Table Maker Icon" width="120" height="120">
@@ -109,9 +109,9 @@ mytimetablemaker_swiftui/
 ├── MainContentView/                      # Main app views
 │   ├── MainContentView.swift
 │   ├── SplashContentView.swift
-│   ├── MyTransit.swift
+│   ├── MyTransfer.swift
 │   ├── stationAndTime.swift
-│   ├── transitInfomation.swift
+│   ├── transferInfomation.swift
 │   ├── lineInfomation.swift
 │   ├── lineTimeImage.swift
 │   └── operationButton.swift

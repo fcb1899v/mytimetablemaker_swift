@@ -12,18 +12,18 @@ import AppTrackingTransparency
 // Initial splash screen displayed when app launches
 struct SplashContentView: View {
 
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myLogin: MyLogin
     @ObservedObject private var myFirestore: MyFirestore
 
     @State private var isFinishSplash = false
 
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         _ myLogin: MyLogin,
         _ myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -68,7 +68,7 @@ struct SplashContentView: View {
             }
             .edgesIgnoringSafeArea(.all)
             .navigationDestination(isPresented: $isFinishSplash) {
-                MainContentView(myTransit, myLogin, myFirestore)
+                MainContentView(myTransfer, myLogin, myFirestore)
             }
         }
     }
@@ -78,10 +78,10 @@ struct SplashContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SplashContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myLogin = MyLogin()
         let myFirestore = MyFirestore()
-        SplashContentView(myTransit, myLogin, myFirestore)
+        SplashContentView(myTransfer, myLogin, myFirestore)
     }
 }
 

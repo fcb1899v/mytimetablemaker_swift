@@ -15,17 +15,17 @@ import AdSupport
 struct ContentView: View {
     
     // Core data models for app state management
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myLogin: MyLogin
     @ObservedObject private var myFirestore: MyFirestore
 
     // MARK: - Initialization
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         _ myLogin: MyLogin,
         _ myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
         self.toTracking()
@@ -33,7 +33,7 @@ struct ContentView: View {
 
     var body: some View {
         // Display splash screen with light color scheme
-        SplashContentView(myTransit, myLogin, myFirestore)
+        SplashContentView(myTransfer, myLogin, myFirestore)
             .preferredColorScheme(.light)        
     }
     
@@ -52,9 +52,9 @@ struct ContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myLogin = MyLogin()
         let myFirestore = MyFirestore()
-        ContentView(myTransit, myLogin, myFirestore)
+        ContentView(myTransfer, myLogin, myFirestore)
     }
 }

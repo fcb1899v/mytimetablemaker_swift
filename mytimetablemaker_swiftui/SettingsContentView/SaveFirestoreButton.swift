@@ -12,15 +12,15 @@ import SwiftUI
 struct SetFirestoreButton: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myFirestore: MyFirestore
     @State private var isShowAlert = false
     
     init(
-        myTransit: MyTransit,
+        myTransfer: MyTransfer,
         myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myFirestore = myFirestore
     }
     
@@ -62,9 +62,9 @@ struct SetFirestoreButton: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SetFirestoreButton_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myFirestore = MyFirestore()
-        SetFirestoreButton(myTransit: myTransit, myFirestore: myFirestore)
+        SetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
     }
 }
 

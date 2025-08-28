@@ -13,7 +13,7 @@ import FirebaseAuth
 struct LoginContentView: View {
 
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myLogin: MyLogin
     @ObservedObject private var myFirestore: MyFirestore
 
@@ -22,11 +22,11 @@ struct LoginContentView: View {
     @State private var isShowSplash = true
 
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         _ myLogin: MyLogin,
         _ myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -177,8 +177,8 @@ struct LoginContentView: View {
 struct LoginContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myLogin = MyLogin()
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myFirestore = MyFirestore()
-        LoginContentView(myTransit, myLogin, myFirestore)
+        LoginContentView(myTransfer, myLogin, myFirestore)
     }
 }

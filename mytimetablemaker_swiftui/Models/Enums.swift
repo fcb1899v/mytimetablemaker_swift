@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-// MARK: - Transit Time Enumeration
-// Defines the number of transfers for transit routes
-enum TransitTime: String, CaseIterable {
+// MARK: - Transfer Time Enumeration
+// Defines the number of transfers for transfer routes
+enum TransferTime: String, CaseIterable {
     case zero = "Zero";
     case once = "Once";
     case twice = "Twice";
@@ -23,7 +23,7 @@ enum TransitTime: String, CaseIterable {
 }
 
 // MARK: - Transportation Enumeration
-// Defines available transportation modes for transit segments
+// Defines available transportation modes for transfer segments
 enum Transportation: String, CaseIterable {
     case walking = "Walking"
     case bicycle = "Bicycle"
@@ -91,7 +91,7 @@ enum LocalDataSource: CaseIterable {
     case tokyoMetro    // Tokyo Metro subway lines
     case toeiMetro     // Toei subway lines
     case odakyu        // Odakyu railway lines
-    case yurikamome    // Yurikamome automated transit system
+    case yurikamome    // Yurikamomey line
     case rinkai        // Rinkai Line
     case seibu         // Seibu Railway
     case sotetsu       // Sotetsu Railway

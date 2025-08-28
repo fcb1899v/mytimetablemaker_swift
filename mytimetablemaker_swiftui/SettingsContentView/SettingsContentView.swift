@@ -12,18 +12,18 @@ import SwiftUI
 struct SettingsContentView: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransit: MyTransit
+    @ObservedObject private var myTransfer: MyTransfer
     @ObservedObject private var myLogin: MyLogin
     @ObservedObject private var myFirestore: MyFirestore
     
     @State private var isShowLogIn = false
 
     init(
-        _ myTransit: MyTransit,
+        _ myTransfer: MyTransfer,
         _ myLogin: MyLogin,
         _ myFirestore: MyFirestore
     ) {
-        self.myTransit = myTransit
+        self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -37,11 +37,11 @@ struct SettingsContentView: View {
                         header: Text("Display route 2".localized).fontWeight(.bold)
                     ) {
                         // Display or not going home route 2
-                        Toggle(isOn: $myTransit.isShowBackRoute2){
+                        Toggle(isOn: $myTransfer.isShowBackRoute2){
                             Text("Going home route 2".localized)
                         }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                         // Display or not outgoing route 2
-                        Toggle(isOn: $myTransit.isShowGoRoute2){
+                        Toggle(isOn: $myTransfer.isShowGoRoute2){
                             Text("Outgoing route 2".localized)
                         }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                     }
@@ -51,13 +51,13 @@ struct SettingsContentView: View {
                         header: Text("Change line".localized).fontWeight(.bold)
                     ) {
                         // Setting change line of going home route 1
-                        settingsChangeLine(myTransit, goorback: "back1")
+                        settingsChangeLine(myTransfer, goorback: "back1")
                         // Setting change line of going home route 2
-                        if (myTransit.isShowBackRoute2) {settingsChangeLine(myTransit, goorback: "back2")}
+                        if (myTransfer.isShowBackRoute2) {settingsChangeLine(myTransfer, goorback: "back2")}
                         // Setting change line of outgoing route 1
-                        settingsChangeLine(myTransit, goorback: "go1")
+                        settingsChangeLine(myTransfer, goorback: "go1")
                         // Setting change line of outgoing route 2
-                        if (myTransit.isShowGoRoute2) {settingsChangeLine(myTransit, goorback: "go2")}
+                        if (myTransfer.isShowGoRoute2) {settingsChangeLine(myTransfer, goorback: "go2")}
                     }
                     
                     // MARK: - Various Settings
@@ -67,7 +67,7 @@ struct SettingsContentView: View {
                         NavigationLink(destination: VariousSettingsContentView("back1")){
                             Text("back1".routeTitle)
                         }
-                        if (myTransit.isShowBackRoute2) {
+                        if (myTransfer.isShowBackRoute2) {
                             NavigationLink(destination: VariousSettingsContentView("back2")){
                                 Text("back2".routeTitle)
                             }
@@ -75,7 +75,7 @@ struct SettingsContentView: View {
                         NavigationLink(destination: VariousSettingsContentView("go1")){
                             Text("go1".routeTitle)
                         }
-                        if (myTransit.isShowGoRoute2) {
+                        if (myTransfer.isShowGoRoute2) {
                             NavigationLink(destination: VariousSettingsContentView("go2")){
                                 Text("go2".routeTitle)
                             }
@@ -87,15 +87,15 @@ struct SettingsContentView: View {
                         header: Text("Account".localized).fontWeight(.bold)
                     ) {
                         if myLogin.isLoginSuccess {
-                            GetFirestoreButton(myTransit: myTransit, myFirestore: myFirestore)
-                            SetFirestoreButton(myTransit: myTransit, myFirestore: myFirestore)
+                            GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
+                            SetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
                             LogOutButton(myLogin: myLogin)
                             DeleteAccountButton(myLogin: myLogin)
                         } else {
-                            NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
+                            NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
                                 Text("Get your data after login".localized)
                             }
-                            NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
+                            NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
                                 Text("Save your data after login".localized)
                             }
                         }
@@ -159,10 +159,10 @@ struct SettingsContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SettingsContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransit = MyTransit()
+        let myTransfer = MyTransfer()
         let myLogin = MyLogin()
         let myFirestore = MyFirestore()
-        SettingsContentView(myTransit, myLogin, myFirestore)
+        SettingsContentView(myTransfer, myLogin, myFirestore)
     }
 }
 
