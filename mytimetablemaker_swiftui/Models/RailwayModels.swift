@@ -16,7 +16,10 @@ import SwiftUI
 // Core data structure representing a railway line or transportation route.
 // Contains all necessary information for line identification, display, and configuration.
 struct TransportationLine: Identifiable, Hashable {
-    enum Kind: String { case railway }
+    enum Kind: String { 
+        case railway = "Railway"
+        case bus = "Bus"
+    }
     
     let id = UUID()
     let kind: Kind
@@ -29,6 +32,12 @@ struct TransportationLine: Identifiable, Hashable {
     let endStation: String?         // odpt:endStation - last station on the line
     let railwayTitle: RailwayTitle? // odpt:railwayTitle - multi-language support
     let lineCode: String?           // odpt:lineCode (e.g., "JY", "TT", etc.)
+    
+    // MARK: - Bus-specific properties
+    let busRoute: String?           // odpt:busroute - bus route identifier
+    let pattern: String?            // odpt:pattern - bus route pattern
+    let direction: String?          // odpt:direction - bus direction
+    let busstopPoleOrder: [BusStopPole]? // odpt:busstopPoleOrder - bus stop sequence
 }
 
 // MARK: - Railway Title Model
@@ -108,6 +117,20 @@ struct StationOrder: Decodable {
         case index = "odpt:index"         // Station order index
         case station = "odpt:station"     // Station identifier
         case stationTitle = "odpt:stationTitle"  // Localized station name
+    }
+}
+
+// MARK: - Bus Stop Pole Model
+// Represents a bus stop within a bus route pattern
+struct BusStopPole: Codable, Hashable {
+    let note: String?               // odpt:note - bus stop description
+    let busstopPole: String?        // odpt:busstopPole - bus stop identifier
+    let index: Int?                 // odpt:index - bus stop order
+    
+    enum CodingKeys: String, CodingKey {
+        case note = "odpt:note"
+        case busstopPole = "odpt:busstopPole"
+        case index = "odpt:index"
     }
 }
 

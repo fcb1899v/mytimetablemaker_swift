@@ -278,6 +278,8 @@ struct SettingsLineSheet: View {
                         vm.isLineNumberChanging = true
                         
                         selected = line
+                        // Set selectedLine for proper filtering
+                        vm.selectedLine = line
                         // Update display name with operator information on selection
                         vm.query = vm.displayName(for: line)
                         focused = false
@@ -297,6 +299,28 @@ struct SettingsLineSheet: View {
                         vm.selectedRideTime = 5
                         // Set line color or default to accent color
                         vm.selectedLineColor = line.lineColor ?? accentColorString
+                        
+                        // MARK: - Set Line Stations for Bus Routes
+                        // For bus routes, set bus stops from busstopPoleOrder
+                        if line.kind == .bus {
+                            if let busstopPoleOrder = line.busstopPoleOrder {
+                                let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
+                                    guard let note = busStop.note else { return nil }
+                                    return Station(
+                                        name: note,
+                                        code: busStop.busstopPole,
+                                        title: StationTitle(ja: note, en: nil)
+                                    )
+                                }
+                                vm.lineStations = busStops
+                            }
+                        }
+                        
+                        // MARK: - Auto Show Color Selection
+                        // Automatically show color selection sheet if line has no color
+                        if line.lineColor == nil {
+                            vm.showColorSelection = true
+                        }
                         
                         // Hide line suggestions after selection
                         vm.showLineSuggestions = false
@@ -511,23 +535,49 @@ struct SettingsLineSheet: View {
     // MARK: - Header Implementations
     /// Line header with line number selection menu
     private var lineHeaderMenu: some View {
-        Menu {
-            ForEach(vm.availableLineNumbers, id: \.self) { lineNumber in
-                Button("\("Line".localized)\(lineNumber)") {
-                    vm.selectLineNumber(lineNumber)
+        HStack {
+
+            Menu {
+                ForEach(vm.availableLineNumbers, id: \.self) { lineNumber in
+                    Button("\("Line".localized)\(lineNumber)") {
+                        vm.selectLineNumber(lineNumber)
+                    }
+                }
+            } label: {
+                HStack {
+                    Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
+                        .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+                        .foregroundColor(Color.black)
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: settingsLineSheetHeaderFontSize, weight: .medium))
+                        .foregroundColor(.black)
                 }
             }
-        } label: {
+            
+            Spacer()
+
+
+            // MARK: - Transportation Kind Toggle
+            // Toggle for switching between railway and bus transportation types
             HStack {
-                Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
-                    .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
-                    .foregroundColor(Color.black)
-                
-                Image(systemName: "chevron.down")
-                    .font(.system(size: settingsLineSheetHeaderFontSize, weight: .medium))
-                    .foregroundColor(.black)
-                
-                Spacer()
+
+                Toggle("", isOn: Binding(
+                    get: { vm.selectedTransportationKind == .bus },
+                    set: { isOn in
+                        vm.selectedTransportationKind = isOn ? .bus : .railway
+                    }
+                ))
+                .toggleStyle(SwitchToggleStyle(tint: .primaryColor))
+                .scaleEffect(0.8)
+            
+                Text("Railway".localized)
+                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .medium))
+                    .foregroundColor(vm.selectedTransportationKind == .railway ? .black : .secondary)
+
+                Text("Bus".localized)
+                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .medium))
+                    .foregroundColor(vm.selectedTransportationKind == .bus ? .primaryColor : .secondary)
             }
         }
         .padding(.top, settingsLineSheetPadding)
@@ -535,7 +585,7 @@ struct SettingsLineSheet: View {
     
     /// Station header with dynamic station information
     private var stationHeaderText: some View {
-        Text("Station Input".localized + "\(vm.hasSelectedLine && vm.hasStations ? ": ".localized + "\(vm.lineStations.first?.name ?? "")" + " to ".localized + "\(vm.lineStations.last?.name ?? "")": "")")
+        Text((vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized) + "\(vm.hasSelectedLine && vm.hasStations ? ": ".localized + "\(vm.lineStations.first?.name ?? "")" + " to ".localized + "\(vm.lineStations.last?.name ?? "")": "")")
             .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
             .foregroundColor(Color.black)
             .padding(.top, settingsLineSheetPadding)
@@ -589,6 +639,8 @@ struct SettingsLineSheet: View {
                 
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(vm.query.isEmpty ? .gray : .accentColor)
+                
+                Spacer()
             }
             .onChange(of: vm.query) { newValue in
                 handleQueryChange(newValue)
@@ -785,6 +837,9 @@ struct SettingsLineSheet: View {
                 // Reset line color to accent (not saved to UserDefaults)
                 vm.selectedLineColor = accentColorString
                 
+                // Reset transportation kind to railway
+                vm.selectedTransportationKind = .railway
+                
                 // Hide color selection UI
                 vm.showColorSelection = false
             }) {
@@ -803,11 +858,11 @@ struct SettingsLineSheet: View {
     /// Section for inputting departure station information
     private var departureStationInputSection: some View {
         HStack {
-            Text("Departure Station".localized)
+            Text(vm.selectedTransportationKind == .bus ? "Departure Stop".localized : "Departure Station".localized)
                 .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
             
-            TextField("Enter departure station".localized, text: $vm.departureStationInput)
+            TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStationInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: settingsLineSheetInputFontSize))
@@ -854,11 +909,11 @@ struct SettingsLineSheet: View {
     /// Section for inputting arrival station information
     private var arrivalStationInputSection: some View {
         HStack {
-            Text("Arrival Station".localized)
+            Text(vm.selectedTransportationKind == .bus ? "Arrival Stop".localized : "Arrival Station".localized)
                 .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
 
-            TextField("Enter arrival station".localized, text: $vm.arrivalStationInput)
+            TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStationInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: settingsLineSheetInputFontSize))

@@ -249,11 +249,17 @@
 "TWR" = "TWR";
 "Seibu" = "西武";
 "Sotetsu" = "相鉄";
-"Tama" = "多摩";
+"TamaMonorail" = "多摩";
 "Tobu" = "東武";
 "Tokyu" = "東急";
-"TX" = "TX";
-"Yokohama" = "横浜市営";
+"MIR" = "MIR";
+"YokohamaMunicipal" = "横浜市";
+"Kanachu" = "神奈中";
+"SotetsuBus" = "相鉄";
+"KokusaiKogyoBus" = "国際興業";
+"OdakyuBus" = "小田急";
+"SeibuBus" = "西武";
+"TokyuBus" = "東急";
 
 //SettingsLineSheet
 "Select Line Color" = "路線カラーの選択";
@@ -275,6 +281,12 @@
 "Enter departure station" = "乗車駅を入力";
 "Arrival Station" = "降車駅";
 "Enter arrival station" = "降車駅を入力";
+"Departure Stop" = "乗車停";
+"Enter departure stop" = "乗車停を入力";
+"Arrival Stop" = "降車停";
+"Enter arrival stop" = "降車停を入力";
+"Station Input" = "駅の入力";
+"Bus Stop Input" = "バス停の入力";
 "Railway" = "鉄道";
 "Bus" = "バス";
 "Next Transfer" = "次の乗換";

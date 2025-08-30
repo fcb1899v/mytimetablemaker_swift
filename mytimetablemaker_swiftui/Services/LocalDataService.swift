@@ -95,6 +95,10 @@ struct LocalFileParser {
                 // Standard railway data format
                 let result = parseRailwaysFromArray(array, source: source)
                 return result
+            case "odpt:BusroutePattern":
+                // Bus route pattern data format
+                let result = parseBusRoutesFromArray(array, source: source)
+                return result
             case "odpt:Station":
                 // Station data format (e.g., JR East Japan)
                 let result = parseStationsToLines(array, source: source)
@@ -160,7 +164,11 @@ struct LocalFileParser {
                     startStation: stations.first,
                     endStation: stations.last,
                     railwayTitle: RailwayTitle(ja: firstStation, en: nil),
-                    lineCode: nil
+                    lineCode: nil,
+                    busRoute: nil,
+                    pattern: nil,
+                    direction: nil,
+                    busstopPoleOrder: nil
                 )
                 lines.append(line)
             }
@@ -235,7 +243,11 @@ struct LocalFileParser {
                     startStation: info.startStation,
                     endStation: info.endStation,
                     railwayTitle: info.railwayTitle,
-                    lineCode: info.lineCode
+                    lineCode: info.lineCode,
+                    busRoute: nil,
+                    pattern: nil,
+                    direction: nil,
+                    busstopPoleOrder: nil
                 )
             }
             
@@ -257,7 +269,11 @@ struct LocalFileParser {
                         startStation: $0.stationOrder?.first?.stationTitle?.ja,
                         endStation: $0.stationOrder?.last?.stationTitle?.ja,
                         railwayTitle: $0.railwayTitle,
-                        lineCode: $0.lineCode
+                        lineCode: $0.lineCode,
+                        busRoute: nil,
+                        pattern: nil,
+                        direction: nil,
+                        busstopPoleOrder: nil
                     )
                 }
             } catch {
@@ -318,10 +334,108 @@ func parseRailwaysFromArray(_ array: [[String: Any]], source: LocalDataSource) -
                 startStation: startStation,
                 endStation: endStation,
                 railwayTitle: railwayTitle,
-                lineCode: lineCode
+                lineCode: lineCode,
+                busRoute: nil,
+                pattern: nil,
+                direction: nil,
+                busstopPoleOrder: nil
             )
             lines.append(line)
         }
+    }
+    
+    return lines
+}
+
+// MARK: - Bus Route Array Parsing
+// Parse bus route pattern data from array format.
+// Used for bus data sources like Toei Bus and Yokohama Municipal Bus.
+func parseBusRoutesFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
+    var lines: [TransportationLine] = []
+    
+    // MARK: - Bus Route Grouping
+    // Group bus routes by route name to avoid duplicates
+    var busRoutes: [String: (name: String, operatorCode: String, patterns: [String], directions: [String], busStops: [String])] = [:]
+    
+    for element in array {
+        // MARK: - Required Field Validation
+        // Validate required fields for bus route data
+        if let title = element["dc:title"] as? String,
+           let sameAs = element["owl:sameAs"] as? String {
+            
+            let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
+            let busRoute = element["odpt:busroute"] as? String
+            let pattern = element["odpt:pattern"] as? String
+            let direction = element["odpt:direction"] as? String
+            let note = element["odpt:note"] as? String
+            
+            // MARK: - Bus Stop Processing
+            // Process bus stop pole order if available
+            var busstopPoleOrder: [BusStopPole]? = nil
+            var busStopNames: [String] = []
+            
+            if let busstopPoleArray = element["odpt:busstopPoleOrder"] as? [[String: Any]] {
+                busstopPoleOrder = busstopPoleArray.compactMap { poleDict in
+                    guard let note = poleDict["odpt:note"] as? String else { return nil }
+                    let busstopPole = poleDict["odpt:busstopPole"] as? String
+                    let index = poleDict["odpt:index"] as? Int
+                    busStopNames.append(note) // Add bus stop name to the list
+                    return BusStopPole(note: note, busstopPole: busstopPole, index: index)
+                }
+            }
+            
+            // MARK: - Route Name Processing
+            // Use dc:title as the route name (this is the bus route name)
+            let routeName = title
+            
+            // MARK: - Route Storage
+            // Store route information using route name as key
+            if busRoutes[routeName] == nil {
+                busRoutes[routeName] = (name: routeName, operatorCode: operatorCode, patterns: [], directions: [], busStops: [])
+            }
+            
+            // Add pattern and direction if not already present
+            if let pattern = pattern, !busRoutes[routeName]!.patterns.contains(pattern) {
+                busRoutes[routeName]!.patterns.append(pattern)
+            }
+            if let direction = direction, !busRoutes[routeName]!.directions.contains(direction) {
+                busRoutes[routeName]!.directions.append(direction)
+            }
+            
+            // Add bus stops if not already present
+            for busStop in busStopNames {
+                if !busRoutes[routeName]!.busStops.contains(busStop) {
+                    busRoutes[routeName]!.busStops.append(busStop)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Object Conversion
+    // Convert route information to TransportationLine objects
+    for (routeName, info) in busRoutes {
+        // Create bus stop pole order from collected bus stops
+        let busstopPoleOrder = info.busStops.enumerated().map { index, stopName in
+            BusStopPole(note: stopName, busstopPole: "\(routeName)_\(index)", index: index + 1)
+        }
+        
+        let line = TransportationLine(
+            kind: .bus,
+            name: info.name,
+            code: "odpt.Busroute:\(routeName)",
+            operatorCode: info.operatorCode,
+            railwayType: nil,
+            lineColor: nil,
+            startStation: info.busStops.first,
+            endStation: info.busStops.last,
+            railwayTitle: RailwayTitle(ja: info.name, en: nil),
+            lineCode: nil,
+            busRoute: "odpt.Busroute:\(routeName)",
+            pattern: info.patterns.first,
+            direction: info.directions.first,
+            busstopPoleOrder: busstopPoleOrder
+        )
+        lines.append(line)
     }
     
     return lines

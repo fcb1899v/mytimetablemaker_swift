@@ -22,6 +22,7 @@ struct StationLineView: View {
     private let lineNameArray: [String]
     private let lineColorArray: [Color]
     private let lineCodeArray: [String]
+    private let lineKindArray: [TransportationLine.Kind]
     private var stationArray: [String]
     
     // MARK: - Initialization
@@ -41,6 +42,7 @@ struct StationLineView: View {
         self.lineNameArray = goorback.lineNameArray
         self.lineColorArray = goorback.lineColorArray
         self.lineCodeArray = goorback.lineCodeArray
+        self.lineKindArray = goorback.lineKindArray
         self.stationArray = goorback.stationArray
     }
 
@@ -67,18 +69,20 @@ struct StationLineView: View {
                         lineColor: lineColorArray[num],
                         lineCode: lineCodeArray[num],
                         isTransfer: false,
-                        transportation: ""
+                        transportation: "",
+                        transportationKind: lineKindArray[num]
                     )
                     
                     Text(lineNameArray[num])
                         .font(.system(size: lineFontSize))
                         .foregroundColor(lineColorArray[num])
-                        .lineLimit(1)
+                        .lineLimit(2)
                 }
                 .sheet(isPresented: $isShowingTimetableAlert) {
                     TimetableContentView(goorback, num)
                 }
             }
+            .frame(height: lineNameHeight)
             .sheet(isPresented: $isShowingLineSelection) {
                 NavigationStack {
                     SettingsLineSheet(goorback: goorback, lineIndex: num)

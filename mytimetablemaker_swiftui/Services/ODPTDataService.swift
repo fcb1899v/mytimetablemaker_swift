@@ -34,7 +34,11 @@ struct ODPTParser {
                 startStation: $0.startStation,
                 endStation: $0.endStation,
                 railwayTitle: $0.railwayTitle,
-                lineCode: $0.lineCode
+                lineCode: $0.lineCode,
+                busRoute: nil,
+                pattern: nil,
+                direction: nil,
+                busstopPoleOrder: nil
             )
         }
     }

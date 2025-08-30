@@ -61,6 +61,7 @@ extension String{
     func lineSelectedKey(_ num: Int) -> String { return "\(self)lineSelected\(num + 1)" }
     func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
     func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
+    func lineKindKey(_ num: Int) -> String { return "\(self)linekind\(num + 1)" }
     func lastUpdatedKey(_ num: Int) -> String { return "\(self)lastupdated\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
@@ -95,6 +96,10 @@ extension String{
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(lineNameDefault(num))! }
     func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(accentColorString) }
     func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
+    func lineKind(_ num: Int) -> TransportationLine.Kind { 
+        let kindString = lineKindKey(num).userDefaultsValue("Railway")!
+        return TransportationLine.Kind(rawValue: kindString) ?? .railway
+    }
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
@@ -126,6 +131,7 @@ extension String{
     var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
     var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
     var lineCodeArray: Array<String> { return (0..<3).map { i in lineCode(i) } }
+    var lineKindArray: Array<TransportationLine.Kind> { return (0..<3).map { i in lineKind(i) } }
     var lineColorStringArray: Array<String> { return (0..<3).map { i in lineColorString(i)} }
     var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
     var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }

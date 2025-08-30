@@ -90,6 +90,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // User preference for line color customization
     @Published var selectedLineColor: String? = nil            // Selected line color hex value for display
     
+    // MARK: - Transportation Kind Selection State
+    // Manual transportation kind selection for custom lines
+    @Published var selectedTransportationKind: TransportationLine.Kind = .railway  // Selected transportation kind (default: railway)
+    
     // MARK: - Transfer Settings State
     // Transfer configuration properties
     @Published var selectedTransferTime: Int = 5               // Acceptable transfer time in minutes
@@ -127,6 +131,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalStationInput = ""
         selectedRideTime = 5
         selectedLineColor = "#03DAC5"
+        selectedTransportationKind = .railway
         showColorSelection = false
         
         // Reset suggestion states
@@ -146,6 +151,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         loadStationSettings()
         loadRideTimeSettings()
         loadTransferSettings()
+        loadTransportationKindSettings()
         
         // Update available line numbers for the new route
         updateAvailableLineNumbers()
@@ -206,6 +212,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         loadStationSettings()
         loadRideTimeSettings()
         loadTransferSettings()
+        loadTransportationKindSettings()
         
         // MARK: - Initial Data Loading
         // Load data on initialization and start background updates
@@ -521,6 +528,33 @@ final class SettingsLineSheetViewModel: ObservableObject {
         guard !query.isEmpty else { return [] }
         
         let filtered: [Station] = {
+            // MARK: - Bus Route Filtering
+            // For bus routes, only search within the selected line's bus stops
+            if let selectedLine = selectedLine, selectedLine.kind == .bus {
+                // Always use lineStations for bus routes, never fall back to other sources
+                if !lineStations.isEmpty {
+                    let filtered = lineStations.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(query) }
+                    return filtered
+                } else {
+                    // If lineStations is empty, try to get bus stops from the selected line
+                    if let busstopPoleOrder = selectedLine.busstopPoleOrder {
+                        let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
+                            guard let note = busStop.note else { return nil }
+                            return Station(
+                                name: note,
+                                code: busStop.busstopPole,
+                                title: StationTitle(ja: note, en: nil)
+                            )
+                        }
+                        let filtered = busStops.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(query) }
+                        return filtered
+                    }
+                    return []
+                }
+            }
+            
+            // MARK: - Railway Line Filtering
+            // For railway lines, use existing logic
             if selectedLine != nil, !lineStations.isEmpty {
                 return lineStations.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(query) }
             } else if !self.query.isEmpty {
@@ -630,7 +664,26 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Station Data Extraction
     // Extract station information from railway object, parses station data from railway JSON structure
     func extractStationsFromRailway(_ railway: [String: Any], searchMethod: String, searchValue: String) -> [Station]? {
-        let stations = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
+        // MARK: - Check if this is a bus route
+        // For bus routes, extract bus stops from odpt:busstopPoleOrder
+        if let type = railway["@type"] as? String, type == "odpt:BusroutePattern" {
+            let busStops: [Station]? = (railway["odpt:busstopPoleOrder"] as? [[String: Any]])?.compactMap { busStopInfo in
+                // Extract bus stop name from odpt:note
+                if let note = busStopInfo["odpt:note"] as? String {
+                    return Station(
+                        name: note,
+                        code: busStopInfo["odpt:busstopPole"] as? String,
+                        title: StationTitle(ja: note, en: nil)
+                    )
+                }
+                return nil
+            }
+            return busStops?.isEmpty == false ? busStops : nil
+        }
+        
+        // MARK: - Railway Station Extraction
+        // For railway lines, extract stations from odpt:stationOrder
+        let stations: [Station]? = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
             // MARK: - Station Information Building
             // Build station information based on station order
             (stationInfo["odpt:stationTitle"] as? [String: Any]).map { stationTitle in
@@ -653,6 +706,24 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Line Name Based Station Retrieval
     // Get station information based on line name, searches across multiple data sources to find stations for a specific line
     func getStationsForLineName(_ lineName: String) -> [Station] {
+        // MARK: - Check if selected line is a bus route
+        // For bus routes, extract bus stops from TransportationLine.busstopPoleOrder
+        if let selectedLine = selectedLine, selectedLine.kind == .bus {
+            if let busstopPoleOrder = selectedLine.busstopPoleOrder {
+                let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
+                    guard let note = busStop.note else { return nil }
+                    return Station(
+                        name: note,
+                        code: busStop.busstopPole,
+                        title: StationTitle(ja: note, en: nil)
+                    )
+                }
+                return busStops
+            }
+            // If no bus stops found, return empty array to prevent showing other bus stops
+            return []
+        }
+        
         // MARK: - Sequential File Search
         // Search through each operator's data file for the specified line
         return stationDataFiles.lazy.compactMap { [self] filename in
@@ -783,6 +854,28 @@ final class SettingsLineSheetViewModel: ObservableObject {
             if let foundLine = all.first(where: { $0.name == query || $0.railwayTitle?.getLocalizedName() == query }) {
                 selectedLine = foundLine
                 showStationSelection = true
+                
+                // MARK: - Set Line Stations for Bus Routes
+                // For bus routes, set bus stops from busstopPoleOrder
+                if foundLine.kind == .bus {
+                    if let busstopPoleOrder = foundLine.busstopPoleOrder {
+                        let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
+                            guard let note = busStop.note else { return nil }
+                            return Station(
+                                name: note,
+                                code: busStop.busstopPole,
+                                title: StationTitle(ja: note, en: nil)
+                            )
+                        }
+                        lineStations = busStops
+                    }
+                }
+                
+                // MARK: - Auto Show Color Selection
+                // Automatically show color selection sheet if line has no color
+                if foundLine.lineColor == nil {
+                    showColorSelection = true
+                }
             }
         }
     }
@@ -822,6 +915,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
             UserDefaults.standard.set(lineColor, forKey: lineColorKey)
             savedItems.append("Line color: \(lineColor)")
         }
+        
+        // MARK: - Transportation Kind Persistence
+        // Save transportation kind (always save)
+        let lineKindKey = selectedGoorback.lineKindKey(lineIndex)
+        UserDefaults.standard.set(selectedTransportationKind.rawValue, forKey: lineKindKey)
+        savedItems.append("Transportation kind: \(selectedTransportationKind.rawValue)")
         
         // MARK: - Station Information Persistence
         // Save departure station information (always save if input is complete)
@@ -1018,6 +1117,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
+    // Load transportation kind settings from UserDefaults
+    private func loadTransportationKindSettings() {
+        let lineKindKey = selectedGoorback.lineKindKey(lineIndex)
+        if let savedKindString = UserDefaults.standard.string(forKey: lineKindKey) {
+            self.selectedTransportationKind = TransportationLine.Kind(rawValue: savedKindString) ?? .railway
+        } else {
+            // Default to railway if no kind is set
+            self.selectedTransportationKind = .railway
+        }
+    }
+    
     // MARK: - Line Selection Management
     // Update available line numbers based on changeLine setting
     func updateAvailableLineNumbers() {
@@ -1076,6 +1186,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let lineNameKey = goorback.lineNameKey(currentLineIndex)
         if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
             self.query = savedLineName
+        }
+        
+        // Load transportation kind settings
+        let lineKindKey = goorback.lineKindKey(currentLineIndex)
+        if let savedKindString = UserDefaults.standard.string(forKey: lineKindKey) {
+            self.selectedTransportationKind = TransportationLine.Kind(rawValue: savedKindString) ?? .railway
+        } else {
+            self.selectedTransportationKind = .railway
         }
         
         // Load station settings

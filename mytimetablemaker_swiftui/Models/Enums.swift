@@ -100,6 +100,14 @@ enum LocalDataSource: CaseIterable {
     case tokyu         // Tokyu Railway
     case tsukuba       // Tsukuba Express
     case yokohamaMetro // Yokohama Municipal Subway
+    case toeiBus       // Toei Bus
+    case yokohamaBus   // Yokohama Municipal Bus
+    case sotetsuBus    // Sotetsu Bus
+    case kokusaiKogyo  // Kokusai Kogyo Bus
+    case kanachuBus    // Kanachu Bus
+    case odakyuBus     // Odakyu Bus
+    case seibuBus      // Seibu Bus
+    case tokyuBus      // Tokyu Bus
     
     // MARK: - File Name Mapping
     // Get the filename for each data source
@@ -119,6 +127,14 @@ enum LocalDataSource: CaseIterable {
         case .tokyu: return "tokyu.json"
         case .tsukuba: return "tsukuba.json"
         case .yokohamaMetro: return "yokohamametro.json"
+        case .toeiBus: return "toeibus.json"
+        case .yokohamaBus: return "yokohamabus.json"
+        case .sotetsuBus: return "sotetsubus.json"
+        case .kokusaiKogyo: return "kokusaikogyobus.json"
+        case .kanachuBus: return "kanachubus.json"
+        case .odakyuBus: return "odakyubus.json"
+        case .seibuBus: return "seibubus.json"
+        case .tokyuBus: return "tokyubus.json"
         }
     }
     
@@ -140,6 +156,14 @@ enum LocalDataSource: CaseIterable {
         case .tokyu: return "東急電鉄"
         case .tsukuba: return "首都圏新都市鉄道"
         case .yokohamaMetro: return "横浜市営地下鉄"
+        case .toeiBus: return "都営バス"
+        case .yokohamaBus: return "横浜市営バス"
+        case .sotetsuBus: return "相鉄バス"
+        case .kokusaiKogyo: return "国際興業"
+        case .kanachuBus: return "神奈中バス"
+        case .odakyuBus: return "小田急バス"
+        case .seibuBus: return "西武バス"
+        case .tokyuBus: return "東急バス"
         }
     }
     
@@ -161,6 +185,27 @@ enum LocalDataSource: CaseIterable {
         case .tokyu: return "odpt.Operator:Tokyu"
         case .tsukuba: return "odpt.Operator:MIR"
         case .yokohamaMetro: return "odpt.Operator:YokohamaMunicipal"
+        case .toeiBus: return "odpt.Operator:Toei"
+        case .yokohamaBus: return "odpt.Operator:YokohamaMunicipal"
+        case .sotetsuBus: return "odpt.Operator:SotetsuBus"
+        case .kokusaiKogyo: return "odpt.Operator:KokusaiKogyoBus"
+        case .kanachuBus: return "odpt.Operator:Kanachu"
+        case .odakyuBus: return "odpt.Operator:OdakyuBus"
+        case .seibuBus: return "odpt.Operator:SeibuBus"
+        case .tokyuBus: return "odpt.Operator:TokyuBus"
+        }
+    }
+    
+    // MARK: - Transportation Type
+    // Get transportation type (railway or bus) for data processing
+    var transportationType: TransportationLine.Kind {
+        switch self {
+        case .jrEast, .keikyu, .tokyoMetro, .toeiMetro, .odakyu, .yurikamome, 
+             .rinkai, .seibu, .sotetsu, .tama, .tobu, .tokyu, .tsukuba, .yokohamaMetro:
+            return .railway
+        case .toeiBus, .yokohamaBus, .sotetsuBus, .kokusaiKogyo, .kanachuBus,
+             .odakyuBus, .seibuBus, .tokyuBus:
+            return .bus
         }
     }
 }

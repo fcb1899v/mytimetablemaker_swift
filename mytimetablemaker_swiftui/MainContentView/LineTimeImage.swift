@@ -17,18 +17,21 @@ struct LineTimeImage: View {
     private let lineCode: String
     private let isTransfer: Bool
     private let transportation: String
+    private let transportationKind: TransportationLine.Kind?
     
     // MARK: - Initialization
     init(
         lineColor: Color,
         lineCode: String,
         isTransfer: Bool,
-        transportation: String
+        transportation: String,
+        transportationKind: TransportationLine.Kind? = nil
     ){
         self.lineColor = lineColor
         self.lineCode = lineCode
         self.isTransfer = isTransfer
         self.transportation = transportation
+        self.transportationKind = transportationKind
     }
     
     // MARK: - Body
@@ -52,9 +55,9 @@ struct LineTimeImage: View {
                             height: lineImageForegroundSize
                         )
                 } else {
-                    // MARK: - Lightrail Icon
-                    // Default icon for lines without specific line codes
-                    Image(systemName: "lightrail")
+                    // MARK: - Transportation Icon
+                    // Displays appropriate icon based on transportation kind
+                    Image(systemName: getTransportationIcon())
                         .resizable()
                         .scaledToFit()
                         .frame(
@@ -82,6 +85,21 @@ struct LineTimeImage: View {
                 .shadow(color: .secondary, radius: 0, x: -0.5, y: -0.5)
         }
     }
+    
+    // MARK: - Helper Methods
+    // Get appropriate icon based on transportation kind
+    private func getTransportationIcon() -> String {
+        guard let kind = transportationKind else {
+            return "lightrail" // Default to lightrail for unknown types
+        }
+        
+        switch kind {
+        case .railway:
+            return "lightrail"
+        case .bus:
+            return "bus"
+        }
+    }
 }
     
 // MARK: - Preview Provider
@@ -91,8 +109,10 @@ struct lineTimeImage_Previews: PreviewProvider {
         VStack(spacing: 20) {
             // Transfer example
             LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
-            // Line code example (JK for 京浜東北線)
-            LineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "")
+            // Railway line example (JK for 京浜東北線)
+            LineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "", transportationKind: .railway)
+            // Bus line example
+            LineTimeImage(lineColor: Color.blue, lineCode: "B01", isTransfer: false, transportation: "", transportationKind: .bus)
             // Default lightrail example
             LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
         }

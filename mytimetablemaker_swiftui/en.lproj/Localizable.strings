@@ -244,11 +244,17 @@
 "TWR" = "TWR";
 "Seibu" = "Seibu";
 "Sotetsu" = "Sotetsu";
-"Tama" = "Tama";
+"TamaMonorail" = "Tama";
 "Tobu" = "Tobu";
 "Tokyu" = "Tokyu";
-"TX" = "TX";
-"Yokohama" = "Yokohama";
+"MIR" = "MIR";
+"YokohamaMunicipal" = "Yokohama";
+"Kanachu" = "Kanachu";
+"SotetsuBus" = "Sotetsu";
+"KokusaiKogyoBus" = "KokusaiKogyo";
+"OdakyuBus" = "Odakyu";
+"SeibuBus" = "Seibu";
+"TokyuBus" = "Tokyu";
 
 //SettingsLineSheet
 "Select Line Color" = "Select Line Color";
@@ -270,6 +276,12 @@
 "Enter departure station" = "Enter departure station";
 "Arrival Station" = "Arrival Station";
 "Enter arrival station" = "Enter arrival station";
+"Departure Stop" = "Departure Stop";
+"Enter departure stop" = "Enter departure stop";
+"Arrival Stop" = "Arrival Stop";
+"Enter arrival stop" = "Enter arrival stop";
+"Station Input" = "Station Input";
+"Bus Stop Input" = "Bus Stop Input";
 "Railway" = "Railway";
 "Bus" = "Bus";
 "Next Transfer" = "Next Transfer";

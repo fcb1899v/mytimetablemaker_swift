@@ -49,12 +49,14 @@ struct TransferView: View {
                     lineColor: Color.grayColor,
                     lineCode: "",
                     isTransfer: true,
-                    transportation: transportationArray[num]
+                    transportation: transportationArray[num],
+                    transportationKind: nil as TransportationLine.Kind?
                 )
             }
 
             Spacer()
         }
+        .frame(height: transferHeight)
         .sheet(isPresented: $showSettingsLineSheet) {
             NavigationStack {
                 SettingsLineSheet(goorback: goorback, lineIndex: num - 2)

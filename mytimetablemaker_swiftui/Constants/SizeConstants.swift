@@ -72,6 +72,8 @@ let routeCountdownPadding: CGFloat = customWidth / 50 + ((routeHeight > 600) ? (
 // MARK: - Route Content Styling
 // Route information display sizing and typography
 let stationFontSize: CGFloat = customWidth / 27
+let transferHeight: CGFloat = screenHeight * 0.036
+let lineNameHeight: CGFloat = screenHeight * 0.045
 let lineFontSize: CGFloat = customWidth / 27
 let lineImageForegroundSize: CGFloat = customWidth / 20
 let lineImageForegroundPadding: CGFloat = customWidth / 80
@@ -143,10 +145,10 @@ let settingsLineSheetHStackSpacing: CGFloat = screenHeight * 0.008
 let settingsLineSheetShadowRadius: CGFloat = screenHeight * 0.006
 let settingsLineSheetStrokeLineWidth: CGFloat = screenHeight * 0.001
 // Sheet Offsets
-let settingsLineSheetDepartureOffset: CGFloat = screenHeight * 0.21
-let settingsLineSheetArrivalOffset: CGFloat = screenHeight * 0.26
-let settingsLineSheetLineOffset: CGFloat = screenHeight * 0.06
-let settingsLineSheetColorOffset: CGFloat = screenHeight * 0.13
+let settingsLineSheetLineOffset: CGFloat = screenHeight * 0.12
+let settingsLineSheetColorOffset: CGFloat = screenHeight * 0.19
+let settingsLineSheetDepartureOffset: CGFloat = screenHeight * 0.27
+let settingsLineSheetArrivalOffset: CGFloat = screenHeight * 0.32
 
 // Settings
 let settingsTitleFontSize: CGFloat = screenHeight * 0.024
