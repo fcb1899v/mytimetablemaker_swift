@@ -95,7 +95,6 @@ extension String{
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(lineNameDefault(num))! }
     func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(accentColorString) }
     func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
-
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
@@ -123,7 +122,7 @@ extension String{
     // Array generation for main view display
     var departStationArray: Array<String> { return (0..<3).map { i in departStation(i)} }
     var arriveStationArray: Array<String> { return (0..<3).map { i in arriveStation(i)} }
-    var stationArray: Array<String> { return [destination, departurePoint] + (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
+    var stationArray: Array<String> { return (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
     var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
     var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
     var lineCodeArray: Array<String> { return (0..<3).map { i in lineCode(i) } }
@@ -165,12 +164,12 @@ extension String{
     func rideTimeAlertMessage(_ num: Int) -> String { return  "\("on ".localized)\(lineNameArray[num])" }
     func transportationMessage(_ num: Int) -> String { return "\(transferFromDepartStation(num))\(transferArriveStation(num))" }
     func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
-    func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 3])\("houmen".localized))"}
+    func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized))"}
     var routeTitle: String { return
-        (self == "back1") ? "Going home route 1".localized:
-        (self == "back2") ? "Going home route 2".localized:
-        (self == "go1") ? "Outgoing route 1".localized:
-        "Outgoing route 2".localized
+        (self == "back1") ? "Setting home route 1".localized:
+        (self == "back2") ? "Setting home route 2".localized:
+        (self == "go1") ? "Setting outgoing route 1".localized:
+        "Setting outgoing route 2".localized
     }
     var changeLineString: String {
         switch(changeLineInt) {

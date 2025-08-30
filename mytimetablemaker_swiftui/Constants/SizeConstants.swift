@@ -107,14 +107,16 @@ let admobBannerHeight: CGFloat = ((screenHeight - headerHeight - 75) < 500) ? 50
 
 // MARK: - Settings Line Sheet
 // Basic Layout
-let settingsLineSheetSpacing: CGFloat = screenHeight * 0.012
 let settingsLineSheetPadding: CGFloat = screenWidth * 0.03
+let settingsLineSheetTitlePadding: CGFloat = screenWidth * 0.02
+let settingsLineSheetSpacing: CGFloat = screenHeight * 0.012
 let settingsLineSheetCornerRadius: CGFloat = screenHeight * 0.01
 let settingsLineSheetButtonCornerRadius: CGFloat = screenHeight * 0.020
 // Typography
-let settingsLineSheetTitleFontSize: CGFloat = screenHeight * 0.018
+let settingsLineSheetTitleFontSize: CGFloat = screenHeight * 0.020
+let settingsLineSheetHeaderFontSize: CGFloat = screenHeight * 0.018
 let settingsLineSheetInputFontSize: CGFloat = screenHeight * 0.018
-let settingsLineSheetButtonFontSize: CGFloat = screenHeight * 0.018
+let settingsLineSheetButtonFontSize: CGFloat = screenHeight * 0.020
 let settingsLineSheetHeadlineFontSize: CGFloat = screenHeight * 0.016
 let settingsLineSheetCaptionFontSize: CGFloat = screenHeight * 0.012
 // Component Heights
@@ -145,3 +147,8 @@ let settingsLineSheetDepartureOffset: CGFloat = screenHeight * 0.21
 let settingsLineSheetArrivalOffset: CGFloat = screenHeight * 0.26
 let settingsLineSheetLineOffset: CGFloat = screenHeight * 0.06
 let settingsLineSheetColorOffset: CGFloat = screenHeight * 0.13
+
+// Settings
+let settingsTitleFontSize: CGFloat = screenHeight * 0.024
+let settingsHeaderFontSize: CGFloat = screenHeight * 0.016
+let settingsFontSize: CGFloat = screenHeight * 0.018

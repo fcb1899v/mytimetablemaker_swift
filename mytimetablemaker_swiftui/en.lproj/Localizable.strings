@@ -51,18 +51,23 @@
 "weekday" = "weekday";
 "E, MMM d, yyyy" = "E, MMM d, yyyy";
 
-
 //SettingsContentView
-"Back" = "Back";
 "Settings" = "Settings";
-"Display route 2" = "Display route 2";
-"Change line" = "Change line";
+"Back to homepage" = "Back";
+"Route Settings" = "Route Settings";
+"Setting home and destination" = "Setting home and destination";
+"Setting home route 1" = "Setting home route 1";
+"Setting home route 2" = "Setting home route 2";
+"Display home route 2" = "Display home route 2";
+"Setting outgoing route 1" = "Setting outgoing route 1";
+"Setting outgoing route 2" = "Setting outgoing route 2";
+"Display outgoing route 2" = "Display outgoing route 2";
+"Manage your data after login" = "Manage your data after login";
+
 "Various settings" = "Various settings";
 "Get data" = "Get data";
 "Save data" = "Save data";
 "Account" = "Account";
-"Get your data after login" = "Get your data after login";
-"Save your data after login" = "Save your data after login";
 "About" = "About";
 "Version" = "Version";
 "Terms and privacy policy" = "Terms and privacy policy";
@@ -81,17 +86,27 @@
 //SettingsLineSheet
 "Last Updated" = "Last Updated";
 
+//SettingsTransferSheet
+"Destination" = "Destination";
+"Your home" = "Your home";
+"Enter destination" = "Enter destination";
+"Enter your home" = "Enter your home";
+"Transportation" = "Transportation";
+"Travel Time" = "Travel Time";
+"Setting your home" = "Setting your home";
+"Setting destination" = "Setting destination";
+"Route 1" = "Route 1";
+"Route 2" = "Route 2";
+
 //GetDataButton
 "Get saved data" = "Get saved data";
 "Overwritten current data?" = "Overwritten current data?";
-"Data got error" = "Data got error";
 "Data got successfully" = "Data got successfully";
 "Data could not be got" = "Data could not be got";
 
 //SaveDataButton
 "Save current data" = "Save current data";
 "Overwritten saved data?" = "Overwritten saved data?";
-"Data saved error" = "Data saved error";
 "Data saved successfully" = "Data saved successfully";
 "Data could not be saved" = "Data could not be saved";
 
@@ -99,8 +114,7 @@
 "Logout" = "Logout";
 "Logout your account?" = "Logout your account?";
 "Logout error" = "Logout error";
-"Logged out" = "Logged out successfully";
-"Failed to Log out" = "Failed to Log out";
+"Logged out successfully" = "Logged out successfully";
 
 //Delete Account
 "Delete Account" = "Delete Account";

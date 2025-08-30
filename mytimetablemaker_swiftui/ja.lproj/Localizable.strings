@@ -53,16 +53,22 @@
 
 
 //SettingsContentView
-"Back" = "戻る";
 "Settings" = "設定";
-"Display route 2" = "ルート2の表示";
-"Change line" = "乗換回数";
+"Back to homepage" = "戻る";
+"Route Settings" = "ルート設定";
+"Setting home and destination" = "自宅・行き先の設定";
+"Setting home route 1" = "帰宅ルート1の設定";
+"Setting home route 2" = "帰宅ルート2の設定";
+"Display home route 2" = "帰宅ルート2の表示";
+"Setting outgoing route 1" = "外出ルート1の設定";
+"Setting outgoing route 2" = "外出ルート2の設定";
+"Display outgoing route 2" = "外出ルート2の表示";
+"Manage your data after login" = "ログインしてデータを管理";
+
 "Various settings" = "各種設定";
 "Get data" = "データの取得";
 "Save data" = "データの保存";
 "Account" = "アカウント";
-"Get your data after login" = "ログインして保管データを取得";
-"Save your data after login" = "ログインしてデータを保管";
 "About" = "このアプリについて";
 "Version" = "バージョン";
 "Terms and privacy policy" = "利用規約・プライバシーポリシー";
@@ -80,6 +86,20 @@
 
 //SettingsLineSheet
 "Last Updated" = "前回の更新";
+
+//SettingsTransferSheet
+"Destination" = "行き先";
+"Your home" = "自宅";
+"Enter destination" = "行き先を入力";
+"Enter your home" = "自宅を入力";
+"Transportation" = "移動方法";
+"Travel Time" = "移動時間";
+"Setting your home" = "自宅の設定";
+"Setting destination" = "行き先の設定";
+"Route 1" = "ルート1";
+"Route 2" = "ルート2";
+
+
 
 //GetDataButton
 "Get saved data" = "保存データの取得";
@@ -100,7 +120,6 @@
 "Logout your account?" = "ログアウトしますか？";
 "Logout error" = "ログアウトエラー";
 "Logged out successfully" = "ログアウトしました";
-"Failed to Log out" = "ログアウトに失敗しました";
 
 //Delete Account
 "Delete Account" = "アカウント削除";
@@ -262,3 +281,5 @@
 "Transfer Time" = "乗換時間";
 "None" = "なし";
 "Time Settings" = "時間設定";
+
+

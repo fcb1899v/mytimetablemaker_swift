@@ -27,7 +27,9 @@ struct DeleteAccountButton: View {
         Button(action: {
             isShowAlert = true
         }) {
-            Text("Delete Account".localized).foregroundColor(.black)
+            Text("Delete Account".localized)
+                .font(.system(size: settingsFontSize))
+                .foregroundColor(.black)
         }
         // MARK: - Delete Account Confirmation Alert
         .alert("Delete Account".localized, isPresented: $isShowAlert) {

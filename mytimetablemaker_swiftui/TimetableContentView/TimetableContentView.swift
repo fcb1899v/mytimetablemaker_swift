@@ -45,7 +45,7 @@ struct TimetableContentView: View {
                         }
                         HStack {
                             VStack(alignment: .leading, spacing: 5) {
-                                Text(goorback.stationArray[2 * num + 2]).font(.title3)
+                                Text(goorback.stationArray[2 * num]).font(.title3)
                                 Text(goorback.timetableAlertTitle(num)).font(.callout)
                             }
                             .foregroundColor(.white)

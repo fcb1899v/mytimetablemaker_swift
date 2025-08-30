@@ -9,23 +9,20 @@ import SwiftUI
 
 // MARK: - Line Information View
 // Displays line information with ride time, name, and color editing capabilities
-struct LineAndStation: View {
+struct StationLineView: View {
     
     @State private var isShowingTimetableAlert = false
     @State private var isShowingLineSelection = false
-    @State private var inputText = ""
-    @State private var lineName: String
-    @State private var lineColor : Color
-    @State private var lineCode: String
-    @State private var departureStation: String
-    @State private var arrivalStation: String
 
     private let goorback: String
     private let weekflag: Bool
     private let num: Int
     private let departureTime: String
     private let arrivalTime: String
-
+    private let lineNameArray: [String]
+    private let lineColorArray: [Color]
+    private let lineCodeArray: [String]
+    private var stationArray: [String]
     
     // MARK: - Initialization
     // Initialize with route identifier, weekday flag, and line number
@@ -41,98 +38,65 @@ struct LineAndStation: View {
         self.num = num
         self.departureTime = departureTime
         self.arrivalTime = arrivalTime
-        self.lineName = goorback.lineNameArray[num]
-        self.lineColor = goorback.lineColorArray[num]
-        self.lineCode = goorback.lineCodeArray[num]
-        self.departureStation = goorback.stationArray[2 * num + 2]
-        self.arrivalStation = goorback.stationArray[2 * num + 3]
+        self.lineNameArray = goorback.lineNameArray
+        self.lineColorArray = goorback.lineColorArray
+        self.lineCodeArray = goorback.lineCodeArray
+        self.stationArray = goorback.stationArray
     }
 
     var body: some View {
         VStack(alignment: .leading) {
 
             HStack {
-                Text(departureStation)
+                Text(stationArray[2 * num])
                     .font(.system(size: stationFontSize))
                     .lineLimit(1)
                 Spacer()
                 // MARK: - Time Display
                 Text(departureTime)
                     .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
-            }.foregroundColor(Color.primaryColor)
+            }
+            .foregroundColor(Color.primaryColor)
 
-            HStack {
-                // MARK: - Setting Button
-                Button (action: {
-                    isShowingLineSelection = true
-                }) {
-                    lineTimeImage(
-                        lineColor: lineColor,
-                        lineCode: lineCode,
+            // MARK: - Setting Button
+            Button (action: {
+                isShowingLineSelection = true
+            }) {
+                HStack {
+                    LineTimeImage(
+                        lineColor: lineColorArray[num],
+                        lineCode: lineCodeArray[num],
                         isTransfer: false,
                         transportation: ""
                     )
-                    .sheet(isPresented: $isShowingTimetableAlert) {
-                        TimetableContentView(goorback, num)
-                    }
+                    
+                    Text(lineNameArray[num])
+                        .font(.system(size: lineFontSize))
+                        .foregroundColor(lineColorArray[num])
+                        .lineLimit(1)
                 }
-                .sheet(isPresented: $isShowingLineSelection) {
-                    NavigationStack {
-                        SettingsLineSheet(goorback: goorback, lineIndex: num)
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar {
-                                ToolbarItem(placement: .navigationBarTrailing) {
-                                    Button("Cancel".localized) {
-                                        isShowingLineSelection = false
-                                    }
-                                    .foregroundColor(Color.black)
-                                }
-                            }
-                    }
+                .sheet(isPresented: $isShowingTimetableAlert) {
+                    TimetableContentView(goorback, num)
                 }
-
-                Text(lineName)
-                    .font(.system(size: lineFontSize))
-                    .foregroundColor(lineColor)
-                    .lineLimit(1)
             }
+            .sheet(isPresented: $isShowingLineSelection) {
+                NavigationStack {
+                    SettingsLineSheet(goorback: goorback, lineIndex: num)
+                }
+            }
+
             
             HStack {
-                Text(arrivalStation)
+                Text(stationArray[2 * num + 1])
                     .font(.system(size: stationFontSize))
                     .lineLimit(1)
                 Spacer()
                 // MARK: - Time Display
                 Text(arrivalTime)
                     .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
-            }.foregroundColor(Color.primaryColor)
-        }
-        .onChange(of: isShowingLineSelection) { isPresented in
-            if !isPresented {
-                updateLineData()
             }
+            .foregroundColor(Color.primaryColor)
         }
-        // UserDefaultsが変更された時にデータを更新
-        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
-            updateLineData()
-        }
-        // 初期データの読み込み
-        .onAppear {
-            updateLineData()
-        }
-
-    }
-    
-    
-    // MARK: - Helper Methods
-    // Update line data from UserDefaults
-    private func updateLineData() {
-        departureStation = goorback.stationArray[2 * num + 2]
-        arrivalStation = goorback.stationArray[2 * num + 3]
-        lineName = goorback.lineName(num)
-        lineColor = goorback.lineColorArray[num]
-        lineCode = goorback.lineCodeArray[num]
-        print("Updated line data: lineName: \(lineName), color: \(lineColor), lineCode: \(lineCode), departureStation: \(departureStation), arrivalStation: \(arrivalStation)")
     }
 }
 
@@ -140,6 +104,6 @@ struct LineAndStation: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct StationAndLine_Previews: PreviewProvider {
     static var previews: some View {
-        LineAndStation("back1", true, 0, "0800", "0830")
+        StationLineView("back1", true, 0, "0800", "0830")
     }
 }

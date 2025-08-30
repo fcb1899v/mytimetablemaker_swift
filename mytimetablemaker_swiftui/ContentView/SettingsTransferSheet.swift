@@ -15,215 +15,357 @@ import Foundation
 // MARK: - SettingsTransferSheet
 // Main view for configuring transfer settings including time ranges and transportation methods.
 struct SettingsTransferSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    @StateObject private var vm: SettingsTransferSheetViewModel
     
+    // MARK: - State Management
+    @StateObject private var vm: SettingsTransferSheetViewModel
+    @Environment(\.dismiss) private var dismiss
+
     // MARK: - Initialization
     // Initialize the view with direction and line index for proper data isolation.
-    init(goorback: String, lineIndex: Int) {
-        self._vm = StateObject(wrappedValue: SettingsTransferSheetViewModel(goorback: goorback, lineIndex: lineIndex))
+    init() {
+        self._vm = StateObject(wrappedValue: SettingsTransferSheetViewModel())
     }
     
     // MARK: - Body
     // Main view layout with header and scrollable content sections.
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading) {
                 
-                // MARK: - Transportation Settings
-                // Configuration interface for transportation method preferences.
-                HStack {
-                    Text("Next Transfer".localized)
-                        .font(.headline)
-                        .foregroundColor(Color.primaryColor)
-                    
-                    HStack {
-                        // Display icon for selected transportation method
-                        Image(systemName: getTransportationType(label: vm.selectedTransportation).iconName)
-                            .foregroundColor(.black)
-                            .frame(width: 24)
-
-                        Text(getTransportationType(label: vm.selectedTransportation).displayName)
-                            .foregroundColor(.black)
-                        
-                        Menu {
-                            ForEach(TransportationType.allCases.reversed(), id: \.self) { type in
-                                Button(action: {
-                                    vm.selectedTransportation = type.rawValue
-                                }) {
-                                    HStack {
-                                        Image(systemName: type.iconName)
-                                            .foregroundColor(.black)
-                                            .frame(width: 24)
-                                        Text(type.displayName)
-                                    }
-                                }
-                            }
-                        } label: {
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(.black)
-                                .padding(.leading, 8)
-                        }
-                    }
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 12)
-                    .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.separator), lineWidth: 0.5))
-
-                    Spacer()
-                }
-
-                // MARK: - Transfer Time Settings
-                // Configuration interface for transfer time.
-                if vm.selectedTransportation != "none" {
-                    HStack {
-                        Text("Transfer Time".localized)
-                            .font(.headline)
-                            .foregroundColor(Color.primaryColor)
-                        
-                        HStack {
-                            Text("\(vm.selectedTransferTime)" + " min".localized)
-                                .foregroundColor(.black)
-                            
-                            Menu {
-                                ForEach(0...99, id: \.self) { minute in
-                                    Button("\(minute)" + " min".localized) {
-                                        vm.selectedTransferTime = minute
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(.black)
-                                    .padding(.leading, 8)
-                            }
-                        }
-                        .padding(.vertical, 10)
-                        .padding(.horizontal, 12)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
-                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(.separator), lineWidth: 0.5))
-                        
-                        Spacer()
-                    }
-                }
+                // Header section
+                headerSection(title: "Setting your home".localized)
                 
-                // MARK: - Save Button
-                // Save button for transfer settings
-                Button(action: {
-                    vm.saveSettings()
-                    
-                    // Post notification to update MainContentView
-                    NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
-                    
-                    dismiss()
-                }) {
-                    HStack {
-                        Image(systemName: "square.and.arrow.down.fill")
-                            .font(.title3)
-                        Text("Save".localized)
-                            .font(.title3)
-                            .fontWeight(.medium)
-                    }
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.accentColor)
-                    )
-                }
-                .padding(.horizontal, 20)
+                // Home place input
+                placeInputSection(
+                    title: "Your home".localized,
+                    placeholder: "Enter your home".localized,
+                    text: $vm.homeInput
+                )
+                
+                // Home transportation settings
+                transportationSettingsSection(
+                    transportation1: $vm.selectedHomeTransportation1,
+                    transportation2: $vm.selectedHomeTransportation2,
+                    transferTime1: $vm.selectedHomeTransferTime1,
+                    transferTime2: $vm.selectedHomeTransferTime2
+                )
+                
+                // Destination section header
+                headerSection(title: "Setting destination".localized)
+                
+                // Destination place input
+                placeInputSection(
+                    title: "Destination".localized,
+                    placeholder: "Enter destination".localized,
+                    text: $vm.officeInput
+                )
+                
+                // Destination transportation settings
+                transportationSettingsSection(
+                    transportation1: $vm.selectedOfficeTransportation1,
+                    transportation2: $vm.selectedOfficeTransportation2,
+                    transferTime1: $vm.selectedOfficeTransferTime1,
+                    transferTime2: $vm.selectedOfficeTransferTime2
+                )
+                
+                // Save button
+                saveButtonSection()
                 
                 Spacer()
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel".localized) {
-                        dismiss()
-                    }
-                    .foregroundColor(.black)
-                }
-            }
+            .padding(.horizontal, settingsLineSheetPadding)
         }
+        .padding(.horizontal, settingsLineSheetPadding)
         .onAppear {
             vm.loadSettings()
         }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.white, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Cancel".localized) {
+                    dismiss()
+                }
+                .foregroundColor(Color.black)
+            }
+        }
+    }
+    
+    // MARK: - View Components
+    
+    // Header section with title
+    @ViewBuilder
+    private func headerSection(title: String) -> some View {
+        Text(title)
+            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .foregroundColor(Color.black)
+            .padding(.vertical, settingsLineSheetPadding)
+    }
+    
+    // Place input section with title and text field
+    @ViewBuilder
+    private func placeInputSection(title: String, placeholder: String, text: Binding<String>) -> some View {
+        HStack {
+            Text(title)
+                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .foregroundColor(.primaryColor)
+
+            TextField(placeholder, text: text)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .font(.system(size: settingsLineSheetInputFontSize))
+                .padding(.vertical, settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                .background(styledBackground())
+                .overlay(styledBorder())
+            
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(text.wrappedValue.isEmpty ? .gray : .accentColor)
+        }
+    }
+    
+    /// Transportation settings grid section
+    @ViewBuilder
+    private func transportationSettingsSection(
+        transportation1: Binding<String>,
+        transportation2: Binding<String>,
+        transferTime1: Binding<Int>,
+        transferTime2: Binding<Int>
+    ) -> some View {
+        Grid(alignment: .center) {
+            // Header row
+            GridRow {
+                Text("")
+                    .font(.system(size: settingsLineSheetInputFontSize))
+                Text("Route 1".localized)
+                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .frame(maxWidth: .infinity)
+                Text("Route 2".localized)
+                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .frame(maxWidth: .infinity)
+            }
+
+            // Transportation method row
+            GridRow {
+                Text("Transportation".localized)
+                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .foregroundColor(.primaryColor)
+
+                transportationMethodSelector(selectedTransportation: transportation1)
+                transportationMethodSelector(selectedTransportation: transportation2)
+            }
+            
+            // Travel time row
+            GridRow {
+                Text("Travel Time".localized)
+                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .foregroundColor(.primaryColor)
+
+                timeSelector(selectedTime: transferTime1)
+                timeSelector(selectedTime: transferTime2)
+            }
+        }
+        .padding(.vertical, settingsLineSheetPadding)
+    }
+    
+    /// Transportation method selector component
+    @ViewBuilder
+    private func transportationMethodSelector(selectedTransportation: Binding<String>) -> some View {
+        HStack {
+            Image(systemName: getTransportationType(label: selectedTransportation.wrappedValue).iconName)
+                .foregroundColor(.black)
+                .frame(width: settingsLineSheetIconSize)
+            
+            Text(getTransportationType(label: selectedTransportation.wrappedValue).displayName)
+                .font(.system(size: settingsLineSheetInputFontSize))
+                .foregroundColor(.black)
+                .lineLimit(1)
+            
+            Menu {
+                ForEach(TransportationType.allCases.filter { $0 != .none }, id: \.self) { type in
+                    Button(action: {
+                        selectedTransportation.wrappedValue = type.rawValue
+                    }) {
+                        HStack {
+                            Image(systemName: type.iconName)
+                                .foregroundColor(.black)
+                                .frame(width: settingsLineSheetIconSize)
+                            Text(type.displayName)
+                                .foregroundColor(.black)
+                        }
+                    }
+                }
+            } label: {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .foregroundColor(.black)
+            }
+        }
+        .padding(.vertical, settingsLineSheetInputPaddingVertical)
+        .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+        .background(styledBackground())
+        .overlay(styledBorder())
+    }
+    
+    /// Time selector component
+    @ViewBuilder
+    private func timeSelector(selectedTime: Binding<Int>) -> some View {
+        HStack {
+            Text("\(selectedTime.wrappedValue)" + " min".localized)
+                .font(.system(size: settingsLineSheetInputFontSize))
+                .foregroundColor(.black)
+            
+            Menu {
+                ForEach(0...99, id: \.self) { minute in
+                    Button("\(minute)" + " min".localized) {
+                        selectedTime.wrappedValue = minute
+                    }
+                }
+            } label: {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .foregroundColor(.black)
+            }
+        }
+        .padding(.vertical, settingsLineSheetInputPaddingVertical)
+        .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+        .background(styledBackground())
+        .overlay(styledBorder())
+    }
+    
+    /// Save button section
+    @ViewBuilder
+    private func saveButtonSection() -> some View {
+        Button(action: {
+            vm.saveSettings()
+            
+            // Post notification to update MainContentView
+            NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
+            
+            dismiss()
+        }) {
+            HStack {
+                Image(systemName: "square.and.arrow.down.fill")
+                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
+                Text("Save".localized)
+                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .bold))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: settingsLineSheetButtonHeight)
+            .background(
+                RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
+                    .fill(vm.officeInput.isEmpty ? .gray: Color.accentColor)
+            )
+            .padding(.vertical, settingsLineSheetPadding)
+        }
+        .disabled(vm.homeInput.isEmpty || vm.officeInput.isEmpty)
+    }
+    
+    // MARK: - Styling Helpers
+    
+    /// Styled background for input fields
+    private func styledBackground() -> some View {
+        RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius)
+            .fill(Color(.secondarySystemBackground))
+    }
+    
+    /// Styled border for input fields
+    private func styledBorder() -> some View {
+        RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius)
+            .stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth)
     }
 }
 
 // MARK: - SettingsTransferSheetViewModel
 // View model for managing transfer settings data and business logic.
 class SettingsTransferSheetViewModel: ObservableObject {
+
     // MARK: - Published Properties
     // Observable properties that trigger UI updates when changed
-    @Published var selectedTransferTime: Int = 5                      // Acceptable transfer time in minutes
-    @Published var selectedTransportation: String = "none"            // Selected transportation method (default: none)
-    
-    // MARK: - Private Properties
-    // Internal properties for data management and isolation
-    private let goorback: String    // Direction identifier (go/back)
-    private let lineIndex: Int      // Line index for UserDefaults key isolation
+    @Published var homeInput: String                      // home input text
+    @Published var officeInput: String                    // office input text
+    @Published var selectedHomeTransportation1: String    // Selected transportation 1 from home
+    @Published var selectedHomeTransportation2: String    // Selected transportation 2 from home
+    @Published var selectedOfficeTransportation1: String  // Selected transportation 1 from office
+    @Published var selectedOfficeTransportation2: String  // Selected transportation 2 from office
+    @Published var selectedHomeTransferTime1: Int         // Selected transfer time 1 from home
+    @Published var selectedHomeTransferTime2: Int         // Selected transfer time 2 from home
+    @Published var selectedOfficeTransferTime1: Int       // Selected transfer time 1 from office
+    @Published var selectedOfficeTransferTime2: Int       // Selected transfer time 2 from office
     
     // MARK: - Initialization
     // Initialize view model with direction and line index for proper data isolation
-    init(goorback: String, lineIndex: Int) {
-        self.goorback = goorback
-        self.lineIndex = lineIndex
-        loadSettings()
+    init() {
+        self.homeInput = UserDefaults.standard.string(forKey: homeKey) ?? ""
+        self.officeInput = UserDefaults.standard.string(forKey: officeKey) ?? ""
+        self.selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "walking"
+        self.selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "walking"
+        self.selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "walking"
+        self.selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "walking"
+        
+        let homeTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(0))
+        self.selectedHomeTransferTime1 = homeTime1 == 0 ? 10 : homeTime1
+        
+        let homeTime2 = UserDefaults.standard.integer(forKey: "back2".transferTimeKey(0))
+        self.selectedHomeTransferTime2 = homeTime2 == 0 ? 10 : homeTime2
+        
+        let officeTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(1))
+        self.selectedOfficeTransferTime1 = officeTime1 == 0 ? 10 : officeTime1
+        
+        let officeTime2 = UserDefaults.standard.integer(forKey: "back2".transferTimeKey(1))
+        self.selectedOfficeTransferTime2 = officeTime2 == 0 ? 10 : officeTime2
     }
-    
+
     // MARK: - Data Loading
     // Load saved settings from persistent storage.
     func loadSettings() {
-        // Load transportation from UserDefaults first
-        let savedTransportation = UserDefaults.standard.string(forKey: goorback.transportationKey(lineIndex + 2))
-        if let saved = savedTransportation, !saved.isEmpty {
-            selectedTransportation = saved
-        } else {
-            // Check if there's a transfer count indicating a transfer is needed
-            let savedTransferCount = UserDefaults.standard.integer(forKey: goorback.changeLineKey)
-            if savedTransferCount > lineIndex {
-                // If transfer count is greater than line index, default to "walking"
-                selectedTransportation = "walking"
-            } else {
-                // If no transfer count or transfer not needed, default to "none"
-                selectedTransportation = "none"
-            }
+        homeInput = UserDefaults.standard.string(forKey: homeKey) ?? ""
+        officeInput = UserDefaults.standard.string(forKey: officeKey) ?? ""
+        selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "walking"
+        selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "walking"
+        selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "walking"
+        selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "walking"
+        selectedHomeTransferTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(0))
+        if selectedHomeTransferTime1 == 0 {
+            selectedHomeTransferTime1 = 10
         }
-        
-        // Load transfer time from UserDefaults only if transportation is not "none"
-        if selectedTransportation != "none" {
-            let savedTransferTime = UserDefaults.standard.integer(forKey: goorback.transferTimeKey(lineIndex + 2))
-            if savedTransferTime > 0 {
-                selectedTransferTime = savedTransferTime 
-            } else {
-                // If no saved transfer time, default to 5 minutes
-                selectedTransferTime = 5
-            }
+        selectedHomeTransferTime2 = UserDefaults.standard.integer(forKey: "back2".transferTimeKey(0))
+        if selectedHomeTransferTime2 == 0 {
+            selectedHomeTransferTime2 = 10
+        }
+        selectedOfficeTransferTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(1))
+        if selectedOfficeTransferTime1 == 0 {
+            selectedOfficeTransferTime1 = 10
+        }
+        selectedOfficeTransferTime2 = UserDefaults.standard.integer(forKey: "back2".transferTimeKey(1))
+        if selectedOfficeTransferTime2 == 0 {
+            selectedOfficeTransferTime2 = 10
         }
     }
     
     // MARK: - Data Saving
     // Save current settings to persistent storage.
     func saveSettings() {
-        UserDefaults.standard.set(selectedTransferTime, forKey: goorback.transferTimeKey(lineIndex + 2))
-        UserDefaults.standard.set(selectedTransportation, forKey: goorback.transportationKey(lineIndex + 2))
-        
-        // Calculate and save transfer count
-        let transferCount = selectedTransportation == "none" ? lineIndex : lineIndex + 1
-        UserDefaults.standard.set(transferCount, forKey: goorback.changeLineKey)
+        UserDefaults.standard.set(homeInput, forKey: homeKey)
+        UserDefaults.standard.set(officeInput, forKey: officeKey)
+        UserDefaults.standard.set(selectedHomeTransportation1, forKey: "back1".transportationKey(0))
+        UserDefaults.standard.set(selectedHomeTransportation2, forKey: "back2".transportationKey(0))
+        UserDefaults.standard.set(selectedOfficeTransportation1, forKey: "back1".transportationKey(1))
+        UserDefaults.standard.set(selectedOfficeTransportation2, forKey: "back2".transportationKey(1))
+        UserDefaults.standard.set(selectedHomeTransferTime1, forKey: "back1".transferTimeKey(0))
+        UserDefaults.standard.set(selectedHomeTransferTime2, forKey: "back2".transferTimeKey(0))
+        UserDefaults.standard.set(selectedOfficeTransferTime1, forKey: "back1".transferTimeKey(1))
+        UserDefaults.standard.set(selectedOfficeTransferTime2, forKey: "back2".transferTimeKey(1))
     }
 }
-
-
 
 // MARK: - Preview
 // SwiftUI preview for development and testing
 struct SettingsTransferSheet_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsTransferSheet(goorback: "back1", lineIndex: 0)
+        SettingsTransferSheet()
     }
 }
 

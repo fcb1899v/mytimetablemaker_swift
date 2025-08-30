@@ -26,7 +26,9 @@ struct LogOutButton: View {
         Button(action: {
             isShowAlert = true
         }) {
-            Text("Logout".localized).foregroundColor(.black)
+            Text("Logout".localized)
+                .font(.system(size: settingsFontSize))
+                .foregroundColor(.black)
         }
         // MARK: - Logout Confirmation Alert
         .alert("Logout".localized, isPresented: $isShowAlert) {

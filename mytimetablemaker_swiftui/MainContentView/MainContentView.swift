@@ -107,13 +107,13 @@ struct MainContentView: View {
                     HStack {
                         HStack(spacing: operationButtonMargin) {
                             // Display going home route button
-                            operationButton(isOn: myTransfer.isBack, label: textBack, action: myTransfer.backButton)
+                            OperationButton(isOn: myTransfer.isBack, label: textBack, action: myTransfer.backButton)
                             // Display outgoing route button
-                            operationButton(isOn: !myTransfer.isBack, label: textGo, action: myTransfer.goButton)
+                            OperationButton(isOn: !myTransfer.isBack, label: textGo, action: myTransfer.goButton)
                             // Time Start Button
-                            operationButton(isOn: !myTransfer.isTimeStop, label: textStart, action: myTransfer.startButton)
+                            OperationButton(isOn: !myTransfer.isTimeStop, label: textStart, action: myTransfer.startButton)
                             // Time Stop Button
-                            operationButton(isOn: myTransfer.isTimeStop, label: textStop, action: myTransfer.stopButton)
+                            OperationButton(isOn: myTransfer.isTimeStop, label: textStop, action: myTransfer.stopButton)
                             // To Settings Button
                             Button(action: {
                                 isMoveSettings = true
@@ -142,13 +142,13 @@ struct MainContentView: View {
                                 .font(.custom("GenEiGothicN-Regular", size: routeCountdownFontSize))
                                 .foregroundColor(myTransfer.countdownColor1)
                                 .padding(.vertical, routeCountdownPadding)
-                            stationAndTime(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
+                            HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
                             ForEach(0...myTransfer.changeLine1, id: \.self) { num in
-                                TransferInfomation(myTransfer.goOrBack1, num + 1)
-                                LineAndStation(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
+                                TransferView(myTransfer.goOrBack1, num + 1)
+                                StationLineView(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
                             }
-                            TransferInfomation(myTransfer.goOrBack1, 0)
-                            stationAndTime(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
+                            TransferView(myTransfer.goOrBack1, 0)
+                            HomeOfficeView(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
                             Spacer()
                         }
                         .frame(width: myTransfer.routeWidth, alignment: .top)
@@ -158,7 +158,7 @@ struct MainContentView: View {
                         if (myTransfer.isShowRoute2) {
                             if(screenWidth > 600) { Spacer() }
                             Divider()
-                                .frame(width: 1.5, height: routeHeight)
+                                .frame(width: 1.5, height: .infinity)
                                 .background(Color.primaryColor)
                             if(screenWidth > 600) { Spacer() }
                             VStack(alignment: .center, spacing: routeBottomSpace) {
@@ -167,13 +167,13 @@ struct MainContentView: View {
                                     .font(.system(size: routeCountdownFontSize))
                                     .foregroundColor(myTransfer.countdownColor2)
                                     .padding(.vertical, routeCountdownPadding)
-                                stationAndTime(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
+                                HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
                                 ForEach(0...myTransfer.changeLine2, id: \.self) { num in
-                                    TransferInfomation(myTransfer.goOrBack2, num + 1)
-                                    LineAndStation(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
+                                    TransferView(myTransfer.goOrBack2, num + 1)
+                                    StationLineView(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
                                 }
-                                TransferInfomation(myTransfer.goOrBack2, 0)
-                                stationAndTime(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
+                                TransferView(myTransfer.goOrBack2, 0)
+                                HomeOfficeView(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
                                 Spacer()
                             }
                             .frame(width: myTransfer.routeWidth)
@@ -181,9 +181,6 @@ struct MainContentView: View {
                         }
                         if(screenWidth > 600) { Spacer() }
                     }
-                    Rectangle()
-                        .foregroundColor(Color.primaryColor)
-                        .frame(width: screenWidth, height: 1.5)
                     
                     // MARK: - Ad Banner
                     AdMobBannerView()
@@ -201,6 +198,10 @@ struct MainContentView: View {
         .navigationBarBackButtonHidden(true)
         // SettingsLineSheetの保存完了を監視してMyTransferのデータを更新
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsLineUpdated"))) { _ in
+            myTransfer.updateAllDataFromUserDefaults()
+        }
+        // 帰宅/外出の切り替えを監視して全ての表示を更新
+        .onChange(of: myTransfer.isBack) { _ in
             myTransfer.updateAllDataFromUserDefaults()
         }
     }

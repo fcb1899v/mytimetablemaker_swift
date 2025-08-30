@@ -28,7 +28,9 @@ struct GetFirestoreButton: View {
         Button(action: {
             isShowAlert = true
         }) {
-            Text("Get saved data".localized).foregroundColor(.black)
+            Text("Get saved data".localized)
+                .font(.system(size: settingsFontSize))
+                .foregroundColor(.black)
         }
         // MARK: - Get Confirmation Alert
         .alert("Get saved data".localized, isPresented: $isShowAlert) {
@@ -49,7 +51,7 @@ struct GetFirestoreButton: View {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
                     myTransfer.setRoute2()
-                    myTransfer.setChangeLine()
+                    myTransfer.setLineData()
                 }
                 presentationMode.wrappedValue.dismiss()
             }

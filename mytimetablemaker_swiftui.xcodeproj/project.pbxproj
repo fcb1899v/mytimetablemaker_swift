@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0212A534263C35C600627363 /* settingsStations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0212A533263C35C600627363 /* settingsStations.swift */; };
 		021A12022C70391A00B12BF1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 021A12012C70391A00B12BF1 /* GoogleService-Info.plist */; };
 		0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */; };
 		0220F1B2263FE1120007EDC8 /* SizeConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1B1263FE1120007EDC8 /* SizeConstants.swift */; };
@@ -19,7 +18,7 @@
 		026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D82AD3E573001CF251 /* DeleteAccountButton.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
-		027F23FD2AC9852800852C89 /* lineTimeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23FC2AC9852800852C89 /* lineTimeImage.swift */; };
+		027F23FD2AC9852800852C89 /* LineTimeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23FC2AC9852800852C89 /* LineTimeImage.swift */; };
 		027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
 		027F240B2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
 		027F240C2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
@@ -57,14 +56,8 @@
 		02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D9765D2E50AC68003C3766 /* StationLineView.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
-		02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */; };
-		02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */; };
-		02E7F714262083A000C00545 /* settingsLineName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F713262083A000C00545 /* settingsLineName.swift */; };
-		02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7182620840700C00545 /* settingsRideTime.swift */; };
-		02E7F71E2620848D00C00545 /* settingsTransferTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F71D2620848D00C00545 /* settingsTransferTime.swift */; };
-		02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F722262084FA00C00545 /* settingsTransportation.swift */; };
 		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
-		02EBD0FD2E51500E00450D16 /* stationAndTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD0FC2E51500E00450D16 /* stationAndTime.swift */; };
+		02EBD0FD2E51500E00450D16 /* HomeOfficeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */; };
 		02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */; };
 		02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */; };
 		02EBD4A22E5ABF0B00450D16 /* CommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */; };
@@ -91,8 +84,8 @@
 		02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* SignUpContentView.swift */; };
 		02F02678261C99F400655E54 /* AdMobView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02677261C99F400655E54 /* AdMobView.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
-		02F026E2261DEC7100655E54 /* operationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E1261DEC7100655E54 /* operationButton.swift */; };
-		02F026F1261DED0400655E54 /* TransferInfomation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* TransferInfomation.swift */; };
+		02F026E2261DEC7100655E54 /* OperationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E1261DEC7100655E54 /* OperationButton.swift */; };
+		02F026F1261DED0400655E54 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* TransferView.swift */; };
 		E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -114,7 +107,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0212A533263C35C600627363 /* settingsStations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsStations.swift; sourceTree = "<group>"; };
 		021A12012C70391A00B12BF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridView.swift; sourceTree = "<group>"; };
 		0220F1B1263FE1120007EDC8 /* SizeConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeConstants.swift; sourceTree = "<group>"; };
@@ -127,7 +119,7 @@
 		026257D82AD3E573001CF251 /* DeleteAccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountButton.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
-		027F23FC2AC9852800852C89 /* lineTimeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = lineTimeImage.swift; sourceTree = "<group>"; };
+		027F23FC2AC9852800852C89 /* LineTimeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTimeImage.swift; sourceTree = "<group>"; };
 		027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Heavy.otf"; sourceTree = "<group>"; };
 		027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-SemiLight.otf"; sourceTree = "<group>"; };
 		027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Regular.otf"; sourceTree = "<group>"; };
@@ -144,14 +136,8 @@
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
-		02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsChangeLine.swift; sourceTree = "<group>"; };
-		02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VariousSettingsContentView.swift; sourceTree = "<group>"; };
-		02E7F713262083A000C00545 /* settingsLineName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsLineName.swift; sourceTree = "<group>"; };
-		02E7F7182620840700C00545 /* settingsRideTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsRideTime.swift; sourceTree = "<group>"; };
-		02E7F71D2620848D00C00545 /* settingsTransferTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransferTime.swift; sourceTree = "<group>"; };
-		02E7F722262084FA00C00545 /* settingsTransportation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = settingsTransportation.swift; sourceTree = "<group>"; };
 		02E7F7272620856100C00545 /* TimetableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableContentView.swift; sourceTree = "<group>"; };
-		02EBD0FC2E51500E00450D16 /* stationAndTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stationAndTime.swift; sourceTree = "<group>"; };
+		02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeOfficeView.swift; sourceTree = "<group>"; };
 		02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransferSheet.swift; sourceTree = "<group>"; };
 		02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineViewModel.swift; sourceTree = "<group>"; };
 		02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonComponents.swift; sourceTree = "<group>"; };
@@ -184,8 +170,8 @@
 		02F0263F261C95E400655E54 /* SignUpContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpContentView.swift; sourceTree = "<group>"; };
 		02F02677261C99F400655E54 /* AdMobView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobView.swift; sourceTree = "<group>"; };
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
-		02F026E1261DEC7100655E54 /* operationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = operationButton.swift; sourceTree = "<group>"; };
-		02F026F0261DED0400655E54 /* TransferInfomation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferInfomation.swift; sourceTree = "<group>"; };
+		02F026E1261DEC7100655E54 /* OperationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationButton.swift; sourceTree = "<group>"; };
+		02F026F0261DED0400655E54 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
 		02F026F1261DED0500655E54 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Debug.xcconfig; sourceTree = "<group>"; };
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
 		E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineSheet.swift; sourceTree = "<group>"; };
@@ -342,7 +328,6 @@
 				0212A539263E12AF00627363 /* ContentView */,
 				02F025AF261BDDB700655E54 /* MainContentView */,
 				02F025B0261BDDC600655E54 /* SettingsContentView */,
-				02F025B1261BDDD200655E54 /* VariousSettingsContentView */,
 				02F025B6261BDE3100655E54 /* TimetableContentView */,
 				02F025AE261BDDA400655E54 /* LoginContentView */,
 				02F02581261BDD7F00655E54 /* Preview Content */,
@@ -392,11 +377,11 @@
 				02F025EC261BE5A500655E54 /* MyTransfer.swift */,
 				02F026C8261D38F900655E54 /* MainContentView.swift */,
 				027F24292ACEB7B500852C89 /* SplashContentView.swift */,
-				02F026E1261DEC7100655E54 /* operationButton.swift */,
-				02EBD0FC2E51500E00450D16 /* stationAndTime.swift */,
-				027F23FC2AC9852800852C89 /* lineTimeImage.swift */,
+				02F026E1261DEC7100655E54 /* OperationButton.swift */,
+				027F23FC2AC9852800852C89 /* LineTimeImage.swift */,
+				02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */,
 				02D9765D2E50AC68003C3766 /* StationLineView.swift */,
-				02F026F0261DED0400655E54 /* TransferInfomation.swift */,
+				02F026F0261DED0400655E54 /* TransferView.swift */,
 			);
 			path = MainContentView;
 			sourceTree = "<group>";
@@ -405,7 +390,6 @@
 			isa = PBXGroup;
 			children = (
 				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
-				02E7F6D1261FD61400C00545 /* settingsChangeLine.swift */,
 				02F02622261C935A00655E54 /* MyFirestore.swift */,
 				026257D22AD3E366001CF251 /* GetFirestoreButton.swift */,
 				026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */,
@@ -413,19 +397,6 @@
 				026257D82AD3E573001CF251 /* DeleteAccountButton.swift */,
 			);
 			path = SettingsContentView;
-			sourceTree = "<group>";
-		};
-		02F025B1261BDDD200655E54 /* VariousSettingsContentView */ = {
-			isa = PBXGroup;
-			children = (
-				02E7F6FC261FD7F200C00545 /* VariousSettingsContentView.swift */,
-				0212A533263C35C600627363 /* settingsStations.swift */,
-				02E7F713262083A000C00545 /* settingsLineName.swift */,
-				02E7F7182620840700C00545 /* settingsRideTime.swift */,
-				02E7F722262084FA00C00545 /* settingsTransportation.swift */,
-				02E7F71D2620848D00C00545 /* settingsTransferTime.swift */,
-			);
-			path = VariousSettingsContentView;
 			sourceTree = "<group>";
 		};
 		02F025B2261BDDE100655E54 /* Models */ = {
@@ -621,11 +592,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				02E7F723262084FA00C00545 /* settingsTransportation.swift in Sources */,
 				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
 				02F02678261C99F400655E54 /* AdMobView.swift in Sources */,
 				02C4C4432AF4F00600CEC290 /* CommonConstants.swift in Sources */,
-				027F23FD2AC9852800852C89 /* lineTimeImage.swift in Sources */,
+				027F23FD2AC9852800852C89 /* LineTimeImage.swift in Sources */,
 				027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */,
 				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
 				02F02623261C935A00655E54 /* MyFirestore.swift in Sources */,
@@ -635,30 +605,24 @@
 				026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
-				02F026E2261DEC7100655E54 /* operationButton.swift in Sources */,
+				02F026E2261DEC7100655E54 /* OperationButton.swift in Sources */,
 				02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */,
-				02F026F1261DED0400655E54 /* TransferInfomation.swift in Sources */,
-				02E7F6FD261FD7F200C00545 /* VariousSettingsContentView.swift in Sources */,
+				02F026F1261DED0400655E54 /* TransferView.swift in Sources */,
 				0220F1B2263FE1120007EDC8 /* SizeConstants.swift in Sources */,
-				02E7F6D2261FD61400C00545 /* settingsChangeLine.swift in Sources */,
 				027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
 				02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */,
-				02E7F7192620840700C00545 /* settingsRideTime.swift in Sources */,
 				026257D32AD3E366001CF251 /* GetFirestoreButton.swift in Sources */,
 				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
 				0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */,
 				027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */,
-				0212A534263C35C600627363 /* settingsStations.swift in Sources */,
 				02C15511262BC9170037EEC0 /* ContentView.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */,
-				02E7F71E2620848D00C00545 /* settingsTransferTime.swift in Sources */,
 				0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */,
 				02EBD4B82E5B087400450D16 /* ODPTDataService.swift in Sources */,
 				02F025CA261BDF0600655E54 /* DataExtensions.swift in Sources */,
 				02EBD4BA2E5B088400450D16 /* CacheService.swift in Sources */,
 				02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */,
-				02E7F714262083A000C00545 /* settingsLineName.swift in Sources */,
 				026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */,
 				02F025BD261BDEA000655E54 /* TimeExtensions.swift in Sources */,
 				02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */,
@@ -668,7 +632,7 @@
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
 				02F025C5261BDED100655E54 /* Enums.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
-				02EBD0FD2E51500E00450D16 /* stationAndTime.swift in Sources */,
+				02EBD0FD2E51500E00450D16 /* HomeOfficeView.swift in Sources */,
 				02F025ED261BE5A500655E54 /* MyTransfer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

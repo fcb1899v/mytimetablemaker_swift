@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Operation Button
 // Custom button component for header operation controls
-struct operationButton: View {
+struct OperationButton: View {
     
     private let isOn: Bool
     private let label: String
@@ -42,7 +42,7 @@ struct operationButton: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct stateButton_Previews: PreviewProvider {
     static var previews: some View {
-        operationButton(
+        OperationButton(
             isOn: true,
             label: "Back",
             action: {}

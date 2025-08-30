@@ -20,6 +20,10 @@ func departStationDefault(_ num: Int) -> String { return "\("Dep. St. ".localize
 func arriveStationDefault(_ num: Int) -> String { return "\("Arr. St. ".localized)\(num + 1)" }
 func lineNameDefault(_ num: Int) -> String { return "\("Line ".localized)\(num + 1)" }
 
+// MARK: - UserDefault Key
+let homeKey = "departurepoint"
+let officeKey = "destination"
+
 // MARK: - Alert Titles
 // Localized alert titles for various settings
 let changeLineAlertTitle = "Setting your number of transfers".localized

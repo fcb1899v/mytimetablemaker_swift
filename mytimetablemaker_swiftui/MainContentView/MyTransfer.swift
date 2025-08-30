@@ -30,6 +30,22 @@ class MyTransfer: ObservableObject {
     @Published var changeLine1: Int
     @Published var changeLine2: Int
     
+    // Route direction identifiers with UserDefaults persistence
+    @Published var goOrBack1: String
+    @Published var goOrBack2: String
+    
+    // Line data arrays for real-time updates
+    @Published var home: String
+    @Published var office: String
+    @Published var stationArray1: [String]
+    @Published var lineNameArray1: [String]
+    @Published var lineColorArray1: [Color]
+    @Published var transportationArray1: [String]
+    @Published var stationArray2: [String]
+    @Published var lineNameArray2: [String]
+    @Published var lineColorArray2: [Color]
+    @Published var transportationArray2: [String]
+    
     // MARK: - Initialization
     init() {
         self.isBack = true
@@ -37,13 +53,31 @@ class MyTransfer: ObservableObject {
         self.isShowGoRoute2 = "go2".isShowRoute2
         self.changeLine1 = "back1".changeLineInt
         self.changeLine2 = "back2".changeLineInt
+        self.goOrBack1 = "back1"
+        self.goOrBack2 = "back2"
         self.isTimeStop = false
         self.selectDate = Date()
         self.dateLabel = Date().setDate
         self.timeLabel = Date().setTime
+        self.home = "back1".departurePoint
+        self.office = "back1".destination
+        self.stationArray1 = "back1".stationArray
+        self.lineNameArray1 = "back1".lineNameArray
+        self.lineColorArray1 = "back1".lineColorArray
+        self.transportationArray1 = "back1".transportationArray
+        self.stationArray2 = "back2".stationArray
+        self.lineNameArray2 = "back2".lineNameArray
+        self.lineColorArray2 = "back2".lineColorArray
+        self.transportationArray2 = "back2".transportationArray
     }
     
     // MARK: - Route Management
+    // Updates 
+    func setGoOrBack() {
+        goOrBack1 = isBack.goOrBack1
+        goOrBack2 = isBack.goOrBack2
+    }
+
     // Updates route visibility settings from UserDefaults
     func setRoute2() {
         isShowBackRoute2 = "back2".isShowRoute2
@@ -51,11 +85,21 @@ class MyTransfer: ObservableObject {
     }
     
     // Updates line change settings based on current direction
-    func setChangeLine() {
-        changeLine1 = isBack.goOrBack1.changeLineInt
-        changeLine2 = isBack.goOrBack2.changeLineInt
+    func setLineData() {
+        home = goOrBack1.departurePoint
+        office = goOrBack1.destination
+        changeLine1 = goOrBack1.changeLineInt
+        changeLine2 = goOrBack2.changeLineInt
+        stationArray1 = goOrBack1.stationArray
+        lineNameArray1 = goOrBack1.lineNameArray
+        lineColorArray1 = goOrBack1.lineColorArray
+        transportationArray1 = goOrBack1.transportationArray
+        stationArray2 = goOrBack2.stationArray
+        lineNameArray2 = goOrBack2.lineNameArray
+        lineColorArray2 = goOrBack2.lineColorArray
+        transportationArray2 = goOrBack2.transportationArray
     }
-    
+
     // MARK: - UserDefaults Persistence
     // Save route visibility settings to UserDefaults
     func saveRoute2Settings() {
@@ -65,19 +109,21 @@ class MyTransfer: ObservableObject {
     
     // Save line change settings to UserDefaults
     func saveChangeLineSettings() {
-        UserDefaults.standard.set(changeLine1, forKey: isBack.goOrBack1.changeLineKey)
-        UserDefaults.standard.set(changeLine2, forKey: isBack.goOrBack2.changeLineKey)
+        UserDefaults.standard.set(changeLine1, forKey: goOrBack1.changeLineKey)
+        UserDefaults.standard.set(changeLine2, forKey: goOrBack2.changeLineKey)
     }
     
     // MARK: - UserDefaults Data Update
     // Updates all data from UserDefaults when changes are detected
     func updateAllDataFromUserDefaults() {
-        // Update route visibility settings
+        // Update route direction identifiers
+        setGoOrBack()
+        // Update route 2 visibility settings
         setRoute2()
-        
-        // Update line change settings
-        setChangeLine()
-        
+        // Update line settings
+        setLineData()
+        // Update time
+        timeLabel = Date().setTime
         // Force UI update by triggering objectWillChange
         objectWillChange.send()
     }
@@ -86,13 +132,13 @@ class MyTransfer: ObservableObject {
     // Switches to return direction and updates line settings
     func backButton() {
         isBack = true
-        setChangeLine()
+        updateAllDataFromUserDefaults()
     }
     
     // Switches to outbound direction and updates line settings
     func goButton() {
         isBack = false
-        setChangeLine()
+        updateAllDataFromUserDefaults()
     }
     
     // MARK: - Timer Control
@@ -118,10 +164,6 @@ class MyTransfer: ObservableObject {
     // Current date and time information
     var isWeekday: Bool { return dateLabel.dateFromDate.isWeekday }
     var currentTime: Int { return timeLabel.currentTime }
-    
-    // Direction-based route identifiers
-    var goOrBack1: String { return isBack.goOrBack1 }
-    var goOrBack2: String { return isBack.goOrBack2 }
     
     // Route visibility based on current direction
     var isShowRoute2: Bool { return isBack ? isShowBackRoute2: isShowGoRoute2 }

@@ -28,7 +28,9 @@ struct SetFirestoreButton: View {
         Button(action: {
             isShowAlert = true
         }) {
-            Text("Save current data".localized).foregroundColor(.black)
+            Text("Save current data".localized)
+                .font(.system(size: settingsFontSize))
+                .foregroundColor(.black)
         }
         // MARK: - Save Confirmation Alert
         .alert("Save current data".localized, isPresented: $isShowAlert) {

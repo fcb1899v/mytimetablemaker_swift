@@ -17,6 +17,9 @@ struct SettingsContentView: View {
     @ObservedObject private var myFirestore: MyFirestore
     
     @State private var isShowLogIn = false
+    @State private var showTransferSheet = false
+    @State private var showLineSheet = false
+    @State private var selectedRoute = "back1"
 
     init(
         _ myTransfer: MyTransfer,
@@ -28,63 +31,55 @@ struct SettingsContentView: View {
         self.myFirestore = myFirestore
     }
     
-    var body: some View {
+        var body: some View {
         NavigationStack {
             ZStack {
                 Form {
-                    // MARK: - Route Display Settings
+                    // MARK: - Route Settings
                     Section(
-                        header: Text("Display route 2".localized).fontWeight(.bold)
+                        header: Text("Route Settings".localized)
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .foregroundColor(.gray)
                     ) {
-                        // Display or not going home route 2
-                        Toggle(isOn: $myTransfer.isShowBackRoute2){
-                            Text("Going home route 2".localized)
-                        }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
-                        // Display or not outgoing route 2
-                        Toggle(isOn: $myTransfer.isShowGoRoute2){
-                            Text("Outgoing route 2".localized)
-                        }.toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
-                    }
-                    
-                    // MARK: - Line Change Settings
-                    Section(
-                        header: Text("Change line".localized).fontWeight(.bold)
-                    ) {
-                        // Setting change line of going home route 1
-                        settingsChangeLine(myTransfer, goorback: "back1")
-                        // Setting change line of going home route 2
-                        if (myTransfer.isShowBackRoute2) {settingsChangeLine(myTransfer, goorback: "back2")}
-                        // Setting change line of outgoing route 1
-                        settingsChangeLine(myTransfer, goorback: "go1")
-                        // Setting change line of outgoing route 2
-                        if (myTransfer.isShowGoRoute2) {settingsChangeLine(myTransfer, goorback: "go2")}
-                    }
-                    
-                    // MARK: - Various Settings
-                    Section(
-                        header: Text("Various settings".localized).fontWeight(.bold)
-                    ) {
-                        NavigationLink(destination: VariousSettingsContentView("back1")){
-                            Text("back1".routeTitle)
-                        }
+                        // Home and Destination button
+                        createSettingsButton(
+                            title: "Setting home and destination".localized,
+                            action: { showTransferSheet = true }
+                        )
+
+                        // Settings going home route
+                        createRouteButton(goorback: "back1")
                         if (myTransfer.isShowBackRoute2) {
-                            NavigationLink(destination: VariousSettingsContentView("back2")){
-                                Text("back2".routeTitle)
-                            }
+                            createRouteButton(goorback: "back2")
                         }
-                        NavigationLink(destination: VariousSettingsContentView("go1")){
-                            Text("go1".routeTitle)
+                        Toggle(isOn: $myTransfer.isShowBackRoute2){
+                            Text("Display home route 2".localized)
+                                .font(.system(size: settingsFontSize))
                         }
+                        .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
+                        .onChange(of: myTransfer.isShowBackRoute2) { _ in
+                            myTransfer.saveRoute2Settings()
+                        }
+
+                        // Settings outgoing route
+                        createRouteButton(goorback: "go1")
                         if (myTransfer.isShowGoRoute2) {
-                            NavigationLink(destination: VariousSettingsContentView("go2")){
-                                Text("go2".routeTitle)
-                            }
+                            createRouteButton(goorback: "go2")
+                        }
+                        Toggle(isOn: $myTransfer.isShowGoRoute2){
+                            Text("Display outgoing route 2".localized)
+                                .font(.system(size: settingsFontSize))
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
+                        .onChange(of: myTransfer.isShowGoRoute2) { _ in
+                            myTransfer.saveRoute2Settings()
                         }
                     }
                     
                     // MARK: - Account Management
                     Section(
-                        header: Text("Account".localized).fontWeight(.bold)
+                        header: Text("Account".localized)
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
                     ) {
                         if myLogin.isLoginSuccess {
                             GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
@@ -93,10 +88,8 @@ struct SettingsContentView: View {
                             DeleteAccountButton(myLogin: myLogin)
                         } else {
                             NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
-                                Text("Get your data after login".localized)
-                            }
-                            NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
-                                Text("Save your data after login".localized)
+                                Text("Manage your data after login".localized)
+                                    .font(.system(size: settingsFontSize))
                             }
                         }
                     }
@@ -104,12 +97,17 @@ struct SettingsContentView: View {
                     // MARK: - About Section
                     Section(
                         header: Text("About".localized).fontWeight(.bold)
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
                     ) {
                         // Version information
                         HStack {
                             Text("Version".localized)
+                                .font(.system(size: settingsFontSize))
+                                .foregroundColor(.black)
                             Spacer()
-                            Text(version).foregroundColor(Color.grayColor)
+                            Text(version)
+                                .font(.system(size: settingsFontSize))
+                                .foregroundColor(.gray)
                         }
                         // Privacy Policy link
                         Button(action: {
@@ -117,7 +115,9 @@ struct SettingsContentView: View {
                                 UIApplication.shared.open(yourURL, options: [:], completionHandler: nil)
                             }
                         }) {
-                           Text("Terms and privacy policy".localized).foregroundColor(.black)
+                           Text("Terms and privacy policy".localized)
+                                .font(.system(size: settingsFontSize))
+                                .foregroundColor(.black)
                         }
                     }
                 }
@@ -130,15 +130,34 @@ struct SettingsContentView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .padding()
                         .background(Color.white)
-                        .cornerRadius(10)
+                        .cornerRadius(settingsLineSheetCornerRadius)
                 }
             }
         }
-        .navigationTitle("Settings".localized)
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarColor(backgroundColor: UIColor(Color.primaryColor), titleColor: .white)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Settings".localized)
+                    .font(.system(size: settingsTitleFontSize, weight: .bold))
+                    .foregroundColor(.white)
+            }
+        }
+        .navigationBarColor(
+            backgroundColor: UIColor(Color.primaryColor),
+            titleColor: .white,
+        )
         .navigationBarBackButtonHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(isPresented: $showTransferSheet) {
+            NavigationStack {
+                SettingsTransferSheet()
+            }
+        }
+        .sheet(isPresented: $showLineSheet) {
+            NavigationStack {
+                SettingsLineSheet(goorback: selectedRoute, lineIndex: 0)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){
                 // Back button
@@ -146,12 +165,51 @@ struct SettingsContentView: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
                     HStack {
-                        Image("arrow_back_ios").resizable().frame(width: 10, height: 18)
-                        Text("Back".localized).foregroundColor(.white)
+                        Image("arrow_back_ios")
+                            .foregroundColor(.white)
+                        Text("Back to homepage".localized)
+                            .font(.system(size: settingsFontSize, weight: .bold))
+                            .foregroundColor(.white)
                     }
                 }
             }
         }
+    }
+    
+    // MARK: - Helper Functions
+    
+    /// Creates a settings button with consistent styling
+    /// - Parameters:
+    ///   - title: Button title text
+    ///   - action: Action to perform when button is tapped
+    /// - Returns: Configured button view
+    @ViewBuilder
+    private func createSettingsButton(title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title)
+                    .font(.system(size: settingsFontSize))
+                    .foregroundColor(.black)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: settingsFontSize))
+                    .foregroundColor(.gray)
+            }
+        }
+    }
+    
+    /// Creates a route button for line settings
+    /// - Parameter route: Route identifier (back1, back2, go1, go2)
+    /// - Returns: Configured route button view
+    @ViewBuilder
+    private func createRouteButton(goorback: String) -> some View {
+        createSettingsButton(
+            title: goorback.routeTitle,
+            action: {
+                selectedRoute = goorback
+                showLineSheet = true
+            }
+        )
     }
 }
 

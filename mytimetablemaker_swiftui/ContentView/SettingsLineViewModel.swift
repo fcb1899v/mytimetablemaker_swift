@@ -116,7 +116,39 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Handle goorback selection changes
     func selectGoorback(_ newGoorback: String) {
         selectedGoorback = newGoorback
-        // TODO: Implement additional logic for goorback changes if needed
+        
+        // Clear current selections when route changes
+        query = ""
+        selectedLine = nil
+        lineStations = []
+        selectedDepartureStation = nil
+        selectedArrivalStation = nil
+        departureStationInput = ""
+        arrivalStationInput = ""
+        selectedRideTime = 5
+        selectedLineColor = "#03DAC5"
+        showColorSelection = false
+        
+        // Reset suggestion states
+        showDepartureSuggestions = false
+        departureSuggestions = []
+        showArrivalSuggestions = false
+        arrivalSuggestions = []
+        isDepartureFieldFocused = false
+        isArrivalFieldFocused = false
+        departureStationSelected = false
+        arrivalStationSelected = false
+        lineSelected = false
+        
+        // Load settings for the new route
+        loadLineColorSettings()
+        loadLineNameSettings()
+        loadStationSettings()
+        loadRideTimeSettings()
+        loadTransferSettings()
+        
+        // Update available line numbers for the new route
+        updateAvailableLineNumbers()
     }
     
     // MARK: - Initialization
@@ -124,6 +156,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     init(goorback: String = "back1", lineIndex: Int = 0) {
         self.goorback = goorback
         self.lineIndex = lineIndex
+        self.selectedGoorback = goorback
         
         // MARK: - ODPT API Token Configuration
         // Get ODPT access token from Debug.xcconfig for API authentication
@@ -429,7 +462,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // MARK: - Show Line Suggestions
         // Show line suggestions if there are results and line suggestions should be shown
-        showLineSuggestions = !lineSuggestions.isEmpty
+        // Don't show suggestions if there's only one result and it matches the query exactly
+        if lineSuggestions.count == 1 {
+            let singleLine = lineSuggestions[0]
+            let displayName = displayName(for: singleLine)
+            let normalizedDisplayName = displayName.normalizedForSearch
+            let normalizedQuery = q.normalizedForSearch
+            
+            // Hide suggestions if the single result exactly matches the query
+            showLineSuggestions = !(normalizedDisplayName == normalizedQuery)
+        } else {
+            showLineSuggestions = !lineSuggestions.isEmpty
+        }
         
         // MARK: - Duplicate Counting
         // Count duplicates for display purposes to show frequency information
@@ -754,13 +798,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let lineIndex = selectedLineNumber - 1
         
         if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let lineNameKey = goorback.lineNameKey(lineIndex)
+            let lineNameKey = selectedGoorback.lineNameKey(lineIndex)
             UserDefaults.standard.set(query, forKey: lineNameKey)
             savedItems.append("Line name: \(query)")
             
             // MARK: - Line Code Search and Save
             // Save lineCode by searching in loaded data based on query
-            let lineCodeKey = goorback.lineCodeKey(lineIndex)
+            let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
             let lineCodeToSave = all.first { line in
                 line.name == query || line.railwayTitle?.getLocalizedName() == query
             }?.lineCode ?? ""
@@ -774,7 +818,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // MARK: - Line Color Persistence
         // Save line color (only if set)
         if let lineColor = selectedLineColor, !lineColor.isEmpty {
-            let lineColorKey = goorback.lineColorKey(lineIndex)
+            let lineColorKey = selectedGoorback.lineColorKey(lineIndex)
             UserDefaults.standard.set(lineColor, forKey: lineColorKey)
             savedItems.append("Line color: \(lineColor)")
         }
@@ -782,28 +826,28 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // MARK: - Station Information Persistence
         // Save departure station information (always save if input is complete)
         if !departureStationInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let departureKey = goorback.departStationKey(lineIndex)
+            let departureKey = selectedGoorback.departStationKey(lineIndex)
             UserDefaults.standard.set(departureStationInput, forKey: departureKey)
             savedItems.append("Departure station: \(departureStationInput)")
         }
         
         // Save arrival station information (always save if input is complete)
         if !arrivalStationInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let arrivalKey = goorback.arriveStationKey(lineIndex)
+            let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
             UserDefaults.standard.set(arrivalStationInput, forKey: arrivalKey)
             savedItems.append("Arrival station: \(arrivalStationInput)")
         }
         
         // MARK: - Ride Time Persistence
         // Save ride time (always save)
-        let rideTimeKey = goorback.rideTimeKey(lineIndex)
+        let rideTimeKey = selectedGoorback.rideTimeKey(lineIndex)
         UserDefaults.standard.set(selectedRideTime, forKey: rideTimeKey)
         savedItems.append("Ride time: \(selectedRideTime) minutes")
         
         // MARK: - Transfer Settings Persistence
         // Save transfer transportation preference and calculate transfer count
-        let changeLineKey = goorback.changeLineKey
-        let transportationKey = goorback.transportationKey(lineIndex + 2)        
+        let changeLineKey = selectedGoorback.changeLineKey
+        let transportationKey = selectedGoorback.transportationKey(lineIndex + 2)        
         // Calculate and save transfer count
         let currentChangeLine = UserDefaults.standard.integer(forKey: changeLineKey)
         let currentTransportation = UserDefaults.standard.string(forKey: transportationKey)
@@ -818,15 +862,22 @@ final class SettingsLineSheetViewModel: ObservableObject {
             savedItems.append("Change line updated: \(newChangeLine)")
         }
 
-                // Save transportation method
+        // Save transportation method
         UserDefaults.standard.set(selectedTransportation, forKey: transportationKey)
         savedItems.append("Transfer transportation: \(selectedTransportation)")
         
         // Save transfer time preference
-        let transferTimeKey = goorback.transferTimeKey(lineIndex + 2)
+        let transferTimeKey = selectedGoorback.transferTimeKey(lineIndex + 2)
         UserDefaults.standard.set(selectedTransferTime, forKey: transferTimeKey)
         savedItems.append("Transfer time: \(selectedTransferTime) minutes")
-
+        
+        // MARK: - Route 2 Display Management
+        // Enable route 2 display when saving data for route 2
+        if selectedGoorback == "back2" || selectedGoorback == "go2" {
+            let route2DisplayKey = selectedGoorback.isShowRoute2Key
+            UserDefaults.standard.set(true, forKey: route2DisplayKey)
+            savedItems.append("Route 2 display enabled for \(selectedGoorback)")
+        }
     }
     
     // MARK: - Station Data Retrieval
@@ -892,14 +943,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Load line color settings from UserDefaults
     private func loadLineColorSettings() {
         // Load settings for the specific line index passed during initialization
-        let userDefaultsKey = goorback.lineColorKey(lineIndex)
+        let userDefaultsKey = selectedGoorback.lineColorKey(lineIndex)
+        print("🎨 Loading line color for \(selectedGoorback) with key: \(userDefaultsKey)")
         self.selectedLineColor = UserDefaults.standard.string(forKey: userDefaultsKey)
     }
     
     // Load line name settings from UserDefaults
     private func loadLineNameSettings() {
         // Load settings for the specific line index passed during initialization
-        let lineNameKey = goorback.lineNameKey(lineIndex)
+        let lineNameKey = selectedGoorback.lineNameKey(lineIndex)
         if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
             self.query = savedLineName
         }
@@ -908,7 +960,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Load station settings from UserDefaults
     private func loadStationSettings() {
         // Load departure station
-        let departureKey = goorback.departStationKey(lineIndex)
+        let departureKey = selectedGoorback.departStationKey(lineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             self.departureStationInput = savedDeparture
             // Try to find and set the corresponding station object
@@ -919,7 +971,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Load arrival station
-        let arrivalKey = goorback.arriveStationKey(lineIndex)
+        let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             self.arrivalStationInput = savedArrival
             // Try to find and set the corresponding station object
@@ -933,7 +985,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Load ride time settings from UserDefaults
     private func loadRideTimeSettings() {
         // Load settings for the specific line index passed during initialization
-        let rideTimeKey = goorback.rideTimeKey(lineIndex)
+        let rideTimeKey = selectedGoorback.rideTimeKey(lineIndex)
         self.selectedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
     }
     
@@ -941,24 +993,24 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func loadTransferSettings() {
         // Check if this is line 3 (lineIndex == 2)
         if lineIndex < 2 {
-            // For lines 1 and 2, load transfer settings
-            let transportationKey = goorback.transportationKey(lineIndex + 2)
-            if let savedTransportation = UserDefaults.standard.string(forKey: transportationKey), !savedTransportation.isEmpty {
-                self.selectedTransportation = savedTransportation
-            } else {
-                // Default to "none" if no transportation is set
-                self.selectedTransportation = "none"
-            }
-            
-            // Load transfer time preference
-            let transferTimeKey = goorback.transferTimeKey(lineIndex + 2)
-            let savedTransferTime = UserDefaults.standard.integer(forKey: transferTimeKey)
-            if savedTransferTime > 0 {
-                self.selectedTransferTime = savedTransferTime
-            } else {
-                // Default to 5 minutes if no saved transfer time
-                self.selectedTransferTime = 5
-            }
+                    // For lines 1 and 2, load transfer settings
+        let transportationKey = selectedGoorback.transportationKey(lineIndex + 2)
+        if let savedTransportation = UserDefaults.standard.string(forKey: transportationKey), !savedTransportation.isEmpty {
+            self.selectedTransportation = savedTransportation
+        } else {
+            // Default to "none" if no transportation is set
+            self.selectedTransportation = "none"
+        }
+        
+        // Load transfer time preference
+        let transferTimeKey = selectedGoorback.transferTimeKey(lineIndex + 2)
+        let savedTransferTime = UserDefaults.standard.integer(forKey: transferTimeKey)
+        if savedTransferTime > 0 {
+            self.selectedTransferTime = savedTransferTime
+        } else {
+            // Default to 5 minutes if no saved transfer time
+            self.selectedTransferTime = 5
+        }
         } else {
             // For line 3, set transfer settings to none
             self.selectedTransportation = "none"
@@ -969,7 +1021,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Line Selection Management
     // Update available line numbers based on changeLine setting
     func updateAvailableLineNumbers() {
-        let changeLineValue = UserDefaults.standard.integer(forKey: goorback.changeLineKey)
+        let changeLineValue = UserDefaults.standard.integer(forKey: selectedGoorback.changeLineKey)
         
         // Set available line numbers based on changeLine value
         // changeLine=0: only line 1, changeLine=1: lines 1-2, changeLine=2: lines 1-3
@@ -977,7 +1029,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Reset transportation settings for lines beyond the current transfer count
         for i in (changeLineValue + 2)...4 {
-            let transportationKey = goorback.transportationKey(i)
+            let transportationKey = selectedGoorback.transportationKey(i)
             UserDefaults.standard.set("none", forKey: transportationKey)
         }
         

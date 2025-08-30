@@ -4,9 +4,9 @@
 //
 //  Created by Masao Nakajima on 2025/08/12.
 //  Sheet view for configuring railway lines and bus routes in settings
-//  This view provides functionality to search, select, and configure transportation lines
-//  including both predefined railway data from ODPT API and custom line configurations.
-//  Features include multi-language support, station search, and line color customization.
+//  Provides functionality to search, select, and configure transportation lines
+//  including predefined railway data from ODPT API and custom line configurations.
+//  Features multi-language support, station search, and line color customization.
 //
 
 import SwiftUI
@@ -31,7 +31,10 @@ struct SettingsLineSheet: View {
     private let goorback: String
     private let lineIndex: Int
     
-    init(goorback: String, lineIndex: Int) {
+    init(
+        goorback: String,
+        lineIndex: Int
+    ) {
         self.goorback = goorback
         self.lineIndex = lineIndex
         self._vm = StateObject(wrappedValue: SettingsLineSheetViewModel(goorback: goorback, lineIndex: lineIndex))
@@ -60,7 +63,8 @@ struct SettingsLineSheet: View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
                 VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
-                    lineHeaderText
+                    routeHeaderMenu
+                    lineHeaderMenu
                     lineNameSection
                     lineColorSection
                     stationHeaderText
@@ -72,7 +76,8 @@ struct SettingsLineSheet: View {
                         transferSettingsSection
                     }
                     dataManagementSection
-                    actionButtonsSection
+                    saveButtonSection
+                    timetableSettingsButtonSection
                 }
                 .coordinateSpace(name: "scrollView")
                 .onPreferenceChange(DepartureStationPositionKey.self) { value in
@@ -112,6 +117,16 @@ struct SettingsLineSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.white, for: .navigationBar)
         .toolbarColorScheme(.light, for: .navigationBar)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                // Cancel button
+                Button("Cancel".localized) {
+                    dismiss()
+                }
+                .font(.system(size: settingsLineSheetButtonFontSize))
+                .foregroundColor(.black)
+            }
+        }
         .onPreferenceChange(DepartureStationPositionKey.self) { value in
             departureStationPosition = value
         }
@@ -183,7 +198,7 @@ struct SettingsLineSheet: View {
         .shadow(radius: settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: settingsLineSheetDepartureOffset) // Adjust position to match departure station input field
+        .offset(y: settingsLineSheetDepartureOffset)
         .zIndex(100)
     }
 
@@ -246,13 +261,12 @@ struct SettingsLineSheet: View {
         .shadow(radius: settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: settingsLineSheetArrivalOffset) // Adjust position to match arrival station input field
+        .offset(y: settingsLineSheetArrivalOffset)
         .zIndex(100)
     }
 
     // MARK: - Line Suggestions
     private var lineSuggestionsView: some View {
-        // Debug: Check conditions for line suggestions display
         VStack(alignment: .leading) {
             ScrollView {
                 ForEach(Array(removeDuplicates(from: vm.lineSuggestions).enumerated()), id: \.element.id) { index, line in
@@ -282,7 +296,7 @@ struct SettingsLineSheet: View {
                         // Reset ride time to 5 minutes when line is selected
                         vm.selectedRideTime = 5
                         // Set line color or default to accent color
-                        vm.selectedLineColor = line.lineColor ?? "#03DAC5"
+                        vm.selectedLineColor = line.lineColor ?? accentColorString
                         
                         // Hide line suggestions after selection
                         vm.showLineSuggestions = false
@@ -362,7 +376,7 @@ struct SettingsLineSheet: View {
     private var colorSelectionHeader: some View {
         HStack {
             Text("Select Line Color".localized)
-                .font(.system(size: settingsLineSheetTitleFontSize, weight: .semibold))
+                .font(.system(size: settingsLineSheetHeaderFontSize, weight: .semibold))
                 .foregroundColor(.black)
             Spacer()
             // Cancel button (only shown during manual color selection)
@@ -378,16 +392,16 @@ struct SettingsLineSheet: View {
     
     // MARK: - Color Selection Grid
     private var colorSelectionGrid: some View {
-        // 4-column grid layout for color selection buttons
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: settingsLineSheetGridSpacing) {
-            // Iterate through all available custom colors
             ForEach(CustomColor.allCases, id: \.self) { color in
                 colorSelectionButton(for: color)
             }
-        }.padding(.all, settingsLineSheetGridSpacing)
+        }
+        .padding(.all, settingsLineSheetGridSpacing)
     }
     
     // MARK: - Color Selection Button
+    /// Button for selecting a specific line color
     private func colorSelectionButton(for color: CustomColor) -> some View {
         Button(action: {
             // Set selected color and hide color selection UI
@@ -410,60 +424,93 @@ struct SettingsLineSheet: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - Action Buttons Section
-    private var actionButtonsSection: some View {
+    // MARK: - Save Button Section
+    /// Save button for storing line configuration data
+    private var saveButtonSection: some View {
         VStack(spacing: settingsLineSheetSpacing) {
-            // MARK: - Save Button
-            Button(action: {
-                // Save all data (both predefined and custom lines)
+            actionButton(
+                title: "Save".localized,
+                icon: "square.and.arrow.down.fill",
+                color: selected == nil && !vm.isCustomLineStationInputComplete() ? .gray : .accentColor
+            ) {
                 vm.handleLineSave(dismiss: dismiss)
-            }) {
-                HStack {
-                    Image(systemName: "square.and.arrow.down.fill")
-                        .font(.title3)
-                    Text("Save".localized)
-                        .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: settingsLineSheetButtonHeight)
-                .background(
-                    RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
-                        .fill(selected == nil && !vm.isCustomLineStationInputComplete() ? .gray : .accentColor)
-                )
             }
             .disabled(!vm.isCustomLineStationInputComplete())
-            
-            // MARK: - Timetable Settings Button
-            Button(action: {
+        }
+        .padding(.top, settingsLineSheetPadding)
+    }
+    
+    // MARK: - Timetable Settings Button Section
+    /// Button to open timetable configuration screen
+    private var timetableSettingsButtonSection: some View {
+        VStack(spacing: settingsLineSheetSpacing) {
+            actionButton(
+                title: "Timetable Settings".localized,
+                icon: "clock.fill",
+                color: .primaryColor
+            ) {
                 showTimetableSettings = true
-            }) {
-                HStack {
-                    Image(systemName: "clock.fill")
-                        .font(.title3)
-                    Text("Timetable Settings".localized)
-                        .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
-                }
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: settingsLineSheetButtonHeight)
-                .background(
-                    RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
-                        .fill(Color.primaryColor)
-                )
             }
             
-            // Add space below buttons
             Spacer()
         }
         .padding(.top, settingsLineSheetPadding)
     }
     
-
+    // MARK: - Action Button Helper
+    /// Reusable button component with consistent styling
+    @ViewBuilder
+    private func actionButton(
+        title: String,
+        icon: String,
+        color: Color = .accentColor,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
+                Text(title)
+                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .bold))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: settingsLineSheetButtonHeight)
+            .background(
+                RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
+                    .fill(color)
+            )
+        }
+    }
     
-    // MARK: - Station Header Text
-    private var lineHeaderText: some View {
-            
+
+    // MARK: - Header View
+    /// Main header view with route selection dropdown and cancel button
+    private var routeHeaderMenu: some View {
+        // Route selection dropdown
+        Menu {
+            ForEach(vm.goorbackOptions, id: \.self) { option in
+                Button(vm.goorbackDisplayNames[option] ?? option) {
+                    vm.selectGoorback(option)
+                }
+            }
+        } label: {
+            HStack {
+                Text(vm.goorbackDisplayNames[vm.selectedGoorback] ?? vm.selectedGoorback)
+                    .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
+                    .foregroundColor(.primary)
+
+                Image(systemName: "chevron.down")
+                    .font(.system(size: settingsLineSheetTitleFontSize, weight: .medium))
+                    .foregroundColor(.black)
+                Spacer()
+            }
+        }
+    }
+    
+    // MARK: - Header Implementations
+    /// Line header with line number selection menu
+    private var lineHeaderMenu: some View {
         Menu {
             ForEach(vm.availableLineNumbers, id: \.self) { lineNumber in
                 Button("\("Line".localized)\(lineNumber)") {
@@ -473,21 +520,38 @@ struct SettingsLineSheet: View {
         } label: {
             HStack {
                 Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
-                    .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
+                    .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
                     .foregroundColor(Color.black)
                 
                 Image(systemName: "chevron.down")
+                    .font(.system(size: settingsLineSheetHeaderFontSize, weight: .medium))
                     .foregroundColor(.black)
                 
                 Spacer()
             }
         }
+        .padding(.top, settingsLineSheetPadding)
     }
-
+    
+    /// Station header with dynamic station information
+    private var stationHeaderText: some View {
+        Text("Station Input".localized + "\(vm.hasSelectedLine && vm.hasStations ? ": ".localized + "\(vm.lineStations.first?.name ?? "")" + " to ".localized + "\(vm.lineStations.last?.name ?? "")": "")")
+            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .foregroundColor(Color.black)
+            .padding(.top, settingsLineSheetPadding)
+    }
+    
+    /// Time header with simple text
+    private var timeHeaderText: some View {
+        Text("Time Settings".localized)
+            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .foregroundColor(Color.black)
+            .padding(.top, settingsLineSheetPadding)
+    }
+    
     // MARK: - Line Name Section
     private var lineNameSection: some View {
         VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
-            // MARK: - Line Name Input
             HStack {
                 Text("Line Name".localized)
                     .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
@@ -533,6 +597,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Line Color Section
+    /// Section for displaying and selecting line colors
     private var lineColorSection: some View {
         HStack {
             Text("Line Color".localized)
@@ -565,23 +630,8 @@ struct SettingsLineSheet: View {
         }
     }
     
-    // MARK: - Station Header Text
-    private var stationHeaderText: some View {
-        Text("Station Input".localized + "\(vm.hasSelectedLine && vm.hasStations ? ": ".localized + "\(vm.lineStations.first?.name ?? "")" + " to ".localized + "\(vm.lineStations.last?.name ?? "")": "")")
-            .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
-            .foregroundColor(Color.black)
-            .padding(.top, settingsLineSheetPadding)
-    }
-    
-    // MARK: - Time Header Text
-    private var timeHeaderText: some View {
-        Text("Time Settings".localized)
-            .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
-            .foregroundColor(Color.black)
-            .padding(.top, settingsLineSheetPadding)
-    }
-    
     // MARK: - Ride Time Section
+    /// Section for configuring travel time between stations
     private var rideTimeSection: some View {
         HStack(alignment: .center) {
             Text("Ride Time".localized)
@@ -601,6 +651,7 @@ struct SettingsLineSheet: View {
                     }
                 } label: {
                     Image(systemName: "chevron.down")
+                        .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
                         .foregroundColor(.black)
                 }
             }
@@ -641,11 +692,14 @@ struct SettingsLineSheet: View {
                                         .foregroundColor(.black)
                                         .frame(width: settingsLineSheetIconSize)
                                     Text(type.displayName)
+                                        .foregroundColor(.black)
+                                        .frame(width: settingsLineSheetIconSize)
                                 }
                             }
                         }
                     } label: {
                         Image(systemName: "chevron.down")
+                            .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
                             .foregroundColor(.black)
                     }
                 }
@@ -677,6 +731,7 @@ struct SettingsLineSheet: View {
                             }
                         } label: {
                             Image(systemName: "chevron.down")
+                                .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
                                 .foregroundColor(.black)
                         }
                     }
@@ -692,6 +747,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Data Management Section
+    /// Section for updating data and clearing configuration
     private var dataManagementSection: some View {
         HStack {
             Button("Update Data".localized) {
@@ -727,7 +783,7 @@ struct SettingsLineSheet: View {
                 vm.selectedRideTime = 5
                 
                 // Reset line color to accent (not saved to UserDefaults)
-                vm.selectedLineColor = "#03DAC5"
+                vm.selectedLineColor = accentColorString
                 
                 // Hide color selection UI
                 vm.showColorSelection = false
@@ -744,115 +800,109 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Departure Station Input Section
+    /// Section for inputting departure station information
     private var departureStationInputSection: some View {
         HStack {
             Text("Departure Station".localized)
                 .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
             
-            departureStationTextField
+            TextField("Enter departure station".localized, text: $vm.departureStationInput)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .font(.system(size: settingsLineSheetInputFontSize))
+                .padding(.vertical, settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                .frame(maxWidth: .infinity)
+                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .onChange(of: vm.departureStationInput) { newValue in
+                    handleDepartureStationInputChange(newValue)
+                }
+                .onChange(of: vm.selectedDepartureStation) { _ in
+                    // Re-filter arrival station suggestions after departure station selection
+                    if !vm.arrivalStationInput.isEmpty {
+                        vm.filterArrivalStations(vm.arrivalStationInput)
+                    }
+                }
+                .onTapGesture {
+                    // Show suggestions on tap and reset selection flag
+                    vm.isDepartureFieldFocused = true
+                    vm.departureStationSelected = false
+                    if !vm.departureStationInput.isEmpty {
+                        vm.filterDepartureStations(vm.departureStationInput)
+                    }
+                }
+                .onSubmit {
+                    // Hide suggestions on input completion
+                    vm.showDepartureSuggestions = false
+                    vm.isDepartureFieldFocused = false
+                }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(key: DepartureStationPositionKey.self, value: geometry.frame(in: .named("scrollView")).minY)
+                    }
+                )
             
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(vm.departureStationInput.isEmpty ? .gray : .accentColor)
         }
     }
     
-    // MARK: - Departure Station TextField
-    private var departureStationTextField: some View {
-        TextField("Enter departure station".localized, text: $vm.departureStationInput)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .font(.system(size: settingsLineSheetInputFontSize))
-            .padding(.vertical, settingsLineSheetInputPaddingVertical)
-            .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-            .frame(maxWidth: .infinity)
-            .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-            .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
-            .onChange(of: vm.departureStationInput) { newValue in
-                handleDepartureStationInputChange(newValue)
-            }
-            .onChange(of: vm.selectedDepartureStation) { _ in
-                // Re-filter arrival station suggestions after departure station selection
-                if !vm.arrivalStationInput.isEmpty {
-                    vm.filterArrivalStations(vm.arrivalStationInput)
-                }
-            }
-            .onTapGesture {
-                // Show suggestions on tap and reset selection flag
-                vm.isDepartureFieldFocused = true
-                vm.departureStationSelected = false
-                if !vm.departureStationInput.isEmpty {
-                    vm.filterDepartureStations(vm.departureStationInput)
-                }
-            }
-            .onSubmit {
-                // Hide suggestions on input completion
-                vm.showDepartureSuggestions = false
-                vm.isDepartureFieldFocused = false
-            }
-            .background(
-                GeometryReader { geometry in
-                    Color.clear
-                        .preference(key: DepartureStationPositionKey.self, value: geometry.frame(in: .named("scrollView")).minY)
-                }
-            )
-    }
-    
     // MARK: - Arrival Station Input Section
+    /// Section for inputting arrival station information
     private var arrivalStationInputSection: some View {
         HStack {
             Text("Arrival Station".localized)
                 .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
 
-            arrivalStationTextField
+            TextField("Enter arrival station".localized, text: $vm.arrivalStationInput)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+                .font(.system(size: settingsLineSheetInputFontSize))
+                .padding(.vertical, settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .onChange(of: vm.arrivalStationInput) { newValue in
+                    handleArrivalStationInputChange(newValue)
+                }
+                .onChange(of: vm.selectedArrivalStation) { _ in
+                    // Re-filter departure station suggestions after arrival station selection
+                    if !vm.departureStationInput.isEmpty {
+                        vm.filterDepartureStations(vm.departureStationInput)
+                    }
+                }
+                .onTapGesture {
+                    // Show suggestions on tap and reset selection flag
+                    vm.isArrivalFieldFocused = true
+                    vm.arrivalStationSelected = false
+                    if !vm.arrivalStationInput.isEmpty {
+                        vm.filterArrivalStations(vm.arrivalStationInput)
+                    }
+                }
+                .onSubmit {
+                    // Hide suggestions on input completion
+                    vm.showArrivalSuggestions = false
+                    vm.isArrivalFieldFocused = false
+                }
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear
+                            .preference(key: ArrivalStationPositionKey.self, value: geometry.frame(in: .named("scrollView")).minY)
+                    }
+                )
             
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(vm.arrivalStationInput.isEmpty ? .gray : .accentColor)
         }
     }
     
-    // MARK: - Arrival Station TextField
-    private var arrivalStationTextField: some View {
-        TextField("Enter arrival station".localized, text: $vm.arrivalStationInput)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .font(.system(size: settingsLineSheetInputFontSize))
-            .padding(.vertical, settingsLineSheetInputPaddingVertical)
-            .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-            .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-            .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
-            .onChange(of: vm.arrivalStationInput) { newValue in
-                handleArrivalStationInputChange(newValue)
-            }
-            .onChange(of: vm.selectedArrivalStation) { _ in
-                // Re-filter departure station suggestions after arrival station selection
-                if !vm.departureStationInput.isEmpty {
-                    vm.filterDepartureStations(vm.departureStationInput)
-                }
-            }
-            .onTapGesture {
-                // Show suggestions on tap and reset selection flag
-                vm.isArrivalFieldFocused = true
-                vm.arrivalStationSelected = false
-                if !vm.arrivalStationInput.isEmpty {
-                    vm.filterArrivalStations(vm.arrivalStationInput)
-                }
-            }
-            .onSubmit {
-                // Hide suggestions on input completion
-                vm.showArrivalSuggestions = false
-                vm.isArrivalFieldFocused = false
-            }
-            .background(
-                GeometryReader { geometry in
-                    Color.clear
-                        .preference(key: ArrivalStationPositionKey.self, value: geometry.frame(in: .named("scrollView")).minY)
-                }
-            )
-    }
     
     // MARK: - Departure Station Input Change Handler
+    /// Handles changes in departure station input field
     private func handleDepartureStationInputChange(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if vm.isLineNumberChanging {
@@ -874,6 +924,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Arrival Station Input Change Handler
+    /// Handles changes in arrival station input field
     private func handleArrivalStationInputChange(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if vm.isLineNumberChanging {
@@ -895,6 +946,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Query Change Handler
+    /// Handles changes in line name query field
     private func handleQueryChange(_ newValue: String) {
         // Ensure focus is maintained when typing
         if !newValue.isEmpty {
@@ -951,13 +1003,5 @@ struct SettingsLineSheet: View {
 }
 
 // MARK: - File Summary
-// This file implements a comprehensive line configuration sheet interface for the MyTimeTableMaker app.
-// Key components include:
-// - TransportationLine data model with multi-language support
-// - ODPT API integration for railway data
-// - Local file parsing for custom configurations
-// - Advanced search and filtering capabilities
-// - Station selection with intelligent suggestions
-// - Line color customization
-// - Data persistence and management
-// - Responsive UI with proper state management
+// Comprehensive line configuration sheet interface for MyTimeTableMaker app
+// Features: ODPT API integration, station search, line customization, data management

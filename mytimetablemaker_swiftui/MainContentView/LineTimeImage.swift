@@ -10,7 +10,7 @@ import Foundation
 
 // MARK: - Line Time Image View
 // Custom view component displaying different icons based on line type and transfer information
-struct lineTimeImage: View {
+struct LineTimeImage: View {
     
     // MARK: - Properties
     private let lineColor: Color
@@ -90,11 +90,11 @@ struct lineTimeImage_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
             // Transfer example
-            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
+            LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
             // Line code example (JK for 京浜東北線)
-            lineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "")
+            LineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "")
             // Default lightrail example
-            lineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
+            LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
         }
     }
 }
