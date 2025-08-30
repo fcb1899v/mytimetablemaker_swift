@@ -144,6 +144,8 @@ class MyTransfer: ObservableObject {
     // MARK: - Timer Control
     // Starts real-time timer for updating date and time
     func startButton() {
+        // Cancel existing timer before starting new one
+        cancellable?.cancel()
         isTimeStop = false
         selectDate = Date()
         cancellable = Timer.publish(every: 1.0, on: .main, in: .common)
@@ -158,6 +160,19 @@ class MyTransfer: ObservableObject {
     func stopButton() {
         isTimeStop = true
         cancellable?.cancel()
+    }
+    
+    // MARK: - Timer State Management
+    // Ensures timer is running when view appears
+    func ensureTimerRunning() {
+        // Always start timer when view appears, regardless of current state
+        startButton()
+    }
+    
+    // Stops timer when view disappears
+    func stopTimerOnDisappear() {
+        // Always stop timer when view disappears
+        stopButton()
     }
     
     // MARK: - Computed Properties

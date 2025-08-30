@@ -92,8 +92,12 @@ struct MainContentView: View {
                             } else {
                                 Text(myTransfer.timeLabel)
                                     .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                    .onAppear { myTransfer.startButton() }
-                                    .onDisappear { myTransfer.stopButton() }
+                                    .onAppear { 
+                                        myTransfer.ensureTimerRunning()
+                                    }
+                                    .onDisappear { 
+                                        myTransfer.stopTimerOnDisappear()
+                                    }
                             }
                             Spacer()
                         }
@@ -203,6 +207,12 @@ struct MainContentView: View {
         // 帰宅/外出の切り替えを監視して全ての表示を更新
         .onChange(of: myTransfer.isBack) { _ in
             myTransfer.updateAllDataFromUserDefaults()
+        }
+        .onAppear {
+            // Ensure timer is running when MainContentView appears
+            if myTransfer.isTimeStop {
+                myTransfer.startButton()
+            }
         }
     }
 }
