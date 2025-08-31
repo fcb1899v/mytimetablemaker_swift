@@ -101,7 +101,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     // MARK: - URL Session Delegate Methods
     // Handle HTTP redirects while preserving authentication parameters.
     // Ensures consumer key is maintained across redirect chains.
-    private func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         // MARK: - Redirect URL Modification
         // Add consumerKey to the redirected URL to maintain authentication
         if var components = URLComponents(url: request.url!, resolvingAgainstBaseURL: false) {
@@ -171,11 +171,8 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         // MARK: - Step 3: Conditional Update
         // If changes detected, send GET with conditional headers for efficient updates
         var getReq = URLRequest(url: source.url(consumerKey: consumerKey))
-        if let meta {
-            // Add conditional headers for efficient updates
-            if let et = meta.eTag { getReq.setValue(et, forHTTPHeaderField: "If-None-Match") }
-            if let lm = meta.lastModified { getReq.setValue(lm, forHTTPHeaderField: "If-Modified-Since") }
-        }
+        meta?.eTag.map { getReq.setValue($0, forHTTPHeaderField: "If-None-Match") }
+        meta?.lastModified.map { getReq.setValue($0, forHTTPHeaderField: "If-Modified-Since") }
 
         // MARK: - Step 4: Data Retrieval and Caching
         // Execute GET request with conditional headers
@@ -187,9 +184,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
 
         // Cache new data and metadata
         cache.saveData(data, for: source.cacheFile)
+        let httpResponse = resp as? HTTPURLResponse
         let newMeta = CacheMeta(
-            eTag: (resp as? HTTPURLResponse)?.value(forHTTPHeaderField: "ETag"),
-            lastModified: (resp as? HTTPURLResponse)?.value(forHTTPHeaderField: "Last-Modified"),
+            eTag: httpResponse?.value(forHTTPHeaderField: "ETag"),
+            lastModified: httpResponse?.value(forHTTPHeaderField: "Last-Modified"),
             downloadedAt: Date()
         )
         cache.saveMeta(newMeta, for: source.metaFile)
@@ -205,9 +203,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         // MARK: - Data Caching
         // Cache the downloaded data and metadata
         cache.saveData(data, for: source.cacheFile)
+        let httpResponse = resp as? HTTPURLResponse
         let meta = CacheMeta(
-            eTag: (resp as? HTTPURLResponse)?.value(forHTTPHeaderField: "ETag"),
-            lastModified: (resp as? HTTPURLResponse)?.value(forHTTPHeaderField: "Last-Modified"),
+            eTag: httpResponse?.value(forHTTPHeaderField: "ETag"),
+            lastModified: httpResponse?.value(forHTTPHeaderField: "Last-Modified"),
             downloadedAt: Date()
         )
         cache.saveMeta(meta, for: source.metaFile)
