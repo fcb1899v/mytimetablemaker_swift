@@ -86,7 +86,7 @@ struct SignUpContentView: View {
                     }
                 } .padding(.bottom, 6)
             }.alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                Button(textOk, role: .none){
+                                    Button("OK".localized, role: .none){
                     myLogin.isShowMessage = false
                     if myLogin.isSignUpSuccess {
                         self.presentationMode.wrappedValue.dismiss()

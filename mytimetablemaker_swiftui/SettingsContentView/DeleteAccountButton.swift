@@ -34,12 +34,12 @@ struct DeleteAccountButton: View {
         // MARK: - Delete Account Confirmation Alert
         .alert("Delete Account".localized, isPresented: $isShowAlert) {
             // OK button
-            Button(textOk, role: .destructive){
+            Button("OK".localized, role: .destructive){
                 myLogin.delete()
                 isShowAlert = false
             }
             // Cancel button
-            Button(textCancel, role: .cancel){
+            Button("Cancel".localized, role: .cancel){
                 isShowAlert = false
             }
         } message: {
@@ -47,7 +47,7 @@ struct DeleteAccountButton: View {
         }
         // MARK: - Delete Account Result Alert
         .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-            Button(textOk, role: .none){
+            Button("OK".localized, role: .none){
                 myLogin.isShowMessage = false
                 if (!myLogin.isLoginSuccess) {
                     presentationMode.wrappedValue.dismiss()

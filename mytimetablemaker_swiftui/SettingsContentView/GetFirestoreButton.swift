@@ -35,11 +35,11 @@ struct GetFirestoreButton: View {
         // MARK: - Get Confirmation Alert
         .alert("Get saved data".localized, isPresented: $isShowAlert) {
             // OK button
-            Button(textOk, role: .destructive) {
+            Button("OK".localized, role: .destructive) {
                 myFirestore.getFirestore()
             }
             // Cancel button
-            Button(textCancel, role: .cancel){
+            Button("Cancel".localized, role: .cancel){
                 isShowAlert = false
             }
         } message: {
@@ -47,7 +47,7 @@ struct GetFirestoreButton: View {
         }
         // MARK: - Get Result Alert
         .alert(myFirestore.title, isPresented: $myFirestore.isShowMessage) {
-            Button(textOk, role: .none) {
+            Button("OK".localized, role: .none) {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
                     myTransfer.setRoute2()

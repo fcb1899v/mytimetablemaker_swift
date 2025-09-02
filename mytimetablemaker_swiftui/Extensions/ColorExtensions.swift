@@ -31,6 +31,14 @@ extension Color {
         let blue = Double((hex & 0xff) >> 0) / 255.0
         self.init(.sRGB, red: red, green: green, blue: blue, opacity: opacity)
     }
+    
+    // MARK: - Hex String Initializer
+    // Initialize color from hex string value
+    init?(hex: String) {
+        let cleanString = hex.replacingOccurrences(of: "#", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let hexValue = Int(cleanString, radix: 16) else { return nil }
+        self.init(hexValue)
+    }
 
     // MARK: - Hex String Conversion
     // Convert color to hex string representation
@@ -58,13 +66,23 @@ extension String {
     // MARK: - Hex String to Int Conversion
     // Convert hex color string to integer value
     var colorInt: Int {
-        return Int(self.replacingOccurrences(of: "#", with: ""), radix: 16) ?? 000000
+        let cleanString = self.replacingOccurrences(of: "#", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if cleanString.isEmpty {
+            return 0xAAAAAA // Default gray color
+        }
+        return Int(cleanString, radix: 16) ?? 0xAAAAAA
     }
     
     // MARK: - Settings Color Logic
     // Determine color for settings display based on text value
     var settingsColor: Color {
-        return (self == textNotSet) ? Color.grayColor: Color.black
+        return (self == "Not set".localized) ? Color.grayColor: Color.black
+    }
+    
+    // MARK: - Safe Color Conversion
+    // Safely convert hex string to Color with fallback
+    var safeColor: Color {
+        return Color(self.colorInt)
     }
     
 }

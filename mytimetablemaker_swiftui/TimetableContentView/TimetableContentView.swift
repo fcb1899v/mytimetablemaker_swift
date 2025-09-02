@@ -37,7 +37,7 @@ struct TimetableContentView: View {
                     VStack {
                         HStack {
                             Spacer()
-                            Text(timetableAlertTitle)
+                            Text("Setting your timetable".localized)
                                 .fontWeight(.bold)
                                 .foregroundColor(.white)
                                 .padding(.top, 20)
@@ -94,7 +94,7 @@ struct TimetableContentView: View {
                             Button(action: {
                                 self.isShowImagePicker = true
                             }, label: {
-                                Text(timetablePictureButtonText)
+                                Text("Select your timetable picture".localized)
                                     .font(.body)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.white)

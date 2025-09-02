@@ -96,7 +96,7 @@ struct LoginContentView: View {
                     }.padding(.bottom, 6)
                 }
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                    Button(textOk, role: .none){
+                    Button("OK".localized, role: .none){
                         myLogin.isShowMessage = false
                         if myLogin.isLoginSuccess {
                             presentationMode.wrappedValue.dismiss()
@@ -132,11 +132,11 @@ struct LoginContentView: View {
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                     // OK button
-                    Button(textOk, role: .none){
+                    Button("OK".localized, role: .none){
                         myLogin.reset()
                     }
                     // Cancel button
-                    Button(textCancel, role: .cancel){
+                    Button("Cancel".localized, role: .cancel){
                         isShowReset = false
                     }
                 } message: {
@@ -144,7 +144,7 @@ struct LoginContentView: View {
                 }
                 // Message alert
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                    Button(textOk, role: .none){
+                    Button("OK".localized, role: .none){
                         myLogin.isShowMessage = false
                     }
                 } message: {

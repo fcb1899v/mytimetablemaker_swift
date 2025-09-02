@@ -6,57 +6,10 @@
 //
 //  MARK: - Overview
 //  Data Transfer Objects (DTOs) for handling external data formats.
-//  Provides structures for parsing JSON data from local files and ODPT API.
+//  Provides structures for parsing JSON data from ODPT API.
 //
 
 import Foundation
-
-// MARK: - Transportation Type DTO
-// Base DTO that includes the @type field for distinguishing between railway and bus data
-struct TransportationTypeDTO: Decodable {
-    let type: String
-    
-    enum CodingKeys: String, CodingKey {
-        case type = "@type"
-    }
-    
-    // MARK: - Transportation Type Mapping
-    // Maps the @type field to our internal TransportationType enum
-    var transportationType: TransportationType? {
-        return TransportationType(rawValue: type)
-    }
-}
-
-// MARK: - Local File Data Transfer Objects
-// These structures represent the local JSON data files.
-// They provide offline data when ODPT API is unavailable.
-
-// MARK: - Local Railway DTO
-// Line data structure for local JSON files.
-// Similar to RailwayDTO but with local-specific field mappings.
-struct LocalRailwayDTO: Decodable {
-    let title: String
-    let sameAs: String
-    let operatorCode: String?
-    let lineColor: String?
-    let stationOrder: [StationOrder]?
-    let railwayTitle: RailwayTitle?
-    let lineCode: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case title = "dc:title"           // Dublin Core title
-        case sameAs = "owl:sameAs"        // OWL sameAs identifier
-        case operatorCode = "odpt:operator"       // Railway operator code
-        case lineColor = "odpt:color"             // Line color (local format)
-        case stationOrder = "odpt:stationOrder"   // Station sequence on the line
-        case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
-        case lineCode = "odpt:lineCode"           // Line identifier code
-    }
-}
-
-// MARK: - ODPT JSON Data Transfer Objects
-// These structures represent the raw JSON data received from the ODPT API.
-// They are used for parsing and converting external data to our internal models.
 
 // MARK: - ODPT Railway DTO
 // DTO for railway data from ODPT API.
@@ -71,6 +24,7 @@ struct RailwayDTO: Decodable {
     let endStation: String?
     let railwayTitle: RailwayTitle?
     let lineCode: String?
+    let date: String?
 
     enum CodingKeys: String, CodingKey {
         case title = "dc:title"           // Dublin Core title
@@ -82,6 +36,7 @@ struct RailwayDTO: Decodable {
         case endStation = "odpt:endStation"       // Last station on the line
         case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
         case lineCode = "odpt:lineCode"           // Line identifier code
+        case date = "dc:date"                     // Data update date
     }
 }
 
@@ -97,6 +52,7 @@ struct BusRoutePatternDTO: Decodable {
     let direction: String?
     let busstopPoleOrder: [BusStopPole]?
     let note: String?
+    let date: String?
 
     enum CodingKeys: String, CodingKey {
         case title = "dc:title"           // Dublin Core title
@@ -107,28 +63,6 @@ struct BusRoutePatternDTO: Decodable {
         case direction = "odpt:direction"        // Bus direction
         case busstopPoleOrder = "odpt:busstopPoleOrder"  // Bus stop sequence
         case note = "odpt:note"                   // Bus route note/description
-    }
-}
-
-// MARK: - Local Station DTO
-// Station data structure for local JSON files (JR East Japan specific).
-// Contains station information and ordering within railway lines.
-private struct LocalStationDTO: Decodable {
-    let title: String
-    let sameAs: String
-    let operatorCode: String?
-    let lineColor: String?
-    let stationOrder: [StationOrder]?
-    let railwayTitle: RailwayTitle?
-    let lineCode: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case title = "dc:title"           // Dublin Core title
-        case sameAs = "owl:sameAs"        // OWL sameAs identifier
-        case operatorCode = "odpt:operator"       // Railway operator code
-        case lineColor = "odpt:color"             // Line color (local format)
-        case stationOrder = "odpt:stationOrder"   // Station sequence on the line
-        case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
-        case lineCode = "odpt:lineCode"           // Line identifier code
+        case date = "dc:date"                     // Data update date
     }
 }

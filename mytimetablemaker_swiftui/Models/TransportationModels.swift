@@ -10,10 +10,10 @@ import Foundation
 // MARK: - TransportationType
 // Enumeration of available transportation methods for transfer.
 enum TransportationType: String, CaseIterable {
-    case none = "none"          // No transfer required
-    case walking = "walking"    // Walking between stations
-    case bicycle = "bicycle"    // Bicycle transportation
     case car = "car"            // Car transportation
+    case bicycle = "bicycle"    // Bicycle transportation
+    case walking = "walking"    // Walking between stations
+    case none = "none"          // No transfer required
     
     // MARK: - Display Properties
     // Localized display name for each transportation method

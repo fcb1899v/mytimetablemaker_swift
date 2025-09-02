@@ -18,40 +18,73 @@ final class LocalFileLoader {
     
     // MARK: - Main Data Loading
     // Load all available local data sources and combine results.
-    static func loadLocalData() -> [TransportationLine] {
-        var allLines: [TransportationLine] = []
-        var fileStats: [String: Int] = [:]
+    static func loadLocalData() async -> [TransportationLine] {
+        print("📁 LocalFileLoader: Starting to load local data for \(LocalDataSource.allCases.count) sources")
         
-        // MARK: - Source Processing
-        // Process each available data source
-        for source in LocalDataSource.allCases {
-            if let data = loadFileData(for: source.fileName) {
-                // Parse data using appropriate parser for the source
-                let lines = LocalFileParser.parseLocalData(from: source, data: data)
-                allLines.append(contentsOf: lines)
-                fileStats[source.displayName] = lines.count
-            } else {
-                // Mark source as unavailable
-                fileStats[source.displayName] = 0
+        // MARK: - Parallel Source Processing
+        // Process each available data source in parallel for faster loading
+        let loadTasks = LocalDataSource.allCases.map { source in
+            Task {
+                if let data = loadFileData(for: source.fileName) {
+                    // Parse data using appropriate parser for the source
+                    let lines = LocalFileParser.parseLocalData(from: source, data: data)
+                    print("✅ Loaded \(source.displayName): \(lines.count) lines")
+                    return lines
+                } else {
+                    // Mark source as unavailable
+                    print("❌ Failed to load \(source.displayName)")
+                    return []
+                }
             }
         }
-                
-        return allLines
+        
+        // Wait for all tasks to complete
+        let allResults = await withTaskGroup(of: [TransportationLine].self) { group in
+            for task in loadTasks {
+                group.addTask { await task.value }
+            }
+            
+            var allLines: [TransportationLine] = []
+            for await lines in group {
+                allLines.append(contentsOf: lines)
+            }
+            return allLines
+        }
+        
+        print("📊 LocalFileLoader: Total loaded \(allResults.count) lines from local files")
+        return allResults
     }
     
     // MARK: - Individual File Loading
-    // Load individual file data from LineData folder or app bundle.
+    // Load individual file data with priority: Documents directory > Bundle root
     static func loadFileData(for fileName: String) -> Data? {
-        // MARK: - Primary Data Source
-        // First try to load from LineData folder
-        if let lineDataURL = Bundle.main.url(forResource: "LineData", withExtension: nil) {
-            let jsonURL = lineDataURL.appendingPathComponent(fileName)
-            if let data = try? Data(contentsOf: jsonURL) {
-                return data
+        // MARK: - Priority 1: Documents Directory (Updated Files)
+        // First try to load from Documents directory for updated files
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let lineDataPath = documentsPath.appendingPathComponent("LineData", isDirectory: true)
+        let updatedFileName = fileName.replacingOccurrences(of: ".json", with: "_updated.json")
+        let documentsURL = lineDataPath.appendingPathComponent(updatedFileName)
+        
+        // Debug: Check if file exists
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: documentsURL.path) {
+            if let attributes = try? fileManager.attributesOfItem(atPath: documentsURL.path),
+               let fileSize = attributes[.size] as? Int64 {
+                print("📁 File exists: \(updatedFileName) (\(fileSize) bytes)")
             }
+        } else {
+            print("❌ File does not exist: \(documentsURL.path)")
         }
         
-        // MARK: - Fallback Data Source
+        do {
+            let data = try Data(contentsOf: documentsURL)
+            print("📁 Loaded updated file from Documents: \(updatedFileName)")
+            return data
+        } catch {
+            print("❌ Failed to load from Documents: \(updatedFileName) - \(error.localizedDescription)")
+        }
+        
+        // MARK: - Priority 2: Bundle Root (Fallback)
         // Fallback to original bundle search (for backward compatibility)
         let name = fileName.replacingOccurrences(of: ".json", with: "")
         let ext = "json"
@@ -62,8 +95,10 @@ final class LocalFileLoader {
 
         do {
             let data = try Data(contentsOf: url)
+            print("📦 Loaded file from Bundle root: \(fileName)")
             return data
         } catch {
+            print("❌ Failed to load from Bundle root: \(fileName)")
             return nil
         }
     }
@@ -80,6 +115,7 @@ struct LocalFileParser {
     static func parseLocalData(from source: LocalDataSource, data: Data) -> [TransportationLine] {
         // Use already loaded data
         guard let json = try? JSONSerialization.jsonObject(with: data) else {
+            print("❌ Failed to parse JSON for \(source.displayName)")
             return []
         }
                 
@@ -87,41 +123,45 @@ struct LocalFileParser {
         // Determine the type of data by examining the first item
         if let array = json as? [[String: Any]], let firstItem = array.first {
             let type = firstItem["@type"] as? String ?? ""
+            print("🔍 \(source.displayName): Data type = '\(type)', items count = \(array.count)")
     
             // MARK: - Format-Based Processing
             // Process based on data type
             switch type {
             case "odpt:Railway":
                 // Standard railway data format
-                let result = parseRailwaysFromArray(array, source: source)
-                return result
+                print("🚆 Processing \(source.displayName) as railway data")
+                return parseRailwaysFromArray(array, source: source)
             case "odpt:BusroutePattern":
                 // Bus route pattern data format
-                let result = parseBusRoutesFromArray(array, source: source)
-                return result
+                print("🚌 Processing \(source.displayName) as bus route pattern data")
+                return parseBusRoutesFromArray(array, source: source)
             case "odpt:Station":
                 // Station data format (e.g., JR East Japan)
-                let result = parseStationsToLines(array, source: source)
-                return result
+                print("🚉 Processing \(source.displayName) as station data")
+                return parseStationsToLines(array, source: source)
             default:
+                print("⚠️ Unknown data type '\(type)' for \(source.displayName), trying fallback parsing")
                 // MARK: - Fallback Parsing
                 // Fallback parsing when type is not explicitly specified
                 // Try processing as railway data
                 if let _ = firstItem["dc:title"], let _ = firstItem["odpt:operator"] {
-                    let result = parseRailwaysFromArray(array, source: source)
-                    return result
+                    print("🔄 Fallback: Processing \(source.displayName) as railway data")
+                    return parseRailwaysFromArray(array, source: source)
                 }
                 
                 // Try processing as station data
                 if let _ = firstItem["title"] as? [String: Any] {
-                    let result = parseStationsToLines(array, source: source)
-                    return result
+                    print("🔄 Fallback: Processing \(source.displayName) as station data")
+                    return parseStationsToLines(array, source: source)
                 }
                 
+                print("❌ No suitable parser found for \(source.displayName)")
                 return []
             }
         }
         
+        print("❌ Invalid JSON structure for \(source.displayName)")
         return []
     }
     
@@ -129,202 +169,72 @@ struct LocalFileParser {
     // Parse station data and convert to line information.
     // Used for data sources that provide station-level information.
     static func parseStationsToLines(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
-        var lines: [TransportationLine] = []
-        
-        // MARK: - Station Grouping
+        // MARK: - Station Grouping using closures
         // Group stations by line to create line representations
-        var lineGroups: [String: [String]] = [:]
-        
-        for element in array {
-            if let title = element["title"] as? [String: Any],
-               let lineName = title["ja"] as? String,
-               let sameAs = element["owl:sameAs"] as? String {
-                
-                // Extract line identifier from station's sameAs
-                let lineId = sameAs.components(separatedBy: ":").last ?? ""
-                
-                if lineGroups[lineId] == nil {
-                    lineGroups[lineId] = []
-                }
-                lineGroups[lineId]?.append(lineName)
-            }
+        let lineGroups = array.reduce(into: [String: [String]]()) { result, element in
+            guard let title = element["title"] as? [String: Any],
+                  let lineName = title["ja"] as? String,
+                  let sameAs = element["owl:sameAs"] as? String else { return }
+            
+            // Extract line identifier from station's sameAs
+            let lineId = sameAs.components(separatedBy: ":").last ?? ""
+            result[lineId, default: []].append(lineName)
         }
         
-        // MARK: - Line Creation
+        // MARK: - Line Creation using closures
         // Create TransportationLine objects from grouped stations
-        for (lineId, stations) in lineGroups {
-            if let firstStation = stations.first {
-                let line = TransportationLine(
-                    kind: .railway,
-                    name: firstStation,
-                    code: lineId,
-                    operatorCode: source.operatorCode,
-                    railwayType: nil,
-                    lineColor: nil,
-                    startStation: stations.first,
-                    endStation: stations.last,
-                    railwayTitle: RailwayTitle(ja: firstStation, en: nil),
-                    lineCode: nil,
-                    busRoute: nil,
-                    pattern: nil,
-                    direction: nil,
-                    busstopPoleOrder: nil
-                )
-                lines.append(line)
-            }
-        }
-    
-        return lines
-    }
-    
-    // MARK: - Direct Railway Data Parsing
-    // Parse line data directly (for Keikyu, Tokyo Metro, Toei Subway, and JR East Japan).
-    // Optimized parsing for standard railway data format.
-    static func parseRailways(_ data: Data, source: LocalDataSource) throws -> [TransportationLine] {
-        // Check structure of JSON for confirmation
-        let json = try JSONSerialization.jsonObject(with: data, options: [])
-        
-        if let array = json as? [[String: Any]] {
-            // MARK: - Line Information Dictionary
-            // Extract line information using dictionary for efficient processing
-            var railwayLines: [String: (name: String, operatorCode: String, lineColor: String?, railwayTitle: RailwayTitle?, lineCode: String?, startStation: String?, endStation: String?)] = [:]
+        return lineGroups.compactMap { lineId, stations in
+            guard let firstStation = stations.first else { return nil }
             
-            for element in array {
-                // MARK: - Required Field Validation
-                // Validate required fields for railway data
-                if let title = element["dc:title"] as? String,
-                   let sameAs = element["owl:sameAs"] as? String {
-                    
-                    let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
-                    let lineColor = element["odpt:color"] as? String
-                    let lineCode = element["odpt:lineCode"] as? String
-                    
-                    // MARK: - Multi-Language Title Processing
-                    // Process odpt:railwayTitle for multi-language support
-                    var railwayTitle: RailwayTitle? = nil
-                    if let railwayTitleDict = element["odpt:railwayTitle"] as? [String: String] {
-                        railwayTitle = RailwayTitle(
-                            ja: railwayTitleDict["ja"],
-                            en: railwayTitleDict["en"]
-                        )
-                    }
-                    
-                    // MARK: - Station Boundary Information
-                    // Get start and end stations for line boundaries
-                    var startStation: String? = nil
-                    var endStation: String? = nil
-                    
-                    // First, check directly for start and end stations
-                    if let directStart = element["odpt:startStation"] as? String {
-                        startStation = directStart
-                    }
-                    if let directEnd = element["odpt:endStation"] as? String {
-                        endStation = directEnd
-                    }
-                                        
-                    // MARK: - Line Storage
-                    // Store line information using sameAs as unique key
-                    if railwayLines[sameAs] == nil {
-                        railwayLines[sameAs] = (name: title, operatorCode: operatorCode, lineColor: lineColor, railwayTitle: railwayTitle, lineCode: lineCode, startStation: startStation, endStation: endStation)
-                    }
-                }
-            }
-            
-            // MARK: - Object Conversion
-            // Convert line information to TransportationLine objects
-            let result = railwayLines.map { sameAs, info in
-                TransportationLine(
-                    kind: .railway,
-                    name: info.name,
-                    code: sameAs,
-                    operatorCode: info.operatorCode,
-                    railwayType: nil,
-                    lineColor: info.lineColor,
-                    startStation: info.startStation,
-                    endStation: info.endStation,
-                    railwayTitle: info.railwayTitle,
-                    lineCode: info.lineCode,
-                    busRoute: nil,
-                    pattern: nil,
-                    direction: nil,
-                    busstopPoleOrder: nil
-                )
-            }
-            
-            return result
-        } else {
-            // MARK: - Fallback Parsing
-            // Try old method as well
-            do {
-                let dec = JSONDecoder()
-                let dtos = try dec.decode([LocalRailwayDTO].self, from: data)
-                return dtos.map {
-                    TransportationLine(
-                        kind: .railway,
-                        name: $0.title,
-                        code: $0.sameAs,
-                        operatorCode: $0.operatorCode ?? source.operatorCode,
-                        railwayType: nil,
-                        lineColor: $0.lineColor,
-                        startStation: $0.stationOrder?.first?.stationTitle?.ja,
-                        endStation: $0.stationOrder?.last?.stationTitle?.ja,
-                        railwayTitle: $0.railwayTitle,
-                        lineCode: $0.lineCode,
-                        busRoute: nil,
-                        pattern: nil,
-                        direction: nil,
-                        busstopPoleOrder: nil
-                    )
-                }
-            } catch {
-                throw error
-            }
+            return TransportationLine(
+                kind: .railway,
+                name: firstStation,
+                code: lineId,
+                operatorCode: source.operatorCode,
+                railwayType: nil,
+                lineColor: nil,
+                startStation: stations.first,
+                endStation: stations.last,
+                railwayTitle: RailwayTitle(ja: firstStation, en: nil),
+                lineCode: nil,
+                busRoute: nil,
+                pattern: nil,
+                direction: nil,
+                busstopPoleOrder: nil
+            )
         }
     }
-}
-
-// MARK: - Railway Array Parsing
-// Parse railway data from array format.
-// Used for standard railway data sources.
-func parseRailwaysFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
-    var lines: [TransportationLine] = []
     
-    for element in array {
-        // MARK: - Required Field Validation
-        // Validate required fields for railway data
-        if let title = element["dc:title"] as? String,
-           let sameAs = element["owl:sameAs"] as? String {
+    // MARK: - Railway Array Parsing
+    // Parse railway data from array format.
+    // Used for standard railway data sources.
+    static func parseRailwaysFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
+        return array.compactMap { element in
+            // Extract common fields using closure
+            guard let title = element["dc:title"] as? String,
+                  let sameAs = element["owl:sameAs"] as? String else { return nil }
             
             let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
             let lineColor = element["odpt:color"] as? String
             let lineCode = element["odpt:lineCode"] as? String
             
-            // MARK: - Multi-Language Title Processing
-            // Process odpt:railwayTitle for multi-language support
-            var railwayTitle: RailwayTitle? = nil
-            if let railwayTitleDict = element["odpt:railwayTitle"] as? [String: String] {
-                railwayTitle = RailwayTitle(
+            // MARK: - Multi-Language Title Processing using closure
+            let railwayTitle: RailwayTitle? = {
+                guard let railwayTitleDict = element["odpt:railwayTitle"] as? [String: String] else { return nil }
+                return RailwayTitle(
                     ja: railwayTitleDict["ja"],
                     en: railwayTitleDict["en"]
                 )
-            }
+            }()
             
-            // MARK: - Station Boundary Information
-            // Get start and end stations for line boundaries
-            var startStation: String? = nil
-            var endStation: String? = nil
+            // MARK: - Station Boundary Information using closure
+            let (startStation, endStation) = {
+                let start = element["odpt:startStation"] as? String
+                let end = element["odpt:endStation"] as? String
+                return (start, end)
+            }()
             
-            // First, check directly for start and end stations
-            if let directStart = element["odpt:startStation"] as? String {
-                startStation = directStart
-            }
-            if let directEnd = element["odpt:endStation"] as? String {
-                endStation = directEnd
-            }
-                                
-            // MARK: - Line Creation
-            // Create TransportationLine object
-            let line = TransportationLine(
+            return TransportationLine(
                 kind: .railway,
                 name: title,
                 code: sameAs,
@@ -340,103 +250,130 @@ func parseRailwaysFromArray(_ array: [[String: Any]], source: LocalDataSource) -
                 direction: nil,
                 busstopPoleOrder: nil
             )
-            lines.append(line)
         }
     }
     
-    return lines
-}
-
-// MARK: - Bus Route Array Parsing
-// Parse bus route pattern data from array format.
-// Used for bus data sources like Toei Bus and Yokohama Municipal Bus.
-func parseBusRoutesFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
-    var lines: [TransportationLine] = []
-    
-    // MARK: - Bus Route Grouping
-    // Group bus routes by route name to avoid duplicates
-    var busRoutes: [String: (name: String, operatorCode: String, patterns: [String], directions: [String], busStops: [String])] = [:]
-    
-    for element in array {
-        // MARK: - Required Field Validation
-        // Validate required fields for bus route data
-        if let title = element["dc:title"] as? String,
-           let sameAs = element["owl:sameAs"] as? String {
-            
-            let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
-            let busRoute = element["odpt:busroute"] as? String
-            let pattern = element["odpt:pattern"] as? String
-            let direction = element["odpt:direction"] as? String
-            let note = element["odpt:note"] as? String
-            
-            // MARK: - Bus Stop Processing
-            // Process bus stop pole order if available
-            var busstopPoleOrder: [BusStopPole]? = nil
-            var busStopNames: [String] = []
-            
-            if let busstopPoleArray = element["odpt:busstopPoleOrder"] as? [[String: Any]] {
-                busstopPoleOrder = busstopPoleArray.compactMap { poleDict in
-                    guard let note = poleDict["odpt:note"] as? String else { return nil }
-                    let busstopPole = poleDict["odpt:busstopPole"] as? String
-                    let index = poleDict["odpt:index"] as? Int
-                    busStopNames.append(note) // Add bus stop name to the list
-                    return BusStopPole(note: note, busstopPole: busstopPole, index: index)
-                }
+    // MARK: - Bus Route Array Parsing
+    // Parse bus route pattern data from array format.
+    // Used for bus data sources like Toei Bus and Yokohama Municipal Bus.
+    static func parseBusRoutesFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
+        print("🚌 Starting bus route parsing for \(source.displayName) with \(array.count) items")
+        
+        // MARK: - Bus Route Grouping using closures
+        // Group bus routes by route name to avoid duplicates
+        let busRoutes = array.reduce(into: [String: (name: String, operatorCode: String, patterns: Set<String>, directions: Set<String>, busStops: Set<String>, busRouteCode: String)]()) { result, element in
+            guard let title = element["dc:title"] as? String else { 
+                print("⚠️ Missing dc:title in bus route item")
+                return 
+            }
+            guard let busRouteCode = element["odpt:busroute"] as? String else { 
+                print("⚠️ Missing odpt:busroute in bus route item: \(title)")
+                return 
             }
             
-            // MARK: - Route Name Processing
-            // Use dc:title as the route name (this is the bus route name)
-            let routeName = title
+            let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
+            let pattern = element["odpt:pattern"] as? String
+            let direction = element["odpt:direction"] as? String
             
-            // MARK: - Route Storage
-            // Store route information using route name as key
-            if busRoutes[routeName] == nil {
-                busRoutes[routeName] = (name: routeName, operatorCode: operatorCode, patterns: [], directions: [], busStops: [])
+            // Extract bus stop names using closure
+            let busStopNames: [String] = (element["odpt:busstopPoleOrder"] as? [[String: Any]])?.compactMap { busStopInfo in
+                // Extract English name from busstopPole if available (only for English locale), otherwise use note
+                let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+                if currentLanguage != "ja", let busstopPole = busStopInfo["odpt:busstopPole"] as? String {
+                    let components = busstopPole.components(separatedBy: ".")
+                    let englishName = components.count >= 3 ? components[2] : nil
+                    return englishName ?? busStopInfo["odpt:note"] as? String
+                } else {
+                    return busStopInfo["odpt:note"] as? String
+                }
+            } ?? []
+            
+            // Initialize or update route information
+            if result[title] == nil {
+                result[title] = (name: title, operatorCode: operatorCode, patterns: Set<String>(), directions: Set<String>(), busStops: Set<String>(), busRouteCode: busRouteCode)
+                print("✅ Added new bus route: \(title) (code: \(busRouteCode))")
             }
             
             // Add pattern and direction if not already present
-            if let pattern = pattern, !busRoutes[routeName]!.patterns.contains(pattern) {
-                busRoutes[routeName]!.patterns.append(pattern)
+            if let pattern = pattern {
+                result[title]!.patterns.insert(pattern)
             }
-            if let direction = direction, !busRoutes[routeName]!.directions.contains(direction) {
-                busRoutes[routeName]!.directions.append(direction)
+            if let direction = direction {
+                result[title]!.directions.insert(direction)
             }
             
             // Add bus stops if not already present
             for busStop in busStopNames {
-                if !busRoutes[routeName]!.busStops.contains(busStop) {
-                    busRoutes[routeName]!.busStops.append(busStop)
-                }
+                result[title]!.busStops.insert(busStop)
             }
         }
-    }
-    
-    // MARK: - Object Conversion
-    // Convert route information to TransportationLine objects
-    for (routeName, info) in busRoutes {
-        // Create bus stop pole order from collected bus stops
-        let busstopPoleOrder = info.busStops.enumerated().map { index, stopName in
-            BusStopPole(note: stopName, busstopPole: "\(routeName)_\(index)", index: index + 1)
+        
+        print("🚌 Processed \(busRoutes.count) unique bus routes for \(source.displayName)")
+        
+        // MARK: - Object Conversion using closures
+        // Convert route information to TransportationLine objects
+        let transportationLines = busRoutes.map { routeName, info in
+            // Extract English name from odpt:busroute value (e.g., "Mon33" from "odpt.Busroute:Toei.Mon33")
+            print("🔍 Processing route: \(routeName), busRouteCode: \(info.busRouteCode)")
+            let englishName = extractEnglishNameFromRouteName(info.busRouteCode)
+            
+            return TransportationLine(
+                kind: .bus,
+                name: info.name,
+                code: "odpt.Busroute:\(routeName)",
+                operatorCode: info.operatorCode,
+                railwayType: nil,
+                lineColor: nil,
+                startStation: Array(info.busStops).sorted().first,
+                endStation: Array(info.busStops).sorted().last,
+                railwayTitle: RailwayTitle(ja: info.name, en: englishName),
+                lineCode: nil,
+                busRoute: info.busRouteCode,
+                pattern: Array(info.patterns).first,
+                direction: Array(info.directions).first,
+                busstopPoleOrder: Array(info.busStops).sorted().enumerated().map { 
+                    BusStopPole(note: $0.element, busstopPole: "\(routeName)_\($0.offset)", index: $0.offset + 1, busstopPoleTitle: nil) 
+                }
+            )
         }
         
-        let line = TransportationLine(
-            kind: .bus,
-            name: info.name,
-            code: "odpt.Busroute:\(routeName)",
-            operatorCode: info.operatorCode,
-            railwayType: nil,
-            lineColor: nil,
-            startStation: info.busStops.first,
-            endStation: info.busStops.last,
-            railwayTitle: RailwayTitle(ja: info.name, en: nil),
-            lineCode: nil,
-            busRoute: "odpt.Busroute:\(routeName)",
-            pattern: info.patterns.first,
-            direction: info.directions.first,
-            busstopPoleOrder: busstopPoleOrder
-        )
-        lines.append(line)
+        print("🚌 Created \(transportationLines.count) TransportationLine objects for \(source.displayName)")
+        return transportationLines
     }
     
-    return lines
+    // MARK: - Helper Functions
+    // Extract English name from odpt:busroute value
+    private static func extractEnglishNameFromRouteName(_ routeName: String) -> String? {
+        // Extract English name from odpt:busroute format (e.g., "Mon33" from "odpt.Busroute:Toei.Mon33")
+        // Format: "odpt.Busroute:OperatorName.RouteCode"
+        // Similar to: result["odpt:busroute"].split(".")[2]
+        
+        print("🔍 extractEnglishNameFromRouteName called with routeName: '\(routeName)'")
+        
+        // Split by "." to get parts
+        let parts = routeName.components(separatedBy: ".")
+        
+        print("🔍 Split parts: \(parts)")
+        
+        // Check if we have enough parts and the format is correct
+        guard parts.count >= 3,
+              parts[0] == "odpt",
+              parts[1].hasPrefix("Busroute:") else { 
+            print("❌ Invalid format for routeName: '\(routeName)'")
+            return nil 
+        }
+        
+        // Get the route code (third part, index 2)
+        let routeCode = parts[2]
+        
+        // Validate that the route code contains English characters or numbers
+        let englishPattern = "[A-Za-z0-9]"
+        guard routeCode.range(of: englishPattern, options: .regularExpression) != nil else { 
+            print("❌ Route code '\(routeCode)' does not contain English characters")
+            return nil 
+        }
+        
+        print("🔍 Extracted route code '\(routeCode)' from '\(routeName)'")
+        return routeCode
+    }
 }

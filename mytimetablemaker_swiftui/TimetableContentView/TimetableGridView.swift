@@ -61,13 +61,13 @@ struct TimetableGridView: View {
                                 }
                         }
                         // MARK: - Time Edit Alert
-                        .alert(addAndDeleteTimeTitle, isPresented: $isShowingAlert) {
+                        .alert("Add and delete departure time [min]".localized, isPresented: $isShowingAlert) {
                             TextField(minutePlaceHolder, text: $inputText)
                                 .multilineTextAlignment(.center)
                                 .keyboardType(.numberPad)
                                 .lineLimit(1)
                             // Add button
-                            Button(textAdd, role: .none){
+                            Button("Add".localized, role: .none){
                                 if (inputText.intText(min: 0, max: 59) > -1) {
                                     UserDefaults.standard.set(
                                         goorback.addTimeFromTimetable(inputText, weekflag, num, hour),
@@ -77,12 +77,12 @@ struct TimetableGridView: View {
                                 isShowingAlert = false
                             }
                             // Copy button
-                            Button(choiceCopyTimeTitle, role: .none) {
+                            Button("Copying your timetable".localized, role: .none) {
                                 isShowingNextAlert = true
                                 isShowingAlert = false
                             }
                             // Delete button
-                            Button(textDelete, role: .destructive) {
+                            Button("Delete".localized, role: .destructive) {
                                 if (inputText.intText(min: 0, max: 59) > -1) {
                                     UserDefaults.standard.set(
                                         goorback.deleteTimeFromTimetable(inputText, weekflag, num, hour),
@@ -92,7 +92,7 @@ struct TimetableGridView: View {
                                 isShowingAlert = false
                             }
                             // Cancel button
-                            Button(textCancel, role: .cancel){
+                            Button("Cancel".localized, role: .cancel){
                                 isShowingAlert = false
                             }
                         } message: {
@@ -102,7 +102,7 @@ struct TimetableGridView: View {
                         // MARK: - Copy Time Action Sheet
                         .actionSheet(isPresented: $isShowingNextAlert) {
                             ActionSheet(
-                                title: Text(choiceCopyTimeTitle),
+                                title: Text("Copying your timetable".localized),
                                 message: Text(""),
                                 buttons: (((hour == 4) ? 1: 0)..<choiceCopyTimeList(weekflag, hour).count)
                                     .filter { !(hour == 25 && $0 == 1) }

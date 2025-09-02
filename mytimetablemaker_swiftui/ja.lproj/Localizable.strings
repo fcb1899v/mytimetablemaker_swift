@@ -84,9 +84,6 @@
 "Setting your transfer time [min]" = "乗換時間の設定 [分]";
 "Setting your timetable" = "時刻表設定";
 
-//SettingsLineSheet
-"Last Updated" = "前回の更新";
-
 //SettingsTransferSheet
 "Destination" = "行き先";
 "Your home" = "自宅";
@@ -98,8 +95,6 @@
 "Setting destination" = "行き先の設定";
 "Route 1" = "ルート1";
 "Route 2" = "ルート2";
-
-
 
 //GetDataButton
 "Get saved data" = "保存データの取得";
@@ -264,8 +259,9 @@
 //SettingsLineSheet
 "Select Line Color" = "路線カラーの選択";
 "Timetable Settings" = "時刻表の設定";
-"Update Data" = "データ更新";
+"Update Line Data" = "路線データの更新";
 "Save" = "保存";
+"Select" = "選択";
 "Updated: " = "更新: ";
 "Clear" = "クリア";
 "Ride Time" = "乗車時間";

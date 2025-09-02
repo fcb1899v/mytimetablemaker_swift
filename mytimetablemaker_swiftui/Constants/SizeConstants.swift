@@ -112,13 +112,14 @@ let admobBannerHeight: CGFloat = ((screenHeight - headerHeight - 75) < 500) ? 50
 let settingsLineSheetPadding: CGFloat = screenWidth * 0.03
 let settingsLineSheetTitlePadding: CGFloat = screenWidth * 0.02
 let settingsLineSheetSpacing: CGFloat = screenHeight * 0.012
+let settingsLineSheetIconSpacing: CGFloat = screenHeight * 0.005
 let settingsLineSheetCornerRadius: CGFloat = screenHeight * 0.01
 let settingsLineSheetButtonCornerRadius: CGFloat = screenHeight * 0.020
 // Typography
 let settingsLineSheetTitleFontSize: CGFloat = screenHeight * 0.020
 let settingsLineSheetHeaderFontSize: CGFloat = screenHeight * 0.018
 let settingsLineSheetInputFontSize: CGFloat = screenHeight * 0.018
-let settingsLineSheetButtonFontSize: CGFloat = screenHeight * 0.020
+let settingsLineSheetButtonFontSize: CGFloat = screenHeight * 0.018
 let settingsLineSheetHeadlineFontSize: CGFloat = screenHeight * 0.016
 let settingsLineSheetCaptionFontSize: CGFloat = screenHeight * 0.012
 // Component Heights
@@ -137,7 +138,7 @@ let settingsLineSheetInputPaddingVertical: CGFloat = screenHeight * 0.008
 // Tags and Icons
 let settingsLineSheetTagPaddingHorizontal: CGFloat = screenHeight * 0.006
 let settingsLineSheetTagPaddingVertical: CGFloat = screenHeight * 0.003
-let settingsLineSheetIconSize: CGFloat = screenWidth * 0.04
+let settingsLineSheetIconSize: CGFloat = screenHeight * 0.016
 // Grid and Spacing
 let settingsLineSheetGridSpacing: CGFloat = screenHeight * 0.02
 let settingsLineSheetHStackSpacing: CGFloat = screenHeight * 0.008
@@ -154,3 +155,13 @@ let settingsLineSheetArrivalOffset: CGFloat = screenHeight * 0.32
 let settingsTitleFontSize: CGFloat = screenHeight * 0.024
 let settingsHeaderFontSize: CGFloat = screenHeight * 0.016
 let settingsFontSize: CGFloat = screenHeight * 0.018
+
+// MARK: - Transportation Toggle Constants
+// Transportation toggle component sizing and responsive layout
+let transportationToggleSpacing: CGFloat = screenHeight * 0.013
+let transportationToggleCornerRadius: CGFloat = screenHeight * 0.026
+let transportationToggleWidth: CGFloat = screenHeight * 0.051
+let transportationToggleHeight: CGFloat = screenHeight * 0.029
+let transportationToggleCircleSize: CGFloat = screenHeight * 0.022
+let transportationToggleCircleOffset: CGFloat = screenHeight * 0.011
+let transportationTogglePaddingHorizontal: CGFloat = screenWidth * 0.02

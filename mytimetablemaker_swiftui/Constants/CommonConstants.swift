@@ -24,27 +24,13 @@ func lineNameDefault(_ num: Int) -> String { return "\("Line ".localized)\(num +
 let homeKey = "departurepoint"
 let officeKey = "destination"
 
-// MARK: - Alert Titles
-// Localized alert titles for various settings
-let changeLineAlertTitle = "Setting your number of transfers".localized
-let departPointAlertTitle = "Setting your departure place".localized
-let destinationAlertTitle = "Setting your destination".localized
-let stationAlertTitle = "Setting your station name".localized
-let lineNameAlertTitle = "Setting your line name".localized
-let lineColorAlertTitle = "Setting your line color".localized
-let stationAlertTitleArray = [destinationAlertTitle, departPointAlertTitle] + (0..<6).flatMap { _ in [stationAlertTitle] }
-let rideTimeAlertTitle = "Setting your ride time [min]".localized
-let transferTimeAlertTitle = "Setting your transfer time [min]".localized
-let transportationAlertTitle = "Setting your transportation".localized
-let timetableAlertTitle = "Setting your timetable".localized
-let addAndDeleteTimeTitle = "Add and delete departure time [min]".localized
-let choiceCopyTimeTitle = "Copying your timetable".localized
+// MARK: - Placeholder Text
+// Input field placeholder text
+let placeHolder = "Maximum 20 Charactors".localized
+let minutePlaceHolder = "Enter 0~59 [min]".localized
 
-// MARK: - Alert Messages
-// Localized alert messages for form validation and user guidance
-let stationAlertMessageArray: Array<String> = ["", ""] +
-    (0..<3).flatMap { i in ["\("of departure station ".localized)\(i)", "\("of arrival station ".localized)\(i)"] }
-func lineNameAlertMessage(_ num: Int) -> String { return "\("of ".localized)\("line ".localized)\(num + 1)" }
+// MARK: - Choice Copy Time List Function
+// Generates copy time choice list for timetable editing
 func choiceCopyTimeList(_ isWeekday: Bool, _ hour: Int) -> [String] {
     return [
         "\(hour - 1)\("Hour".localized)",
@@ -56,36 +42,15 @@ func choiceCopyTimeList(_ isWeekday: Bool, _ hour: Int) -> [String] {
     ]
 }
 
-// MARK: - Settings Labels
-// Common text labels used throughout the app
-let textNotSet = "Not set".localized
-let textHome = "Home".localized
-let textOffice = "Office".localized
-let textDestination = "Destination".localized
-let textDepartPoint = "Departure place".localized
-
-// MARK: - Button Labels
-// Standard button text labels
-let textOk = "OK".localized
-let textCancel = "Cancel".localized
-let textAdd = "Add".localized
-let textDelete = "Delete".localized
-let textBack = "Back".localized
-let textGo = "Go".localized
-let textStart = "Start".localized
-let textStop = "Stop".localized
-let timetablePictureButtonText = "Select your timetable picture".localized
-
-// MARK: - Placeholder Text
-// Input field placeholder text
-let placeHolder = "Maximum 20 Charactors".localized
-let numberPlaceHolder = "Enter 0~99 [min]".localized
-let minutePlaceHolder = "Enter 0~59 [min]".localized
-
 // MARK: - App Information
 // App version and external links
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized
+
+// MARK: - ODPT API Keys
+// API keys for ODPT (Open Data for Public Transportation) services
+let odptAccessKey = "h34l1u19vxxa3itym1sa3n2qiufokufo543zfifwbuenj3dtpwthnf91k8u4lyra"
+let odptChallengeKey = "fadeyt8wutw5nkfziikuroi3jj5s69zqoc2gqzd10mpybqpwjv39ev8vwbehvmyt"
 
 // MARK: - Color String Constants
 // Hex string constants for color definitions
@@ -96,41 +61,4 @@ let yellowColorString  = "#FFFF00"
 let grayColorString    = "#AAAAAA"
 let blackColorString   = "#000000"
 let whiteColorString   = "#FFFFFF"
-
-// MARK: - Hiragana to Kanji Mapping
-// Common hiragana to kanji mappings for railway lines
-let hiraganaMappings: [String: [String]] = [
-    "けいきゅう": ["京急", "keikyu"],
-    "けいひん": ["京浜", "keihin"],
-    "とうきょうめとろ": ["東京メトロ", "tokyometro"],
-    "とえい": ["都営", "toei"],
-    "おだきゅう": ["小田急", "odakyu"],
-    "ゆりかもめ": ["ゆりかもめ", "yurikamome"],
-    "せいぶ": ["西武", "seibu"],
-    "そうてつ": ["相鉄", "sotetsu"],
-    "たま": ["多摩", "tama"],
-    "とうぶ": ["東武", "tobu"],
-    "とうきゅう": ["東急", "tokyu"],
-    "よこはましえい": ["横浜市営", "yokohama"]
-]
-
-// MARK: - Station Data Files
-// List of available station data files for railway operators
-let stationDataFiles: [String] = [
-    "jreast.json", 
-    "tokyometro.json", 
-    "toeimetro.json", 
-    "keikyu.json", 
-    "odakyu.json", 
-    "yurikamome.json", 
-    "rinkai.json", 
-    "seibu.json", 
-    "sotetsu.json", 
-    "tama.json", 
-    "tobu.json", 
-    "tokyu.json",
-    "tsukuba.json", 
-    "yokohamametro.json"
-]
-
 

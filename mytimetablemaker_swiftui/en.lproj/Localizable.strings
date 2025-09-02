@@ -83,9 +83,6 @@
 "Setting your transfer time [min]" = "Setting your transfer time [min]";
 "Setting your timetable" = "Setting your timetable";
 
-//SettingsLineSheet
-"Last Updated" = "Last Updated";
-
 //SettingsTransferSheet
 "Destination" = "Destination";
 "Your home" = "Your home";
@@ -259,9 +256,10 @@
 //SettingsLineSheet
 "Select Line Color" = "Select Line Color";
 "Timetable Settings" = "Timetable Settings";
-"Update Data" = "Update Data";
+"Update Line Data" = "Update Line Data";
 "Updated: " = "Updated: ";
 "Clear" = "Clear";
+"Select" = "Select";
 "Save" = "Save";
 "Ride Time" = "Ride Time";
 "Line Name" = "Line Name";
@@ -272,13 +270,13 @@
 " to " = " to ";
 "Select Color" = "Select Color";
 "Station Input" = "Station Input";
-"Departure Station" = "Departure Station";
+"Departure Station" = "Departure";
 "Enter departure station" = "Enter departure station";
-"Arrival Station" = "Arrival Station";
+"Arrival Station" = "Arrival";
 "Enter arrival station" = "Enter arrival station";
-"Departure Stop" = "Departure Stop";
+"Departure Stop" = "Departure";
 "Enter departure stop" = "Enter departure stop";
-"Arrival Stop" = "Arrival Stop";
+"Arrival Stop" = "Arrival";
 "Enter arrival stop" = "Enter arrival stop";
 "Station Input" = "Station Input";
 "Bus Stop Input" = "Bus Stop Input";

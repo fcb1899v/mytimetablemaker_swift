@@ -38,6 +38,20 @@ struct TransportationLine: Identifiable, Hashable {
     let pattern: String?            // odpt:pattern - bus route pattern
     let direction: String?          // odpt:direction - bus direction
     let busstopPoleOrder: [BusStopPole]? // odpt:busstopPoleOrder - bus stop sequence
+    
+    // MARK: - Bus Route English Name
+    // Extract English name from bus route identifier (only for English locale)
+    var busRouteEnglishName: String? {
+        guard let busRoute = busRoute else { return nil }
+        // Only extract English name for English locale
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        guard currentLanguage != "ja" else { return nil }
+        
+        // Extract the third part after splitting by dots (e.g., "Mon33" from "odpt.Busroute:Toei.Mon33")
+        let components = busRoute.components(separatedBy: ".")
+        guard components.count >= 3 else { return nil }
+        return components[2] // Index 2 should be the English route code
+    }
 }
 
 // MARK: - Railway Title Model
@@ -126,11 +140,52 @@ struct BusStopPole: Codable, Hashable {
     let note: String?               // odpt:note - bus stop description
     let busstopPole: String?        // odpt:busstopPole - bus stop identifier
     let index: Int?                 // odpt:index - bus stop order
+    let busstopPoleTitle: BusStopPoleTitle? // odpt:busstopPoleTitle - multi-language bus stop name
     
     enum CodingKeys: String, CodingKey {
         case note = "odpt:note"
         case busstopPole = "odpt:busstopPole"
         case index = "odpt:index"
+        case busstopPoleTitle = "odpt:busstopPoleTitle"
+    }
+    
+    // MARK: - Bus Stop English Name
+    // Extract English name from bus stop pole identifier (only for English locale)
+    var busStopEnglishName: String? {
+        guard let busstopPole = busstopPole else { return nil }
+        // Only extract English name for English locale
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        guard currentLanguage != "ja" else { return nil }
+        
+        // Extract the third part after splitting by dots (e.g., "KameidoStation" from "odpt.BusstopPole:Toei.KameidoStation.369.7")
+        let components = busstopPole.components(separatedBy: ".")
+        guard components.count >= 3 else { return nil }
+        return components[2] // Index 2 should be the station name
+    }
+}
+
+// MARK: - Bus Stop Pole Title Model
+// Multi-language support structure for bus stop names
+struct BusStopPoleTitle: Codable, Hashable {
+    let ja: String?  // Japanese bus stop name
+    let en: String?  // English bus stop name
+    
+    enum CodingKeys: String, CodingKey {
+        case ja = "ja"
+        case en = "en"
+    }
+    
+    // MARK: - Localized Name Retrieval
+    // Get localized bus stop name based on current language
+    func getLocalizedName() -> String {
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        switch currentLanguage {
+        case "ja":
+            return ja ?? en ?? ""
+        default:
+            return en ?? ja ?? ""
+        }
     }
 }
 
@@ -138,19 +193,25 @@ struct BusStopPole: Codable, Hashable {
 // Structure for managing application statistics and cache status.
 // Tracks data freshness, cache availability, and usage metrics.
 struct DataStatistics {
-    var totalRailways: Int = 0        // Total number of available railway lines
-    var lastUpdated: String? = nil    // When data was last refreshed (as formatted string)
+    var totalLines: Int = 0           // Total number of available transportation lines
+    var railwayLines: Int = 0         // Number of railway lines
+    var busLines: Int = 0             // Number of bus lines
+    var operators: Int = 0            // Number of transportation operators
     var cacheStatus: [String: Bool] = [:]  // Cache availability for each data source
     
     init() {
-        self.totalRailways = 0
-        self.lastUpdated = nil
+        self.totalLines = 0
+        self.railwayLines = 0
+        self.busLines = 0
+        self.operators = 0
         self.cacheStatus = [:]
     }
     
-    init(totalRailways: Int, lastUpdated: String?, cacheStatus: [String: Bool]) {
-        self.totalRailways = totalRailways
-        self.lastUpdated = lastUpdated
+    init(totalLines: Int, railwayLines: Int, busLines: Int, operators: Int, cacheStatus: [String: Bool] = [:]) {
+        self.totalLines = totalLines
+        self.railwayLines = railwayLines
+        self.busLines = busLines
+        self.operators = operators
         self.cacheStatus = cacheStatus
     }
 }
@@ -176,3 +237,4 @@ struct ArrivalStationPositionKey: PreferenceKey {
         value = nextValue()
     }
 }
+

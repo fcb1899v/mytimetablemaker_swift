@@ -62,34 +62,35 @@ struct SettingsLineSheet: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
-                VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
-                    routeHeaderMenu
-                    lineHeaderMenu
-                    lineNameSection
-                    lineColorSection
-                    stationHeaderText
-                    departureStationInputSection
-                    arrivalStationInputSection
-                    timeHeaderText
-                    rideTimeSection
-                    if vm.selectedLineNumber < 3 {
-                        transferSettingsSection
+                ScrollView {
+                    VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
+                        routeHeaderMenu
+                        lineHeaderMenu
+                        lineNameSection
+                        lineColorSection
+                        stationHeaderText
+                        departureStationInputSection
+                        arrivalStationInputSection
+                        timeHeaderText
+                        rideTimeSection
+                        if vm.selectedLineNumber < 3 {
+                            transferSettingsSection
+                        }
+                        saveButtonSection
+                        timetableSettingsButtonSection
                     }
-                    dataManagementSection
-                    saveButtonSection
-                    timetableSettingsButtonSection
-                }
-                .coordinateSpace(name: "scrollView")
-                .onPreferenceChange(DepartureStationPositionKey.self) { value in
-                    departureStationPosition = value
-                }
-                .padding(.horizontal, settingsLineSheetPadding)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-                .animation(.default, value: vm.showStationSelection)
-                .sheet(isPresented: $showTimetableSettings) {
-                    NavigationStack {
-                        TimetableContentView(goorback, lineIndex)
-                            .navigationBarTitleDisplayMode(.inline)
+                    .coordinateSpace(name: "scrollView")
+                    .onPreferenceChange(DepartureStationPositionKey.self) { value in
+                        departureStationPosition = value
+                    }
+                    .padding(.horizontal, settingsLineSheetPadding)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .animation(.default, value: vm.showStationSelection)
+                    .sheet(isPresented: $showTimetableSettings) {
+                        NavigationStack {
+                            TimetableContentView(goorback, lineIndex)
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
                     }
                 }
 
@@ -117,14 +118,22 @@ struct SettingsLineSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.white, for: .navigationBar)
         .toolbarColorScheme(.light, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                // Cancel button
-                Button("Cancel".localized) {
+            ToolbarItem(placement: .navigationBarLeading) {
+                // Back button
+                Button(action: {
                     dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .foregroundColor(Color.black)
+                        Text("Back to homepage".localized)
+                            .font(.system(size: settingsFontSize, weight: .bold))
+                            .foregroundColor(.black)
+                    }
                 }
-                .font(.system(size: settingsLineSheetButtonFontSize))
-                .foregroundColor(.black)
             }
         }
         .onPreferenceChange(DepartureStationPositionKey.self) { value in
@@ -300,20 +309,30 @@ struct SettingsLineSheet: View {
                         // Set line color or default to accent color
                         vm.selectedLineColor = line.lineColor ?? accentColorString
                         
-                        // MARK: - Set Line Stations for Bus Routes
+                        // MARK: - Set Line Stations for All Routes
                         // For bus routes, set bus stops from busstopPoleOrder
                         if line.kind == .bus {
                             if let busstopPoleOrder = line.busstopPoleOrder {
                                 let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
-                                    guard let note = busStop.note else { return nil }
+                                    // Use busstopPoleTitle for localized name if available, otherwise use English name from busstopPole
+                                    let stopName = busStop.busstopPoleTitle?.getLocalizedName() ?? 
+                                                 busStop.busStopEnglishName ?? 
+                                                 busStop.note ?? ""
+                                    guard !stopName.isEmpty else { return nil }
                                     return Station(
-                                        name: note,
+                                        name: stopName,
                                         code: busStop.busstopPole,
-                                        title: StationTitle(ja: note, en: nil)
+                                        title: StationTitle(
+                                            ja: busStop.busstopPoleTitle?.ja ?? busStop.note,
+                                            en: busStop.busstopPoleTitle?.en ?? busStop.busStopEnglishName ?? busStop.note
+                                        )
                                     )
                                 }
                                 vm.lineStations = busStops
                             }
+                        } else {
+                            // For railway lines, get stations from line name
+                            vm.lineStations = vm.getStationsForLineName(vm.displayName(for: line))
                         }
                         
                         // MARK: - Auto Show Color Selection
@@ -337,7 +356,7 @@ struct SettingsLineSheet: View {
                                  .font(.system(size: settingsLineSheetCaptionFontSize))
                                  .padding(.vertical, settingsLineSheetTagPaddingVertical)
                                  .padding(.horizontal, settingsLineSheetTagPaddingHorizontal)
-                                 .background(Capsule().fill(Color(line.lineColor?.colorInt ?? 0xAAAAAA).opacity(0.5)))
+                                 .background(Capsule().fill((line.lineColor?.safeColor ?? Color(0xAAAAAA)).opacity(0.5)))
                              
                              Text(vm.displayName(for: line))
                                  .font(.system(size: settingsLineSheetInputFontSize))
@@ -435,7 +454,7 @@ struct SettingsLineSheet: View {
             VStack {
                 // Color circle with border
                 Circle()
-                    .fill(Color(color.RGB.colorInt))
+                                                     .fill(color.RGB.safeColor)
                     .frame(width: settingsLineSheetColorCircleSize, height: settingsLineSheetColorCircleSize)
                     .overlay(Circle().stroke(Color.secondary, lineWidth: settingsLineSheetStrokeLineWidth))
                 
@@ -451,36 +470,29 @@ struct SettingsLineSheet: View {
     // MARK: - Save Button Section
     /// Save button for storing line configuration data
     private var saveButtonSection: some View {
-        VStack(spacing: settingsLineSheetSpacing) {
-            actionButton(
-                title: "Save".localized,
-                icon: "square.and.arrow.down.fill",
-                color: selected == nil && !vm.isCustomLineStationInputComplete() ? .gray : .accentColor
-            ) {
-                vm.handleLineSave(dismiss: dismiss)
-            }
-            .disabled(!vm.isCustomLineStationInputComplete())
+        actionButton(
+            title: "Save".localized,
+            icon: "square.and.arrow.down.fill",
+            color: selected == nil && !vm.isCustomLineStationInputComplete() ? .gray : .accentColor
+        ) {
+            vm.handleLineSave(dismiss: dismiss)
         }
+        .disabled(!vm.isCustomLineStationInputComplete())
         .padding(.top, settingsLineSheetPadding)
     }
     
     // MARK: - Timetable Settings Button Section
     /// Button to open timetable configuration screen
     private var timetableSettingsButtonSection: some View {
-        VStack(spacing: settingsLineSheetSpacing) {
-            actionButton(
-                title: "Timetable Settings".localized,
-                icon: "clock.fill",
-                color: .primaryColor
-            ) {
-                showTimetableSettings = true
-            }
-            
-            Spacer()
-        }
-        .padding(.top, settingsLineSheetPadding)
+        actionButton(
+            title: "Timetable Settings".localized,
+            icon: "clock.fill",
+            color: .primaryColor
+        ) {
+            showTimetableSettings = true
+        }.padding(.top, settingsLineSheetPadding)
     }
-    
+        
     // MARK: - Action Button Helper
     /// Reusable button component with consistent styling
     @ViewBuilder
@@ -511,24 +523,45 @@ struct SettingsLineSheet: View {
     // MARK: - Header View
     /// Main header view with route selection dropdown and cancel button
     private var routeHeaderMenu: some View {
-        // Route selection dropdown
-        Menu {
-            ForEach(vm.goorbackOptions, id: \.self) { option in
-                Button(vm.goorbackDisplayNames[option] ?? option) {
-                    vm.selectGoorback(option)
+        HStack {
+            
+            // Route selection dropdown
+            Menu {
+                ForEach(vm.goorbackOptions, id: \.self) { option in
+                    Button(vm.goorbackDisplayNames[option] ?? option) {
+                        vm.selectGoorback(option)
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(vm.goorbackDisplayNames[vm.selectedGoorback] ?? vm.selectedGoorback)
+                        .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
+                        .foregroundColor(.primary)
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: settingsLineSheetTitleFontSize, weight: .medium))
+                        .foregroundColor(.black)
+                    Spacer()
                 }
             }
-        } label: {
-            HStack {
-                Text(vm.goorbackDisplayNames[vm.selectedGoorback] ?? vm.selectedGoorback)
-                    .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
-                    .foregroundColor(.primary)
-
-                Image(systemName: "chevron.down")
-                    .font(.system(size: settingsLineSheetTitleFontSize, weight: .medium))
-                    .foregroundColor(.black)
-                Spacer()
+            
+            Spacer()
+            
+            // MARK: - Data Update Button
+            Button(action: {
+                Task { await vm.performDataUpdate() }
+            }) {
+                HStack(spacing: settingsLineSheetIconSpacing) {
+                    Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .foregroundColor(.white)
+                    Text("Update Line Data".localized)
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                }
             }
+            .font(.system(size: settingsLineSheetButtonFontSize))
+            .buttonStyle(.borderedProminent)
+            .tint(vm.lastUpdatedDisplay != nil ? .accentColor: .secondary)
         }
     }
     
@@ -559,33 +592,68 @@ struct SettingsLineSheet: View {
 
 
             // MARK: - Transportation Kind Toggle
-            // Toggle for switching between railway and bus transportation types
-            HStack {
-
-                Toggle("", isOn: Binding(
-                    get: { vm.selectedTransportationKind == .bus },
-                    set: { isOn in
-                        vm.selectedTransportationKind = isOn ? .bus : .railway
+            // Custom toggle for switching between railway and bus transportation types
+            TransportationToggle(isRailway: Binding(
+                get: { vm.selectedTransportationKind == .railway },
+                set: { isRailway in
+                    // Update transportation kind immediately for responsive UI
+                    vm.selectedTransportationKind = isRailway ? .railway : .bus
+                    
+                    // Clear line name and station selections when switching transportation types
+                    vm.query = ""
+                    vm.selectedLine = nil
+                    vm.selectedDepartureStation = nil
+                    vm.selectedArrivalStation = nil
+                    vm.departureStationInput = ""
+                    vm.arrivalStationInput = ""
+                    vm.lineStations = []
+                    vm.selectedLineColor = accentColorString
+                    
+                    // Clear current suggestions immediately for instant UI update
+                    vm.lineSuggestions = []
+                    vm.showLineSuggestions = false
+                    vm.nameCounts = [:]
+                    vm.showDepartureSuggestions = false
+                    vm.showArrivalSuggestions = false
+                    vm.departureSuggestions = []
+                    vm.arrivalSuggestions = []
+                    vm.isDepartureFieldFocused = false
+                    vm.isArrivalFieldFocused = false
+                    vm.departureStationSelected = false
+                    vm.arrivalStationSelected = false
+                    vm.lineSelected = false
+                    vm.showStationSelection = false
+                    
+                    // Only filter if there's an active query and it's not empty
+                    if !vm.query.isEmpty && vm.query.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                        // Use longer delay for bus to allow UI to fully update
+                        let delay = isRailway ? 0.1 : 0.2
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                            Task { await vm.filter(vm.query) }
+                        }
                     }
-                ))
-                .toggleStyle(SwitchToggleStyle(tint: .primaryColor))
-                .scaleEffect(0.8)
-            
-                Text("Railway".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .medium))
-                    .foregroundColor(vm.selectedTransportationKind == .railway ? .black : .secondary)
-
-                Text("Bus".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .medium))
-                    .foregroundColor(vm.selectedTransportationKind == .bus ? .primaryColor : .secondary)
-            }
+                }
+            ))
         }
         .padding(.top, settingsLineSheetPadding)
     }
     
     /// Station header with dynamic station information
     private var stationHeaderText: some View {
-        Text((vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized) + "\(vm.hasSelectedLine && vm.hasStations ? ": ".localized + "\(vm.lineStations.first?.name ?? "")" + " to ".localized + "\(vm.lineStations.last?.name ?? "")": "")")
+        let headerText = vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized
+        
+        let stationInfo: String
+        if vm.hasSelectedLine && vm.hasStations {
+            let firstStation = vm.lineStations.first?.getLocalizedName() ?? ""
+            let lastStation = vm.lineStations.last?.getLocalizedName() ?? ""
+            stationInfo = ": ".localized + firstStation + " to ".localized + lastStation
+        } else {
+            stationInfo = ""
+        }
+        
+        let finalText = headerText + stationInfo
+        
+        return Text(finalText)
             .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
             .foregroundColor(Color.black)
             .padding(.top, settingsLineSheetPadding)
@@ -639,8 +707,6 @@ struct SettingsLineSheet: View {
                 
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(vm.query.isEmpty ? .gray : .accentColor)
-                
-                Spacer()
             }
             .onChange(of: vm.query) { newValue in
                 handleQueryChange(newValue)
@@ -658,8 +724,8 @@ struct SettingsLineSheet: View {
 
             // Display selected color as a circle
             Circle()
-                .fill(vm.selectedLineColor != nil ? Color(vm.selectedLineColor!.colorInt) : 
-                      selected?.lineColor != nil ? Color(selected!.lineColor!.colorInt) : 
+                .fill(vm.selectedLineColor != nil ? vm.selectedLineColor!.safeColor :
+                      selected?.lineColor != nil ? selected!.lineColor!.safeColor :
                       Color.primaryColor)
                 .frame(width: settingsLineSheetColorCircleSmallSize, height: settingsLineSheetColorCircleSmallSize)
                 .overlay(Circle().stroke(Color.primaryColor, lineWidth: settingsLineSheetStrokeLineWidth))
@@ -668,17 +734,63 @@ struct SettingsLineSheet: View {
                 .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
                 .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
 
-            Spacer()
-            
             // Color selection button
             Button(action: {
                 vm.showColorSelection = true
             }) {
-                Text("Select Color".localized)
-                    .font(.system(size: settingsLineSheetButtonFontSize))
+                HStack(spacing: settingsLineSheetIconSpacing) {
+                    Image(systemName: "paintpalette.fill")
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .foregroundColor(.white)
+                    Text("Select".localized)
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                }
             }
             .buttonStyle(.borderedProminent)
             .tint(Color.primaryColor)
+            
+            Spacer()
+            
+            // MARK: - Clear Button
+            Button(action: {
+                // Clear line name
+                vm.query = ""
+                selected = nil
+                
+                // Reset station selection
+                vm.resetStationSelection()
+                
+                // Clear departure and arrival station input fields
+                vm.departureStationInput = ""
+                vm.arrivalStationInput = ""
+                
+                // Reset ride time to 5 minutes
+                vm.selectedRideTime = 5
+                
+                // Reset line color to accent (not saved to UserDefaults)
+                vm.selectedLineColor = accentColorString
+                
+                // Reset transportation kind to railway
+                vm.selectedTransportationKind = .railway
+                
+                // Reset transfer settings to none
+                vm.selectedTransportation = "none"
+                vm.selectedTransferTime = 5
+                
+                // Hide color selection UI
+                vm.showColorSelection = false
+            }) {
+                HStack(spacing: settingsLineSheetIconSpacing) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .foregroundColor(.white)
+                    Text("Clear".localized)
+                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .buttonStyle(.borderedProminent)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(.red)
         }
     }
     
@@ -727,8 +839,8 @@ struct SettingsLineSheet: View {
                 HStack {
                     // Display icon for selected transportation method
                     Image(systemName: getTransportationType(label: vm.selectedTransportation).iconName)
+                        .frame(height: settingsLineSheetIconSize)
                         .foregroundColor(.black)
-                        .frame(width: settingsLineSheetIconSize)
 
                     Text(getTransportationType(label: vm.selectedTransportation).displayName)
                         .font(.system(size: settingsLineSheetInputFontSize))
@@ -742,10 +854,10 @@ struct SettingsLineSheet: View {
                                 HStack {
                                     Image(systemName: type.iconName)
                                         .foregroundColor(.black)
-                                        .frame(width: settingsLineSheetIconSize)
+                                        .frame(height: settingsLineSheetIconSize)
                                     Text(type.displayName)
+                                        .font(.system(size: settingsLineSheetInputFontSize))
                                         .foregroundColor(.black)
-                                        .frame(width: settingsLineSheetIconSize)
                                 }
                             }
                         }
@@ -798,62 +910,6 @@ struct SettingsLineSheet: View {
         }
     }
     
-    // MARK: - Data Management Section
-    /// Section for updating data and clearing configuration
-    private var dataManagementSection: some View {
-        HStack {
-            Button("Update Data".localized) {
-                Task { await vm.refreshAllData() }
-            }
-            .font(.system(size: settingsLineSheetButtonFontSize))
-            .buttonStyle(.borderedProminent)
-            .tint(Color.secondary)
-
-            if vm.isLoading { ProgressView() }
-            
-            if let updated = vm.lastUpdatedDisplay {
-                Text("Updated: ".localized + updated)
-                    .font(.system(size: settingsLineSheetCaptionFontSize))
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            
-            // MARK: - Clear Button
-            Button(action: {
-                // Clear line name
-                vm.query = ""
-                selected = nil
-                
-                // Reset station selection
-                vm.resetStationSelection()
-                
-                // Clear departure and arrival station input fields
-                vm.departureStationInput = ""
-                vm.arrivalStationInput = ""
-                
-                // Reset ride time to 5 minutes
-                vm.selectedRideTime = 5
-                
-                // Reset line color to accent (not saved to UserDefaults)
-                vm.selectedLineColor = accentColorString
-                
-                // Reset transportation kind to railway
-                vm.selectedTransportationKind = .railway
-                
-                // Hide color selection UI
-                vm.showColorSelection = false
-            }) {
-                Text("Clear".localized)
-                    .font(.system(size: settingsLineSheetButtonFontSize))
-                    .buttonStyle(.borderedProminent)
-            }
-            .buttonStyle(.borderedProminent)
-            .padding(.leading, settingsLineSheetSpacing)
-            .tint(.red)
-        }
-        .padding(.top, settingsLineSheetPadding)
-    }
-    
     // MARK: - Departure Station Input Section
     /// Section for inputting departure station information
     private var departureStationInputSection: some View {
@@ -868,7 +924,6 @@ struct SettingsLineSheet: View {
                 .font(.system(size: settingsLineSheetInputFontSize))
                 .padding(.vertical, settingsLineSheetInputPaddingVertical)
                 .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                .frame(maxWidth: .infinity)
                 .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
                 .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
                 .onChange(of: vm.departureStationInput) { newValue in
@@ -1013,6 +1068,9 @@ struct SettingsLineSheet: View {
             return
         }
         
+        // Trigger filtering when query changes
+        Task { await vm.filter(newValue) }
+        
         // Reset station selection when query changes
         let currentLineName = vm.selectedLine?.name ?? ""
         let currentDisplayName: String
@@ -1052,10 +1110,14 @@ struct SettingsLineSheet: View {
     }
 }
 
-#Preview {
-    SettingsLineSheet(goorback: "back1", lineIndex: 0)
-        .environment(\.locale, .init(identifier: "ja_JP"))
+// MARK: - Preview Provider
+// Provides preview data for SwiftUI previews in Xcode
+struct SettingsLineSheet_Previews: PreviewProvider {
+    static var previews: some View {
+        SettingsLineSheet(goorback: "back1", lineIndex: 0)
+    }
 }
+
 
 // MARK: - File Summary
 // Comprehensive line configuration sheet interface for MyTimeTableMaker app

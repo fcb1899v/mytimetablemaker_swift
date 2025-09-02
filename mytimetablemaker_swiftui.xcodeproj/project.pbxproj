@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,8 @@
 		026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */; };
 		026257D72AD3E515001CF251 /* LogOutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D62AD3E515001CF251 /* LogOutButton.swift */; };
 		026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D82AD3E573001CF251 /* DeleteAccountButton.swift */; };
+		02723C472E63BF3E00F1528E /* APITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C462E63BEFE00F1528E /* APITest.swift */; };
+		02723C492E63BF4E00F1528E /* APINetworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C482E63BF4D00F1528E /* APINetworkTest.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
 		027F23FD2AC9852800852C89 /* LineTimeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23FC2AC9852800852C89 /* LineTimeImage.swift */; };
@@ -44,8 +46,6 @@
 		027F24232ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
 		027F24242ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
 		027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F24292ACEB7B500852C89 /* SplashContentView.swift */; };
-		027F242B2ACEB7B500852C89 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F24292ACEB7B500852C89 /* SplashContentView.swift */; };
-		027F242C2ACEB7B500852C89 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F24292ACEB7B500852C89 /* SplashContentView.swift */; };
 		0298F55E2E3A52B100271243 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0298F55D2E3A52B100271243 /* Algorithms */; };
 		02C15511262BC9170037EEC0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* ContentView.swift */; };
 		02C4C4432AF4F00600CEC290 /* CommonConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C4C4422AF4F00600CEC290 /* CommonConstants.swift */; };
@@ -117,6 +117,8 @@
 		026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveFirestoreButton.swift; sourceTree = "<group>"; };
 		026257D62AD3E515001CF251 /* LogOutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutButton.swift; sourceTree = "<group>"; };
 		026257D82AD3E573001CF251 /* DeleteAccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountButton.swift; sourceTree = "<group>"; };
+		02723C462E63BEFE00F1528E /* APITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITest.swift; sourceTree = "<group>"; };
+		02723C482E63BF4D00F1528E /* APINetworkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APINetworkTest.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
 		027F23FC2AC9852800852C89 /* LineTimeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTimeImage.swift; sourceTree = "<group>"; };
@@ -176,10 +178,6 @@
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
 		E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		02EBD1162E560FCD00450D16 /* LineData */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LineData; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		02F02575261BDD7E00655E54 /* Frameworks */ = {
@@ -309,7 +307,6 @@
 			isa = PBXGroup;
 			children = (
 				022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */,
-				02EBD1162E560FCD00450D16 /* LineData */,
 				02F026F1261DED0500655E54 /* Debug.xcconfig */,
 				02F026F2261DED0600655E54 /* Release.xcconfig */,
 				02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */,
@@ -348,6 +345,8 @@
 			children = (
 				02F02592261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift */,
 				02F02594261BDD7F00655E54 /* Info.plist */,
+				02723C462E63BEFE00F1528E /* APITest.swift */,
+				02723C482E63BF4D00F1528E /* APINetworkTest.swift */,
 			);
 			path = mytimetablemaker_swiftuiTests;
 			sourceTree = "<group>";
@@ -434,9 +433,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				02EBD1162E560FCD00450D16 /* LineData */,
 			);
 			name = mytimetablemaker_swiftui;
 			packageProductDependencies = (
@@ -642,7 +638,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F02593261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift in Sources */,
-				027F242B2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
+				02723C492E63BF4E00F1528E /* APINetworkTest.swift in Sources */,
+				02723C472E63BF3E00F1528E /* APITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,7 +648,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F0259E261BDD7F00655E54 /* mytimetablemaker_swiftuiUITests.swift in Sources */,
-				027F242C2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

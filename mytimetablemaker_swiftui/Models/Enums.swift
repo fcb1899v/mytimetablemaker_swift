@@ -7,29 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Transfer Time Enumeration
-// Defines the number of transfers for transfer routes
-enum TransferTime: String, CaseIterable {
-    case zero = "Zero";
-    case once = "Once";
-    case twice = "Twice";
-    var Number: Int {
-        switch (self) {
-            case .zero: return 0
-            case .once: return 1
-            case .twice: return 2
-        }
-    }
-}
-
-// MARK: - Transportation Enumeration
-// Defines available transportation modes for transfer segments
-enum Transportation: String, CaseIterable {
-    case walking = "Walking"
-    case bicycle = "Bicycle"
-    case car = "Car"
-}
-
 // MARK: - Custom Color Enumeration
 // Defines color options for line customization with RGB values
 enum CustomColor: String, CaseIterable {
@@ -110,32 +87,14 @@ enum LocalDataSource: CaseIterable {
     case tokyuBus      // Tokyu Bus
     
     // MARK: - File Name Mapping
-    // Get the filename for each data source
+    // Generate filename dynamically from operatorCode with transportation type included
     var fileName: String {
-        switch self {
-        case .jrEast: return "jreast.json"
-        case .keikyu: return "keikyu.json"
-        case .tokyoMetro: return "tokyometro.json"
-        case .toeiMetro: return "toeimetro.json"
-        case .odakyu: return "odakyu.json"
-        case .yurikamome: return "yurikamome.json"
-        case .rinkai: return "rinkai.json"
-        case .seibu: return "seibu.json"
-        case .sotetsu: return "sotetsu.json"
-        case .tama: return "tama.json"
-        case .tobu: return "tobu.json"
-        case .tokyu: return "tokyu.json"
-        case .tsukuba: return "tsukuba.json"
-        case .yokohamaMetro: return "yokohamametro.json"
-        case .toeiBus: return "toeibus.json"
-        case .yokohamaBus: return "yokohamabus.json"
-        case .sotetsuBus: return "sotetsubus.json"
-        case .kokusaiKogyo: return "kokusaikogyobus.json"
-        case .kanachuBus: return "kanachubus.json"
-        case .odakyuBus: return "odakyubus.json"
-        case .seibuBus: return "seibubus.json"
-        case .tokyuBus: return "tokyubus.json"
-        }
+        // Extract operator name from operatorCode (remove "odpt.Operator:" prefix)
+        let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
+        // Convert to lowercase and keep hyphens
+        let normalizedName = operatorName.lowercased().replacingOccurrences(of: " ", with: "")
+        // Add transportation type suffix
+        return "\(normalizedName)_\(transportationType.rawValue.lowercased()).json"
     }
     
     // MARK: - Display Name Mapping
@@ -143,27 +102,27 @@ enum LocalDataSource: CaseIterable {
     var displayName: String {
         switch self {
         case .jrEast: return "JR東日本"
-        case .keikyu: return "京急電鉄"
         case .tokyoMetro: return "東京メトロ"
         case .toeiMetro: return "都営地下鉄"
+        case .tokyu: return "東急電鉄"
+        case .keikyu: return "京急電鉄"
         case .odakyu: return "小田急電鉄"
-        case .yurikamome: return "ゆりかもめ"
-        case .rinkai: return "東京臨海高速鉄道"
+        case .tobu: return "東武鉄道"
         case .seibu: return "西武鉄道"
         case .sotetsu: return "相模鉄道"
-        case .tama: return "多摩都市モノレール"
-        case .tobu: return "東武鉄道"
-        case .tokyu: return "東急電鉄"
-        case .tsukuba: return "首都圏新都市鉄道"
         case .yokohamaMetro: return "横浜市営地下鉄"
+        case .rinkai: return "東京臨海高速鉄道"
+        case .yurikamome: return "ゆりかもめ"
+        case .tsukuba: return "首都圏新都市鉄道"
+        case .tama: return "多摩都市モノレール"
         case .toeiBus: return "都営バス"
         case .yokohamaBus: return "横浜市営バス"
-        case .sotetsuBus: return "相鉄バス"
-        case .kokusaiKogyo: return "国際興業"
-        case .kanachuBus: return "神奈中バス"
+        case .tokyuBus: return "東急バス"
         case .odakyuBus: return "小田急バス"
         case .seibuBus: return "西武バス"
-        case .tokyuBus: return "東急バス"
+        case .sotetsuBus: return "相鉄バス"
+        case .kanachuBus: return "神奈中バス"
+        case .kokusaiKogyo: return "国際興業"
         }
     }
     
@@ -172,27 +131,27 @@ enum LocalDataSource: CaseIterable {
     var operatorCode: String {
         switch self {
         case .jrEast: return "odpt.Operator:JR-East"
-        case .keikyu: return "odpt.Operator:Keikyu"
         case .tokyoMetro: return "odpt.Operator:TokyoMetro"
         case .toeiMetro: return "odpt.Operator:Toei"
+        case .tokyu: return "odpt.Operator:Tokyu"
+        case .keikyu: return "odpt.Operator:Keikyu"
         case .odakyu: return "odpt.Operator:Odakyu"
-        case .yurikamome: return "odpt.Operator:Yurikamome"
-        case .rinkai: return "odpt.Operator:TWR"
+        case .tobu: return "odpt.Operator:Tobu"
         case .seibu: return "odpt.Operator:Seibu"
         case .sotetsu: return "odpt.Operator:Sotetsu"
-        case .tama: return "odpt.Operator:TamaMonorail"
-        case .tobu: return "odpt.Operator:Tobu"
-        case .tokyu: return "odpt.Operator:Tokyu"
-        case .tsukuba: return "odpt.Operator:MIR"
         case .yokohamaMetro: return "odpt.Operator:YokohamaMunicipal"
+        case .rinkai: return "odpt.Operator:TWR"
+        case .yurikamome: return "odpt.Operator:Yurikamome"
+        case .tsukuba: return "odpt.Operator:MIR"
+        case .tama: return "odpt.Operator:TamaMonorail"
         case .toeiBus: return "odpt.Operator:Toei"
         case .yokohamaBus: return "odpt.Operator:YokohamaMunicipal"
-        case .sotetsuBus: return "odpt.Operator:SotetsuBus"
-        case .kokusaiKogyo: return "odpt.Operator:KokusaiKogyoBus"
-        case .kanachuBus: return "odpt.Operator:Kanachu"
+        case .tokyuBus: return "odpt.Operator:TokyuBus"
         case .odakyuBus: return "odpt.Operator:OdakyuBus"
         case .seibuBus: return "odpt.Operator:SeibuBus"
-        case .tokyuBus: return "odpt.Operator:TokyuBus"
+        case .sotetsuBus: return "odpt.Operator:SotetsuBus"
+        case .kanachuBus: return "odpt.Operator:Kanachu"
+        case .kokusaiKogyo: return "odpt.Operator:KokusaiKogyoBus"
         }
     }
     
@@ -200,15 +159,40 @@ enum LocalDataSource: CaseIterable {
     // Get transportation type (railway or bus) for data processing
     var transportationType: TransportationLine.Kind {
         switch self {
-        case .jrEast, .keikyu, .tokyoMetro, .toeiMetro, .odakyu, .yurikamome, 
-             .rinkai, .seibu, .sotetsu, .tama, .tobu, .tokyu, .tsukuba, .yokohamaMetro:
+        case .jrEast, .tokyoMetro, .toeiMetro, .tokyu, .keikyu, .odakyu, .tobu,
+             .seibu, .sotetsu, .yokohamaMetro, .rinkai, .yurikamome, .tsukuba, .tama:
             return .railway
-        case .toeiBus, .yokohamaBus, .sotetsuBus, .kokusaiKogyo, .kanachuBus,
-             .odakyuBus, .seibuBus, .tokyuBus:
+        case .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus, .sotetsuBus,
+             .kanachuBus, .kokusaiKogyo:
             return .bus
         }
     }
+    
+    // MARK: - API Link
+    var lineInfomationLink: String {
+        switch self {
+        case .toeiMetro:
+            return operatorCode.odptPublicURL(isRailway: true)
+        case .tokyoMetro, .yokohamaMetro, .tsukuba, .tama, .yurikamome, .rinkai:
+            return operatorCode.odptURL(isRailway: true)
+        case .jrEast, .tokyu, .odakyu, .keikyu, .tobu, .seibu, .sotetsu:
+            return operatorCode.odptChallengeURL(isRailway: true)
+        case .toeiBus:
+            return operatorCode.odptPublicURL(isRailway: false)
+        case .odakyuBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus:
+            return operatorCode.odptURL(isRailway: false)
+        case .kanachuBus, .kokusaiKogyo:
+            return operatorCode.odptChallengeURL(isRailway: false)
+        }
+    }
 }
+
+// MARK: - Station Data Files
+// Get railway data files dynamically from LocalDataSource
+// Using the fileName property for consistent naming convention
+let stationDataFiles: [String] = LocalDataSource.allCases
+    .filter { $0.transportationType == .railway }
+    .map { $0.fileName }
 
 // MARK: - Parser Error Definitions
 // Custom error types for data parsing failures.

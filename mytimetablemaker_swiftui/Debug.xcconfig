@@ -5,7 +5,8 @@
 ADMOB_BANNER_UNIT_ID = ca-app-pub-3940256099942544/6300978111
 
 // ODPT API
-ODPT_ACCESS_TOKEN = fadeyt8wutw5nkfziikuroi3jj5s69zqoc2gqzd10mpybqpwjv39ev8vwbehvmyt
+ODPT_ACCESS_TOKEN = h34l1u19vxxa3itym1sa3n2qiufokufo543zfifwbuenj3dtpwthnf91k8u4lyra
+ODPT_CHALLENGE_TOKEN = fadeyt8wutw5nkfziikuroi3jj5s69zqoc2gqzd10mpybqpwjv39ev8vwbehvmyt
 
 // Other configuration variables can be added here
 // ROLLBAR_KEY = debug-rollbar-key

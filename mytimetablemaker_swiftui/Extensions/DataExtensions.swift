@@ -81,8 +81,8 @@ extension String{
 
     // MARK: - Default Data Definitions
     // Default values for route configuration
-    var departurePointDefault: String { return isBack ? textHome: textOffice }
-    var destinationDefault: String { return isBack ? textOffice: textHome }
+    var departurePointDefault: String { return isBack ? "Home".localized: "Office".localized }
+    var destinationDefault: String { return isBack ? "Office".localized: "Home".localized }
     
     
     // MARK: - Main View Data Access
@@ -110,17 +110,17 @@ extension String{
 
     // MARK: - Settings View Data Access
     // UserDefaults data retrieval for settings view display
-    var settingsDeparturePoint: String { return departurePointKey.userDefaultsValue(textNotSet)! }
-    var settingsDestination: String { return destinationKey.userDefaultsValue(textNotSet)! }
-    func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(textNotSet)! }
-    func settingsArriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(textNotSet)! }
-    func settingsLineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(textNotSet)! }
+    var settingsDeparturePoint: String { return departurePointKey.userDefaultsValue("Not set".localized)! }
+    var settingsDestination: String { return destinationKey.userDefaultsValue("Not set".localized)! }
+    func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue("Not set".localized)! }
+    func settingsArriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue("Not set".localized)! }
+    func settingsLineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue("Not set".localized)! }
     func settingsLineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(grayColorString) }
     func settingsLineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(grayColorString)! }
-    func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? textNotSet: "\(String(rideTime(num)))\("[min]".localized)"}
+    func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? "Not set".localized: "\(String(rideTime(num)))\("[min]".localized)"}
     func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? Color.grayColor: lineColorArray[num] }
-    func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(textNotSet)! }
-    func settingsTransferTime(_ num: Int) -> String { return (transferTime(num) == 0) ? textNotSet: "\(transferTime(num))\("[min]".localized)"}
+    func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue("Not set".localized)! }
+    func settingsTransferTime(_ num: Int) -> String { return (transferTime(num) == 0) ? "Not set".localized: "\(transferTime(num))\("[min]".localized)"}
     
     
     // MARK: - Main View Data Arrays
@@ -154,8 +154,8 @@ extension String{
     
     // MARK: - Label Generation
     // Dynamic label generation for UI display
-    var departurePointLabel: String { return isBack ? textDestination: textDepartPoint }
-    var destinationLabel: String { return isBack ? textDepartPoint: textDestination }
+    var departurePointLabel: String { return isBack ? "Destination".localized: "Departure place".localized }
+    var destinationLabel: String { return isBack ? "Departure place".localized: "Destination".localized }
     var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [departStationDefault(i), arriveStationDefault(i)] } }
     func transferDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
     func transferDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transferDepartNum(num)).localized }
@@ -176,14 +176,6 @@ extension String{
         (self == "back2") ? "Setting home route 2".localized:
         (self == "go1") ? "Setting outgoing route 1".localized:
         "Setting outgoing route 2".localized
-    }
-    var changeLineString: String {
-        switch(changeLineInt) {
-            case 0: return TransferTime.zero.rawValue.localized
-            case 1: return TransferTime.once.rawValue.localized
-            case 2: return TransferTime.twice.rawValue.localized
-            default: return textNotSet
-        }
     }
     var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
@@ -239,6 +231,20 @@ extension String{
             .filter{$0 != inputText}
             .joined(separator: " ")
     }
+
+
+    // MARK: - ODPT API URL Generation
+    // Generate ODPT API URLs for different data types
+    func odptURL(isRailway: Bool) -> String {
+        return "https://api.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)&acl:consumerKey=\(odptAccessKey)"
+    }
+    func odptPublicURL(isRailway: Bool) -> String {
+        return "https://api-public.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)"
+    }
+    func odptChallengeURL(isRailway: Bool) -> String {
+        return "https://api-challenge.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)&acl:consumerKey=\(odptChallengeKey)"
+    }
+
 }
 
 // MARK: - Boolean Extensions

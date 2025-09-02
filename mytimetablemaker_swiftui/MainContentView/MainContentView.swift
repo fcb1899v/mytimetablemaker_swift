@@ -111,19 +111,19 @@ struct MainContentView: View {
                     HStack {
                         HStack(spacing: operationButtonMargin) {
                             // Display going home route button
-                            OperationButton(isOn: myTransfer.isBack, label: textBack, action: myTransfer.backButton)
+                            OperationButton(isOn: myTransfer.isBack, label: "Back".localized, action: myTransfer.backButton)
                             // Display outgoing route button
-                            OperationButton(isOn: !myTransfer.isBack, label: textGo, action: myTransfer.goButton)
+                            OperationButton(isOn: !myTransfer.isBack, label: "Go".localized, action: myTransfer.goButton)
                             // Time Start Button
-                            OperationButton(isOn: !myTransfer.isTimeStop, label: textStart, action: myTransfer.startButton)
+                            OperationButton(isOn: !myTransfer.isTimeStop, label: "Start".localized, action: myTransfer.startButton)
                             // Time Stop Button
-                            OperationButton(isOn: myTransfer.isTimeStop, label: textStop, action: myTransfer.stopButton)
+                            OperationButton(isOn: myTransfer.isTimeStop, label: "Stop".localized, action: myTransfer.stopButton)
                             // To Settings Button
                             Button(action: {
                                 isMoveSettings = true
                             }) {
                                 ZStack {
-                                    Image("ic_settings1")
+                                    Image(systemName: "igearshape.fill")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: operationSettingsBottonSize)
@@ -162,7 +162,7 @@ struct MainContentView: View {
                         if (myTransfer.isShowRoute2) {
                             if(screenWidth > 600) { Spacer() }
                             Divider()
-                                .frame(width: 1.5, height: .infinity)
+                                .frame(width: 1.5, height: screenHeight - admobBannerHeight - headerHeight)
                                 .background(Color.primaryColor)
                             if(screenWidth > 600) { Spacer() }
                             VStack(alignment: .center, spacing: routeBottomSpace) {

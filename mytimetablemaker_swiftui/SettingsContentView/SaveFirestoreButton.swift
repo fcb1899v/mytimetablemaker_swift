@@ -35,12 +35,12 @@ struct SetFirestoreButton: View {
         // MARK: - Save Confirmation Alert
         .alert("Save current data".localized, isPresented: $isShowAlert) {
             // OK button
-            Button(textOk, role: .destructive) {
+                            Button("OK".localized, role: .destructive) {
                 myFirestore.setFirestore()
                 isShowAlert = false
             }
             // Cancel button
-            Button(textCancel, role: .cancel){
+                            Button("Cancel".localized, role: .cancel){
                 isShowAlert = false
             }
         } message: {
@@ -48,7 +48,7 @@ struct SetFirestoreButton: View {
         }
         // MARK: - Save Result Alert
         .alert(myFirestore.title, isPresented: $myFirestore.isShowMessage) {
-            Button(textOk, role: .none) {
+                            Button("OK".localized, role: .none) {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
                     presentationMode.wrappedValue.dismiss()

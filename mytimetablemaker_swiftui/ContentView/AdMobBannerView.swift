@@ -25,14 +25,11 @@ class BannerViewController: UIViewController {
     super.viewDidAppear(animated)
     // Tell the delegate the initial ad width.
     let width = view.frame.inset(by: view.safeAreaInsets).size.width
-    print("🔍 AdMob Debug: BannerViewController viewDidAppear with width: \(width)")
     delegate?.bannerViewController(self, didUpdate: width)
     
     // Load ad after view appears with a slight delay
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       if let bannerView = self.view.subviews.first(where: { $0 is GADBannerView }) as? GADBannerView {
-        print("🔍 AdMob Debug: Loading ad in viewDidAppear")
-        print("🔍 AdMob Debug: Banner view frame in viewDidAppear: \(bannerView.frame)")
         bannerView.load(GADRequest())
       }
     }
@@ -47,7 +44,6 @@ class BannerViewController: UIViewController {
     } completion: { _ in
       // Notify the delegate of ad width changes.
       let width = self.view.frame.inset(by: self.view.safeAreaInsets).size.width
-      print("🔍 AdMob Debug: BannerViewController viewWillTransition with width: \(width)")
       self.delegate?.bannerViewController(self, didUpdate: width)
     }
   }
@@ -65,7 +61,6 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     private var adUnitID: String {
         // Method 1: Try to get from Info.plist (set by xcconfig)
         if let unitID = Bundle.main.infoDictionary?["ADMOB_BANNER_UNIT_ID"] as? String {
-            print("🔍 AdMob Debug: ✅ Using unit ID from Info.plist: \(unitID)")
             return unitID
         } else {
             print("🔍 AdMob Debug: ❌ Failed to get unit ID from Info.plist")
@@ -73,7 +68,6 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         
         // Method 2: Try to get from environment variable directly
         if let unitID = ProcessInfo.processInfo.environment["ADMOB_BANNER_UNIT_ID"] {
-            print("🔍 AdMob Debug: ✅ Using unit ID from environment: \(unitID)")
             return unitID
         } else {
             print("🔍 AdMob Debug: ❌ Failed to get unit ID from environment")
@@ -84,19 +78,13 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> some UIViewController {
-        print("🔍 AdMob Debug: makeUIViewController called")
-        
-        let bannerViewController = BannerViewController()
         
         // Log the ad unit ID before setting it
-        print("🔍 AdMob Debug: About to set ad unit ID: \(adUnitID)")
-        
+        let bannerViewController = BannerViewController()
         bannerView.adUnitID = adUnitID
         bannerView.rootViewController = bannerViewController
         
         // Log the ad unit ID after setting it
-        print("🔍 AdMob Debug: Ad unit ID after setting: \(String(describing: bannerView.adUnitID))")
-        
         bannerViewController.view.addSubview(bannerView)
         
         // Set proper constraints for the banner view
@@ -114,31 +102,22 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         // Set the width delegate
         bannerViewController.delegate = context.coordinator
         
-        print("🔍 AdMob Debug: Banner view controller created with ad unit ID: \(adUnitID)")
-        print("🔍 AdMob Debug: Banner view frame: \(bannerView.frame)")
-        
         return bannerViewController
     }
     
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        print("🔍 AdMob Debug: updateUIViewController called with viewWidth: \(viewWidth)")
-        guard viewWidth != .zero else { 
-            print("🔍 AdMob Debug: viewWidth is zero, skipping ad load")
+        guard viewWidth != .zero else {
             return 
         }
         
         // Set ad size based on view width
         bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
-        print("🔍 AdMob Debug: Loading ad with size: \(bannerView.adSize)")
-        print("🔍 AdMob Debug: Banner view frame after size update: \(bannerView.frame)")
         
         // Load the ad
         bannerView.load(GADRequest())
-        print("🔍 AdMob Debug: Ad load request sent")
     }
     
     func makeCoordinator() -> Coordinator {
-        print("🔍 AdMob Debug: makeCoordinator called")
         return Coordinator(self)
     }
     
@@ -147,14 +126,6 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         
         init(_ parent: AdMobBannerView) {
             self.parent = parent
-            print("🔍 AdMob Debug: Coordinator initialized")
-        }
-        
-        func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-            print("🔍 AdMob Debug: Ad loaded successfully")
-            print("🔍 AdMob Debug: Ad size: \(bannerView.adSize)")
-            print("🔍 AdMob Debug: Ad frame: \(bannerView.frame)")
-            print("🔍 AdMob Debug: Ad unit ID: \(String(describing: bannerView.adUnitID))")
         }
         
         func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
@@ -195,16 +166,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         }
         
         func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat) {
-            print("🔍 AdMob Debug: Width updated to: \(width)")
             parent.viewWidth = width
-        }
-        
-        func bannerViewWillPresentScreen(_ bannerView: GADBannerView) {
-            print("🔍 AdMob Debug: Banner will present screen")
-        }
-        
-        func bannerViewDidDismissScreen(_ bannerView: GADBannerView) {
-            print("🔍 AdMob Debug: Banner did dismiss screen")
         }
     }
 }

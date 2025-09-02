@@ -82,12 +82,22 @@ struct SettingsTransferSheet: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(Color.white, for: .navigationBar)
         .toolbarColorScheme(.light, for: .navigationBar)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Cancel".localized) {
+            ToolbarItem(placement: .navigationBarLeading) {
+                // Back button
+                Button(action: {
                     dismiss()
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .foregroundColor(Color.black)
+                        Text("Cancel".localized)
+                            .font(.system(size: settingsFontSize, weight: .bold))
+                            .foregroundColor(.black)
+                    }
                 }
-                .foregroundColor(Color.black)
             }
         }
     }

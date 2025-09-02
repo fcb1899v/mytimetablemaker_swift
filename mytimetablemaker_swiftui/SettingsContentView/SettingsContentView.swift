@@ -164,10 +164,11 @@ struct SettingsContentView: View {
                 Button(action: {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
-                    HStack {
-                        Image("arrow_back_ios")
-                            .foregroundColor(.white)
-                        Text("Back to homepage".localized)
+                     HStack {
+                        Image(systemName: "arrow.left")
+                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .foregroundColor(Color.white)
+                        Text("Cancel".localized)
                             .font(.system(size: settingsFontSize, weight: .bold))
                             .foregroundColor(.white)
                     }
