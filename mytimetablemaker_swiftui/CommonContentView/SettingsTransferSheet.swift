@@ -73,9 +73,9 @@ struct SettingsTransferSheet: View {
                 
                 Spacer()
             }
-            .padding(.horizontal, settingsLineSheetPadding)
+            .padding(.horizontal, screen.settingsLineSheetPadding)
         }
-        .padding(.horizontal, settingsLineSheetPadding)
+        .padding(.horizontal, screen.settingsLineSheetPadding)
         .onAppear {
             vm.loadSettings()
         }
@@ -90,11 +90,11 @@ struct SettingsTransferSheet: View {
                     dismiss()
                 }) {
                     HStack {
-                        Image(systemName: "arrow.left")
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                        Image(systemName: "arrowshape.backward.fill")
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(Color.black)
-                        Text("Cancel".localized)
-                            .font(.system(size: settingsFontSize, weight: .bold))
+                        Text("Back to homepage".localized)
+                            .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.black)
                     }
                 }
@@ -108,9 +108,9 @@ struct SettingsTransferSheet: View {
     @ViewBuilder
     private func headerSection(title: String) -> some View {
         Text(title)
-            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
             .foregroundColor(Color.black)
-            .padding(.vertical, settingsLineSheetPadding)
+            .padding(.vertical, screen.settingsLineSheetPadding)
     }
     
     // Place input section with title and text field
@@ -118,15 +118,15 @@ struct SettingsTransferSheet: View {
     private func placeInputSection(title: String, placeholder: String, text: Binding<String>) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
 
             TextField(placeholder, text: text)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                .font(.system(size: settingsLineSheetInputFontSize))
-                .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                .font(.system(size: screen.settingsLineSheetInputFontSize))
+                .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
                 .background(styledBackground())
                 .overlay(styledBorder())
             
@@ -147,19 +147,19 @@ struct SettingsTransferSheet: View {
             // Header row
             GridRow {
                 Text("")
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                 Text("Route 1".localized)
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .frame(maxWidth: .infinity)
                 Text("Route 2".localized)
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .frame(maxWidth: .infinity)
             }
 
             // Transportation method row
             GridRow {
                 Text("Transportation".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                     .foregroundColor(.primaryColor)
 
                 transportationMethodSelector(selectedTransportation: transportation1)
@@ -169,14 +169,14 @@ struct SettingsTransferSheet: View {
             // Travel time row
             GridRow {
                 Text("Travel Time".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                     .foregroundColor(.primaryColor)
 
                 timeSelector(selectedTime: transferTime1)
                 timeSelector(selectedTime: transferTime2)
             }
         }
-        .padding(.vertical, settingsLineSheetPadding)
+        .padding(.vertical, screen.settingsLineSheetPadding)
     }
     
     /// Transportation method selector component
@@ -185,10 +185,10 @@ struct SettingsTransferSheet: View {
         HStack {
             Image(systemName: getTransportationType(label: selectedTransportation.wrappedValue).iconName)
                 .foregroundColor(.black)
-                .frame(width: settingsLineSheetIconSize)
+                .frame(width: screen.settingsLineSheetIconSize)
             
             Text(getTransportationType(label: selectedTransportation.wrappedValue).displayName)
-                .font(.system(size: settingsLineSheetInputFontSize))
+                .font(.system(size: screen.settingsLineSheetInputFontSize))
                 .foregroundColor(.black)
                 .lineLimit(1)
             
@@ -200,20 +200,21 @@ struct SettingsTransferSheet: View {
                         HStack {
                             Image(systemName: type.iconName)
                                 .foregroundColor(.black)
-                                .frame(width: settingsLineSheetIconSize)
+                                .frame(width: screen.settingsLineSheetIconSize)
                             Text(type.displayName)
+                                .font(.system(size: screen.settingsLineSheetInputFontSize))
                                 .foregroundColor(.black)
                         }
                     }
                 }
             } label: {
                 Image(systemName: "chevron.down")
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .foregroundColor(.black)
             }
         }
-        .padding(.vertical, settingsLineSheetInputPaddingVertical)
-        .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+        .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+        .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
         .background(styledBackground())
         .overlay(styledBorder())
     }
@@ -223,7 +224,7 @@ struct SettingsTransferSheet: View {
     private func timeSelector(selectedTime: Binding<Int>) -> some View {
         HStack {
             Text("\(selectedTime.wrappedValue)" + " min".localized)
-                .font(.system(size: settingsLineSheetInputFontSize))
+                .font(.system(size: screen.settingsLineSheetInputFontSize))
                 .foregroundColor(.black)
             
             Menu {
@@ -234,12 +235,12 @@ struct SettingsTransferSheet: View {
                 }
             } label: {
                 Image(systemName: "chevron.down")
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .foregroundColor(.black)
             }
         }
-        .padding(.vertical, settingsLineSheetInputPaddingVertical)
-        .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+        .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+        .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
         .background(styledBackground())
         .overlay(styledBorder())
     }
@@ -257,18 +258,18 @@ struct SettingsTransferSheet: View {
         }) {
             HStack {
                 Image(systemName: "square.and.arrow.down.fill")
-                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .medium))
                 Text("Save".localized)
-                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .bold))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: settingsLineSheetButtonHeight)
+            .frame(height: screen.settingsLineSheetButtonHeight)
             .background(
-                RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetButtonCornerRadius)
                     .fill(vm.officeInput.isEmpty ? .gray: Color.accentColor)
             )
-            .padding(.vertical, settingsLineSheetPadding)
+            .padding(.vertical, screen.settingsLineSheetPadding)
         }
         .disabled(vm.homeInput.isEmpty || vm.officeInput.isEmpty)
     }
@@ -277,14 +278,14 @@ struct SettingsTransferSheet: View {
     
     /// Styled background for input fields
     private func styledBackground() -> some View {
-        RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius)
+        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
             .fill(Color(.secondarySystemBackground))
     }
     
     /// Styled border for input fields
     private func styledBorder() -> some View {
-        RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius)
-            .stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth)
+        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+            .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
     }
 }
 

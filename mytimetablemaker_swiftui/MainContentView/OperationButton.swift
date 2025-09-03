@@ -28,12 +28,12 @@ struct OperationButton: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: operationButtonFontSize))
+                .font(.system(size: screen.operationButtonFontSize))
                 .fontWeight(.semibold)
-                .frame(width: operationButtonWidth, height: operationButtonHeight)
+                .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                 .foregroundColor(.white)
                 .background(isOn ? Color.accentColor: Color.grayColor)
-                .cornerRadius(operationButtonCornerRadius)
+                .cornerRadius(screen.operationButtonCornerRadius)
         }
     }
 }

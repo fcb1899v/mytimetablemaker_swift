@@ -15,7 +15,7 @@ struct Tag: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.system(size: settingsLineSheetCaptionFontSize, weight: .medium))
+            .font(.system(size: screen.settingsLineSheetCaptionFontSize, weight: .medium))
             .padding(.vertical, 2)
             .padding(.horizontal, 6)
             .background(Capsule().fill(Color(.secondarySystemFill)))
@@ -28,26 +28,26 @@ struct TransportationToggle: View {
     @Binding var isRailway: Bool
     
     var body: some View {
-        HStack(spacing: transportationToggleSpacing) {
+        HStack(spacing: screen.transportationToggleSpacing) {
             // Railway label
             Text("Railway".localized)
-                .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
+                .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
                 .foregroundColor(isRailway ? .primaryColor : .secondary)
                 .animation(.easeInOut(duration: 0.2), value: isRailway)
             
             // Toggle switch
             ZStack {
                 // Background
-                RoundedRectangle(cornerRadius: transportationToggleCornerRadius)
+                RoundedRectangle(cornerRadius: screen.transportationToggleCornerRadius)
                     .fill(Color.primaryColor)
-                    .frame(width: transportationToggleWidth, height: transportationToggleHeight)
+                    .frame(width: screen.transportationToggleWidth, height: screen.transportationToggleHeight)
                     .animation(.easeInOut(duration: 0.1), value: isRailway)
                 
                 // Toggle circle
                 Circle()
                     .fill(Color.white)
-                    .frame(width: transportationToggleCircleSize, height: transportationToggleCircleSize)
-                    .offset(x: isRailway ? -transportationToggleCircleOffset : transportationToggleCircleOffset)
+                    .frame(width: screen.transportationToggleCircleSize, height: screen.transportationToggleCircleSize)
+                    .offset(x: isRailway ? -screen.transportationToggleCircleOffset : screen.transportationToggleCircleOffset)
                     .animation(.easeInOut(duration: 0.2), value: isRailway)
             }
             .onTapGesture {
@@ -56,11 +56,11 @@ struct TransportationToggle: View {
             
             // Bus label
             Text("Bus".localized)
-                .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
+                .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
                 .foregroundColor(isRailway ? .secondary : .primaryColor)
                 .animation(.easeInOut(duration: 0.1), value: isRailway)
         }
-        .padding(.horizontal, transportationTogglePaddingHorizontal)
+        .padding(.horizontal, screen.transportationTogglePaddingHorizontal)
     }
 }
 

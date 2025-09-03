@@ -63,7 +63,7 @@ struct SettingsLineSheet: View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
                 ScrollView {
-                    VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
+                    VStack(alignment: .leading, spacing: screen.settingsLineSheetSpacing) {
                         routeHeaderMenu
                         lineHeaderMenu
                         lineNameSection
@@ -83,7 +83,7 @@ struct SettingsLineSheet: View {
                     .onPreferenceChange(DepartureStationPositionKey.self) { value in
                         departureStationPosition = value
                     }
-                    .padding(.horizontal, settingsLineSheetPadding)
+                    .padding(.horizontal, screen.settingsLineSheetPadding)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .animation(.default, value: vm.showStationSelection)
                     .sheet(isPresented: $showTimetableSettings) {
@@ -126,11 +126,11 @@ struct SettingsLineSheet: View {
                     dismiss()
                 }) {
                     HStack {
-                        Image(systemName: "arrow.left")
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                        Image(systemName: "arrowshape.backward.fill")
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(Color.black)
                         Text("Back to homepage".localized)
-                            .font(.system(size: settingsFontSize, weight: .bold))
+                            .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.black)
                     }
                 }
@@ -139,7 +139,7 @@ struct SettingsLineSheet: View {
         .onPreferenceChange(DepartureStationPositionKey.self) { value in
             departureStationPosition = value
         }
-        .padding(.horizontal, settingsLineSheetPadding)
+        .padding(.horizontal, screen.settingsLineSheetPadding)
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .animation(.default, value: vm.showStationSelection)
         .sheet(isPresented: $showTimetableSettings) {
@@ -186,11 +186,11 @@ struct SettingsLineSheet: View {
                     } label: {
                         HStack {
                             Text(station.getLocalizedName())
-                                .font(.system(size: settingsLineSheetInputFontSize))
+                                .font(.system(size: screen.settingsLineSheetInputFontSize))
                                 .lineLimit(1)
                                 .foregroundColor(.primary)
-                                .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                                .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                                .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
                             Spacer()
                         }
                         .contentShape(Rectangle())
@@ -200,14 +200,14 @@ struct SettingsLineSheet: View {
                 }
             }
         }
-        .frame(maxHeight: min(CGFloat(vm.departureSuggestions.count) * settingsLineSheetSuggestionItemHeight, settingsLineSheetMaxSuggestionHeight))
-        .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(.background))
-        .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+        .frame(maxHeight: min(CGFloat(vm.departureSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
+        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(.background))
+        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
         .animation(.default, value: vm.departureSuggestions)
-        .shadow(radius: settingsLineSheetShadowRadius)
+        .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: settingsLineSheetDepartureOffset)
+        .offset(y: screen.settingsLineSheetDepartureOffset)
         .zIndex(100)
     }
 
@@ -247,12 +247,12 @@ struct SettingsLineSheet: View {
                     } label: {
                         HStack {
                             Text(station.getLocalizedName())
-                                .font(.system(size: settingsLineSheetInputFontSize))
+                                .font(.system(size: screen.settingsLineSheetInputFontSize))
                                 .lineLimit(1)
                                 .foregroundColor(.primary)
                             .contentShape(Rectangle())
-                            .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                            .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                                                     .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                         .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
 
                             Spacer()
                         }
@@ -263,14 +263,14 @@ struct SettingsLineSheet: View {
                 }
             }
         }
-        .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * settingsLineSheetSuggestionItemHeight, settingsLineSheetMaxSuggestionHeight))
-        .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(.background))
-        .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+        .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
+        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(.background))
+        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
         .animation(.default, value: vm.arrivalSuggestions)
-        .shadow(radius: settingsLineSheetShadowRadius)
+        .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: settingsLineSheetArrivalOffset)
+        .offset(y: screen.settingsLineSheetArrivalOffset)
         .zIndex(100)
     }
 
@@ -351,15 +351,15 @@ struct SettingsLineSheet: View {
                         }
 
                     } label: {
-                         HStack(alignment: .top, spacing: settingsLineSheetHStackSpacing) {
+                         HStack(alignment: .top, spacing: screen.settingsLineSheetHStackSpacing) {
                              Text(line.kind == .railway ? (line.lineCode ?? "Railway".localized) : "Bus".localized)
-                                 .font(.system(size: settingsLineSheetCaptionFontSize))
-                                 .padding(.vertical, settingsLineSheetTagPaddingVertical)
-                                 .padding(.horizontal, settingsLineSheetTagPaddingHorizontal)
+                                 .font(.system(size: screen.settingsLineSheetCaptionFontSize))
+                                 .padding(.vertical, screen.settingsLineSheetTagPaddingVertical)
+                                 .padding(.horizontal, screen.settingsLineSheetTagPaddingHorizontal)
                                  .background(Capsule().fill((line.lineColor?.safeColor ?? Color(0xAAAAAA)).opacity(0.5)))
                              
                              Text(vm.displayName(for: line))
-                                 .font(.system(size: settingsLineSheetInputFontSize))
+                                 .font(.system(size: screen.settingsLineSheetInputFontSize))
                                  .lineLimit(1)
                              
                              if let operatorCode = line.operatorCode {
@@ -370,8 +370,8 @@ struct SettingsLineSheet: View {
                              Spacer()
                          }
                          .contentShape(Rectangle())
-                         .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                         .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
+                         .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                         .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
                      }
                     .buttonStyle(.plain)
                     if index < removeDuplicates(from: vm.lineSuggestions).count - 1 {
@@ -381,14 +381,14 @@ struct SettingsLineSheet: View {
             }
             Spacer()
         }
-        .frame(maxHeight: min(CGFloat(vm.lineSuggestions.count) * settingsLineSheetSuggestionItemHeight, settingsLineSheetMaxSuggestionHeight))
-        .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(.background))
-        .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+        .frame(maxHeight: min(CGFloat(vm.lineSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
+        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(.background))
+        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
         .animation(.default, value: vm.lineSuggestions)
-        .shadow(radius: settingsLineSheetShadowRadius)
+        .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: settingsLineSheetLineOffset)
+        .offset(y: screen.settingsLineSheetLineOffset)
         .zIndex(100)
         .onTapGesture {
             if vm.showDepartureSuggestions {
@@ -408,10 +408,10 @@ struct SettingsLineSheet: View {
             colorSelectionHeader
             colorSelectionGrid
         }
-        .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-        .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
-        .padding(.horizontal, settingsLineSheetPadding)
-        .offset(y: settingsLineSheetColorOffset)
+        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+        .padding(.horizontal, screen.settingsLineSheetPadding)
+        .offset(y: screen.settingsLineSheetColorOffset)
         .zIndex(100)
     }
     
@@ -419,7 +419,7 @@ struct SettingsLineSheet: View {
     private var colorSelectionHeader: some View {
         HStack {
             Text("Select Line Color".localized)
-                .font(.system(size: settingsLineSheetHeaderFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .semibold))
                 .foregroundColor(.black)
             Spacer()
             // Cancel button (only shown during manual color selection)
@@ -435,12 +435,12 @@ struct SettingsLineSheet: View {
     
     // MARK: - Color Selection Grid
     private var colorSelectionGrid: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: settingsLineSheetGridSpacing) {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: screen.settingsLineSheetGridSpacing) {
             ForEach(CustomColor.allCases, id: \.self) { color in
                 colorSelectionButton(for: color)
             }
         }
-        .padding(.all, settingsLineSheetGridSpacing)
+        .padding(.all, screen.settingsLineSheetGridSpacing)
     }
     
     // MARK: - Color Selection Button
@@ -454,13 +454,13 @@ struct SettingsLineSheet: View {
             VStack {
                 // Color circle with border
                 Circle()
-                                                     .fill(color.RGB.safeColor)
-                    .frame(width: settingsLineSheetColorCircleSize, height: settingsLineSheetColorCircleSize)
-                    .overlay(Circle().stroke(Color.secondary, lineWidth: settingsLineSheetStrokeLineWidth))
+                    .fill(color.RGB.safeColor)
+                    .frame(width: screen.settingsLineSheetColorCircleSize, height: screen.settingsLineSheetColorCircleSize)
+                    .overlay(Circle().stroke(Color.secondary, lineWidth: screen.settingsLineSheetStrokeLineWidth))
                 
                 // Color name label (localized)
                 Text(color.rawValue.localized)
-                    .font(.system(size: settingsLineSheetCaptionFontSize))
+                    .font(.system(size: screen.settingsLineSheetCaptionFontSize))
                     .lineLimit(1)
             }
         }
@@ -478,7 +478,7 @@ struct SettingsLineSheet: View {
             vm.handleLineSave(dismiss: dismiss)
         }
         .disabled(!vm.isCustomLineStationInputComplete())
-        .padding(.top, settingsLineSheetPadding)
+        .padding(.top, screen.settingsLineSheetPadding)
     }
     
     // MARK: - Timetable Settings Button Section
@@ -490,7 +490,7 @@ struct SettingsLineSheet: View {
             color: .primaryColor
         ) {
             showTimetableSettings = true
-        }.padding(.top, settingsLineSheetPadding)
+        }.padding(.top, screen.settingsLineSheetPadding)
     }
         
     // MARK: - Action Button Helper
@@ -505,15 +505,15 @@ struct SettingsLineSheet: View {
         Button(action: action) {
             HStack {
                 Image(systemName: icon)
-                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .medium))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .medium))
                 Text(title)
-                    .font(.system(size: settingsLineSheetButtonFontSize, weight: .bold))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
             }
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
-            .frame(height: settingsLineSheetButtonHeight)
+            .frame(height: screen.settingsLineSheetButtonHeight)
             .background(
-                RoundedRectangle(cornerRadius: settingsLineSheetButtonCornerRadius)
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetButtonCornerRadius)
                     .fill(color)
             )
         }
@@ -535,11 +535,11 @@ struct SettingsLineSheet: View {
             } label: {
                 HStack {
                     Text(vm.goorbackDisplayNames[vm.selectedGoorback] ?? vm.selectedGoorback)
-                        .font(.system(size: settingsLineSheetTitleFontSize, weight: .bold))
+                        .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
                         .foregroundColor(.primary)
                     
                     Image(systemName: "chevron.down")
-                        .font(.system(size: settingsLineSheetTitleFontSize, weight: .medium))
+                        .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .medium))
                         .foregroundColor(.black)
                     Spacer()
                 }
@@ -551,15 +551,15 @@ struct SettingsLineSheet: View {
             Button(action: {
                 Task { await vm.performDataUpdate() }
             }) {
-                HStack(spacing: settingsLineSheetIconSpacing) {
+                HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                         .foregroundColor(.white)
                     Text("Update Line Data".localized)
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                 }
             }
-            .font(.system(size: settingsLineSheetButtonFontSize))
+            .font(.system(size: screen.settingsLineSheetButtonFontSize))
             .buttonStyle(.borderedProminent)
             .tint(vm.lastUpdatedDisplay != nil ? .accentColor: .secondary)
         }
@@ -579,11 +579,11 @@ struct SettingsLineSheet: View {
             } label: {
                 HStack {
                     Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
-                        .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+                        .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
                         .foregroundColor(Color.black)
                     
                     Image(systemName: "chevron.down")
-                        .font(.system(size: settingsLineSheetHeaderFontSize, weight: .medium))
+                        .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .medium))
                         .foregroundColor(.black)
                 }
             }
@@ -635,7 +635,7 @@ struct SettingsLineSheet: View {
                 }
             ))
         }
-        .padding(.top, settingsLineSheetPadding)
+        .padding(.top, screen.settingsLineSheetPadding)
     }
     
     /// Station header with dynamic station information
@@ -654,35 +654,35 @@ struct SettingsLineSheet: View {
         let finalText = headerText + stationInfo
         
         return Text(finalText)
-            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
             .foregroundColor(Color.black)
-            .padding(.top, settingsLineSheetPadding)
+            .padding(.top, screen.settingsLineSheetPadding)
     }
     
     /// Time header with simple text
     private var timeHeaderText: some View {
         Text("Time Settings".localized)
-            .font(.system(size: settingsLineSheetHeaderFontSize, weight: .bold))
+            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
             .foregroundColor(Color.black)
-            .padding(.top, settingsLineSheetPadding)
+            .padding(.top, screen.settingsLineSheetPadding)
     }
     
     // MARK: - Line Name Section
     private var lineNameSection: some View {
-        VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSpacing) {
             HStack {
                 Text("Line Name".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                     .foregroundColor(.primaryColor)
 
                 TextField("Enter line name or bus route name".localized, text: $vm.query)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
-                    .font(.system(size: settingsLineSheetInputFontSize))
-                    .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                    .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                    .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                    .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
+                    .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                    .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+                    .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                    .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
                     .focused($focused)
                     .onSubmit {
                         // Handle enter key press
@@ -719,7 +719,7 @@ struct SettingsLineSheet: View {
     private var lineColorSection: some View {
         HStack {
             Text("Line Color".localized)
-                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
 
             // Display selected color as a circle
@@ -727,23 +727,23 @@ struct SettingsLineSheet: View {
                 .fill(vm.selectedLineColor != nil ? vm.selectedLineColor!.safeColor :
                       selected?.lineColor != nil ? selected!.lineColor!.safeColor :
                       Color.primaryColor)
-                .frame(width: settingsLineSheetColorCircleSmallSize, height: settingsLineSheetColorCircleSmallSize)
-                .overlay(Circle().stroke(Color.primaryColor, lineWidth: settingsLineSheetStrokeLineWidth))
-                .padding(.horizontal, settingsLineSheetColorPaddingHorizontal)
-                .padding(.vertical, settingsLineSheetColorPaddingVertical)
-                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .frame(width: screen.settingsLineSheetColorCircleSmallSize, height: screen.settingsLineSheetColorCircleSmallSize)
+                .overlay(Circle().stroke(Color.primaryColor, lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                .padding(.horizontal, screen.settingsLineSheetColorPaddingHorizontal)
+                .padding(.vertical, screen.settingsLineSheetColorPaddingVertical)
+                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
 
             // Color selection button
             Button(action: {
                 vm.showColorSelection = true
             }) {
-                HStack(spacing: settingsLineSheetIconSpacing) {
+                HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "paintpalette.fill")
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                         .foregroundColor(.white)
                     Text("Select".localized)
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                 }
             }
             .buttonStyle(.borderedProminent)
@@ -780,12 +780,12 @@ struct SettingsLineSheet: View {
                 // Hide color selection UI
                 vm.showColorSelection = false
             }) {
-                HStack(spacing: settingsLineSheetIconSpacing) {
+                HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                         .foregroundColor(.white)
                     Text("Clear".localized)
-                        .font(.system(size: settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
                         .buttonStyle(.borderedProminent)
                 }
             }
@@ -799,12 +799,12 @@ struct SettingsLineSheet: View {
     private var rideTimeSection: some View {
         HStack(alignment: .center) {
             Text("Ride Time".localized)
-                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
             
             HStack {
                 Text("\(vm.selectedRideTime)\(" min".localized)")
-                    .font(.system(size: settingsLineSheetInputFontSize))
+                    .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .foregroundColor(.black)
                 
                 Menu {
@@ -815,35 +815,35 @@ struct SettingsLineSheet: View {
                     }
                 } label: {
                     Image(systemName: "chevron.down")
-                        .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
                         .foregroundColor(.black)
                 }
             }
-            .padding(.vertical, settingsLineSheetInputPaddingVertical)
-            .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-            .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-            .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+            .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+            .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+            .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+            .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
         }
     }
     
     // MARK: - Transfer Settings Section
     private var transferSettingsSection: some View {
-        VStack(alignment: .leading, spacing: settingsLineSheetSpacing) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSpacing) {
             
             // MARK: - Transportation Settings
             HStack {
                 Text("Next Transfer".localized)
-                    .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                    .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                     .foregroundColor(Color.primaryColor)
                 
                 HStack {
                     // Display icon for selected transportation method
                     Image(systemName: getTransportationType(label: vm.selectedTransportation).iconName)
-                        .frame(height: settingsLineSheetIconSize)
+                        .frame(height: screen.settingsLineSheetIconSize)
                         .foregroundColor(.black)
 
                     Text(getTransportationType(label: vm.selectedTransportation).displayName)
-                        .font(.system(size: settingsLineSheetInputFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .foregroundColor(.black)
                     
                     Menu {
@@ -854,23 +854,23 @@ struct SettingsLineSheet: View {
                                 HStack {
                                     Image(systemName: type.iconName)
                                         .foregroundColor(.black)
-                                        .frame(height: settingsLineSheetIconSize)
+                                        .frame(height: screen.settingsLineSheetIconSize)
                                     Text(type.displayName)
-                                        .font(.system(size: settingsLineSheetInputFontSize))
+                                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                                         .foregroundColor(.black)
                                 }
                             }
                         }
                     } label: {
                         Image(systemName: "chevron.down")
-                            .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
+                            .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
                             .foregroundColor(.black)
                     }
                 }
-                .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
 
                 Spacer()
             }
@@ -879,12 +879,12 @@ struct SettingsLineSheet: View {
             if vm.selectedTransportation != "none" {
                 HStack {
                     Text("Transfer Time".localized)
-                        .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                        .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                         .foregroundColor(Color.primaryColor)
                     
                     HStack {
                         Text("\(vm.selectedTransferTime)" + " min".localized)
-                            .font(.system(size: settingsLineSheetInputFontSize))
+                            .font(.system(size: screen.settingsLineSheetInputFontSize))
                             .foregroundColor(.black)
                         
                         Menu {
@@ -895,14 +895,14 @@ struct SettingsLineSheet: View {
                             }
                         } label: {
                             Image(systemName: "chevron.down")
-                                .font(.system(size: settingsLineSheetInputFontSize, weight: .medium))
+                                .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
                                 .foregroundColor(.black)
                         }
                     }
-                    .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                    .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                    .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                    .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                    .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                    .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+                    .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                    .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
                     
                     Spacer()
                 }
@@ -915,17 +915,17 @@ struct SettingsLineSheet: View {
     private var departureStationInputSection: some View {
         HStack {
             Text(vm.selectedTransportationKind == .bus ? "Departure Stop".localized : "Departure Station".localized)
-                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
             
             TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStationInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                .font(.system(size: settingsLineSheetInputFontSize))
-                .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .font(.system(size: screen.settingsLineSheetInputFontSize))
+                .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
                 .onChange(of: vm.departureStationInput) { newValue in
                     handleDepartureStationInputChange(newValue)
                 }
@@ -965,17 +965,17 @@ struct SettingsLineSheet: View {
     private var arrivalStationInputSection: some View {
         HStack {
             Text(vm.selectedTransportationKind == .bus ? "Arrival Stop".localized : "Arrival Station".localized)
-                .font(.system(size: settingsLineSheetHeadlineFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primaryColor)
 
             TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStationInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
-                .font(.system(size: settingsLineSheetInputFontSize))
-                .padding(.vertical, settingsLineSheetInputPaddingVertical)
-                .padding(.horizontal, settingsLineSheetInputPaddingHorizontal)
-                .background(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: settingsLineSheetStrokeLineWidth))
+                .font(.system(size: screen.settingsLineSheetInputFontSize))
+                .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
+                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
+                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
                 .onChange(of: vm.arrivalStationInput) { newValue in
                     handleArrivalStationInputChange(newValue)
                 }

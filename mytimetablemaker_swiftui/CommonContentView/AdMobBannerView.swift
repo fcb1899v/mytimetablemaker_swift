@@ -93,7 +93,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             bannerView.centerXAnchor.constraint(equalTo: bannerViewController.view.centerXAnchor),
             bannerView.centerYAnchor.constraint(equalTo: bannerViewController.view.centerYAnchor),
             bannerView.widthAnchor.constraint(equalTo: bannerViewController.view.widthAnchor),
-            bannerView.heightAnchor.constraint(equalToConstant: admobBannerHeight)
+            bannerView.heightAnchor.constraint(equalToConstant: screen.admobBannerHeight)
         ])
         
         // Add delegate to handle ad loading

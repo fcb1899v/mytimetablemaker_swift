@@ -29,22 +29,6 @@ class MyLogin : ObservableObject {
     @Published var isLoginSuccess = "Login".userDefaultsBool(false)
     @Published var isSignUpSuccess = false
 
-    // MARK: - Email Validation
-    // Validates email format using regex pattern
-    func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "[A-Z0-9a-z._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegex)
-        return emailTest.evaluate(with: email)
-     }
-    
-    // MARK: - Password Validation
-    // Validates password strength (minimum 8 characters with special characters)
-    func isValidPassword(_ password: String) -> Bool {
-        let passwordRegex = "^(?=.*[A-Za-z0-9])(?=.*[!@#$&~]).{8,}$"
-        let passwordTest = NSPredicate(format: "SELF MATCHES %@", passwordRegex)
-        return passwordTest.evaluate(with: password)
-    }
-    
     // MARK: - Logout Function
     // Signs out current user and updates login state
     func logOut() {
@@ -76,24 +60,16 @@ class MyLogin : ObservableObject {
     // MARK: - Login Validation
     // Validates login form inputs before authentication
     func loginCheck() {
-        alertTitle = ""
-        alertMessage = ""
-        isValidLogin = false
-        if email.isEmpty {
-            alertTitle = "Input error".localized
-            alertMessage = "Enter your email".localized
-        } else if !isValidEmail(email) {
-            alertTitle = "Input error".localized
-            alertMessage = "Incorrect email format".localized
-        } else if password.isEmpty {
-            alertTitle = "Input error".localized
-            alertMessage = "Enter your password".localized
-        } else if !isValidPassword(password) {
-            alertTitle = "Input error".localized
-            alertMessage = "Incorrect password format".localized
-        } else {
-            isValidLogin = true
-        }
+        alertTitle = 
+            (email.isEmpty || !email.isValidEmail || password.isEmpty || !password.isValidPassword) ? "Input error".localized: 
+            ""
+        alertMessage = 
+            email.isEmpty ? "Enter your email".localized :
+            !email.isValidEmail ? "Incorrect email format".localized :
+            password.isEmpty ? "Enter your password".localized :
+            !password.isValidPassword ? "Incorrect password format".localized :
+            ""
+        isValidLogin = (alertTitle.isEmpty && alertMessage.isEmpty)
     }
     
     // MARK: - Login Authentication
@@ -122,13 +98,12 @@ class MyLogin : ObservableObject {
                 } else {
                     if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
                         alertTitle = "Login error".localized
-                        switch errorCode {
-                            case .invalidEmail: alertMessage = "Incorrect email format".localized
-                            case .userNotFound: alertMessage = "Incorrect email or password".localized
-                            case .wrongPassword: alertMessage = "Incorrect email or password".localized
-                            case .userDisabled: alertMessage = "This account is disabled".localized
-                            default: alertMessage = ""
-                        }
+                        alertMessage = 
+                            errorCode == .invalidEmail ? "Incorrect email format".localized :
+                            errorCode == .userNotFound ? "Incorrect email or password".localized :
+                            errorCode == .wrongPassword ? "Incorrect email or password".localized :
+                            errorCode == .userDisabled ? "This account is disabled".localized :
+                            ""
                         isLoading = false
                         isShowMessage = true
                     }
@@ -142,33 +117,20 @@ class MyLogin : ObservableObject {
     // MARK: - Sign Up Validation
     // Validates sign up form inputs including terms agreement
     func signUpCheck() {
-        alertTitle = ""
-        alertMessage = ""
-        isValidSignUp = false
-        if !isTermsAgree {
-            alertTitle = "Check error".localized
-            alertMessage = "Check the terms and privacy policy".localized
-        } else if email.isEmpty {
-            alertTitle = "Input error".localized
-            alertMessage = "Enter your email".localized
-        } else if !isValidEmail(email) {
-            alertTitle = "Input error".localized
-            alertMessage = "Incorrect email format".localized
-        } else if password.isEmpty {
-            alertTitle = "Input error".localized
-            alertMessage = "Enter your password".localized
-        } else if passwordConfirm.isEmpty {
-            alertTitle = "Input error".localized
-            alertMessage = "Enter your confirm password".localized
-        } else if !isValidPassword(password) {
-            alertTitle = "Input error".localized
-            alertMessage = "Incorrect password format".localized
-        } else if password.compare(passwordConfirm) != .orderedSame {
-            alertTitle = "Input error".localized
-            alertMessage = "Confirm password don't match".localized
-        } else {
-            isValidSignUp = true
-        }
+        alertTitle = 
+            !isTermsAgree ? "Check error".localized:
+            (email.isEmpty || !email.isValidEmail || password.isEmpty || passwordConfirm.isEmpty || !password.isValidPassword || !password.isMatching(passwordConfirm)) ? "Input error".localized:
+            ""
+        alertMessage = 
+            !isTermsAgree ? "Check the terms and privacy policy".localized:
+            email.isEmpty ? "Enter your email".localized:
+            !email.isValidEmail ? "Incorrect email format".localized:
+            password.isEmpty ? "Enter your password".localized:
+            passwordConfirm.isEmpty ? "Enter your confirm password".localized:
+            !password.isValidPassword ? "Incorrect password format".localized:
+            !password.isMatching(passwordConfirm) ? "Confirm password don't match".localized:
+            ""
+        isValidSignUp = (alertTitle.isEmpty && alertMessage.isEmpty)
     }
 
     // MARK: - Sign Up Authentication
@@ -193,12 +155,11 @@ class MyLogin : ObservableObject {
                 } else {
                     if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
                         alertTitle = "Signup error".localized
-                        switch errorCode {
-                            case .invalidEmail: alertMessage = "Incorrect email format".localized
-                            case .emailAlreadyInUse: alertMessage = "This email has already been registered".localized
-                            case .weakPassword: alertMessage = "Incorrect password format".localized
-                            default: alertMessage = error.domain
-                        }
+                        alertMessage = 
+                            errorCode == .invalidEmail ? "Incorrect email format".localized :
+                            errorCode == .emailAlreadyInUse ? "This email has already been registered".localized :
+                            errorCode == .weakPassword ? "Incorrect password format".localized :
+                            error.domain
                         isLoading = false
                         isShowMessage = true
                     }
@@ -213,7 +174,7 @@ class MyLogin : ObservableObject {
     // Sends password reset email to user's email address
     func reset() {
         isShowAlert = false
-        if (isValidEmail(resetEmail)) {
+        if (resetEmail.isValidEmail) {
             alertTitle = ""
             alertMessage = ""
             isLoading = true
@@ -221,12 +182,11 @@ class MyLogin : ObservableObject {
             Auth.auth().sendPasswordReset(withEmail: resetEmail) { [self] error in
                 if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
                     alertTitle = "Password reset error".localized
-                    switch errorCode {
-                        case .invalidEmail: alertMessage = "Incorrect email format".localized
-                        case .userNotFound: alertMessage = "Incorrect email".localized
-                        case .userDisabled: alertMessage = "This account is disabled".localized
-                        default: alertMessage = "Password reset email could not be sent".localized
-                    }
+                    alertMessage = 
+                        errorCode == .invalidEmail ? "Incorrect email format".localized :
+                        errorCode == .userNotFound ? "Incorrect email".localized :
+                        errorCode == .userDisabled ? "This account is disabled".localized :
+                        "Password reset email could not be sent".localized
                     isLoading = false
                     isShowMessage = true
                 } else {

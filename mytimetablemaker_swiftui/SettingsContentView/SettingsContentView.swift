@@ -38,7 +38,7 @@ struct SettingsContentView: View {
                     // MARK: - Route Settings
                     Section(
                         header: Text("Route Settings".localized)
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(.gray)
                     ) {
                         // Home and Destination button
@@ -54,7 +54,7 @@ struct SettingsContentView: View {
                         }
                         Toggle(isOn: $myTransfer.isShowBackRoute2){
                             Text("Display home route 2".localized)
-                                .font(.system(size: settingsFontSize))
+                                .font(.system(size: screen.settingsFontSize))
                         }
                         .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                         .onChange(of: myTransfer.isShowBackRoute2) { _ in
@@ -68,7 +68,7 @@ struct SettingsContentView: View {
                         }
                         Toggle(isOn: $myTransfer.isShowGoRoute2){
                             Text("Display outgoing route 2".localized)
-                                .font(.system(size: settingsFontSize))
+                                .font(.system(size: screen.settingsFontSize))
                         }
                         .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
                         .onChange(of: myTransfer.isShowGoRoute2) { _ in
@@ -79,7 +79,7 @@ struct SettingsContentView: View {
                     // MARK: - Account Management
                     Section(
                         header: Text("Account".localized)
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                     ) {
                         if myLogin.isLoginSuccess {
                             GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
@@ -89,7 +89,7 @@ struct SettingsContentView: View {
                         } else {
                             NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
                                 Text("Manage your data after login".localized)
-                                    .font(.system(size: settingsFontSize))
+                                    .font(.system(size: screen.settingsFontSize))
                             }
                         }
                     }
@@ -97,16 +97,16 @@ struct SettingsContentView: View {
                     // MARK: - About Section
                     Section(
                         header: Text("About".localized).fontWeight(.bold)
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                     ) {
                         // Version information
                         HStack {
                             Text("Version".localized)
-                                .font(.system(size: settingsFontSize))
+                                .font(.system(size: screen.settingsFontSize))
                                 .foregroundColor(.black)
                             Spacer()
                             Text(version)
-                                .font(.system(size: settingsFontSize))
+                                .font(.system(size: screen.settingsFontSize))
                                 .foregroundColor(.gray)
                         }
                         // Privacy Policy link
@@ -116,7 +116,7 @@ struct SettingsContentView: View {
                             }
                         }) {
                            Text("Terms and privacy policy".localized)
-                                .font(.system(size: settingsFontSize))
+                                .font(.system(size: screen.settingsFontSize))
                                 .foregroundColor(.black)
                         }
                     }
@@ -130,7 +130,7 @@ struct SettingsContentView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .padding()
                         .background(Color.white)
-                        .cornerRadius(settingsLineSheetCornerRadius)
+                        .cornerRadius(screen.settingsLineSheetCornerRadius)
                 }
             }
         }
@@ -138,7 +138,7 @@ struct SettingsContentView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Settings".localized)
-                    .font(.system(size: settingsTitleFontSize, weight: .bold))
+                    .font(.system(size: screen.settingsTitleFontSize, weight: .bold))
                     .foregroundColor(.white)
             }
         }
@@ -165,11 +165,11 @@ struct SettingsContentView: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }) {
                      HStack {
-                        Image(systemName: "arrow.left")
-                            .font(.system(size: settingsHeaderFontSize, weight: .bold))
+                        Image(systemName: "arrowshape.backward.fill")
+                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(Color.white)
-                        Text("Cancel".localized)
-                            .font(.system(size: settingsFontSize, weight: .bold))
+                        Text("Back to homepage".localized)
+                            .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.white)
                     }
                 }
@@ -189,11 +189,11 @@ struct SettingsContentView: View {
         Button(action: action) {
             HStack {
                 Text(title)
-                    .font(.system(size: settingsFontSize))
+                    .font(.system(size: screen.settingsFontSize))
                     .foregroundColor(.black)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: settingsFontSize))
+                    .font(.system(size: screen.settingsFontSize))
                     .foregroundColor(.gray)
             }
         }

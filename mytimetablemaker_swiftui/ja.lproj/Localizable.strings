@@ -23,13 +23,13 @@
 //DataExtension.swift
 "Office" = "オフィス";
 "Home" = "自宅";
-"Dep. St. " = "発車駅";
+"Dep. St. " = "乗車駅";
 "Arr. St. " = "降車駅";
 "Departure place" = "出発地";
 "Destination" = "目的地";
 "Line " = "路線";
 "line " = "路線";
-"of departure station " = "発車駅";
+"of departure station " = "乗車駅";
 "of arrival station " = "降車駅";
 "of " = "";
 "from " = "";

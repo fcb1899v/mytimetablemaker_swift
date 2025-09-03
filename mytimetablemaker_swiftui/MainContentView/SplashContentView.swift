@@ -37,14 +37,14 @@ struct SplashContentView: View {
                 VStack {
                     Spacer()
                     Text(appTitle)
-                        .font(.system(size: splashTitleFontSize))
+                        .font(.system(size: screen.splashTitleFontSize))
                         .fontWeight(.bold)
                         .foregroundColor(Color.primaryColor)
                     Spacer()
                     Image("icon")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: splashIconSize, height: splashIconSize)
+                        .frame(width: screen.splashIconSize, height: screen.splashIconSize)
                     Spacer()
                     Spacer()
                     Spacer()
@@ -54,10 +54,10 @@ struct SplashContentView: View {
                     Image("splash")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: screenWidth)
+                        .frame(width: screen.screenWidth)
                 }
             }
-            .frame(width: screenWidth, height: screenHeight)
+            .frame(width: screen.screenWidth, height: screen.screenHeight)
             .onAppear {
                 // Auto-navigate to main content after 2 seconds
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

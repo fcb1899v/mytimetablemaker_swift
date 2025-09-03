@@ -29,7 +29,7 @@ struct SetFirestoreButton: View {
             isShowAlert = true
         }) {
             Text("Save current data".localized)
-                .font(.system(size: settingsFontSize))
+                .font(.system(size: screen.settingsFontSize))
                 .foregroundColor(.black)
         }
         // MARK: - Save Confirmation Alert

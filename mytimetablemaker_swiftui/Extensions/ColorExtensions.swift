@@ -8,17 +8,34 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Color Constants
+// Hex string constants for color definitions
+let primaryColorString = "#3700B3"
+let accentColorString  = "#03DAC5"
+let redColorString     = "#FF0000"
+let yellowColorString  = "#FFEA00"
+let grayColorString    = "#AAAAAA"
+let blackColorString   = "#000000"
+let whiteColorString   = "#FFFFFF"
+
 // MARK: - Color Extensions
 // Extensions for color management and hex color support
 extension Color {
     
-    // MARK: - Custom Color Definitions
-    // Predefined custom colors for the application
-    static let accentColor = Color("myaccent")
-    static let primaryColor = Color("myprimary")
-    static let grayColor = Color("mygray")
-    static let redColor = Color("myred")
-    static let yellowColor = Color("myyellow")
+    // MARK: - App Theme Colors
+    static let primary = Color(hex: primaryColorString)!
+    static let accent = Color(hex: accentColorString)!
+    static let red = Color(hex: redColorString)!
+    static let yellow = Color(hex: yellowColorString)!
+    static let gray = Color(hex: grayColorString)!
+    
+    // MARK: - Legacy Color Support
+    // Maintain backward compatibility with existing code
+    static let primaryColor = primary
+    static let accentColor = accent
+    static let grayColor = gray
+    static let redColor = red
+    static let yellowColor = yellow
     
     // MARK: - Hex Color Initializer
     // Initialize color from hex integer value

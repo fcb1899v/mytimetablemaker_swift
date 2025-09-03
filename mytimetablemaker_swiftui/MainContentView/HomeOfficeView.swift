@@ -33,12 +33,12 @@ struct HomeOfficeView: View {
         HStack {
             // MARK: - Station Name Button
             Text(num == 0 ? goorback.destination: goorback.departurePoint)
-                .font(.system(size: stationFontSize))
+                .font(.system(size: screen.stationFontSize))
                 .lineLimit(1)
             Spacer()
             // MARK: - Time Display
             Text(time)
-                .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
+                .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
         }
         .foregroundColor(Color.primaryColor)
     }

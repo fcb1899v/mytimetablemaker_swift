@@ -28,7 +28,7 @@ struct DeleteAccountButton: View {
             isShowAlert = true
         }) {
             Text("Delete Account".localized)
-                .font(.system(size: settingsFontSize))
+                .font(.system(size: screen.settingsFontSize))
                 .foregroundColor(.black)
         }
         // MARK: - Delete Account Confirmation Alert

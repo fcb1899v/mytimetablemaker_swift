@@ -62,7 +62,7 @@ struct TimetableGridView: View {
                         }
                         // MARK: - Time Edit Alert
                         .alert("Add and delete departure time [min]".localized, isPresented: $isShowingAlert) {
-                            TextField(minutePlaceHolder, text: $inputText)
+                            TextField("Enter 0~59 [min]".localized, text: $inputText)
                                 .multilineTextAlignment(.center)
                                 .keyboardType(.numberPad)
                                 .lineLimit(1)
@@ -104,9 +104,9 @@ struct TimetableGridView: View {
                             ActionSheet(
                                 title: Text("Copying your timetable".localized),
                                 message: Text(""),
-                                buttons: (((hour == 4) ? 1: 0)..<choiceCopyTimeList(weekflag, hour).count)
+                                buttons: (((hour == 4) ? 1: 0)..<hour.choiceCopyTimeList(weekflag).count)
                                     .filter { !(hour == 25 && $0 == 1) }
-                                    .map { i in .default(Text(choiceCopyTimeList(weekflag, hour)[i]),
+                                    .map { i in .default(Text(hour.choiceCopyTimeList(weekflag)[i]),
                                         action: {
                                             UserDefaults.standard.set(
                                                 goorback.choiceCopyTime(weekflag, num, hour, i),
@@ -121,7 +121,7 @@ struct TimetableGridView: View {
                     Color.white.frame(width: 0)
                 }
             }
-        }.frame(width: customWidth)
+        }.frame(width: screen.customWidth)
     }
 }
 

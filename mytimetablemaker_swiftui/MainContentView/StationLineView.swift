@@ -51,12 +51,12 @@ struct StationLineView: View {
 
             HStack {
                 Text(stationArray[2 * num])
-                    .font(.system(size: stationFontSize))
+                    .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
                 Spacer()
                 // MARK: - Time Display
                 Text(departureTime)
-                    .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
+                    .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
             }
             .foregroundColor(Color.primaryColor)
 
@@ -74,7 +74,7 @@ struct StationLineView: View {
                     )
                     
                     Text(lineNameArray[num])
-                        .font(.system(size: lineFontSize))
+                        .font(.system(size: screen.lineFontSize))
                         .foregroundColor(lineColorArray[num])
                         .lineLimit(2)
                 }
@@ -82,7 +82,7 @@ struct StationLineView: View {
                     TimetableContentView(goorback, num)
                 }
             }
-            .frame(height: lineNameHeight)
+            .frame(height: screen.lineNameHeight)
             .sheet(isPresented: $isShowingLineSelection) {
                 NavigationStack {
                     SettingsLineSheet(goorback: goorback, lineIndex: num)
@@ -92,12 +92,12 @@ struct StationLineView: View {
             
             HStack {
                 Text(stationArray[2 * num + 1])
-                    .font(.system(size: stationFontSize))
+                    .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
                 Spacer()
                 // MARK: - Time Display
                 Text(arrivalTime)
-                    .font(.custom("GenEiGothicN-Regular", size: timeFontSize))
+                    .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
             }
             .foregroundColor(Color.primaryColor)
         }

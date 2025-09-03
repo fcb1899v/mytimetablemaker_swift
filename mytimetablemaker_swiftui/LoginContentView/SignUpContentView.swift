@@ -24,53 +24,53 @@ struct SignUpContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: loginMargin) {
+        VStack(spacing: screen.loginMargin) {
             // MARK: - Title
             Text("Create Account".localized)
-                .font(.system(size: loginTitleFontSize))
+                .font(.system(size: screen.loginTitleFontSize))
                 .fontWeight(.bold)
                 .foregroundColor(Color.primaryColor)
-                .padding(.top, loginTitleTopMargin)
-                .padding(.bottom, loginTitleBottomMargin)
+                .padding(.top, screen.loginTitleTopMargin)
+                .padding(.bottom, screen.loginTitleBottomMargin)
             
             // MARK: - Email Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
-                    .cornerRadius(loginTextCornerRadius)
-                    .frame(height: loginTextHeight)
+                    .cornerRadius(screen.loginTextCornerRadius)
+                    .frame(height: screen.loginTextHeight)
                 TextField("Email".localized, text: $myLogin.email)
                     .font(.subheadline)
                     .lineLimit(1)
                     .padding()
                     .onChange(of: myLogin.email) { _ in myLogin.signUpCheck() }
-            }.frame(width: loginButtonWidth)
+            }.frame(width: screen.loginButtonWidth)
             
             // MARK: - Password Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
-                    .cornerRadius(loginTextCornerRadius)
-                    .frame(height: loginTextHeight)
+                    .cornerRadius(screen.loginTextCornerRadius)
+                    .frame(height: screen.loginTextHeight)
                 SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
                     .font(.subheadline)
                     .lineLimit(1)
                     .padding()
                     .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
-            }.frame(width: loginButtonWidth)
+            }.frame(width: screen.loginButtonWidth)
             
             // MARK: - Confirm Password Input Field
             ZStack {
                 Rectangle()
                     .foregroundColor(Color.white)
-                    .cornerRadius(loginTextCornerRadius)
-                    .frame(height: loginTextHeight)
+                    .cornerRadius(screen.loginTextCornerRadius)
+                    .frame(height: screen.loginTextHeight)
                 SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
                     .font(.subheadline)
                     .lineLimit(1)
                     .padding()
                     .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
-            }.frame(width: loginButtonWidth).padding(.bottom, 6)
+            }.frame(width: screen.loginButtonWidth).padding(.bottom, 6)
             
             // MARK: - Sign Up Button
             Button(action: myLogin.signUp) {
@@ -78,9 +78,9 @@ struct SignUpContentView: View {
                     Text("Signup".localized)
                         .font(.headline)
                         .foregroundColor(.white)
-                        .frame(width: loginButtonWidth, height: loginButtonHeight)
+                        .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
                         .background(myLogin.isValidSignUp ? Color.primaryColor: Color.grayColor)
-                        .cornerRadius(loginButtonCornerRadius)
+                        .cornerRadius(screen.loginButtonCornerRadius)
                     if myLogin.isLoading {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
                     }
@@ -119,7 +119,7 @@ struct SignUpContentView: View {
                     .foregroundColor(.white)
                 }
             }
-            .frame(width: loginButtonWidth, height: 40 ,alignment: .top)
+            .frame(width: screen.loginButtonWidth, height: 40 ,alignment: .top)
 
             Spacer()
 

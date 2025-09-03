@@ -52,100 +52,89 @@ struct MainContentView: View {
             // MARK: - Main View Layout
             VStack {
                 // MARK: - Header Section
-                VStack(spacing: headerSpace) {
-                    HStack{
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            // MARK: - Date Display
-                            ZStack {
-                                Text(myTransfer.dateLabel)
-                                    .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                    .onChange(of: myTransfer.selectDate) {
-                                        newValue in myTransfer.dateLabel = "\(newValue.setDate)"
-                                    }
-                                if (myTransfer.isTimeStop) {
-                                    DatePicker("datepicker", selection: $myTransfer.selectDate,
-                                        displayedComponents: .date
-                                    )
-                                    .labelsHidden()
-                                    .opacity(0.1)
-                                    .frame(width: headerDateHeight, height: headerDateHeight)
+                VStack(alignment: .center, spacing: screen.headerSpace) {
+
+                    HStack(alignment: .center, spacing: screen.headerDateMargin) {
+
+                        // MARK: - Date Display
+                        ZStack {
+                            Text(myTransfer.dateLabel)
+                                .onChange(of: myTransfer.selectDate) {
+                                    newValue in myTransfer.dateLabel = "\(newValue.setDate)"
                                 }
-                            }
-                            Spacer()
-                            // MARK: - Time Display
                             if (myTransfer.isTimeStop) {
-                                ZStack {
-                                    Text(myTransfer.timeLabel)
-                                        .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                        .onChange(of: myTransfer.selectDate) {
-                                            newValue in myTransfer.timeLabel = "\(newValue.setTime)"
-                                        }
-                                    DatePicker("datepicker", selection: $myTransfer.selectDate,
-                                        displayedComponents: .hourAndMinute
-                                    )
-                                    .labelsHidden()
-                                    .opacity(0.1)
-                                    .frame(width: headerDateHeight, height: headerDateHeight)
-                                }
-                            } else {
-                                Text(myTransfer.timeLabel)
-                                    .font(.custom("GenEiGothicN-Regular", size: headerDateFontSize))
-                                    .onAppear { 
-                                        myTransfer.ensureTimerRunning()
-                                    }
-                                    .onDisappear { 
-                                        myTransfer.stopTimerOnDisappear()
-                                    }
+                                DatePicker("datepicker", selection: $myTransfer.selectDate,
+                                    displayedComponents: .date
+                                )
+                                .labelsHidden()
+                                .opacity(0.1)
+                                .frame(width: screen.headerDateHeight, height: screen.headerDateHeight)
                             }
-                            Spacer()
                         }
-                        Spacer()
+
+                        // MARK: - Time Display
+                        if (myTransfer.isTimeStop) {
+                            ZStack {
+                                Text(myTransfer.timeLabel)
+                                    .onChange(of: myTransfer.selectDate) {
+                                        newValue in myTransfer.timeLabel = "\(newValue.setTime)"
+                                    }
+                                DatePicker("datepicker", selection: $myTransfer.selectDate,
+                                    displayedComponents: .hourAndMinute
+                                )
+                                .labelsHidden()
+                                .opacity(0.1)
+                                .frame(width: screen.headerDateHeight, height: screen.headerDateHeight)
+                            }
+                        } else {
+                            Text(myTransfer.timeLabel)
+                                .onAppear {
+                                    myTransfer.ensureTimerRunning()
+                                }
+                                .onDisappear {
+                                    myTransfer.stopTimerOnDisappear()
+                                }
+                        }
                     }
-                    .font(.system(size: headerDateFontSize))
+                    .font(.custom("GenEiGothicN-Regular", size: screen.headerDateFontSize))
                     .foregroundColor(Color.white)
-                    .padding(.top, headerTopMargin)
+                    .padding(.top, screen.headerTopMargin)
                     
                     // MARK: - Operation Buttons
-                    HStack {
-                        HStack(spacing: operationButtonMargin) {
-                            // Display going home route button
-                            OperationButton(isOn: myTransfer.isBack, label: "Back".localized, action: myTransfer.backButton)
-                            // Display outgoing route button
-                            OperationButton(isOn: !myTransfer.isBack, label: "Go".localized, action: myTransfer.goButton)
-                            // Time Start Button
-                            OperationButton(isOn: !myTransfer.isTimeStop, label: "Start".localized, action: myTransfer.startButton)
-                            // Time Stop Button
-                            OperationButton(isOn: myTransfer.isTimeStop, label: "Stop".localized, action: myTransfer.stopButton)
-                            // To Settings Button
-                            Button(action: {
-                                isMoveSettings = true
-                            }) {
-                                ZStack {
-                                    Image(systemName: "igearshape.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: operationSettingsBottonSize)
-                                }.frame(width: operationSettingsBottonSize, height: operationSettingsBottonSize)
-                            }
+                    HStack(alignment: .center, spacing: screen.operationButtonMargin) {
+                        // Display going home route button
+                        OperationButton(isOn: myTransfer.isBack, label: "Back".localized, action: myTransfer.backButton)
+                        // Display outgoing route button
+                        OperationButton(isOn: !myTransfer.isBack, label: "Go".localized, action: myTransfer.goButton)
+                        // Time Start Button
+                        OperationButton(isOn: !myTransfer.isTimeStop, label: "Start".localized, action: myTransfer.startButton)
+                        // Time Stop Button
+                        OperationButton(isOn: myTransfer.isTimeStop, label: "Stop".localized, action: myTransfer.stopButton)
+                        // To Settings Button
+                        Button(action: {
+                            isMoveSettings = true
+                        }) {
+                            Image(systemName: "gearshape.fill")
+                                .font(.system(size: screen.headerSettingsButtonSize))
+                                .foregroundColor(.white)
                         }
                     }
-                    .padding(.bottom, headerSpace)
+                    .padding(.bottom, screen.headerSpace)
                 }
+                .frame(width: screen.bounds.size.width)
                 .background(Color.primaryColor)
-                .frame(height: headerHeight)
+                .frame(height: screen.headerHeight)
                 
                 // MARK: - Transfer Information Display
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
-                        if(screenWidth > 600) { Spacer() }
-                        VStack(alignment: .center, spacing: routeBottomSpace) {
-                            Spacer().frame(height: routeCountdownTopSpace)
+                        if(screen.bounds.size.width > 600) { Spacer() }
+                        VStack(alignment: .center, spacing: screen.routeBottomSpace) {
+                            Spacer().frame(height: screen.routeCountdownTopSpace)
                             Text(myTransfer.countdownTime1)
-                                .font(.custom("GenEiGothicN-Regular", size: routeCountdownFontSize))
+                                .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
                                 .foregroundColor(myTransfer.countdownColor1)
-                                .padding(.vertical, routeCountdownPadding)
+                                .padding(.vertical, screen.routeCountdownPadding)
                             HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
                             ForEach(0...myTransfer.changeLine1, id: \.self) { num in
                                 TransferView(myTransfer.goOrBack1, num + 1)
@@ -156,21 +145,21 @@ struct MainContentView: View {
                             Spacer()
                         }
                         .frame(width: myTransfer.routeWidth, alignment: .top)
-                        .padding(.horizontal, routeSidePadding)
+                        .padding(.horizontal, screen.routeSidePadding)
                         
                         // MARK: - Second Route Display (if enabled)
                         if (myTransfer.isShowRoute2) {
-                            if(screenWidth > 600) { Spacer() }
+                            if(screen.bounds.size.width > 600) { Spacer() }
                             Divider()
-                                .frame(width: 1.5, height: screenHeight - admobBannerHeight - headerHeight)
+                                .frame(width: 1.5, height: screen.bounds.size.height - screen.admobBannerHeight - screen.headerHeight)
                                 .background(Color.primaryColor)
-                            if(screenWidth > 600) { Spacer() }
-                            VStack(alignment: .center, spacing: routeBottomSpace) {
-                                Spacer().frame(height: routeCountdownTopSpace)
+                            if(screen.bounds.size.width > 600) { Spacer() }
+                            VStack(alignment: .center, spacing: screen.routeBottomSpace) {
+                                Spacer().frame(height: screen.routeCountdownTopSpace)
                                 Text(myTransfer.countdownTime2)
-                                    .font(.system(size: routeCountdownFontSize))
+                                    .font(.system(size: screen.routeCountdownFontSize))
                                     .foregroundColor(myTransfer.countdownColor2)
-                                    .padding(.vertical, routeCountdownPadding)
+                                    .padding(.vertical, screen.routeCountdownPadding)
                                 HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
                                 ForEach(0...myTransfer.changeLine2, id: \.self) { num in
                                     TransferView(myTransfer.goOrBack2, num + 1)
@@ -181,15 +170,15 @@ struct MainContentView: View {
                                 Spacer()
                             }
                             .frame(width: myTransfer.routeWidth)
-                            .padding(.horizontal, routeSidePadding)
+                            .padding(.horizontal, screen.routeSidePadding)
                         }
-                        if(screenWidth > 600) { Spacer() }
+                        if(screen.bounds.size.width > 600) { Spacer() }
                     }
                     
                     // MARK: - Ad Banner
                     AdMobBannerView()
-                        .frame(minWidth: admobBannerMinWidth)
-                        .frame(width: admobBannerWidth, height: admobBannerHeight)
+                        .frame(minWidth: screen.admobBannerMinWidth)
+                        .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
                         .background(.white)
                 }
             }

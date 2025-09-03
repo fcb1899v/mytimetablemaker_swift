@@ -39,7 +39,7 @@ struct LineTimeImage: View {
         ZStack(alignment: .center) {
             // MARK: - Background Rectangle
             Rectangle()
-                .frame(width: lineImageBackgroundSize, height: lineImageBackgroundSize)
+                .frame(width: screen.lineImageBackgroundSize, height: screen.lineImageBackgroundSize)
                 .foregroundColor(lineColor)
             
             // MARK: - Icon Content
@@ -51,8 +51,8 @@ struct LineTimeImage: View {
                         .resizable()
                         .scaledToFit()
                         .frame(
-                            width: lineImageForegroundSize,
-                            height: lineImageForegroundSize
+                            width: screen.lineImageForegroundSize,
+                            height: screen.lineImageForegroundSize
                         )
                 } else {
                     // MARK: - Transportation Icon
@@ -61,8 +61,8 @@ struct LineTimeImage: View {
                         .resizable()
                         .scaledToFit()
                         .frame(
-                            width: lineImageForegroundSize,
-                            height: lineImageForegroundSize
+                            width: screen.lineImageForegroundSize,
+                            height: screen.lineImageForegroundSize
                         )
                 }
             }

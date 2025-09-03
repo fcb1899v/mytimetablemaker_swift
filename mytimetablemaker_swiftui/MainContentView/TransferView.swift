@@ -56,7 +56,7 @@ struct TransferView: View {
 
             Spacer()
         }
-        .frame(height: transferHeight)
+        .frame(height: screen.transferHeight)
         .sheet(isPresented: $showSettingsLineSheet) {
             NavigationStack {
                 SettingsLineSheet(goorback: goorback, lineIndex: num - 2)

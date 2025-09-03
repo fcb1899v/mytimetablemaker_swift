@@ -24,6 +24,8 @@
 	<string>ca-app-pub-1585283309075901~7073931852</string>
 	<key>ODPT_ACCESS_TOKEN</key>
 	<string>$(ODPT_ACCESS_TOKEN)</string>
+	<key>ODPT_CHALLENGE_TOKEN</key>
+	<string>$(ODPT_CHALLENGE_TOKEN)</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>

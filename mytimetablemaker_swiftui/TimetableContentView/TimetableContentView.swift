@@ -58,21 +58,21 @@ struct TimetableContentView: View {
                                 Text(weekflag.weekendLabel)
                                     .font(.body)
                                     .fontWeight(.semibold)
-                                    .frame(width: timetableButtonWidth, height: operationButtonHeight)
+                                    .frame(width: screen.timetableButtonWidth, height: screen.operationButtonHeight)
                                     .foregroundColor(weekflag.weekButtonLabelColor)
                                     .background(weekflag.weekButtonColor)
-                                    .cornerRadius(operationButtonCornerRadius)
+                                    .cornerRadius(screen.operationButtonCornerRadius)
                                     .padding(.top, 10)
                                     .padding(.trailing, 10)
                             }
-                        }.frame(width: customWidth)
+                        }.frame(width: screen.customWidth)
                     }
                     
                     // MARK: - Timetable Grid
                     ScrollView {
                         VStack(spacing: 30) {
                             VStack(spacing: 0) {
-                                Color.white.frame(width: customWidth, height: 1)
+                                Color.white.frame(width: screen.customWidth, height: 1)
                                 HStack {
                                     Color.white.frame(width: 1)
                                     ZStack(alignment: .center) {
@@ -82,12 +82,12 @@ struct TimetableContentView: View {
                                             .fontWeight(.bold)
                                     }.frame(height: 25)
                                     Color.white.frame(width: 1)
-                                }.frame(width: customWidth)
-                                Color.white.frame(width: customWidth, height: 1)
+                                }.frame(width: screen.customWidth)
+                                Color.white.frame(width: screen.customWidth, height: 1)
                                 ForEach(4...25, id: \.self) { hour in
                                     TimetableGridView(goorback, weekflag, num, hour)
                                 }
-                                Color.white.frame(width: customWidth, height: 0.5)
+                                Color.white.frame(width: screen.customWidth, height: 0.5)
                             }
                             
                             // MARK: - Image Picker Button
@@ -98,9 +98,9 @@ struct TimetableContentView: View {
                                     .font(.body)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color.white)
-                                    .frame(width: ImagePickerButtonWidth, height: operationButtonHeight)
+                                    .frame(width: screen.imagePickerButtonWidth, height: screen.operationButtonHeight)
                                     .background(Color.accentColor)
-                                    .cornerRadius(operationButtonCornerRadius)
+                                    .cornerRadius(screen.operationButtonCornerRadius)
                             }).sheet(isPresented: $isShowImagePicker, content: {
                                 ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
                             })
@@ -110,7 +110,7 @@ struct TimetableContentView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .padding(20)
-                                .frame(width: customWidth)
+                                .frame(width: screen.customWidth)
                         }
                     }
                 }

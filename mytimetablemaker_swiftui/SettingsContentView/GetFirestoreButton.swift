@@ -29,7 +29,7 @@ struct GetFirestoreButton: View {
             isShowAlert = true
         }) {
             Text("Get saved data".localized)
-                .font(.system(size: settingsFontSize))
+                .font(.system(size: screen.settingsFontSize))
                 .foregroundColor(.black)
         }
         // MARK: - Get Confirmation Alert

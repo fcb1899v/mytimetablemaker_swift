@@ -27,7 +27,7 @@ struct LogOutButton: View {
             isShowAlert = true
         }) {
             Text("Logout".localized)
-                .font(.system(size: settingsFontSize))
+                .font(.system(size: screen.settingsFontSize))
                 .foregroundColor(.black)
         }
         // MARK: - Logout Confirmation Alert

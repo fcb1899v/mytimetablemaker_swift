@@ -61,6 +61,19 @@ extension Int {
     // Determine if time represents weekday or weekend
     var isWeekend: Bool { return (self == 0 || self == 6) }
     var isWeekday: Bool { return !isWeekend }
+    
+    // MARK: - Choice Copy Time List Function
+    // Generates copy time choice list for timetable editing
+    func choiceCopyTimeList(_ isWeekday: Bool) -> [String] {
+        return [
+            "\(self - 1)\("Hour".localized)",
+            "\(self + 1)\("Hour".localized)",
+            isWeekday.weekendLabel,
+            "Other route of line 1".localized,
+            "Other route of line 2".localized,
+            "Other route of line 3".localized
+        ]
+    }
 }
 
 
@@ -128,6 +141,70 @@ extension String {
             .sorted()
             .map{String($0)}
     }
+    
+    // MARK: - Alert Message Generation
+    // Dynamic alert title and message generation
+    func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
+    func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized))"}
+    var routeTitle: String { return
+        (self == "back1") ? "Setting home route 1".localized:
+        (self == "back2") ? "Setting home route 2".localized:
+        (self == "go1") ? "Setting outgoing route 1".localized:
+        "Setting outgoing route 2".localized
+    }
+    var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
+    // MARK: - Timetable Management
+    // Timetable data processing and manipulation
+    func timetable(_ isWeekday: Bool, _ num: Int) -> [Int] {
+        return  (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
+            .components(separatedBy: CharacterSet(charactersIn: " "))
+            .compactMap { Int($0) }
+            .map { $0 + hour * 100 }
+            .filter { $0 >= 0 && $0 < 2700 }
+            .sorted()
+        }
+    }
+    func timetableArray(_ isWeekday: Bool) -> [[Int]] {
+        return (0...2).map { num in timetable(isWeekday, num) }
+    }
+
+    // MARK: - Time Array Generation
+    // Generate departure and arrival times for current route
+    func timeArray(_ isWeekday: Bool, _ currenttime: Int) -> [Int] {
+        // Depart time of line 1
+        var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
+        // Arrive time of line 1
+        timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
+        // Depart time from depart point
+        timeArray.insert(timeArray[0].minusHHMM(transferTimeArray[1]).overTime(timeArray[0]), at: 0)
+        if (changeLineInt > 0) {
+            for i in 1...changeLineInt {
+                // Depart time of line i
+                timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
+                // Arrive time of line 1
+                timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
+            }
+        }
+        // Arrive time to destination
+        timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transferTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
+        return timeArray
+    }
+
+    // MARK: - Timetable Modification
+    // Add time to timetable
+    func addTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
+        return timetableTime(isWeekday, num, hour)
+            .addInputTime(inputText)
+            .timeSorting(charactersin: " ")
+            .joined(separator: " ")
+    }
+    // Delete time from timetable
+    func deleteTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
+        return timetableTime(isWeekday, num, hour)
+            .trimmingCharacters(in: .whitespaces)
+            .timeSorting(charactersin: " ")
+            .filter{$0 != inputText}
+            .joined(separator: " ")
+    }
 }
-
