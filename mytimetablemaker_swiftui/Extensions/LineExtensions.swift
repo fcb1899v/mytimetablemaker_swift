@@ -9,6 +9,59 @@ import SwiftUI
 import Foundation
 import Combine
 
+// MARK: - ODPT Data Type Enum
+// Enumeration for different ODPT data types with associated values
+enum ODPTDataType: CaseIterable {
+    case railwayLine
+    case busRoutePattern
+    case railwayTimetable
+    case busTimetable
+    
+    // MARK: - API Endpoint
+    var apiEndpoint: String {
+        switch self {
+        case .railwayLine: return "odpt:Railway"
+        case .busRoutePattern: return "odpt:BusroutePattern"
+        case .railwayTimetable: return "odpt:StationTimetable"
+        case .busTimetable: return "odpt:BusTimetable"
+        }
+    }
+    
+    // MARK: - Display Properties
+    var displayName: String {
+        switch self {
+        case .railwayLine: return "鉄道路線"
+        case .busRoutePattern: return "バス路線"
+        case .railwayTimetable: return "鉄道時刻表"
+        case .busTimetable: return "バス時刻表"
+        }
+    }
+    
+    // MARK: - Transportation Type
+    var isRailway: Bool {
+        switch self {
+        case .railwayLine, .railwayTimetable: return true
+        case .busRoutePattern, .busTimetable: return false
+        }
+    }
+    
+    // MARK: - Data Category
+    var isLineData: Bool {
+        switch self {
+        case .railwayLine, .busRoutePattern: return true
+        case .railwayTimetable, .busTimetable: return false
+        }
+    }
+}
+
+// MARK: - ODPT API Type Enum
+// Enumeration for different ODPT API endpoints
+enum ODPTAPIType: CaseIterable {
+    case standard    // Standard API with access key
+    case publicAPI   // Public API without access key
+    case challenge   // Challenge API with challenge key
+}
+
 // MARK: - App Constants
 // Core application constants and localized strings
 let appTitle = "My Transfer Makers".localized
@@ -72,9 +125,12 @@ extension String{
     var destinationKey: String { return isBack ? "departurepoint" : "destination" }
     func departStationKey(_ num: Int) -> String { return "\(self)departstation\(num + 1)" }
     func arriveStationKey(_ num: Int) -> String { return "\(self)arrivestation\(num + 1)" }
+    func departStationCodeKey(_ num: Int) -> String { return "\(self)departstationcode\(num + 1)" }
+    func arriveStationCodeKey(_ num: Int) -> String { return "\(self)arrivestationcode\(num + 1)" }
     func lineNameKey(_ num: Int) -> String { return "\(self)linename\(num + 1)" }
     func lineSelectedKey(_ num: Int) -> String { return "\(self)lineSelected\(num + 1)" }
     func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
+    func lineDirectionKey(_ num: Int) -> String { return "\(self)linedirection\(num + 1)" }
     func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
     func lineKindKey(_ num: Int) -> String { return "\(self)linekind\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
@@ -160,15 +216,11 @@ extension String{
     func transportationLabel(_ num: Int) -> String { return (num == 1) ? transferFromDepartStation(num): transferToArriveStation(num) }
     
     // MARK: - ODPT API URL Generation
-    // Generate ODPT API URLs for different data types
-    func odptURL(isRailway: Bool) -> String {
-        return "https://api.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)&acl:consumerKey=\(odptAccessKey)"
-    }
-    func odptPublicURL(isRailway: Bool) -> String {
-        return "https://api-public.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)"
-    }
-    func odptChallengeURL(isRailway: Bool) -> String {
-        return "https://api-challenge.odpt.org/api/v4/\(isRailway ? "odpt:Railway" : "odpt:BusroutePattern")?odpt:operator=\(self)&acl:consumerKey=\(odptChallengeKey)"
+    // Generate ODPT API URLs for different data types and API endpoints
+    func odptURL(dataType: ODPTDataType, apiType: ODPTAPIType = .standard) -> String {
+        return (apiType == .publicAPI) ? "https://api-public.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)":
+               (apiType == .standard) ? "https://api.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)&acl:consumerKey=\(odptAccessKey)":
+               "https://api-challenge.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)&acl:consumerKey=\(odptChallengeKey)"
     }
 }
 
@@ -185,8 +237,8 @@ extension Bool {
     // self = isWeekDay
     var weekdayTag: String { return self ? "weekday": "weekend" }
     var weekendTag: String { return self ? "weekend": "weekday" }
-    var weekdayLabel: String { return self ? "Weekday".localized: "Weekend".localized }
-    var weekendLabel: String { return self ? "Weekend".localized: "Weekday".localized }
+    var weekdayLabel: String { return self ? "Weekdays (Except Public Holidays)".localized: "Saturday & Sunday $ Public Holidays".localized }
+    var weekendLabel: String { return self ? "Sat/Sun/PH".localized: "Weekdays".localized }
 }
 
 // MARK: - Integer Extensions

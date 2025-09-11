@@ -58,10 +58,6 @@ enum CustomColor: String, CaseIterable {
 
 // MARK: - Data Source Definitions
 // Defines available data sources for railway information
-
-// MARK: - Local Data Source Definition
-// Defines available local JSON data files for offline operation.
-// Provides fallback data when ODPT API is unavailable.
 enum LocalDataSource: CaseIterable {
     case jrEast        // JR East railway lines
     case keikyu        // Keikyu railway lines
@@ -168,22 +164,38 @@ enum LocalDataSource: CaseIterable {
         }
     }
     
-    // MARK: - API Link
-    var lineInfomationLink: String {
+    // MARK: - API Type Determination
+    // Determine the appropriate API type for this operator
+    var apiType: ODPTAPIType {
         switch self {
-        case .toeiMetro:
-            return operatorCode.odptPublicURL(isRailway: true)
-        case .tokyoMetro, .yokohamaMetro, .tsukuba, .tama, .yurikamome, .rinkai:
-            return operatorCode.odptURL(isRailway: true)
-        case .jrEast, .tokyu, .odakyu, .keikyu, .tobu, .seibu, .sotetsu:
-            return operatorCode.odptChallengeURL(isRailway: true)
-        case .toeiBus:
-            return operatorCode.odptPublicURL(isRailway: false)
-        case .odakyuBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus:
-            return operatorCode.odptURL(isRailway: false)
-        case .kanachuBus, .kokusaiKogyo:
-            return operatorCode.odptChallengeURL(isRailway: false)
+        case .toeiMetro, .toeiBus:
+            return .publicAPI
+        case .tokyoMetro, .yokohamaMetro, .tsukuba, .tama, .yurikamome, .rinkai,
+             .odakyuBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus:
+            return .standard
+        case .jrEast, .tokyu, .odakyu, .keikyu, .tobu, .seibu, .sotetsu,
+             .kanachuBus, .kokusaiKogyo:
+            return .challenge
         }
+    }
+    
+    // MARK: - Unified API Link Generation
+    // Generate API links for both line information and timetable data
+    func apiLink(for kind: TransportationLine.Kind, isTimetable: Bool) -> String {
+        let dataType: ODPTDataType = (kind == .railway) ? 
+            (isTimetable ? .railwayTimetable : .railwayLine) :
+            (isTimetable ? .busTimetable : .busRoutePattern)
+        return operatorCode.odptURL(dataType: dataType, apiType: apiType)
+    }
+    
+    // MARK: - API Link (Legacy - for backward compatibility)
+    var lineInfomationLink: String {
+        return apiLink(for: transportationType, isTimetable: false)
+    }
+    
+    // MARK: - API Link (Legacy - for backward compatibility)
+    var timetableInfomationLink: String {
+        return apiLink(for: transportationType, isTimetable: true)
     }
 }
 

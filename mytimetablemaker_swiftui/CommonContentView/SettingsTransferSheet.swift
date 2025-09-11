@@ -295,6 +295,7 @@ class SettingsTransferSheetViewModel: ObservableObject {
 
     // MARK: - Published Properties
     // Observable properties that trigger UI updates when changed
+    
     @Published var homeInput: String                      // home input text
     @Published var officeInput: String                    // office input text
     @Published var selectedHomeTransportation1: String    // Selected transportation 1 from home
@@ -311,10 +312,10 @@ class SettingsTransferSheetViewModel: ObservableObject {
     init() {
         self.homeInput = UserDefaults.standard.string(forKey: homeKey) ?? ""
         self.officeInput = UserDefaults.standard.string(forKey: officeKey) ?? ""
-        self.selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "walking"
-        self.selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "walking"
-        self.selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "walking"
-        self.selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "walking"
+        self.selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "Walking".localized
+        self.selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "Walking".localized
+        self.selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "Walking".localized
+        self.selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "Walking".localized
         
         let homeTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(0))
         self.selectedHomeTransferTime1 = homeTime1 == 0 ? 10 : homeTime1
@@ -334,10 +335,10 @@ class SettingsTransferSheetViewModel: ObservableObject {
     func loadSettings() {
         homeInput = UserDefaults.standard.string(forKey: homeKey) ?? ""
         officeInput = UserDefaults.standard.string(forKey: officeKey) ?? ""
-        selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "walking"
-        selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "walking"
-        selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "walking"
-        selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "walking"
+        selectedHomeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(0)) ?? "Walking".localized
+        selectedHomeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(0)) ?? "Walking".localized
+        selectedOfficeTransportation1 = UserDefaults.standard.string(forKey: "back1".transportationKey(1)) ?? "Walking".localized
+        selectedOfficeTransportation2 = UserDefaults.standard.string(forKey: "back2".transportationKey(1)) ?? "Walking".localized
         selectedHomeTransferTime1 = UserDefaults.standard.integer(forKey: "back1".transferTimeKey(0))
         if selectedHomeTransferTime1 == 0 {
             selectedHomeTransferTime1 = 10
@@ -369,6 +370,15 @@ class SettingsTransferSheetViewModel: ObservableObject {
         UserDefaults.standard.set(selectedHomeTransferTime2, forKey: "back2".transferTimeKey(0))
         UserDefaults.standard.set(selectedOfficeTransferTime1, forKey: "back1".transferTimeKey(1))
         UserDefaults.standard.set(selectedOfficeTransferTime2, forKey: "back2".transferTimeKey(1))
+
+        UserDefaults.standard.set(selectedHomeTransportation1, forKey: "go1".transportationKey(1))
+        UserDefaults.standard.set(selectedHomeTransportation2, forKey: "go2".transportationKey(1))
+        UserDefaults.standard.set(selectedOfficeTransportation1, forKey: "go1".transportationKey(0))
+        UserDefaults.standard.set(selectedOfficeTransportation2, forKey: "go2".transportationKey(0))
+        UserDefaults.standard.set(selectedHomeTransferTime1, forKey: "go1".transferTimeKey(1))
+        UserDefaults.standard.set(selectedHomeTransferTime2, forKey: "go2".transferTimeKey(1))
+        UserDefaults.standard.set(selectedOfficeTransferTime1, forKey: "go1".transferTimeKey(0))
+        UserDefaults.standard.set(selectedOfficeTransferTime2, forKey: "go2".transferTimeKey(0))
     }
 }
 

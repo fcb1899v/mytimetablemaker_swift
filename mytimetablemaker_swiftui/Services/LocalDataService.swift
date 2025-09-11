@@ -11,99 +11,6 @@
 
 import Foundation
 
-// MARK: - Local File Loader
-// Manages loading of local JSON data files from the app bundle.
-// Provides offline data access when ODPT API is unavailable.
-final class LocalFileLoader {
-    
-    // MARK: - Main Data Loading
-    // Load all available local data sources and combine results.
-    static func loadLocalData() async -> [TransportationLine] {
-        print("📁 LocalFileLoader: Starting to load local data for \(LocalDataSource.allCases.count) sources")
-        
-        // MARK: - Parallel Source Processing
-        // Process each available data source in parallel for faster loading
-        let loadTasks = LocalDataSource.allCases.map { source in
-            Task {
-                if let data = loadFileData(for: source.fileName) {
-                    // Parse data using appropriate parser for the source
-                    let lines = LocalFileParser.parseLocalData(from: source, data: data)
-                    print("✅ Loaded \(source.displayName): \(lines.count) lines")
-                    return lines
-                } else {
-                    // Mark source as unavailable
-                    print("❌ Failed to load \(source.displayName)")
-                    return []
-                }
-            }
-        }
-        
-        // Wait for all tasks to complete
-        let allResults = await withTaskGroup(of: [TransportationLine].self) { group in
-            for task in loadTasks {
-                group.addTask { await task.value }
-            }
-            
-            var allLines: [TransportationLine] = []
-            for await lines in group {
-                allLines.append(contentsOf: lines)
-            }
-            return allLines
-        }
-        
-        print("📊 LocalFileLoader: Total loaded \(allResults.count) lines from local files")
-        return allResults
-    }
-    
-    // MARK: - Individual File Loading
-    // Load individual file data with priority: Documents directory > Bundle root
-    static func loadFileData(for fileName: String) -> Data? {
-        // MARK: - Priority 1: Documents Directory (Updated Files)
-        // First try to load from Documents directory for updated files
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let lineDataPath = documentsPath.appendingPathComponent("LineData", isDirectory: true)
-        let updatedFileName = fileName.replacingOccurrences(of: ".json", with: "_updated.json")
-        let documentsURL = lineDataPath.appendingPathComponent(updatedFileName)
-        
-        // Debug: Check if file exists
-        let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: documentsURL.path) {
-            if let attributes = try? fileManager.attributesOfItem(atPath: documentsURL.path),
-               let fileSize = attributes[.size] as? Int64 {
-                print("📁 File exists: \(updatedFileName) (\(fileSize) bytes)")
-            }
-        } else {
-            print("❌ File does not exist: \(documentsURL.path)")
-        }
-        
-        do {
-            let data = try Data(contentsOf: documentsURL)
-            print("📁 Loaded updated file from Documents: \(updatedFileName)")
-            return data
-        } catch {
-            print("❌ Failed to load from Documents: \(updatedFileName) - \(error.localizedDescription)")
-        }
-        
-        // MARK: - Priority 2: Bundle Root (Fallback)
-        // Fallback to original bundle search (for backward compatibility)
-        let name = fileName.replacingOccurrences(of: ".json", with: "")
-        let ext = "json"
-    
-        guard let url = Bundle.main.url(forResource: name, withExtension: ext) else {
-            return nil
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            print("📦 Loaded file from Bundle root: \(fileName)")
-            return data
-        } catch {
-            print("❌ Failed to load from Bundle root: \(fileName)")
-            return nil
-        }
-    }
-}
-
 // MARK: - Local File Parser
 // Handles parsing of local JSON data files.
 // Supports multiple data formats and provides fallback parsing strategies.
@@ -191,15 +98,16 @@ struct LocalFileParser {
                 name: firstStation,
                 code: lineId,
                 operatorCode: source.operatorCode,
-                railwayType: nil,
                 lineColor: nil,
                 startStation: stations.first,
                 endStation: stations.last,
+                destinationStation: stations.last,
                 railwayTitle: RailwayTitle(ja: firstStation, en: nil),
                 lineCode: nil,
+                lineDirection: nil,
                 busRoute: nil,
                 pattern: nil,
-                direction: nil,
+                busDirection: nil,
                 busstopPoleOrder: nil
             )
         }
@@ -217,6 +125,7 @@ struct LocalFileParser {
             let operatorCode = element["odpt:operator"] as? String ?? source.operatorCode
             let lineColor = element["odpt:color"] as? String
             let lineCode = element["odpt:lineCode"] as? String
+            let lineDirection = element["odpt:ascendingRailDirection"] as? String
             
             // MARK: - Multi-Language Title Processing using closure
             let railwayTitle: RailwayTitle? = {
@@ -234,20 +143,30 @@ struct LocalFileParser {
                 return (start, end)
             }()
             
+            // MARK: - Destination Station Information
+            let destinationStation: String? = {
+                if let destinationArray = element["odpt:destinationStation"] as? [String],
+                   let firstDestination = destinationArray.first {
+                    return firstDestination
+                }
+                return nil
+            }()
+            
             return TransportationLine(
                 kind: .railway,
                 name: title,
                 code: sameAs,
                 operatorCode: operatorCode,
-                railwayType: nil,
                 lineColor: lineColor,
                 startStation: startStation,
                 endStation: endStation,
+                destinationStation: destinationStation,
                 railwayTitle: railwayTitle,
                 lineCode: lineCode,
+                lineDirection: lineDirection,
                 busRoute: nil,
                 pattern: nil,
-                direction: nil,
+                busDirection: nil,
                 busstopPoleOrder: nil
             )
         }
@@ -322,15 +241,16 @@ struct LocalFileParser {
                 name: info.name,
                 code: "odpt.Busroute:\(routeName)",
                 operatorCode: info.operatorCode,
-                railwayType: nil,
                 lineColor: nil,
                 startStation: Array(info.busStops).sorted().first,
                 endStation: Array(info.busStops).sorted().last,
+                destinationStation: Array(info.busStops).sorted().last,
                 railwayTitle: RailwayTitle(ja: info.name, en: englishName),
                 lineCode: nil,
+                lineDirection: nil, // Will be calculated based on station index comparison
                 busRoute: info.busRouteCode,
                 pattern: Array(info.patterns).first,
-                direction: Array(info.directions).first,
+                busDirection: Array(info.directions).first,
                 busstopPoleOrder: Array(info.busStops).sorted().enumerated().map { 
                     BusStopPole(note: $0.element, busstopPole: "\(routeName)_\($0.offset)", index: $0.offset + 1, busstopPoleTitle: nil) 
                 }

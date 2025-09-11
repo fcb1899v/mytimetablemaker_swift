@@ -60,7 +60,7 @@ extension UIScreen {
 
 // MARK: - Route Layout Extensions
 extension UIScreen {
-    // Route display sizing and responsive layout
+    // Direction display sizing and responsive layout
     var routeSingleWidth: CGFloat { customWidth - 10 * routeSidePadding }
     var routeDoubleWidth: CGFloat { customWidth / 2 - 4 * routeSidePadding }
     var routeHeight: CGFloat { bounds.size.height - admobBannerHeight - headerHeight }
@@ -78,7 +78,7 @@ extension UIScreen {
 
 // MARK: - Route Content Extensions
 extension UIScreen {
-    // Route information display sizing and typography
+    // Direction information display sizing and typography
     var stationFontSize: CGFloat { customWidth / 27 }
     var transferHeight: CGFloat { bounds.size.height * 0.036 }
     var lineNameHeight: CGFloat { bounds.size.height * 0.045 }
@@ -107,9 +107,18 @@ extension UIScreen {
 
 // MARK: - Timetable Extensions
 extension UIScreen {
-    // Timetable view button sizing
-    var timetableButtonWidth: CGFloat { operationButtonWidth * 1.5 }
-    var imagePickerButtonWidth: CGFloat { customWidth * 0.8 }
+    
+    // Timetable responsive sizing based on screen height
+    var timetableTitleFontSize:  CGFloat { customWidth * 0.05 }
+    var timetableHeaderFontSize: CGFloat { customWidth * 0.04 }
+    var timetableButtonFontSize: CGFloat { customWidth * 0.04 }
+    var timetableButtonWidth:    CGFloat { customWidth * 0.20 }
+    var timetableButtonHeight:   CGFloat { customWidth * 0.08 }
+    var timetableGridHeight:     CGFloat { customWidth * 0.06 }
+    var timetableHourFrameWidth: CGFloat { customWidth * 0.06 }
+    var timetableTimeFontSize:   CGFloat { customWidth * 0.04 }
+    var timetablePadding:        CGFloat { customWidth * 0.03 }
+    var timetableSpacing:        CGFloat { customWidth * 0.01 }
 }
 
 // MARK: - Ad Banner Extensions

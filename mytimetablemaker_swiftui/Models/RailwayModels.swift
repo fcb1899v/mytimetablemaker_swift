@@ -24,19 +24,20 @@ struct TransportationLine: Identifiable, Hashable {
     let id = UUID()
     let kind: Kind
     let name: String
-    let code: String                // owl:sameAs - unique identifier from ODPT
-    let operatorCode: String?       // odpt:operator (e.g., odpt.Operator:JR-East)
-    let railwayType: String?        // odpt:railwayType (e.g., odpt:RailwayType:JR)
-    let lineColor: String?          // odpt:lineColor (e.g., #000000)
-    let startStation: String?       // odpt:startStation - first station on the line
-    let endStation: String?         // odpt:endStation - last station on the line
-    let railwayTitle: RailwayTitle? // odpt:railwayTitle - multi-language support
-    let lineCode: String?           // odpt:lineCode (e.g., "JY", "TT", etc.)
+    let code: String                    // owl:sameAs - unique identifier from ODPT
+    let operatorCode: String?           // odpt:operator (e.g., odpt.Operator:JR-East)
+    let lineColor: String?              // odpt:lineColor (e.g., #000000)
+    let startStation: String?           // odpt:startStation - first station on the line
+    let endStation: String?             // odpt:endStation - last station on the line
+    let destinationStation: String?     // odpt:destinationStation - destination station (first element from array)
+    let railwayTitle: RailwayTitle?     // odpt:railwayTitle - multi-language support
+    let lineCode: String?               // odpt:lineCode (e.g., "JY", "TT", etc.)
+    let lineDirection: String?          // Calculated direction based on station index comparison
     
     // MARK: - Bus-specific properties
     let busRoute: String?           // odpt:busroute - bus route identifier
     let pattern: String?            // odpt:pattern - bus route pattern
-    let direction: String?          // odpt:direction - bus direction
+    let busDirection: String?       // odpt:direction - bus direction
     let busstopPoleOrder: [BusStopPole]? // odpt:busstopPoleOrder - bus stop sequence
     
     // MARK: - Bus Route English Name
@@ -79,6 +80,10 @@ struct RailwayTitle: Codable, Hashable {
             return en ?? ja ?? ""
         }
     }
+    
+    func getEnglishName() -> String {
+        return en ?? ""
+    }
 }
 
 // MARK: - Station Information Model
@@ -88,6 +93,8 @@ struct Station: Identifiable, Hashable {
     let id = UUID()
     let name: String
     let code: String?
+    let index: Int?                    // odpt:index - station order in the line
+    let lineCode: String?              // Line code that this station belongs to
     let title: StationTitle?
     
     // MARK: - Localized Name Retrieval
@@ -102,6 +109,13 @@ struct Station: Identifiable, Hashable {
             default:
                 return title.en ?? title.ja ?? name
             }
+        }
+        return name
+    }
+    
+    func getEnglishName() -> String {
+        if let title = title {
+            return title.en ?? name
         }
         return name
     }
@@ -187,6 +201,10 @@ struct BusStopPoleTitle: Codable, Hashable {
             return en ?? ja ?? ""
         }
     }
+    
+    func getEnName() -> String {
+        return en ?? ""
+    }
 }
 
 // MARK: - Data Statistics Structure
@@ -237,4 +255,3 @@ struct ArrivalStationPositionKey: PreferenceKey {
         value = nextValue()
     }
 }
-

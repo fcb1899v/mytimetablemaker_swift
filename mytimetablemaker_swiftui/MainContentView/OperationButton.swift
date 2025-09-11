@@ -28,8 +28,7 @@ struct OperationButton: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: screen.operationButtonFontSize))
-                .fontWeight(.semibold)
+                .font(.system(size: screen.operationButtonFontSize, weight: .semibold))
                 .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                 .foregroundColor(.white)
                 .background(isOn ? Color.accentColor: Color.grayColor)

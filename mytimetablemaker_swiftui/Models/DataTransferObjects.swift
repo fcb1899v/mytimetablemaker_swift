@@ -18,22 +18,22 @@ struct RailwayDTO: Decodable {
     let title: String
     let sameAs: String
     let operatorCode: String?
-    let railwayType: String?
     let lineColor: String?
     let startStation: String?
     let endStation: String?
+    let destinationStation: String?
     let railwayTitle: RailwayTitle?
     let lineCode: String?
     let date: String?
 
     enum CodingKeys: String, CodingKey {
-        case title = "dc:title"           // Dublin Core title
-        case sameAs = "owl:sameAs"        // OWL sameAs identifier
+        case title = "dc:title"                   // Dublin Core title
+        case sameAs = "owl:sameAs"                // OWL sameAs identifier
         case operatorCode = "odpt:operator"       // Railway operator code
-        case railwayType = "odpt:railwayType"     // Type of railway (JR, private, etc.)
         case lineColor = "odpt:lineColor"         // Line color in hex format
         case startStation = "odpt:startStation"   // First station on the line
         case endStation = "odpt:endStation"       // Last station on the line
+        case destinationStation = "odpt:destinationStation" // Destination station (first element from array)
         case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
         case lineCode = "odpt:lineCode"           // Line identifier code
         case date = "dc:date"                     // Data update date

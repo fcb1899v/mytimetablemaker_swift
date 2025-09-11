@@ -28,15 +28,16 @@ struct ODPTParser {
                 name: dto.title,
                 code: dto.sameAs,
                 operatorCode: dto.operatorCode,
-                railwayType: dto.railwayType,
                 lineColor: dto.lineColor,
                 startStation: dto.startStation,
                 endStation: dto.endStation,
+                destinationStation: dto.destinationStation,
                 railwayTitle: dto.railwayTitle,
                 lineCode: dto.lineCode,
+                lineDirection: nil,
                 busRoute: nil,
                 pattern: nil,
-                direction: nil,
+                busDirection: nil,
                 busstopPoleOrder: nil
             )
         }
@@ -60,15 +61,16 @@ struct ODPTParser {
                 name: dto.title,
                 code: dto.sameAs,
                 operatorCode: dto.operatorCode,
-                railwayType: nil,
                 lineColor: nil,
                 startStation: nil,
                 endStation: nil,
+                destinationStation: nil,
                 railwayTitle: RailwayTitle(ja: dto.title, en: englishName),
                 lineCode: nil,
+                lineDirection: nil,
                 busRoute: dto.busRoute,
                 pattern: dto.pattern,
-                direction: dto.direction,
+                busDirection: dto.direction,
                 busstopPoleOrder: dto.busstopPoleOrder
             )
         }
@@ -115,11 +117,10 @@ struct ODPTParser {
             
             if let array = json as? [[String: Any]] {
                 // MARK: - Array Processing using closures
-                return array.compactMap { element in
+                return array.compactMap { element -> TransportationLine? in
                     // MARK: - Required Field Validation using closure
                     guard let title = element["dc:title"] as? String,
                           let sameAs = element["owl:sameAs"] as? String else { return nil }
-                    
                     let operatorCode = element["odpt:operator"] as? String
                     // Support both odpt:color (local) and odpt:lineColor (API) fields
                     let lineColor = element["odpt:color"] as? String ?? element["odpt:lineColor"] as? String
@@ -135,11 +136,20 @@ struct ODPTParser {
                     }()
                     
                     // MARK: - Station Boundary Information using closure
-                    let (startStation, endStation) = {
-                        let start = element["odpt:startStation"] as? String
-                        let end = element["odpt:endStation"] as? String
-                        return (start, end)
+                    let startStation = element["odpt:startStation"] as? String
+                    let endStation = element["odpt:endStation"] as? String
+                    
+                    // MARK: - Destination Station Information
+                    let destinationStation: String? = {
+                        if let destinationArray = element["odpt:destinationStation"] as? [String],
+                           let firstDestination = destinationArray.first {
+                            return firstDestination
+                        }
+                        return nil
                     }()
+                    
+                    // MARK: - Rail Direction Information
+                    let lineDirection = element["odpt:ascendingRailDirection"] as? String
                     
                     // MARK: - Line Creation
                     return TransportationLine(
@@ -147,15 +157,16 @@ struct ODPTParser {
                         name: title,
                         code: sameAs,
                         operatorCode: operatorCode,
-                        railwayType: nil,
                         lineColor: lineColor,
                         startStation: startStation,
                         endStation: endStation,
+                        destinationStation: destinationStation,
                         railwayTitle: railwayTitle,
                         lineCode: lineCode,
+                        lineDirection: lineDirection,
                         busRoute: nil,
                         pattern: nil,
-                        direction: nil,
+                        busDirection: nil,
                         busstopPoleOrder: nil
                     )
                 }
@@ -165,64 +176,6 @@ struct ODPTParser {
         }
         
         return []
-    }
-}
-
-// MARK: - ODPT Data Source Definition
-// Defines the source of ODPT data and provides URL construction.
-// Currently supports railway data, extensible for other transportation types.
-enum ODPTSource: CaseIterable {
-    case railways
-    case busRoutes
-
-    // MARK: - URL Construction
-    // Constructs the API URL with consumer key for authentication.
-    func url(consumerKey: String) -> URL {
-        switch self {
-        case .railways:
-            var components = URLComponents(string: "https://api-public.odpt.org/api/v4/odpt:Railway.json")!
-            components.queryItems = [URLQueryItem(name: "acl:consumerKey", value: consumerKey)]
-            return components.url!
-        case .busRoutes:
-            var components = URLComponents(string: "https://api.odpt.org/api/v4/odpt:BusroutePattern")!
-            components.queryItems = [
-                URLQueryItem(name: "odpt:operator", value: "odpt.Operator:YokohamaMunicipal"),
-                URLQueryItem(name: "acl:consumerKey", value: consumerKey)
-            ]
-            return components.url!
-        }
-    }
-
-    // MARK: - Cache File Names
-    // Cache file name for storing downloaded data.
-    var cacheFile: String {
-        switch self {
-        case .railways:
-            return "odpt_railways.json"
-        case .busRoutes:
-            return "odpt_bus_routes.json"
-        }
-    }
-    
-    // Metadata file name for storing cache information.
-    var metaFile: String {
-        switch self {
-        case .railways:
-            return "odpt_railways.meta.json"
-        case .busRoutes:
-            return "odpt_bus_routes.meta.json"
-        }
-    }
-    
-    // MARK: - Display Information
-    // Display name for UI presentation.
-    var displayName: String {
-        switch self {
-        case .railways:
-            return "鉄道"
-        case .busRoutes:
-            return "バス路線"
-        }
     }
 }
 
@@ -316,74 +269,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
             downloadedAt: Date()
         )
     }
-
-    // MARK: - Data Fetching with Cache Management
-    /// Return cached data if available, and check for updates in the background. If updated, return new data.
-    /// Implements efficient caching strategy using ETag and Last-Modified headers.
-    func fetchWithUpdateIfNeeded(source: ODPTSource, consumerKey: String) async throws -> (data: Data, updated: Bool) {
-        let cached = cache.loadData(for: source.cacheFile)
-        let meta = cache.loadMeta(for: source.metaFile)
-
-        // MARK: - Step 1: Cache Validation
-        // Check ETag / Last-Modified with HEAD request for cache validation
-        var headReq = URLRequest(url: source.url(consumerKey: consumerKey))
-        headReq.httpMethod = "HEAD"
-        let headResp: HTTPURLResponse?
-        do {
-            let (_, resp) = try await session.data(for: headReq)
-            headResp = resp as? HTTPURLResponse
-        } catch {
-            headResp = nil
-        }
-        let serverETag = headResp?.value(forHTTPHeaderField: "ETag")
-        let serverLastMod = headResp?.value(forHTTPHeaderField: "Last-Modified")
-
-        // MARK: - Step 2: Cache Hit Check
-        // If data unchanged, return cached data immediately
-        if let cached = cached, let meta = meta {
-            if (serverETag != nil && serverETag == meta.eTag) ||
-               (serverETag == nil && serverLastMod != nil && serverLastMod == meta.lastModified) {
-                return (cached, false)
-            }
-        }
-
-        // MARK: - Step 3: Conditional Update
-        // If changes detected, send GET with conditional headers for efficient updates
-        var getReq = URLRequest(url: source.url(consumerKey: consumerKey))
-        configureRequest(&getReq, consumerKey: consumerKey, conditionalHeaders: (meta?.eTag, meta?.lastModified))
-
-        // MARK: - Step 4: Data Retrieval and Caching
-        // Execute GET request with conditional headers
-        let (data, resp) = try await session.data(for: getReq)
-        if let http = resp as? HTTPURLResponse, http.statusCode == 304, let cached = cached {
-            return (cached, false)
-        }
-
-        // Cache new data and metadata
-        cache.saveData(data, for: source.cacheFile)
-        cache.saveMeta(createCacheMeta(from: resp), for: source.metaFile)
-        return (data, true)
-    }
-
-    // MARK: - Simple Data Fetching
-    // Fetch data for the first time or when cache is empty.
-    // No conditional headers - always downloads fresh data.
-    func fetchSimple(source: ODPTSource, consumerKey: String) async throws -> Data {
-        var request = URLRequest(url: source.url(consumerKey: consumerKey))
-        configureRequest(&request, consumerKey: consumerKey)
-        
-        let (data, resp) = try await session.data(for: request)
-        
-        // MARK: - Data Caching
-        // Cache the downloaded data and metadata
-        cache.saveData(data, for: source.cacheFile)
-        cache.saveMeta(createCacheMeta(from: resp), for: source.metaFile)
-        return data
-    }
-
-    // MARK: - Cache Access
-    // Load cached data without network requests.
-    func loadCached(source: ODPTSource) -> Data? { cache.loadData(for: source.cacheFile) }
     
     // Load cached data by custom key
     func loadCachedData(for key: String) -> Data? { cache.loadData(for: key) }
@@ -400,173 +285,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         }
     }
     
-    // MARK: - Local Date Extraction Helper
-    // Common function to extract latest date from local files
-    private func extractLocalLatestDate(for source: ODPTSource) -> String? {
-        let fileName = source.cacheFile.replacingOccurrences(of: "odpt_", with: "").replacingOccurrences(of: ".json", with: "")
-        
-        // First try Documents directory for updated files
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let lineDataPath = documentsPath.appendingPathComponent("LineData", isDirectory: true)
-        let updatedFileName = fileName + "_updated.json"
-        let documentsURL = lineDataPath.appendingPathComponent(updatedFileName)
-        
-        if let data = try? Data(contentsOf: documentsURL) {
-            return extractLatestDate(from: data)
-        }
-        
-        // Fallback to Bundle.main for original files
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json"),
-              let data = try? Data(contentsOf: url) else {
-            return nil
-        }
-        return extractLatestDate(from: data)
-    }
-    
-    // MARK: - Date-based Update Check
-    // Check if data needs to be updated based on dc:date comparison
-    func checkForDateUpdates(source: ODPTSource, consumerKey: String) async throws -> Bool {
-        do {
-            // Fetch minimal data from API for date comparison
-            let (data, _) = try await session.data(from: source.url(consumerKey: consumerKey))
-            
-            // Extract latest date from API
-            guard let apiLatestDate = extractLatestDate(from: data) else {
-                throw ODPTError.dateExtractionFailed
-            }
-            
-            // Get local latest date
-            guard let localLatestDate = extractLocalLatestDate(for: source) else {
-                return true // No local data, update needed
-            }
-            
-            // Compare dates
-            return apiLatestDate > localLatestDate
-            
-        } catch {
-            throw ODPTError.networkError(error.localizedDescription)
-        }
-    }
-    
-    // MARK: - Common Update Processing
-    // Common function to process updates for a source
-    private func processUpdate(for source: ODPTSource, consumerKey: String) async throws -> (data: Data, updated: Bool) {
-        let needsUpdate = try await checkForDateUpdates(source: source, consumerKey: consumerKey)
-        if needsUpdate {
-            // Fetch full data from API
-            let (data, _) = try await session.data(from: source.url(consumerKey: consumerKey))
-            
-            // Write updated data to JSON file
-            try await writeDataToFile(data: data, for: source)
-            
-            // Update cache
-            cache.saveData(data, for: source.cacheFile)
-            let meta = CacheMeta(
-                eTag: nil,
-                lastModified: nil,
-                downloadedAt: Date()
-            )
-            cache.saveMeta(meta, for: source.metaFile)
-            
-            print("Successfully updated \(source.displayName) data and wrote to JSON file")
-            return (data, true)
-        } else {
-            print("No update needed for \(source.displayName) data")
-            return (Data(), false)
-        }
-    }
-    
-    // MARK: - Unified Update Check
-    // Check for updates across all data sources
-    func checkAllForUpdates(consumerKey: String) async -> [ODPTSource: Bool] {
-        return await withTaskGroup(of: (ODPTSource, Bool).self) { group in
-            for source in ODPTSource.allCases {
-                group.addTask {
-                    do {
-                        let needsUpdate = try await self.checkForDateUpdates(source: source, consumerKey: consumerKey)
-                        print("\(source.displayName): \(needsUpdate ? "Update needed" : "No update needed")")
-                        return (source, needsUpdate)
-                    } catch {
-                        print("Error checking updates for \(source.displayName): \(error)")
-                        return (source, false)
-                    }
-                }
-            }
-            
-            var results: [ODPTSource: Bool] = [:]
-            for await (source, needsUpdate) in group {
-                results[source] = needsUpdate
-            }
-            return results
-        }
-    }
-    
-    // MARK: - Update Single Source
-    // Update a single data source if needed
-    func updateSingleSource(_ source: ODPTSource, consumerKey: String) async -> Result<Void, Error> {
-        do {
-            let (_, _) = try await processUpdate(for: source, consumerKey: consumerKey)
-            return .success(())
-        } catch {
-            print("Failed to update \(source.displayName) data: \(error)")
-            return .failure(error)
-        }
-    }
-    
-    // MARK: - Perform Updates
-    // Perform updates for all sources that need them and write to JSON files
-    func performUpdates(consumerKey: String) async -> [ODPTSource: Result<Void, Error>] {
-        return await withTaskGroup(of: (ODPTSource, Result<Void, Error>).self) { group in
-            for source in ODPTSource.allCases {
-                group.addTask {
-                    do {
-                        let (_, _) = try await self.processUpdate(for: source, consumerKey: consumerKey)
-                        return (source, .success(()))
-                    } catch {
-                        print("Failed to update \(source.displayName) data: \(error)")
-                        return (source, .failure(error))
-                    }
-                }
-            }
-            
-            var results: [ODPTSource: Result<Void, Error>] = [:]
-            for await (source, result) in group {
-                results[source] = result
-            }
-            return results
-        }
-    }
-    
-    // MARK: - Write Data to JSON File
-    // Write downloaded data to local JSON file in Documents directory
-    private func writeDataToFile(data: Data, for source: ODPTSource) async throws {
-        // Get Documents directory path for writable JSON files
-        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let lineDataPath = documentsPath.appendingPathComponent("LineData", isDirectory: true)
-        
-        // Create LineData directory if it doesn't exist
-        try FileManager.default.createDirectory(at: lineDataPath, withIntermediateDirectories: true, attributes: nil)
-        
-        // Determine the target file name based on source
-        let fileName: String
-        switch source {
-        case .railways:
-            fileName = "railways_updated.json"
-        case .busRoutes:
-            fileName = "yokohamabus_updated.json"
-        }
-        
-        let fileURL = lineDataPath.appendingPathComponent(fileName)
-        
-        // Write data to file with atomic operation
-        try data.write(to: fileURL, options: [.atomic])
-        print("Successfully wrote \(source.displayName) data to \(fileName) in Documents directory")
-    }
-
     // MARK: - Individual Operator Data Fetching
     // Fetch data for individual transportation operators using their specific API endpoints
     func fetchIndividualOperatorData(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Data {
-                    let urlString = transportOperator.lineInfomationLink
+        let urlString = transportOperator.lineInfomationLink
         guard let url = URL(string: urlString) else {
             throw ODPTError.invalidData
         }
@@ -699,13 +421,9 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                     
                     // MARK: - Data Content Comparison (Fallback)
                     // Compare actual data content to determine if update is needed
-                    if let cachedData = cachedData, data == cachedData {
-                        print("✅ \(transportOperator.displayName): Data content is identical - No update needed")
-                        return false // No update needed - content is the same
-                    } else {
-                        print("🔄 \(transportOperator.displayName): Data content has changed - Update needed")
-                        return true // Update needed - content has changed
-                    }
+                    let dataMatches = cachedData != nil && data == cachedData!
+                    print(dataMatches ? "✅ \(transportOperator.displayName): Data content is identical - No update needed" : "🔄 \(transportOperator.displayName): Data content has changed - Update needed")
+                    return !dataMatches
                 } else {
                     print("❌ \(transportOperator.displayName): Unexpected response status: \(httpResponse.statusCode)")
                     return false // Don't update on error
@@ -723,7 +441,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     // MARK: - Common Operator Update Processing
     // Common function to process operator updates
     private func processOperatorUpdate(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> (data: Data, updated: Bool) {
-                    let needsUpdate = try await checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
+        let needsUpdate = try await checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
             if needsUpdate {
                 print("📥 \(transportOperator.displayName): Fetching updated data...")
                 let data = try await fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)

@@ -38,14 +38,17 @@ class MyTransfer: ObservableObject {
     @Published var home: String
     @Published var office: String
     @Published var stationArray1: [String]
-    @Published var lineNameArray1: [String]
-    @Published var lineColorArray1: [Color]
-    @Published var transportationArray1: [String]
     @Published var stationArray2: [String]
+    @Published var lineNameArray1: [String]
     @Published var lineNameArray2: [String]
+    @Published var lineColorArray1: [Color]
     @Published var lineColorArray2: [Color]
+    @Published var transportationArray1: [String]
     @Published var transportationArray2: [String]
+    @Published var transferTimeArray1: [Int]
+    @Published var transferTimeArray2: [Int]
     
+
     // MARK: - Initialization
     init() {
         self.isBack = true
@@ -62,13 +65,15 @@ class MyTransfer: ObservableObject {
         self.home = "back1".departurePoint
         self.office = "back1".destination
         self.stationArray1 = "back1".stationArray
-        self.lineNameArray1 = "back1".lineNameArray
-        self.lineColorArray1 = "back1".lineColorArray
-        self.transportationArray1 = "back1".transportationArray
         self.stationArray2 = "back2".stationArray
+        self.lineNameArray1 = "back1".lineNameArray
         self.lineNameArray2 = "back2".lineNameArray
+        self.lineColorArray1 = "back1".lineColorArray
         self.lineColorArray2 = "back2".lineColorArray
+        self.transportationArray1 = "back1".transportationArray
         self.transportationArray2 = "back2".transportationArray
+        self.transferTimeArray1 = "back1".transferTimeArray
+        self.transferTimeArray2 = "back2".transferTimeArray
     }
     
     // MARK: - Route Management
@@ -91,15 +96,20 @@ class MyTransfer: ObservableObject {
         changeLine1 = goOrBack1.changeLineInt
         changeLine2 = goOrBack2.changeLineInt
         stationArray1 = goOrBack1.stationArray
-        lineNameArray1 = goOrBack1.lineNameArray
-        lineColorArray1 = goOrBack1.lineColorArray
-        transportationArray1 = goOrBack1.transportationArray
         stationArray2 = goOrBack2.stationArray
+        lineNameArray1 = goOrBack1.lineNameArray
         lineNameArray2 = goOrBack2.lineNameArray
+        lineColorArray1 = goOrBack1.lineColorArray
         lineColorArray2 = goOrBack2.lineColorArray
-        transportationArray2 = goOrBack2.transportationArray
     }
-
+    
+    func setTransferData() {
+        transportationArray1 = goOrBack1.transportationArray
+        transportationArray2 = goOrBack2.transportationArray
+        transferTimeArray1 = goOrBack1.transferTimeArray
+        transferTimeArray2 = goOrBack2.transferTimeArray
+    }
+ 
     // MARK: - UserDefaults Persistence
     // Save route visibility settings to UserDefaults
     func saveRoute2Settings() {

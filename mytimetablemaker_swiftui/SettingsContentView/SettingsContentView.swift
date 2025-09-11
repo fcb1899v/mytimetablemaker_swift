@@ -35,9 +35,9 @@ struct SettingsContentView: View {
         NavigationStack {
             ZStack {
                 Form {
-                    // MARK: - Route Settings
+                    // MARK: - Direction Settings
                     Section(
-                        header: Text("Route Settings".localized)
+                        header: Text("Direction Settings".localized)
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(.gray)
                     ) {
@@ -47,13 +47,13 @@ struct SettingsContentView: View {
                             action: { showTransferSheet = true }
                         )
 
-                        // Settings going home route
+                        // Settings return route
                         createRouteButton(goorback: "back1")
                         if (myTransfer.isShowBackRoute2) {
                             createRouteButton(goorback: "back2")
                         }
                         Toggle(isOn: $myTransfer.isShowBackRoute2){
-                            Text("Display home route 2".localized)
+                            Text("Display Return Route 2".localized)
                                 .font(.system(size: screen.settingsFontSize))
                         }
                         .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
@@ -61,13 +61,13 @@ struct SettingsContentView: View {
                             myTransfer.saveRoute2Settings()
                         }
 
-                        // Settings outgoing route
+                        // Settings outbound route
                         createRouteButton(goorback: "go1")
                         if (myTransfer.isShowGoRoute2) {
                             createRouteButton(goorback: "go2")
                         }
                         Toggle(isOn: $myTransfer.isShowGoRoute2){
-                            Text("Display outgoing route 2".localized)
+                            Text("Display Outbound Route 2".localized)
                                 .font(.system(size: screen.settingsFontSize))
                         }
                         .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
@@ -199,9 +199,9 @@ struct SettingsContentView: View {
         }
     }
     
-    /// Creates a route button for line settings
-    /// - Parameter route: Route identifier (back1, back2, go1, go2)
-    /// - Returns: Configured route button view
+    /// Creates a direction button for line settings
+    /// - Parameter route: Direction identifier (back1, back2, go1, go2)
+    /// - Returns: Configured direction button view
     @ViewBuilder
     private func createRouteButton(goorback: String) -> some View {
         createSettingsButton(

@@ -38,31 +38,25 @@
 "To " = "";
 "he" = "へ";
 "on " = "";
-"Going home route 1" = "帰宅ルート1";
-"Going home route 2" = "帰宅ルート2";
-"Outgoing route 1" = "外出ルート1";
-"Outgoing route 2" = "外出ルート2";
+"Return Route 1" = "帰宅ルート1";
+"Return Route 2" = "帰宅ルート2";
+"Outbound Route 1" = "外出ルート1";
+"Outbound Route 2" = "外出ルート2";
 " min" = " 分";
 "[min]" = " [分]";
 "Not set" = "未設定";
 
-//TimeExtension.swift
-"weekend" = "土日";
-"weekday" = "平日";
-"E, MMM d, yyyy" = "yyyy/M/d (E)";
-
-
 //SettingsContentView
 "Settings" = "設定";
 "Back to homepage" = "戻る";
-"Route Settings" = "ルート設定";
+"Direction Settings" = "方向設定";
 "Setting home and destination" = "自宅・行き先の設定";
-"Setting home route 1" = "帰宅ルート1の設定";
-"Setting home route 2" = "帰宅ルート2の設定";
-"Display home route 2" = "帰宅ルート2の表示";
-"Setting outgoing route 1" = "外出ルート1の設定";
-"Setting outgoing route 2" = "外出ルート2の設定";
-"Display outgoing route 2" = "外出ルート2の表示";
+"Setting Return Route 1" = "帰宅ルート1の設定";
+"Setting Return Route 2" = "帰宅ルート2の設定";
+"Setting Outbound Route 1" = "外出ルート1の設定";
+"Setting Outbound Route 2" = "外出ルート2の設定";
+"Display Return Route 2" = "帰宅ルート2の表示";
+"Display Outbound Route 2" = "外出ルート2の表示";
 "Manage your data after login" = "ログインしてデータを管理";
 
 "Various settings" = "各種設定";
@@ -133,8 +127,16 @@
 "Select your timetable picture" =  "時刻表写真の選択";
 
 //Timetable.swift
-"Weekday" = "平日";
-"Weekend" = "土日";
+"Weekdays" = "平日";
+"Weekends" = "土日";
+"weekends" = "土日";
+"weekdays" = "平日";
+"Sat/Sun/PH" = "土日祝";
+"Weekdays (Except Public Holidays)" = "平日（祝日を除く）";
+"Saturday & Sunday $ Public Holidays" = "土曜・日曜・祝日";
+
+"E, MMM d, yyyy" = "yyyy/M/d (E)";
+
 "Hour" = "時台";
 " for " = "：";
 "houmen" = "方面";
@@ -257,8 +259,9 @@
 "TokyuBus" = "東急";
 
 //SettingsLineSheet
-"Select Line Color" = "路線カラーの選択";
-"Timetable Settings" = "時刻表の設定";
+"Select Line Color" = "路線カラー選択";
+"Timetable Settings" = "時刻表設定";
+"Auto Generate Timetable" = "時刻表の自動生成";
 "Update Line Data" = "路線データの更新";
 "Save" = "保存";
 "Select" = "選択";

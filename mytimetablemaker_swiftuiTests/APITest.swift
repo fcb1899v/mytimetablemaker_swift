@@ -26,7 +26,7 @@ class APITest: XCTestCase {
     func testAllAPIEndpoints() throws {
         // Test each LocalDataSource case
         for dataSource in LocalDataSource.allCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: dataSource.transportationType, isTimetable: false)
             XCTAssertFalse(url.isEmpty, "URL should not be empty for \(dataSource)")
             
             // Log the URL for verification

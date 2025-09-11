@@ -32,99 +32,90 @@ struct TimetableContentView: View {
         NavigationStack {
             ZStack {
                 Color.primaryColor
-                VStack {
+                VStack(alignment: .leading) {
+
+                    // MARK: - Weekday/Weekend Toggle Button
+                    HStack {
+                        Spacer()
+                        CustomToggle(
+                            isLeftSelected: $weekflag,
+                            leftText: "Weekdays".localized,
+                            leftColor: .white,
+                            rightText: "Sat/Sun/PH".localized,
+                            rightColor: .redColor,
+                            circleColor: .primaryColor
+                        )
+                    }
+                    .padding(.horizontal, screen.timetablePadding)
+
                     // MARK: - Header Section
-                    VStack {
+                    Text(goorback.stationArray[2 * num])
+                        .font(.system(size: screen.timetableTitleFontSize, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.leading, screen.timetablePadding)
+
+                    Text(goorback.timetableAlertTitle(num))
+                        .font(.system(size: screen.timetableHeaderFontSize, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.leading, screen.timetablePadding)
+                        .padding(.bottom, screen.timetableSpacing)
+
+                    // MARK: - Timetable Grid
+                    VStack(spacing: 0) {
+                        Color.white.frame(width: screen.customWidth, height: 1)
                         HStack {
+                            Color.white.frame(width: 1)
                             Spacer()
-                            Text("Setting your timetable".localized)
+                            Text(weekflag.weekdayLabel)
+                                .foregroundColor(weekflag.weekLabelColor)
                                 .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .padding(.top, 20)
                             Spacer()
+                            Color.white.frame(width: 1)
                         }
-                        HStack {
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(goorback.stationArray[2 * num]).font(.title3)
-                                Text(goorback.timetableAlertTitle(num)).font(.callout)
-                            }
-                            .foregroundColor(.white)
-                            .padding(.leading, 10)
-                            Spacer()
-                            // MARK: - Weekday/Weekend Toggle Button
-                            Button(action: {
-                                weekflag = !weekflag
-                            }){
-                                Text(weekflag.weekendLabel)
-                                    .font(.body)
-                                    .fontWeight(.semibold)
-                                    .frame(width: screen.timetableButtonWidth, height: screen.operationButtonHeight)
-                                    .foregroundColor(weekflag.weekButtonLabelColor)
-                                    .background(weekflag.weekButtonColor)
-                                    .cornerRadius(screen.operationButtonCornerRadius)
-                                    .padding(.top, 10)
-                                    .padding(.trailing, 10)
-                            }
-                        }.frame(width: screen.customWidth)
+                        .frame(width: screen.customWidth, height: screen.timetableGridHeight)
+                        Color.white.frame(width: screen.customWidth, height: 1)
+                        ForEach(4...24, id: \.self) { hour in
+                            TimetableGridView(goorback, weekflag, num, hour)
+                            Color.white.frame(width: screen.customWidth, height: 1)
+                        }
                     }
                     
-                    // MARK: - Timetable Grid
-                    ScrollView {
-                        VStack(spacing: 30) {
-                            VStack(spacing: 0) {
-                                Color.white.frame(width: screen.customWidth, height: 1)
-                                HStack {
-                                    Color.white.frame(width: 1)
-                                    ZStack(alignment: .center) {
-                                        Color.primaryColor
-                                        Text(weekflag.weekdayLabel)
-                                            .foregroundColor(weekflag.weekLabelColor)
-                                            .fontWeight(.bold)
-                                    }.frame(height: 25)
-                                    Color.white.frame(width: 1)
-                                }.frame(width: screen.customWidth)
-                                Color.white.frame(width: screen.customWidth, height: 1)
-                                ForEach(4...25, id: \.self) { hour in
-                                    TimetableGridView(goorback, weekflag, num, hour)
-                                }
-                                Color.white.frame(width: screen.customWidth, height: 0.5)
-                            }
-                            
-                            // MARK: - Image Picker Button
-                            Button(action: {
-                                self.isShowImagePicker = true
-                            }, label: {
-                                Text("Select your timetable picture".localized)
-                                    .font(.body)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color.white)
-                                    .frame(width: screen.imagePickerButtonWidth, height: screen.operationButtonHeight)
-                                    .background(Color.accentColor)
-                                    .cornerRadius(screen.operationButtonCornerRadius)
-                            }).sheet(isPresented: $isShowImagePicker, content: {
-                                ImagePicker(sourceType: .photoLibrary, selectedImage: self.$image)
-                            })
-                            
-                            // MARK: - Selected Image Display
-                            Image(uiImage: self.image)
-                                .resizable()
-                                .scaledToFit()
-                                .padding(20)
-                                .frame(width: screen.customWidth)
-                        }
-                    }
+                    Spacer()
                 }
-                .navigationBarColor(backgroundColor: UIColor(Color.primaryColor), titleColor: .white)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("キャンセル") {
-                            presentationMode.wrappedValue.dismiss()
-                        }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarColor(
+                backgroundColor: UIColor(Color.primaryColor),
+                titleColor: .white,
+            )
+            .toolbarColorScheme(.light, for: .navigationBar)
+            .navigationViewStyle(StackNavigationViewStyle())
+            .navigationBarBackButtonHidden(true)
+            .edgesIgnoringSafeArea(.bottom)
+            .preferredColorScheme(.dark)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Timetable Settings".localized)
+                        .font(.system(size: screen.timetableTitleFontSize, weight: .bold))
                         .foregroundColor(.white)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    // Back button
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack {
+                            Image(systemName: "arrowshape.backward.fill")
+                                .font(.system(size: screen.timetableHeaderFontSize, weight: .bold))
+                                .foregroundColor(.white)
+                            Text("Back to homepage".localized)
+                                .font(.system(size: screen.timetableButtonFontSize, weight: .bold))
+                                .foregroundColor(.white)
+                        }
                     }
                 }
-                .edgesIgnoringSafeArea(.bottom)
             }
         }
     }

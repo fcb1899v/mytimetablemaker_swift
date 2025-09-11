@@ -102,9 +102,9 @@ struct MainContentView: View {
                     
                     // MARK: - Operation Buttons
                     HStack(alignment: .center, spacing: screen.operationButtonMargin) {
-                        // Display going home route button
+                        // Display return route button
                         OperationButton(isOn: myTransfer.isBack, label: "Back".localized, action: myTransfer.backButton)
-                        // Display outgoing route button
+                        // Display outbound route button
                         OperationButton(isOn: !myTransfer.isBack, label: "Go".localized, action: myTransfer.goButton)
                         // Time Start Button
                         OperationButton(isOn: !myTransfer.isTimeStop, label: "Start".localized, action: myTransfer.startButton)
@@ -147,7 +147,7 @@ struct MainContentView: View {
                         .frame(width: myTransfer.routeWidth, alignment: .top)
                         .padding(.horizontal, screen.routeSidePadding)
                         
-                        // MARK: - Second Route Display (if enabled)
+                        // MARK: - Second Direction Display (if enabled)
                         if (myTransfer.isShowRoute2) {
                             if(screen.bounds.size.width > 600) { Spacer() }
                             Divider()

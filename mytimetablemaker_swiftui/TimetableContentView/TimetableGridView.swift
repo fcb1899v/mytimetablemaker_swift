@@ -31,34 +31,38 @@ struct TimetableGridView: View {
         self.weekflag = weekflag
         self.num = num
         self.hour = hour
-        self.label = goorback.timetableTime(weekflag, num, hour)
+        // Initialize with empty string, will be updated by onChange
+        self.label = ""
     }
 
     var body: some View {
-        ZStack {
-            Color.white
-            LazyVGrid(columns: [GridItem(.flexible())], spacing: 2) {
-                HStack(spacing: 1) {
-                    Color.white.frame(width: 0)
-                    // MARK: - Hour Display
-                    ZStack {
-                        Color.primaryColor.frame(width: 30)
-                        Text(hour.addZeroTime).foregroundColor(Color.accentColor)
-                    }
-                    
-                    // MARK: - Time Edit Button
-                    Button (action: {
-                        self.isShowingAlert = true
-                        inputText = ""
-                    }) {
-                        ZStack(alignment: .leading) {
-                            Color.primaryColor
-                            Text(label)
-                                .padding(.leading, 2)
-                                .foregroundColor(.white)
-                                .onChange(of: goorback.timetableTime(weekflag, num, hour)) {
-                                    newValue in label = newValue
-                                }
+        ZStack(alignment: .topLeading) {
+            Color.primaryColor
+            HStack {
+                // MARK: - Hour Display
+                Color.white.frame(width: 1)
+                Text(hour.addZeroTime)
+                    .font(.system(size: screen.timetableTimeFontSize, weight: .bold))
+                    .foregroundColor(Color.accentColor)
+                    .frame(width: screen.timetableHourFrameWidth)
+                Color.white.frame(width: 1)
+                // MARK: - Time Edit Button
+                Button (action: {
+                    self.isShowingAlert = true
+                    inputText = ""
+                }) {
+                    Text(label)
+                        .font(.system(size: screen.timetableTimeFontSize, weight: .semibold))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .scaledToFit()
+                        .onAppear {
+                            // Load initial data
+                            label = goorback.timetableTime(weekflag, num, hour)
+                        }
+                        .onChange(of: goorback.timetableTime(weekflag, num, hour)) {
+                            newValue in label = newValue
                         }
                         // MARK: - Time Edit Alert
                         .alert("Add and delete departure time [min]".localized, isPresented: $isShowingAlert) {
@@ -98,7 +102,6 @@ struct TimetableGridView: View {
                         } message: {
                             Text(goorback.timetableAlertMessage(num, hour))
                         }
-                        
                         // MARK: - Copy Time Action Sheet
                         .actionSheet(isPresented: $isShowingNextAlert) {
                             ActionSheet(
@@ -117,11 +120,12 @@ struct TimetableGridView: View {
                                 } + [.cancel()]
                             )
                         }
-                    }
-                    Color.white.frame(width: 0)
                 }
+                Spacer()
+                Color.white.frame(width: 1)
             }
-        }.frame(width: screen.customWidth)
+        }
+        .frame(width: screen.customWidth, height: screen.timetableGridHeight)
     }
 }
 

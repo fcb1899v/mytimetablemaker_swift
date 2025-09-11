@@ -38,30 +38,25 @@
 "To " = "To ";
 "he" = "";
 "on " = "on ";
-"Going home route 1" = "Going home route 1";
-"Going home route 2" = "Going home route 2";
-"Outgoing route 1" = "Outgoing route 1";
-"Outgoing route 2" = "Outgoing route 2";
+"Return Route 1" = "Return Route 1";
+"Return Route 2" = "Return Route 2";
+"Outbound Route 1" = "Outbound Route 1";
+"Outbound Route 2" = "Outbound Route 2";
 " min" = " min";
 "[min]" = " [min]";
 "Not set" = "Not set";
 
-//TimeExtension.swift
-"weekend" = "weekend";
-"weekday" = "weekday";
-"E, MMM d, yyyy" = "E, MMM d, yyyy";
-
 //SettingsContentView
 "Settings" = "Settings";
 "Back to homepage" = "Back";
-"Route Settings" = "Route Settings";
+"Direction Settings" = "Direction Settings";
 "Setting home and destination" = "Setting home and destination";
-"Setting home route 1" = "Setting home route 1";
-"Setting home route 2" = "Setting home route 2";
-"Display home route 2" = "Display home route 2";
-"Setting outgoing route 1" = "Setting outgoing route 1";
-"Setting outgoing route 2" = "Setting outgoing route 2";
-"Display outgoing route 2" = "Display outgoing route 2";
+"Setting Return Route 1" = "Setting Return Route 1";
+"Setting Return Route 2" = "Setting Return Route 2";
+"Setting Outbound Route 1" = "Setting Outbound Route 1";
+"Setting Outbound Route 2" = "Setting Outbound Route 2";
+"Display Return Route 2" = "Display Return Route 2";
+"Display Outbound Route 2" = "Display Outbound Route 2";
 "Manage your data after login" = "Manage your data after login";
 
 "Various settings" = "Various settings";
@@ -128,10 +123,15 @@
 "Copying your timetable" = "Copying your timetable";
 "Copying all the time?" = "Copying all the time?";
 "Select your timetable picture" =  "Select your timetable picture";
+"Weekdays" = "Weekdays";
+"Weekends" = "Weekends";
+"weekends" = "weekends";
+"weekdays" = "weekdays";
+"Sat/Sun/PH" = "Sat/Sun/PH";
+"Weekdays (Except Public Holidays)" = "Weekdays (Except Public Holidays)";
+"Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
 
-//Timetable.swift
-"Weekday" = "Weekday";
-"Weekend" = "Weekend";
+"E, MMM d, yyyy" = "E, MMM d, yyyy";
 "Hour" = ":00-";
 " for " = " for ";
 "houmen" = "";
@@ -254,8 +254,9 @@
 "TokyuBus" = "Tokyu";
 
 //SettingsLineSheet
-"Select Line Color" = "Select Line Color";
+"Select Line Color" = "Line Color Select";
 "Timetable Settings" = "Timetable Settings";
+"Auto Generate Timetable" = "Auto Generate Timetable";
 "Update Line Data" = "Update Line Data";
 "Updated: " = "Updated: ";
 "Clear" = "Clear";

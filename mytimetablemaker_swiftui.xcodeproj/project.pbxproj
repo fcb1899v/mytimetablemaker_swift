@@ -60,7 +60,7 @@
 		02EBD0FD2E51500E00450D16 /* HomeOfficeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */; };
 		02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */; };
 		02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */; };
-		02EBD4A22E5ABF0B00450D16 /* CommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */; };
+		02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */; };
 		02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A62E5B023400450D16 /* RailwayModels.swift */; };
 		02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */; };
 		02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B12E5B080300450D16 /* LocalDataService.swift */; };
@@ -141,7 +141,7 @@
 		02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeOfficeView.swift; sourceTree = "<group>"; };
 		02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransferSheet.swift; sourceTree = "<group>"; };
 		02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineViewModel.swift; sourceTree = "<group>"; };
-		02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonComponents.swift; sourceTree = "<group>"; };
+		02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomComponents.swift; sourceTree = "<group>"; };
 		02EBD4A62E5B023400450D16 /* RailwayModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RailwayModels.swift; sourceTree = "<group>"; };
 		02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransferObjects.swift; sourceTree = "<group>"; };
 		02EBD4B12E5B080300450D16 /* LocalDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDataService.swift; sourceTree = "<group>"; };
@@ -211,7 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */,
-				02EBD4A12E5ABEFA00450D16 /* CommonComponents.swift */,
+				02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */,
 				02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */,
 				E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */,
 				02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */,
@@ -574,7 +574,7 @@
 				027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */,
 				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
 				02F02623261C935A00655E54 /* MyFirestore.swift in Sources */,
-				02EBD4A22E5ABF0B00450D16 /* CommonComponents.swift in Sources */,
+				02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */,
 				02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */,
 				02F025E7261BE54700655E54 /* MyLogin.swift in Sources */,
 				026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */,

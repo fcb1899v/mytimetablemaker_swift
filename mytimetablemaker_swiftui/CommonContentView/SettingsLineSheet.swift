@@ -95,12 +95,12 @@ struct SettingsLineSheet: View {
                 }
 
                 // MARK: - Departure Station Suggestions
-                if vm.showDepartureSuggestions && !vm.departureSuggestions.isEmpty {
+                if vm.showDepartureSuggestions && !vm.departureSuggestions.isEmpty && vm.lineSelected {
                     departureStationSuggestionsView
                 }
                 
                 // MARK: - Arrival Station Suggestions
-                if vm.showArrivalSuggestions && !vm.arrivalSuggestions.isEmpty {
+                if vm.showArrivalSuggestions && !vm.arrivalSuggestions.isEmpty && vm.lineSelected {
                     arrivalStationSuggestionsView
                 }
                 
@@ -110,7 +110,7 @@ struct SettingsLineSheet: View {
                 }
                 
                 // MARK: - Color Selection Section
-                if vm.showColorSelection || (!vm.query.isEmpty && vm.selectedLineColor == nil && (selected?.lineColor == nil)) {
+                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && (selected?.lineColor == nil)) {
                     colorSelectionSection
                 }
             }
@@ -163,14 +163,9 @@ struct SettingsLineSheet: View {
                         vm.isLineNumberChanging = true
                         
                         // Clear input if same station as arrival station is selected
-                        if let selectedArrivalStation = vm.selectedArrivalStation,
-                           station.getLocalizedName() == selectedArrivalStation.getLocalizedName() {
-                            vm.departureStationInput = ""
-                            vm.selectedDepartureStation = nil
-                        } else {
-                            vm.departureStationInput = station.getLocalizedName()
-                            vm.selectedDepartureStation = station
-                        }
+                        let isSameAsArrival = vm.selectedArrivalStation?.getLocalizedName() == station.getLocalizedName()
+                        vm.departureStationInput = isSameAsArrival ? "" : station.getLocalizedName()
+                        vm.selectedDepartureStation = isSameAsArrival ? nil : station
                         // Completely disable departure suggestions after selection
                         vm.showDepartureSuggestions = false
                         vm.isDepartureFieldFocused = false
@@ -224,14 +219,9 @@ struct SettingsLineSheet: View {
                         vm.isLineNumberChanging = true
                         
                         // Clear input if same station as departure station is selected
-                        if let selectedDepartureStation = vm.selectedDepartureStation,
-                           station.getLocalizedName() == selectedDepartureStation.getLocalizedName() {
-                            vm.arrivalStationInput = ""
-                            vm.selectedArrivalStation = nil
-                        } else {
-                            vm.arrivalStationInput = station.getLocalizedName()
-                            vm.selectedArrivalStation = station
-                        }
+                        let isSameAsDeparture = vm.selectedDepartureStation?.getLocalizedName() == station.getLocalizedName()
+                        vm.arrivalStationInput = isSameAsDeparture ? "" : station.getLocalizedName()
+                        vm.selectedArrivalStation = isSameAsDeparture ? nil : station
                         // Completely disable arrival suggestions after selection
                         vm.showArrivalSuggestions = false
                         vm.isArrivalFieldFocused = false
@@ -278,77 +268,17 @@ struct SettingsLineSheet: View {
     private var lineSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                ForEach(Array(removeDuplicates(from: vm.lineSuggestions).enumerated()), id: \.element.id) { index, line in
+                let uniqueLines = removeDuplicates(from: vm.lineSuggestions)
+                let enumeratedLines = Array(uniqueLines.enumerated())
+                ForEach(enumeratedLines, id: \.element.id) { index, line in
                     if index == 0 {
                         Color.clear.frame(height: 0)
                     }
                     Button {
-                        // Set line number changing flag to prevent unwanted suggestions
-                        vm.isLineNumberChanging = true
-                        
-                        selected = line
-                        // Set selectedLine for proper filtering
-                        vm.selectedLine = line
-                        // Update display name with operator information on selection
-                        vm.query = vm.displayName(for: line)
-                        focused = false
-                        // Clear station fields when line is selected
-                        vm.departureStationInput = ""
-                        vm.arrivalStationInput = ""
-                        vm.selectedDepartureStation = nil
-                        vm.selectedArrivalStation = nil
-                        // Clear suggestion displays
-                        vm.showDepartureSuggestions = false
-                        vm.departureSuggestions = []
-                        vm.showArrivalSuggestions = false
-                        vm.arrivalSuggestions = []
-                        vm.isDepartureFieldFocused = false
-                        vm.isArrivalFieldFocused = false
-                        // Reset ride time to 5 minutes when line is selected
-                        vm.selectedRideTime = 5
-                        // Set line color or default to accent color
-                        vm.selectedLineColor = line.lineColor ?? accentColorString
-                        
-                        // MARK: - Set Line Stations for All Routes
-                        // For bus routes, set bus stops from busstopPoleOrder
-                        if line.kind == .bus {
-                            if let busstopPoleOrder = line.busstopPoleOrder {
-                                let busStops: [Station] = busstopPoleOrder.compactMap { busStop in
-                                    // Use busstopPoleTitle for localized name if available, otherwise use English name from busstopPole
-                                    let stopName = busStop.busstopPoleTitle?.getLocalizedName() ?? 
-                                                 busStop.busStopEnglishName ?? 
-                                                 busStop.note ?? ""
-                                    guard !stopName.isEmpty else { return nil }
-                                    return Station(
-                                        name: stopName,
-                                        code: busStop.busstopPole,
-                                        title: StationTitle(
-                                            ja: busStop.busstopPoleTitle?.ja ?? busStop.note,
-                                            en: busStop.busstopPoleTitle?.en ?? busStop.busStopEnglishName ?? busStop.note
-                                        )
-                                    )
-                                }
-                                vm.lineStations = busStops
-                            }
-                        } else {
-                            // For railway lines, get stations from line name
-                            vm.lineStations = vm.getStationsForLineName(vm.displayName(for: line))
-                        }
-                        
-                        // MARK: - Auto Show Color Selection
-                        // Automatically show color selection sheet if line has no color
-                        if line.lineColor == nil {
-                            vm.showColorSelection = true
-                        }
-                        
-                        // Hide line suggestions after selection
-                        vm.showLineSuggestions = false
-                        vm.lineSelected = true
-                        
-                        // Reset flag after a short delay to allow UI updates
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            vm.isLineNumberChanging = false
-                        }
+                        handleLineSelection(line)
+                        handleLineStations(line)
+                        handleLineColorSelection(line)
+                        handleLineSelectionCompletion()
 
                     } label: {
                          HStack(alignment: .top, spacing: screen.settingsLineSheetHStackSpacing) {
@@ -364,7 +294,7 @@ struct SettingsLineSheet: View {
                              
                              if let operatorCode = line.operatorCode {
                                  let displayText = vm.getOperatorDisplayName(for: operatorCode, lineKind: line.kind)
-                                 Tag(text: displayText)
+                                 CustomTag(text: displayText)
                              }
                              
                              Spacer()
@@ -472,8 +402,8 @@ struct SettingsLineSheet: View {
     private var saveButtonSection: some View {
         actionButton(
             title: "Save".localized,
-            icon: "square.and.arrow.down.fill",
-            color: selected == nil && !vm.isCustomLineStationInputComplete() ? .gray : .accentColor
+            icon: "square.and.arrow.down.on.square.fill",
+            color: vm.isAllNotEmpty ? .accentColor: .gray,
         ) {
             vm.handleLineSave(dismiss: dismiss)
         }
@@ -485,27 +415,32 @@ struct SettingsLineSheet: View {
     /// Button to open timetable configuration screen
     private var timetableSettingsButtonSection: some View {
         actionButton(
-            title: "Timetable Settings".localized,
-            icon: "clock.fill",
-            color: .primaryColor
+            title: vm.isAllSelected ? "Auto Generate Timetable".localized: "Timetable Settings".localized,
+            icon: vm.isAllSelected ? "clock.badge.checkmark.fill": "clock.fill",
+            color: vm.isAllSelected ? .accentColor: .primaryColor,
         ) {
+            if vm.isAllSelected {
+                Task {
+                    await vm.getTargetTimetableData()
+                }
+            }
             showTimetableSettings = true
         }.padding(.top, screen.settingsLineSheetPadding)
     }
-        
+    
     // MARK: - Action Button Helper
     /// Reusable button component with consistent styling
     @ViewBuilder
     private func actionButton(
         title: String,
         icon: String,
-        color: Color = .accentColor,
+        color: Color,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack {
                 Image(systemName: icon)
-                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .medium))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
                 Text(title)
                     .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
             }
@@ -521,11 +456,11 @@ struct SettingsLineSheet: View {
     
 
     // MARK: - Header View
-    /// Main header view with route selection dropdown and cancel button
+    /// Main header view with direction selection dropdown and cancel button
     private var routeHeaderMenu: some View {
         HStack {
             
-            // Route selection dropdown
+            // Direction selection dropdown
             Menu {
                 ForEach(vm.goorbackOptions, id: \.self) { option in
                     Button(vm.goorbackDisplayNames[option] ?? option) {
@@ -536,7 +471,7 @@ struct SettingsLineSheet: View {
                 HStack {
                     Text(vm.goorbackDisplayNames[vm.selectedGoorback] ?? vm.selectedGoorback)
                         .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
                     
                     Image(systemName: "chevron.down")
                         .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .medium))
@@ -579,7 +514,7 @@ struct SettingsLineSheet: View {
             } label: {
                 HStack {
                     Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
-                        .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
+                        .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
                         .foregroundColor(Color.black)
                     
                     Image(systemName: "chevron.down")
@@ -593,47 +528,19 @@ struct SettingsLineSheet: View {
 
             // MARK: - Transportation Kind Toggle
             // Custom toggle for switching between railway and bus transportation types
-            TransportationToggle(isRailway: Binding(
-                get: { vm.selectedTransportationKind == .railway },
-                set: { isRailway in
-                    // Update transportation kind immediately for responsive UI
-                    vm.selectedTransportationKind = isRailway ? .railway : .bus
-                    
-                    // Clear line name and station selections when switching transportation types
-                    vm.query = ""
-                    vm.selectedLine = nil
-                    vm.selectedDepartureStation = nil
-                    vm.selectedArrivalStation = nil
-                    vm.departureStationInput = ""
-                    vm.arrivalStationInput = ""
-                    vm.lineStations = []
-                    vm.selectedLineColor = accentColorString
-                    
-                    // Clear current suggestions immediately for instant UI update
-                    vm.lineSuggestions = []
-                    vm.showLineSuggestions = false
-                    vm.nameCounts = [:]
-                    vm.showDepartureSuggestions = false
-                    vm.showArrivalSuggestions = false
-                    vm.departureSuggestions = []
-                    vm.arrivalSuggestions = []
-                    vm.isDepartureFieldFocused = false
-                    vm.isArrivalFieldFocused = false
-                    vm.departureStationSelected = false
-                    vm.arrivalStationSelected = false
-                    vm.lineSelected = false
-                    vm.showStationSelection = false
-                    
-                    // Only filter if there's an active query and it's not empty
-                    if !vm.query.isEmpty && vm.query.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
-                        // Use longer delay for bus to allow UI to fully update
-                        let delay = isRailway ? 0.1 : 0.2
-                        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                            Task { await vm.filter(vm.query) }
-                        }
+            CustomToggle(
+                isLeftSelected: Binding(
+                    get: { vm.selectedTransportationKind == .railway },
+                    set: { isRailway in
+                        vm.switchTransportationKind(isRailway)
                     }
-                }
-            ))
+                ),
+                leftText: "Railway".localized,
+                leftColor: .primaryColor,
+                rightText: "Bus".localized,
+                rightColor: .primaryColor,
+                circleColor: .white
+            )
         }
         .padding(.top, screen.settingsLineSheetPadding)
     }
@@ -675,7 +582,7 @@ struct SettingsLineSheet: View {
                     .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
                     .foregroundColor(.primaryColor)
 
-                TextField("Enter line name or bus route name".localized, text: $vm.query)
+                TextField("Enter line name or bus route name".localized, text: $vm.lineInput)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .font(.system(size: screen.settingsLineSheetInputFontSize))
@@ -686,7 +593,7 @@ struct SettingsLineSheet: View {
                     .focused($focused)
                     .onSubmit {
                         // Handle enter key press
-                        Task { await vm.filter(vm.query) }
+                        Task { await vm.filter(vm.lineInput) }
                     }
                     .onTapGesture {
                         // Don't show suggestions if line number is being changed
@@ -700,16 +607,16 @@ struct SettingsLineSheet: View {
                         vm.showLineSuggestions = true
                         vm.lineSelected = false
                         // Trigger filtering if there's already input
-                        if !vm.query.isEmpty {
-                            Task { await vm.filter(vm.query) }
+                        if !vm.lineInput.isEmpty {
+                            Task { await vm.filter(vm.lineInput) }
                         }
                     }
                 
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(vm.query.isEmpty ? .gray : .accentColor)
+                    .foregroundColor(vm.lineInput.isEmpty ? .gray : .accentColor)
             }
-            .onChange(of: vm.query) { newValue in
-                handleQueryChange(newValue)
+            .onChange(of: vm.lineInput) { newValue in
+                handleLineInputChange(newValue)
             }
         }
     }
@@ -724,9 +631,7 @@ struct SettingsLineSheet: View {
 
             // Display selected color as a circle
             Circle()
-                .fill(vm.selectedLineColor != nil ? vm.selectedLineColor!.safeColor :
-                      selected?.lineColor != nil ? selected!.lineColor!.safeColor :
-                      Color.primaryColor)
+                .fill(vm.selectedLineColor?.safeColor ?? selected?.lineColor?.safeColor ?? Color.primaryColor)
                 .frame(width: screen.settingsLineSheetColorCircleSmallSize, height: screen.settingsLineSheetColorCircleSmallSize)
                 .overlay(Circle().stroke(Color.primaryColor, lineWidth: screen.settingsLineSheetStrokeLineWidth))
                 .padding(.horizontal, screen.settingsLineSheetColorPaddingHorizontal)
@@ -754,7 +659,7 @@ struct SettingsLineSheet: View {
             // MARK: - Clear Button
             Button(action: {
                 // Clear line name
-                vm.query = ""
+                vm.lineInput = ""
                 selected = nil
                 
                 // Reset station selection
@@ -769,9 +674,6 @@ struct SettingsLineSheet: View {
                 
                 // Reset line color to accent (not saved to UserDefaults)
                 vm.selectedLineColor = accentColorString
-                
-                // Reset transportation kind to railway
-                vm.selectedTransportationKind = .railway
                 
                 // Reset transfer settings to none
                 vm.selectedTransportation = "none"
@@ -1023,8 +925,8 @@ struct SettingsLineSheet: View {
         vm.isDepartureFieldFocused = true
         vm.departureStationSelected = false
         // Clear input if same station as arrival station is entered
-        if let selectedArrivalStation = vm.selectedArrivalStation,
-           newValue == selectedArrivalStation.getLocalizedName() {
+        let isSameAsArrival = vm.selectedArrivalStation?.getLocalizedName() == newValue
+        if isSameAsArrival {
             vm.departureStationInput = ""
             vm.selectedDepartureStation = nil
         } else {
@@ -1045,8 +947,8 @@ struct SettingsLineSheet: View {
         vm.isArrivalFieldFocused = true
         vm.arrivalStationSelected = false
         // Clear input message on input
-        if let selectedDepartureStation = vm.selectedDepartureStation,
-           newValue == selectedDepartureStation.getLocalizedName() {
+        let isSameAsDeparture = vm.selectedDepartureStation?.getLocalizedName() == newValue
+        if isSameAsDeparture {
             vm.arrivalStationInput = ""
             vm.selectedArrivalStation = nil
         } else {
@@ -1055,9 +957,9 @@ struct SettingsLineSheet: View {
         }
     }
     
-    // MARK: - Query Change Handler
-    /// Handles changes in line name query field
-    private func handleQueryChange(_ newValue: String) {
+    // MARK: - LineInput Change Handler
+    /// Handles changes in line name lineInput field
+    private func handleLineInputChange(_ newValue: String) {
         // Ensure focus is maintained when typing
         if !newValue.isEmpty {
             focused = true
@@ -1068,10 +970,10 @@ struct SettingsLineSheet: View {
             return
         }
         
-        // Trigger filtering when query changes
+        // Trigger filtering when lineInput changes
         Task { await vm.filter(newValue) }
         
-        // Reset station selection when query changes
+        // Reset station selection when lineInput changes
         let currentLineName = vm.selectedLine?.name ?? ""
         let currentDisplayName: String
         if let selectedLine = vm.selectedLine {
@@ -1106,6 +1008,58 @@ struct SettingsLineSheet: View {
             if !newValue.isEmpty {
                 vm.showStationSelection = true
             }
+        }
+    }
+    
+    // MARK: - Helper Functions
+    private func handleLineSelection(_ line: TransportationLine) {
+        // Set line number changing flag to prevent unwanted suggestions
+        vm.isLineNumberChanging = true
+        
+        selected = line
+        // Set selectedLine for proper filtering
+        vm.selectedLine = line
+        // Update display name with operator information on selection
+        vm.lineInput = vm.displayName(for: line)
+        focused = false
+        // Clear station fields when line is selected
+        vm.departureStationInput = ""
+        vm.arrivalStationInput = ""
+        vm.selectedDepartureStation = nil
+        vm.selectedArrivalStation = nil
+        // Clear suggestion displays
+        vm.showDepartureSuggestions = false
+        vm.departureSuggestions = []
+        vm.showArrivalSuggestions = false
+        vm.arrivalSuggestions = []
+        vm.isDepartureFieldFocused = false
+        vm.isArrivalFieldFocused = false
+        // Reset ride time to 5 minutes when line is selected
+        vm.selectedRideTime = 5
+        // Set line color or default to accent color
+        vm.selectedLineColor = line.lineColor ?? accentColorString
+    }
+    
+    private func handleLineStations(_ line: TransportationLine) {
+        vm.lineStations = vm.getStationsForSelectedLine()
+    }
+    
+    private func handleLineColorSelection(_ line: TransportationLine) {
+        // MARK: - Auto Show Color Selection
+        // Automatically show color selection sheet if line has no color
+        if line.lineColor == nil {
+            vm.showColorSelection = true
+        }
+    }
+    
+    private func handleLineSelectionCompletion() {
+        // Hide line suggestions after selection
+        vm.showLineSuggestions = false
+        vm.lineSelected = true
+        
+        // Reset flag after a short delay to allow UI updates
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            vm.isLineNumberChanging = false
         }
     }
 }

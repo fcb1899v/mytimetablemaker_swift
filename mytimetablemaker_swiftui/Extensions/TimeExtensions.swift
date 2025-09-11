@@ -147,10 +147,10 @@ extension String {
     func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
     func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized))"}
     var routeTitle: String { return
-        (self == "back1") ? "Setting home route 1".localized:
-        (self == "back2") ? "Setting home route 2".localized:
-        (self == "go1") ? "Setting outgoing route 1".localized:
-        "Setting outgoing route 2".localized
+        (self == "back1") ? "Setting Return Route 1".localized:
+        (self == "back2") ? "Setting Return Route 2".localized:
+        (self == "go1") ? "Setting Outbound Route 1".localized:
+        "Setting Outbound Route 2".localized
     }
     var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 

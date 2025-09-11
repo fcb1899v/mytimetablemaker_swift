@@ -102,7 +102,7 @@ final class APINetworkTest: XCTestCase {
         print(String(repeating: "=", count: 50))
         
         // Test railways data save
-        let result = await net.updateSingleSource(.railways, consumerKey: consumerKey)
+        let result = await net.updateIndividualOperator(.jreast, consumerKey: consumerKey)
         
         switch result {
         case .success():
@@ -155,15 +155,15 @@ final class APINetworkTest: XCTestCase {
         
         // First request to get data and cache it
         print("📡 First request (should get 200)")
-        let firstResult = try await net.fetchWithUpdateIfNeeded(source: .railways, consumerKey: consumerKey)
-        print("📦 First request result: \(firstResult.updated ? "Updated" : "Cached")")
-        print("📊 Data size: \(firstResult.data.count) bytes")
+        let firstResult = try await net.fetchIndividualOperatorData(.jreast, consumerKey: consumerKey)
+        print("📦 First request result: Data fetched")
+        print("📊 Data size: \(firstResult.count) bytes")
         
         // Second request should get 304 if cache is valid
         print("📡 Second request (should get 304)")
-        let secondResult = try await net.fetchWithUpdateIfNeeded(source: .railways, consumerKey: consumerKey)
-        print("📦 Second request result: \(secondResult.updated ? "Updated" : "Cached")")
-        print("📊 Data size: \(secondResult.data.count) bytes")
+        let secondResult = try await net.fetchIndividualOperatorData(.jreast, consumerKey: consumerKey)
+        print("📦 Second request result: Data fetched")
+        print("📊 Data size: \(secondResult.count) bytes")
         
         // Check cache metadata
         let cache = CacheStore()
