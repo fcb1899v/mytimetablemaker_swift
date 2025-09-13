@@ -26,32 +26,6 @@ enum ODPTDataType: CaseIterable {
         case .busTimetable: return "odpt:BusTimetable"
         }
     }
-    
-    // MARK: - Display Properties
-    var displayName: String {
-        switch self {
-        case .railwayLine: return "鉄道路線"
-        case .busRoutePattern: return "バス路線"
-        case .railwayTimetable: return "鉄道時刻表"
-        case .busTimetable: return "バス時刻表"
-        }
-    }
-    
-    // MARK: - Transportation Type
-    var isRailway: Bool {
-        switch self {
-        case .railwayLine, .railwayTimetable: return true
-        case .busRoutePattern, .busTimetable: return false
-        }
-    }
-    
-    // MARK: - Data Category
-    var isLineData: Bool {
-        switch self {
-        case .railwayLine, .busRoutePattern: return true
-        case .railwayTimetable, .busTimetable: return false
-        }
-    }
 }
 
 // MARK: - ODPT API Type Enum

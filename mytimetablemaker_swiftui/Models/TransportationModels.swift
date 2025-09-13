@@ -15,9 +15,9 @@ enum TransportationType: String, CaseIterable {
     case walking = "walking"    // Walking between stations
     case none = "none"          // No transfer required
     
-    // MARK: - Display Properties
+    // MARK: - Transportation Method Display Name
     // Localized display name for each transportation method
-    var displayName: String {
+    var transportationDisplayName: String {
         switch self {
             case .none: return "None".localized
             case .walking: return "Walking".localized

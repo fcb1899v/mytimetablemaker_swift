@@ -93,9 +93,9 @@ enum LocalDataSource: CaseIterable {
         return "\(normalizedName)_\(transportationType.rawValue.lowercased()).json"
     }
     
-    // MARK: - Display Name Mapping
-    // Get localized display name for UI presentation
-    var displayName: String {
+    // MARK: - Operator Display Name Mapping
+    // Get localized display name for operator selection UI
+    var operatorDisplayName: String {
         switch self {
         case .jrEast: return "JR東日本"
         case .tokyoMetro: return "東京メトロ"
@@ -179,23 +179,424 @@ enum LocalDataSource: CaseIterable {
         }
     }
     
+    // MARK: - Train Type Mapping
+    // Get available train types for each operator
+    var operatorTrainType: [String] {
+        switch self {
+        case .jrEast: return [
+            "odpt.TrainType:JR-East.ChuoSpecialRapid",
+            "odpt.TrainType:JR-East.CommuterRapid",
+            "odpt.TrainType:JR-East.CommuterSpecialRapid",
+            "odpt.TrainType:JR-East.Express",
+            "odpt.TrainType:JR-East.LimitedExpress",
+            "odpt.TrainType:JR-East.Liner",
+            "odpt.TrainType:JR-East.Local",
+            "odpt.TrainType:JR-East.OmeSpecialRapid",
+            "odpt.TrainType:JR-East.Rapid",
+            "odpt.TrainType:JR-East.SpecialRapid"
+        ]
+        case .tokyoMetro: return [
+            "odpt.TrainType:TokyoMetro.CommuterExpress",
+            "odpt.TrainType:TokyoMetro.CommuterLimitedExpress",
+            "odpt.TrainType:TokyoMetro.CommuterRapid",
+            "odpt.TrainType:TokyoMetro.Express",
+            "odpt.TrainType:TokyoMetro.F-Liner",
+            "odpt.TrainType:TokyoMetro.LimitedExpress",
+            "odpt.TrainType:TokyoMetro.Local",
+            "odpt.TrainType:TokyoMetro.RapidExpress",
+            "odpt.TrainType:TokyoMetro.Rapid",
+            "odpt.TrainType:TokyoMetro.S-TRAIN",
+            "odpt.TrainType:TokyoMetro.SemiExpress",
+            "odpt.TrainType:TokyoMetro.TH-LINER"
+        ]
+        case .toeiMetro: return [
+            "odpt.TrainType:Toei.AccessExpress",
+            "odpt.TrainType:Toei.AirportRapidLimitedExpress",
+            "odpt.TrainType:Toei.CommuterLimitedExpress",
+            "odpt.TrainType:Toei.Express",
+            "odpt.TrainType:Toei.LimitedExpress",
+            "odpt.TrainType:Toei.Local",
+            "odpt.TrainType:Toei.RapidLimitedExpress",
+            "odpt.TrainType:Toei.Rapid"
+        ]
+        case .tokyu: return [
+            "odpt.TrainType:Tokyu.CommuterLimitedExpress",
+            "odpt.TrainType:Tokyu.Express",
+            "odpt.TrainType:Tokyu.F-Liner",
+            "odpt.TrainType:Tokyu.LimitedExpress",
+            "odpt.TrainType:Tokyu.Local",
+            "odpt.TrainType:Tokyu.S-TRAIN",
+            "odpt.TrainType:Tokyu.SemiExpress"
+        ]
+        case .keikyu: return [
+            "odpt.TrainType:Keikyu.AccessExpress",
+            "odpt.TrainType:Keikyu.AirportRapidLimitedExpress",
+            "odpt.TrainType:Keikyu.CommuterLimitedExpress",
+            "odpt.TrainType:Keikyu.EveningWing",
+            "odpt.TrainType:Keikyu.Express",
+            "odpt.TrainType:Keikyu.LimitedExpress",
+            "odpt.TrainType:Keikyu.Local",
+            "odpt.TrainType:Keikyu.MorningWing",
+            "odpt.TrainType:Keikyu.RapidLimitedExpress",
+            "odpt.TrainType:Keikyu.Rapid"
+        ]
+        case .odakyu: return [
+            "odpt.TrainType:Odakyu.CommuterExpress",
+            "odpt.TrainType:Odakyu.CommuterSemiExpress",
+            "odpt.TrainType:Odakyu.Express",
+            "odpt.TrainType:Odakyu.LimitedExpress",
+            "odpt.TrainType:Odakyu.Local",
+            "odpt.TrainType:Odakyu.RapidExpress",
+            "odpt.TrainType:Odakyu.SemiExpress"
+        ]
+        case .tobu: return [
+            "odpt.TrainType:Tobu.Express",
+            "odpt.TrainType:Tobu.F-Liner",
+            "odpt.TrainType:Tobu.KawagoeLimitedExpress",
+            "odpt.TrainType:Tobu.LimitedExpress",
+            "odpt.TrainType:Tobu.Local",
+            "odpt.TrainType:Tobu.RapidExpress",
+            "odpt.TrainType:Tobu.Rapid",
+            "odpt.TrainType:Tobu.SL-Taiju",
+            "odpt.TrainType:Tobu.SectionExpress",
+            "odpt.TrainType:Tobu.SectionSemiExpress",
+            "odpt.TrainType:Tobu.SemiExpress",
+            "odpt.TrainType:Tobu.TH-LINER",
+            "odpt.TrainType:Tobu.TJ-Liner"
+        ]
+        case .seibu: return [
+            "odpt.TrainType:Seibu.CommuterExpress",
+            "odpt.TrainType:Seibu.CommuterSemiExpress",
+            "odpt.TrainType:Seibu.Express",
+            "odpt.TrainType:Seibu.F-Liner",
+            "odpt.TrainType:Seibu.HaijimaLiner",
+            "odpt.TrainType:Seibu.LimitedExpress",
+            "odpt.TrainType:Seibu.Local",
+            "odpt.TrainType:Seibu.RapidExpress",
+            "odpt.TrainType:Seibu.Rapid",
+            "odpt.TrainType:Seibu.S-TRAIN",
+            "odpt.TrainType:Seibu.SemiExpress"
+        ]
+        case .sotetsu: return [
+            "odpt.TrainType:Sotetsu.CommuterExpress",
+            "odpt.TrainType:Sotetsu.CommuterLimitedExpress",
+            "odpt.TrainType:Sotetsu.Express",
+            "odpt.TrainType:Sotetsu.LimitedExpress",
+            "odpt.TrainType:Sotetsu.Local",
+            "odpt.TrainType:Sotetsu.Rapid"
+        ]
+        case .yokohamaMetro: return [
+            "odpt.TrainType:YokohamaMunicipal.Local",
+            "odpt.TrainType:YokohamaMunicipal.Rapid"
+        ]
+        case .rinkai: return [
+            "odpt.TrainType:TWR.CommuterRapid",
+            "odpt.TrainType:TWR.Local",
+            "odpt.TrainType:TWR.Rapid"
+        ]
+        case .yurikamome: return [
+            "odpt.TrainType:Yurikamome.Local"
+        ]
+        case .tsukuba: return [
+            "odpt.TrainType:MIR.CommuterRapid",
+            "odpt.TrainType:MIR.Local",
+            "odpt.TrainType:MIR.Rapid",
+            "odpt.TrainType:MIR.SemiRapid"
+        ]
+        case .tama: return [
+            "odpt.TrainType:TamaMonorail.Local"
+        ]
+        // Bus operators don't have train types
+        case .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus, .sotetsuBus,
+             .kanachuBus, .kokusaiKogyo:
+            return []
+        }
+    }
+    
+    // MARK: - API Data Type Enum
+    // Defines the type of data to request from the API
+    enum APIDataType {
+        case lineInfo       // Railway line or bus route information
+        case timetable      // Timetable data
+        
+        var railwayOdpTDataType: ODPTDataType {
+            switch self {
+            case .lineInfo: return .railwayLine
+            case .timetable: return .railwayTimetable
+            }
+        }
+        
+        var busOdpTDataType: ODPTDataType {
+            switch self {
+            case .lineInfo: return .busRoutePattern
+            case .timetable: return .busTimetable
+            }
+        }
+    }
+    
     // MARK: - Unified API Link Generation
-    // Generate API links for both line information and timetable data
-    func apiLink(for kind: TransportationLine.Kind, isTimetable: Bool) -> String {
-        let dataType: ODPTDataType = (kind == .railway) ? 
-            (isTimetable ? .railwayTimetable : .railwayLine) :
-            (isTimetable ? .busTimetable : .busRoutePattern)
-        return operatorCode.odptURL(dataType: dataType, apiType: apiType)
+    // Generate API links using clean enum-based approach
+    func apiLink(for dataType: APIDataType) -> String {
+        let odptDataType = transportationType == .railway ? 
+            dataType.railwayOdpTDataType : 
+            dataType.busOdpTDataType
+        return operatorCode.odptURL(dataType: odptDataType, apiType: apiType)
     }
+}
+
+// MARK: - Train Type Enumeration
+// Comprehensive enumeration of all train types from ODPT API data
+enum TrainType: String, CaseIterable {
+    // Sotetsu Railway
+    case sotetsuCommuterExpress = "odpt.TrainType:Sotetsu.CommuterExpress"
+    case sotetsuCommuterLimitedExpress = "odpt.TrainType:Sotetsu.CommuterLimitedExpress"
+    case sotetsuExpress = "odpt.TrainType:Sotetsu.Express"
+    case sotetsuLimitedExpress = "odpt.TrainType:Sotetsu.LimitedExpress"
+    case sotetsuLocal = "odpt.TrainType:Sotetsu.Local"
+    case sotetsuRapid = "odpt.TrainType:Sotetsu.Rapid"
     
-    // MARK: - API Link (Legacy - for backward compatibility)
-    var lineInfomationLink: String {
-        return apiLink(for: transportationType, isTimetable: false)
-    }
+    // Odakyu Railway
+    case odakyuCommuterExpress = "odpt.TrainType:Odakyu.CommuterExpress"
+    case odakyuCommuterSemiExpress = "odpt.TrainType:Odakyu.CommuterSemiExpress"
+    case odakyuExpress = "odpt.TrainType:Odakyu.Express"
+    case odakyuLimitedExpress = "odpt.TrainType:Odakyu.LimitedExpress"
+    case odakyuLocal = "odpt.TrainType:Odakyu.Local"
+    case odakyuRapidExpress = "odpt.TrainType:Odakyu.RapidExpress"
+    case odakyuSemiExpress = "odpt.TrainType:Odakyu.SemiExpress"
     
-    // MARK: - API Link (Legacy - for backward compatibility)
-    var timetableInfomationLink: String {
-        return apiLink(for: transportationType, isTimetable: true)
+    // Keikyu Railway
+    case keikyuAccessExpress = "odpt.TrainType:Keikyu.AccessExpress"
+    case keikyuAirportRapidLimitedExpress = "odpt.TrainType:Keikyu.AirportRapidLimitedExpress"
+    case keikyuCommuterLimitedExpress = "odpt.TrainType:Keikyu.CommuterLimitedExpress"
+    case keikyuEveningWing = "odpt.TrainType:Keikyu.EveningWing"
+    case keikyuExpress = "odpt.TrainType:Keikyu.Express"
+    case keikyuLimitedExpress = "odpt.TrainType:Keikyu.LimitedExpress"
+    case keikyuLocal = "odpt.TrainType:Keikyu.Local"
+    case keikyuMorningWing = "odpt.TrainType:Keikyu.MorningWing"
+    case keikyuRapidLimitedExpress = "odpt.TrainType:Keikyu.RapidLimitedExpress"
+    case keikyuRapid = "odpt.TrainType:Keikyu.Rapid"
+    
+    // Seibu Railway
+    case seibuCommuterExpress = "odpt.TrainType:Seibu.CommuterExpress"
+    case seibuCommuterSemiExpress = "odpt.TrainType:Seibu.CommuterSemiExpress"
+    case seibuExpress = "odpt.TrainType:Seibu.Express"
+    case seibuFLiner = "odpt.TrainType:Seibu.F-Liner"
+    case seibuHaijimaLiner = "odpt.TrainType:Seibu.HaijimaLiner"
+    case seibuLimitedExpress = "odpt.TrainType:Seibu.LimitedExpress"
+    case seibuLocal = "odpt.TrainType:Seibu.Local"
+    case seibuRapidExpress = "odpt.TrainType:Seibu.RapidExpress"
+    case seibuRapid = "odpt.TrainType:Seibu.Rapid"
+    case seibuSTrain = "odpt.TrainType:Seibu.S-TRAIN"
+    case seibuSemiExpress = "odpt.TrainType:Seibu.SemiExpress"
+    
+    // Tokyu Railway
+    case tokyuCommuterLimitedExpress = "odpt.TrainType:Tokyu.CommuterLimitedExpress"
+    case tokyuExpress = "odpt.TrainType:Tokyu.Express"
+    case tokyuFLiner = "odpt.TrainType:Tokyu.F-Liner"
+    case tokyuLimitedExpress = "odpt.TrainType:Tokyu.LimitedExpress"
+    case tokyuLocal = "odpt.TrainType:Tokyu.Local"
+    case tokyuSTrain = "odpt.TrainType:Tokyu.S-TRAIN"
+    case tokyuSemiExpress = "odpt.TrainType:Tokyu.SemiExpress"
+    
+    // Tobu Railway
+    case tobuExpress = "odpt.TrainType:Tobu.Express"
+    case tobuFLiner = "odpt.TrainType:Tobu.F-Liner"
+    case tobuKawagoeLimitedExpress = "odpt.TrainType:Tobu.KawagoeLimitedExpress"
+    case tobuLimitedExpress = "odpt.TrainType:Tobu.LimitedExpress"
+    case tobuLocal = "odpt.TrainType:Tobu.Local"
+    case tobuRapidExpress = "odpt.TrainType:Tobu.RapidExpress"
+    case tobuRapid = "odpt.TrainType:Tobu.Rapid"
+    case tobuSLTaiju = "odpt.TrainType:Tobu.SL-Taiju"
+    case tobuSectionExpress = "odpt.TrainType:Tobu.SectionExpress"
+    case tobuSectionSemiExpress = "odpt.TrainType:Tobu.SectionSemiExpress"
+    case tobuSemiExpress = "odpt.TrainType:Tobu.SemiExpress"
+    case tobuTHLiner = "odpt.TrainType:Tobu.TH-LINER"
+    case tobuTJLiner = "odpt.TrainType:Tobu.TJ-Liner"
+    
+    // JR-East
+    case jrEastChuoSpecialRapid = "odpt.TrainType:JR-East.ChuoSpecialRapid"
+    case jrEastCommuterRapid = "odpt.TrainType:JR-East.CommuterRapid"
+    case jrEastCommuterSpecialRapid = "odpt.TrainType:JR-East.CommuterSpecialRapid"
+    case jrEastExpress = "odpt.TrainType:JR-East.Express"
+    case jrEastLimitedExpress = "odpt.TrainType:JR-East.LimitedExpress"
+    case jrEastLiner = "odpt.TrainType:JR-East.Liner"
+    case jrEastLocal = "odpt.TrainType:JR-East.Local"
+    case jrEastOmeSpecialRapid = "odpt.TrainType:JR-East.OmeSpecialRapid"
+    case jrEastRapid = "odpt.TrainType:JR-East.Rapid"
+    case jrEastSpecialRapid = "odpt.TrainType:JR-East.SpecialRapid"
+    
+    // Toei Subway
+    case toeiAccessExpress = "odpt.TrainType:Toei.AccessExpress"
+    case toeiAirportRapidLimitedExpress = "odpt.TrainType:Toei.AirportRapidLimitedExpress"
+    case toeiCommuterLimitedExpress = "odpt.TrainType:Toei.CommuterLimitedExpress"
+    case toeiExpress = "odpt.TrainType:Toei.Express"
+    case toeiLimitedExpress = "odpt.TrainType:Toei.LimitedExpress"
+    case toeiLocal = "odpt.TrainType:Toei.Local"
+    case toeiRapidLimitedExpress = "odpt.TrainType:Toei.RapidLimitedExpress"
+    case toeiRapid = "odpt.TrainType:Toei.Rapid"
+    
+    // Yokohama Municipal Subway
+    case yokohamaMunicipalLocal = "odpt.TrainType:YokohamaMunicipal.Local"
+    case yokohamaMunicipalRapid = "odpt.TrainType:YokohamaMunicipal.Rapid"
+    
+    // Yurikamome
+    case yurikamomeLocal = "odpt.TrainType:Yurikamome.Local"
+    
+    // MIR (Tsukuba Express)
+    case mirCommuterRapid = "odpt.TrainType:MIR.CommuterRapid"
+    case mirLocal = "odpt.TrainType:MIR.Local"
+    case mirRapid = "odpt.TrainType:MIR.Rapid"
+    case mirSemiRapid = "odpt.TrainType:MIR.SemiRapid"
+    
+    // Tama Monorail
+    case tamaMonorailLocal = "odpt.TrainType:TamaMonorail.Local"
+    
+    // Tokyo Metro
+    case tokyoMetroCommuterExpress = "odpt.TrainType:TokyoMetro.CommuterExpress"
+    case tokyoMetroCommuterLimitedExpress = "odpt.TrainType:TokyoMetro.CommuterLimitedExpress"
+    case tokyoMetroCommuterRapid = "odpt.TrainType:TokyoMetro.CommuterRapid"
+    case tokyoMetroExpress = "odpt.TrainType:TokyoMetro.Express"
+    case tokyoMetroFLiner = "odpt.TrainType:TokyoMetro.F-Liner"
+    case tokyoMetroLimitedExpress = "odpt.TrainType:TokyoMetro.LimitedExpress"
+    case tokyoMetroLocal = "odpt.TrainType:TokyoMetro.Local"
+    case tokyoMetroRapidExpress = "odpt.TrainType:TokyoMetro.RapidExpress"
+    case tokyoMetroRapid = "odpt.TrainType:TokyoMetro.Rapid"
+    case tokyoMetroSTrain = "odpt.TrainType:TokyoMetro.S-TRAIN"
+    case tokyoMetroSemiExpress = "odpt.TrainType:TokyoMetro.SemiExpress"
+    case tokyoMetroTHLiner = "odpt.TrainType:TokyoMetro.TH-LINER"
+    
+    // TWR (Rinkai Line)
+    case twrCommuterRapid = "odpt.TrainType:TWR.CommuterRapid"
+    case twrLocal = "odpt.TrainType:TWR.Local"
+    case twrRapid = "odpt.TrainType:TWR.Rapid"
+    
+    // MARK: - Display Name
+    // Get localized display name for train type
+    var displayName: String {
+        switch self {
+        // Sotetsu
+        case .sotetsuCommuterExpress: return "CommuterExpress".localized
+        case .sotetsuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
+        case .sotetsuExpress: return "Express".localized
+        case .sotetsuLimitedExpress: return "LimitedExpress".localized
+        case .sotetsuLocal: return "Local".localized
+        case .sotetsuRapid: return "Rapid".localized
+        
+        // Odakyu
+        case .odakyuCommuterExpress: return "CommuterExpress".localized
+        case .odakyuCommuterSemiExpress: return "CommuterSemiExpress".localized
+        case .odakyuExpress: return "Express".localized
+        case .odakyuLimitedExpress: return "LimitedExpress".localized
+        case .odakyuLocal: return "Local".localized
+        case .odakyuRapidExpress: return "RapidExpress".localized
+        case .odakyuSemiExpress: return "SemiExpress".localized
+        
+        // Keikyu
+        case .keikyuAccessExpress: return "AccessExpress".localized
+        case .keikyuAirportRapidLimitedExpress: return "AirportRapidLimitedExpress".localized
+        case .keikyuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
+        case .keikyuEveningWing: return "EveningWing".localized
+        case .keikyuExpress: return "Express".localized
+        case .keikyuLimitedExpress: return "LimitedExpress".localized
+        case .keikyuLocal: return "Local".localized
+        case .keikyuMorningWing: return "MorningWing".localized
+        case .keikyuRapidLimitedExpress: return "RapidLimitedExpress".localized
+        case .keikyuRapid: return "Rapid".localized
+        
+        // Seibu
+        case .seibuCommuterExpress: return "CommuterExpress".localized
+        case .seibuCommuterSemiExpress: return "CommuterSemiExpress".localized
+        case .seibuExpress: return "Express".localized
+        case .seibuFLiner: return "FLiner".localized
+        case .seibuHaijimaLiner: return "HaijimaLiner".localized
+        case .seibuLimitedExpress: return "LimitedExpress".localized
+        case .seibuLocal: return "Local".localized
+        case .seibuRapidExpress: return "RapidExpress".localized
+        case .seibuRapid: return "Rapid".localized
+        case .seibuSTrain: return "STrain".localized
+        case .seibuSemiExpress: return "SemiExpress".localized
+        
+        // Tokyu
+        case .tokyuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
+        case .tokyuExpress: return "Express".localized
+        case .tokyuFLiner: return "FLiner".localized
+        case .tokyuLimitedExpress: return "LimitedExpress".localized
+        case .tokyuLocal: return "Local".localized
+        case .tokyuSTrain: return "STrain".localized
+        case .tokyuSemiExpress: return "SemiExpress".localized
+        
+        // Tobu
+        case .tobuExpress: return "Express".localized
+        case .tobuFLiner: return "FLiner".localized
+        case .tobuKawagoeLimitedExpress: return "KawagoeLimitedExpress".localized
+        case .tobuLimitedExpress: return "LimitedExpress".localized
+        case .tobuLocal: return "Local".localized
+        case .tobuRapidExpress: return "RapidExpress".localized
+        case .tobuRapid: return "Rapid".localized
+        case .tobuSLTaiju: return "SLTaiju".localized
+        case .tobuSectionExpress: return "SectionExpress".localized
+        case .tobuSectionSemiExpress: return "SectionSemiExpress".localized
+        case .tobuSemiExpress: return "SemiExpress".localized
+        case .tobuTHLiner: return "THLiner".localized
+        case .tobuTJLiner: return "TJLiner".localized
+        
+        // JR-East
+        case .jrEastChuoSpecialRapid: return "ChuoSpecialRapid".localized
+        case .jrEastCommuterRapid: return "CommuterRapid".localized
+        case .jrEastCommuterSpecialRapid: return "CommuterSpecialRapid".localized
+        case .jrEastExpress: return "Express".localized
+        case .jrEastLimitedExpress: return "LimitedExpress".localized
+        case .jrEastLiner: return "Liner".localized
+        case .jrEastLocal: return "Local".localized
+        case .jrEastOmeSpecialRapid: return "OmeSpecialRapid".localized
+        case .jrEastRapid: return "Rapid".localized
+        case .jrEastSpecialRapid: return "SpecialRapid".localized
+        
+        // Toei
+        case .toeiAccessExpress: return "AccessExpress".localized
+        case .toeiAirportRapidLimitedExpress: return "AirportRapidLimitedExpress".localized
+        case .toeiCommuterLimitedExpress: return "CommuterLimitedExpress".localized
+        case .toeiExpress: return "Express".localized
+        case .toeiLimitedExpress: return "LimitedExpress".localized
+        case .toeiLocal: return "Local".localized
+        case .toeiRapidLimitedExpress: return "RapidLimitedExpress".localized
+        case .toeiRapid: return "Rapid".localized
+        
+        // Yokohama Municipal
+        case .yokohamaMunicipalLocal: return "Local".localized
+        case .yokohamaMunicipalRapid: return "Rapid".localized
+        
+        // Yurikamome
+        case .yurikamomeLocal: return "Local".localized
+        
+        // MIR
+        case .mirCommuterRapid: return "CommuterRapid".localized
+        case .mirLocal: return "Local".localized
+        case .mirRapid: return "Rapid".localized
+        case .mirSemiRapid: return "SemiRapid".localized
+        
+        // Tama Monorail
+        case .tamaMonorailLocal: return "Local".localized
+        
+        // Tokyo Metro
+        case .tokyoMetroCommuterExpress: return "CommuterExpress".localized
+        case .tokyoMetroCommuterLimitedExpress: return "CommuterLimitedExpress".localized
+        case .tokyoMetroCommuterRapid: return "CommuterRapid".localized
+        case .tokyoMetroExpress: return "Express".localized
+        case .tokyoMetroFLiner: return "FLiner".localized
+        case .tokyoMetroLimitedExpress: return "LimitedExpress".localized
+        case .tokyoMetroLocal: return "Local".localized
+        case .tokyoMetroRapidExpress: return "RapidExpress".localized
+        case .tokyoMetroRapid: return "Rapid".localized
+        case .tokyoMetroSTrain: return "STrain".localized
+        case .tokyoMetroSemiExpress: return "SemiExpress".localized
+        case .tokyoMetroTHLiner: return "THLiner".localized
+        
+        // TWR
+        case .twrCommuterRapid: return "CommuterRapid".localized
+        case .twrLocal: return "Local".localized
+        case .twrRapid: return "Rapid".localized
+        }
     }
 }
 

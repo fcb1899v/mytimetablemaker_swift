@@ -272,15 +272,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Simplified search for bus data to improve performance
         if selectedTransportationKind == .bus {
-            let starts = searchData.filter { displayName(for: $0).normalizedForSearch.hasPrefix(t) }
-            let contains = searchData.filter { !displayName(for: $0).normalizedForSearch.hasPrefix(t) && displayName(for: $0).normalizedForSearch.contains(t) }
+            let starts = searchData.filter { lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) }
+            let contains = searchData.filter { !lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) && lineDisplayName(for: $0).normalizedForSearch.contains(t) }
             let allResults = starts + contains
             
             // Remove duplicates by displayName to show only unique direction names
-            let displayNames = allResults.map { displayName(for: $0) }
+            let displayNames = allResults.map { lineDisplayName(for: $0) }
             let uniqueDisplayNames = Array(Set(displayNames))
             let uniqueResults = uniqueDisplayNames.compactMap { uniqueDisplayName in
-                allResults.first { displayName(for: $0) == uniqueDisplayName }
+                allResults.first { lineDisplayName(for: $0) == uniqueDisplayName }
             }
             
             lineSuggestions = Array(uniqueResults.prefix(10))
@@ -309,17 +309,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Show suggestions based on results count
         if lineSuggestions.count == 1 {
             let singleLine = lineSuggestions[0]
-            showLineSuggestions = displayName(for: singleLine).normalizedForSearch != q.normalizedForSearch
+            showLineSuggestions = lineDisplayName(for: singleLine).normalizedForSearch != q.normalizedForSearch
         } else {
             showLineSuggestions = !lineSuggestions.isEmpty
         }
         
-        nameCounts = Dictionary(grouping: lineSuggestions) { displayName(for: $0) }
+        nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
             .mapValues { $0.count }
     }
     
     // Get localized display name for transportation line
-    func displayName(for line: TransportationLine) -> String {
+    func lineDisplayName(for line: TransportationLine) -> String {
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         
         if line.kind == .bus {
@@ -648,7 +648,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Update all line information at once
     func updateDisplay() {
         if let line = selectedLine {
-            lineInput = displayName(for: line)
+            lineInput = lineDisplayName(for: line)
         }
         
         if let line = selectedLine, let lineColor = line.lineColor {
@@ -1348,7 +1348,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func getTimetableInformationLink() -> String {
         let operatorCode = selectedLine?.operatorCode ?? ""
         let dataSource = LocalDataSource.allCases.first { $0.operatorCode == operatorCode }
-        return dataSource?.timetableInfomationLink ?? ""
+        return dataSource?.apiLink(for: .timetable) ?? ""
     }
     
     // Generate station timetable link with flexible parameters
@@ -1373,124 +1373,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         return "\(timetableLink)\(lineName).\(stationName).\(direction)\(dateSuffix)"
     }
-    
-    // MARK: - Train Number Extraction
-    // Get first train number and departure time from a timetable link
-    private func getFirstTrainNumbers(from urlString: String, index: Int) async -> (trainNumber: String, departureTime: String) {
-        guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL: \(urlString)")
-            return ("", "")
-        }
         
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                guard httpResponse.statusCode == 200 else {
-                    print("❌ HTTP error \(httpResponse.statusCode) for URL: \(urlString)")
-                    return ("", "")
-                }
-            }
-            
-            // Parse JSON and extract first train number and departure time
-            if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]],
-               let firstObject = json.first,
-               let stationTimetableObjects = firstObject["odpt:stationTimetableObject"] as? [[String: Any]],
-               let firstTimetableObject = stationTimetableObjects.first {
-                
-                let trainNumber = firstTimetableObject["odpt:trainNumber"] as? String ?? "No train number"
-                let departureTime = firstTimetableObject["odpt:departureTime"] as? String ?? "No departure time"
-                
-                print("✅ Link \(index) - First Train:")
-                print("   Train Number: \(trainNumber)")
-                print("   Departure Time: \(departureTime)")
-                
-                return (trainNumber, departureTime)
-                
-            } else {
-                print("❌ Link \(index) - No stationTimetableObject found in JSON data")
-                return ("", "")
-            }
-            
-        } catch {
-            print("❌ Failed to process timetable data from \(urlString): \(error)")
-            return ("", "")
-        }
-    }
-    
-    // MARK: - Train Number Matching with Time Comparison
-    // Find matching train number and compare departure times
-    private func findMatchingTrainAndCompare(from urlString: String, index: Int, targetTrain: (trainNumber: String, departureTime: String), compareWith: (trainNumber: String, departureTime: String)) async -> (found: Bool, departureTime: String, isEarlier: Bool?) {
-        guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL: \(urlString)")
-            return (false, "", nil)
-        }
-        
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                guard httpResponse.statusCode == 200 else {
-                    print("❌ HTTP error \(httpResponse.statusCode) for URL: \(urlString)")
-                    return (false, "", nil)
-                }
-            }
-            
-            // Parse JSON and search for matching train number
-            if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]],
-               let firstObject = json.first,
-               let stationTimetableObjects = firstObject["odpt:stationTimetableObject"] as? [[String: Any]] {
-                
-                print("🔍 Link \(index) - Searching for train number: \(targetTrain.trainNumber)")
-                
-                // Search through all stationTimetableObjects for matching train number
-                for timetableObject in stationTimetableObjects {
-                    let trainNumber = timetableObject["odpt:trainNumber"] as? String ?? ""
-                    let departureTime = timetableObject["odpt:departureTime"] as? String ?? ""
-                    
-                    if trainNumber == targetTrain.trainNumber {
-                        print("✅ Link \(index) - Found matching train:")
-                        print("   Train Number: \(trainNumber)")
-                        print("   Departure Time: \(departureTime)")
-                        
-                        // Compare times
-                        let isEarlier = compareTimes(time1: departureTime, time2: compareWith.departureTime)
-                        print("   Time Comparison: \(departureTime) vs \(compareWith.departureTime)")
-                        print("   Link \(index) is \(isEarlier ? "earlier" : "later") than Link \(index == 2 ? 0 : 1)")
-                        
-                        return (true, departureTime, isEarlier)
-                    }
-                }
-                
-                print("❌ Link \(index) - No matching train number found")
-                return (false, "", nil)
-                
-            } else {
-                print("❌ Link \(index) - No stationTimetableObject found in JSON data")
-                return (false, "", nil)
-            }
-            
-        } catch {
-            print("❌ Failed to process timetable data from \(urlString): \(error)")
-            return (false, "", nil)
-        }
-    }
-    
-    // MARK: - Time Comparison Helper
-    // Compare two time strings in HH:mm format
-    private func compareTimes(time1: String, time2: String) -> Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        
-        guard let date1 = formatter.date(from: time1),
-              let date2 = formatter.date(from: time2) else {
-            print("❌ Failed to parse time strings: \(time1), \(time2)")
-            return false
-        }
-        
-        return date1 < date2
-    }
-    
     // MARK: - Target Timetable Data Processing
     // Get timetable data for determined direction and find common train numbers
     func getTargetTimetableData() async {
@@ -1512,66 +1395,85 @@ final class SettingsLineSheetViewModel: ObservableObject {
             print("Link \(index): \(link)")
         }
         
-        //　Process weekday data (isWeekday = true)
-        await processWeekdayTimetableData(links: links)
+        let weekdayDepartureData = await getTimetableData(from: links[0]) // isDeparture: true, isWeekday: true
+        let weekendDepartureData = await getTimetableData(from: links[1]) // isDeparture: true, isWeekday: false
+        let weekdayArrivalData = await getTimetableData(from: links[2])   // isDeparture: false, isWeekday: true
+        let weekendArrivalData = await getTimetableData(from: links[3])    // isDeparture: false, isWeekday: false
+
+        print("📊 Timetable Data Results:")
+        print("   weekdayDepartureData count: \(weekdayDepartureData.count)")
+        print("   weekendDepartureData count: \(weekendDepartureData.count)")
+        print("   weekdayArrivalData count: \(weekdayArrivalData.count)")
+        print("   weekendArrivalData count: \(weekendArrivalData.count)")
         
-        // Process weekend data (isWeekday = false)
-        await processWeekendTimetableData(links: links)
+        if weekdayDepartureData.count > 0 {
+            print("   weekdayDepartureData first item: \(weekdayDepartureData[0])")
+        }
+        if weekendDepartureData.count > 0 {
+            print("   weekendDepartureData first item: \(weekendDepartureData[0])")
+        }
+        if weekdayArrivalData.count > 0 {
+            print("   weekdayArrivalData first item: \(weekdayArrivalData[0])")
+        }
+        if weekendArrivalData.count > 0 {
+            print("   weekendArrivalData first item: \(weekendArrivalData[0])")
+        }
+
+        // [Weekday, Weekend] timetable data
+        var commonTrainDepartureTime: [String] = []
+        for isWeekday in [true, false] {
+            let departureData = isWeekday ? weekdayDepartureData : weekendDepartureData
+            let arrivalData = isWeekday ? weekdayArrivalData : weekendArrivalData
+            
+            print("🔄 Processing \(isWeekday ? "Weekday" : "Weekend") data:")
+            print("   departureData count: \(departureData.count)")
+            print("   arrivalData count: \(arrivalData.count)")
+            
+            if !departureData.isEmpty && !departureData[0].trainNumber.isEmpty {
+                print("   Using getCommonTrainNumberDepartureTime (train numbers available)")
+                commonTrainDepartureTime = await getCommonTrainNumberDepartureTime(
+                    departureTimetableData: isWeekday ? weekdayDepartureData : weekendDepartureData,
+                    arrivalTimetableData: isWeekday ? weekdayArrivalData : weekendArrivalData,
+                    isWeekday: isWeekday
+                )
+            } else {
+                commonTrainDepartureTime = await getEstimatedDepartureTime(
+                    departureTimetableData: isWeekday ? weekdayDepartureData : weekendDepartureData,
+                    arrivalTimetableData: isWeekday ? weekdayArrivalData : weekendArrivalData,
+                    isWeekday: isWeekday,
+                    approxRideTime: selectedRideTime > 0 ? selectedRideTime : nil
+                )
+            }
+            if !commonTrainDepartureTime.isEmpty {
+                saveTimetableToUserDefaults(departureTime: commonTrainDepartureTime, isWeekday: isWeekday)
+            }
+        }
     }
     
-    // MARK: - Weekday Timetable Processing
-    // Process weekday timetable data and find common train numbers
-    private func processWeekdayTimetableData(links: [String]) async {
-        print("\n📅 Weekday Timetable Analysis:")
-        
-        // Get departure and arrival data for weekday
-        let departureData = await getTimetableData(from: links[0]) // isDeparture: true, isWeekday: true
-        let arrivalData = await getTimetableData(from: links[2])   // isDeparture: false, isWeekday: true
-        
+    // MARK: - Timetable Data Processing
+    // Process timetable data and find common train numbers for specified day type
+    private func getCommonTrainNumberDepartureTime(
+        departureTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
+        arrivalTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
+        isWeekday: Bool
+    ) async -> [String] {
         // Find common train numbers
-        let commonTrains = findCommonTrainNumbers(departureData: departureData, arrivalData: arrivalData)
-        
-        print("✅ Weekday Common Trains Found: \(commonTrains.count)")
-        for train in commonTrains {
-            print("   Train Number: \(train.trainNumber), Departure: \(train.departureTime)")
+        let departureTrainNumbers = Set(departureTimetableData.map { $0.trainNumber })
+        let arrivalTrainNumbers = Set(arrivalTimetableData.map { $0.trainNumber })
+        let commonTrainNumbers = departureTrainNumbers.intersection(arrivalTrainNumbers)
+        let commonTrainDepartureTime = departureTimetableData.filter { commonTrainNumbers.contains($0.trainNumber) }.map { $0.departureTime }
+        print("✅ \(isWeekday ? "Weekday" : "Weekend") Common Trains Found: \(commonTrainDepartureTime.count)")
+        for departureTime in commonTrainDepartureTime {
+            print("Departure Time: \(departureTime)")
         }
-        
-        // Print departure timetable for common trains
-        print("\n🚉 Weekday Departure Timetable:")
-        printDepartureTimetable(data: departureData, commonTrains: commonTrains)
-        
-        // Save timetable data to UserDefaults
-        saveTimetableToUserDefaults(data: departureData, commonTrains: commonTrains, isWeekday: true)
-    }
-    
-    // MARK: - Weekend Timetable Processing
-    // Process weekend timetable data and find common train numbers
-    private func processWeekendTimetableData(links: [String]) async {
-        print("\n📅 Weekend Timetable Analysis:")
-        
-        // Get departure and arrival data for weekend
-        let departureData = await getTimetableData(from: links[1]) // isDeparture: true, isWeekday: false
-        let arrivalData = await getTimetableData(from: links[3])    // isDeparture: false, isWeekday: false
-        
-        // Find common train numbers
-        let commonTrains = findCommonTrainNumbers(departureData: departureData, arrivalData: arrivalData)
-        
-        print("✅ Weekend Common Trains Found: \(commonTrains.count)")
-        for train in commonTrains {
-            print("   Train Number: \(train.trainNumber), Departure: \(train.departureTime)")
-        }
-        
-        // Print departure timetable for common trains
-        print("\n🚉 Weekend Departure Timetable:")
-        printDepartureTimetable(data: departureData, commonTrains: commonTrains)
-        
-        // Save timetable data to UserDefaults
-        saveTimetableToUserDefaults(data: departureData, commonTrains: commonTrains, isWeekday: false)
+        return commonTrainDepartureTime
     }
     
     // MARK: - Timetable Data Retrieval
     // Get timetable data from API endpoint
-    private func getTimetableData(from urlString: String) async -> [(trainNumber: String, departureTime: String)] {
+    private func getTimetableData(from urlString: String) async -> [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)] {
+        print("🌐 getTimetableData - Fetching from: \(urlString)")
+        
         guard let url = URL(string: urlString) else {
             print("❌ Invalid URL: \(urlString)")
             return []
@@ -1581,24 +1483,60 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let (data, response) = try await URLSession.shared.data(from: url)
             
             if let httpResponse = response as? HTTPURLResponse {
+                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 200 else {
                     print("❌ HTTP error \(httpResponse.statusCode) for URL: \(urlString)")
                     return []
                 }
             }
             
+            print("📦 Received data size: \(data.count) bytes")
+            
             // Parse JSON and extract train data
             if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]],
                let firstObject = json.first,
                let stationTimetableObjects = firstObject["odpt:stationTimetableObject"] as? [[String: Any]] {
                 
-                return stationTimetableObjects.compactMap { timetableObject in
-                    guard let trainNumber = timetableObject["odpt:trainNumber"] as? String,
-                          let departureTime = timetableObject["odpt:departureTime"] as? String else {
+                print("📋 Found \(stationTimetableObjects.count) timetable objects")
+                
+                // Debug: Check first few objects to understand structure
+                let result: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)] = stationTimetableObjects.compactMap { timetableObject in
+                    let trainNumber = timetableObject["odpt:trainNumber"] as? String
+                    let departureTime = timetableObject["odpt:departureTime"] as? String
+                                        
+                    guard let departureTime = departureTime else {
+                        print("❌ Missing departureTime")
                         return nil
                     }
-                    return (trainNumber: trainNumber, departureTime: departureTime)
+                    
+                    // Handle case where trainNumber field doesn't exist or is empty
+                    if let trainNumber = trainNumber, !trainNumber.isEmpty {
+                        // trainNumber exists and is not empty
+                        print("✅ Valid entry with trainNumber: \(trainNumber)")
+                        return (trainNumber: trainNumber, departureTime: departureTime, destinationStation: "", trainType: "")
+                    } else {
+                        // trainNumber doesn't exist or is empty, use destinationStation and trainType
+                        let destinationStationArray = timetableObject["odpt:destinationStation"] as? [String]
+                        let trainType = timetableObject["odpt:trainType"] as? String
+                                                
+                        guard let destinationStationArray = destinationStationArray,
+                              !destinationStationArray.isEmpty,
+                              let trainType = trainType else {
+                            print("❌ Missing destinationStation or trainType for no trainNumber")
+                            return nil
+                        }
+                        
+                        let destinationStation = destinationStationArray[0]
+                        return (trainNumber: "", departureTime: departureTime, destinationStation: destinationStation, trainType: trainType)
+                    }
                 }
+                
+                print("✅ Parsed \(result.count) valid timetable entries")
+                if result.count > 0 {
+                    print("   First entry: \(result[0])")
+                }
+                
+                return result
                 
             } else {
                 print("❌ No stationTimetableObject found in JSON data")
@@ -1611,45 +1549,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Common Train Number Finding
-    // Find common train numbers between departure and arrival data
-    private func findCommonTrainNumbers(departureData: [(trainNumber: String, departureTime: String)], arrivalData: [(trainNumber: String, departureTime: String)]) -> [(trainNumber: String, departureTime: String)] {
-        let departureTrainNumbers = Set(departureData.map { $0.trainNumber })
-        let arrivalTrainNumbers = Set(arrivalData.map { $0.trainNumber })
-        
-        let commonTrainNumbers = departureTrainNumbers.intersection(arrivalTrainNumbers)
-        
-        return departureData.filter { commonTrainNumbers.contains($0.trainNumber) }
-    }
-    
-    // MARK: - Departure Timetable Printing
-    // Print departure timetable for common trains
-    private func printDepartureTimetable(data: [(trainNumber: String, departureTime: String)], commonTrains: [(trainNumber: String, departureTime: String)]) {
-        let commonTrainNumbers = Set(commonTrains.map { $0.trainNumber })
-        
-        for train in data {
-            if commonTrainNumbers.contains(train.trainNumber) {
-                print("   \(train.departureTime) - Train \(train.trainNumber)")
-            }
-        }
-    }
-    
     // MARK: - Timetable Data Saving
     // Save timetable data to UserDefaults for display in TimetableContentView
-    private func saveTimetableToUserDefaults(data: [(trainNumber: String, departureTime: String)], commonTrains: [(trainNumber: String, departureTime: String)], isWeekday: Bool) {
-        let commonTrainNumbers = Set(commonTrains.map { $0.trainNumber })
+    private func saveTimetableToUserDefaults(departureTime: [String], isWeekday: Bool) {
+        // Clear existing timetable data for this line and day type
+        clearTimetableData(isWeekday: isWeekday)
         
         // Group times by hour using Int arrays for better performance
         var hourlyMinutes: [Int: [Int]] = [:]
         
-        for train in data {
-            if commonTrainNumbers.contains(train.trainNumber) {
-                let timeComponents = train.departureTime.components(separatedBy: ":")
-                if timeComponents.count == 2,
-                   let hour = Int(timeComponents[0]),
-                   let minute = Int(timeComponents[1]) {
-                    hourlyMinutes[hour, default: []].append(minute)
-                }
+        for timeString in departureTime {
+            let timeComponents = timeString.components(separatedBy: ":")
+            if timeComponents.count == 2,
+               let hour = Int(timeComponents[0]),
+               let minute = Int(timeComponents[1]) {
+                hourlyMinutes[hour, default: []].append(minute)
             }
         }
         
@@ -1663,6 +1577,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let formattedTimes = newTimes.isEmpty ? "" : " \(newTimes)"
             UserDefaults.standard.set(formattedTimes, forKey: timetableKey)
             print("💾 Saved timetable for \(isWeekday ? "weekdays" : "weekends") hour \(hour): \(formattedTimes)")
+        }
+    }
+    
+    // MARK: - Timetable Data Clearing
+    // Clear existing timetable data for specified day type
+    private func clearTimetableData(isWeekday: Bool) {
+        print("🧹 Clearing timetable data for \(isWeekday ? "weekdays" : "weekends")")
+        
+        // Clear all hours (4-24) for the specified day type and line
+        for hour in 4...24 {
+            let timetableKey = selectedGoorback.timetableKey(isWeekday, selectedLineNumber - 1, hour)
+            UserDefaults.standard.removeObject(forKey: timetableKey)
         }
     }
     
@@ -1706,5 +1632,267 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
         }
     }
+    
+    // MARK: - Utility Functions for trainNumber-less Processing
+    // Extract tail part of station code for matching
+    private func tail(_ stationCode: String) -> String {
+        return stationCode.components(separatedBy: ".").last ?? stationCode
+    }
+    
+    // Calculate percentile using linear interpolation
+    private func percentile(_ xs: [Double], _ p: Double) -> Double {
+        guard !xs.isEmpty else { return .nan }
+        let s = xs.sorted()
+        let n = s.count
+        let r = max(0.0, min(1.0, p/100.0))
+        let idx = r * Double(n - 1)
+        let lo = Int(floor(idx))
+        let hi = Int(ceil(idx))
+        if lo == hi { return s[lo] }
+        let w = idx - Double(lo)
+        return s[lo] * (1 - w) + s[hi] * w
+    }
+    
+    // Calculate Freedman-Diaconis bin width
+    private func fdBinWidth(_ xs: [Double]) -> Double {
+        guard xs.count >= 2 else { return 1.0 }
+        let q1 = percentile(xs, 25)
+        let q3 = percentile(xs, 75)
+        let iqr = q3 - q1
+        let n = Double(xs.count)
+        return 2.0 * iqr / pow(n, 1.0/3.0)
+    }
+    
+    // Calculate MAD-based sigma
+    private func madSigma(_ xs: [Double]) -> Double {
+        guard !xs.isEmpty else { return .nan }
+        let median = percentile(xs, 50)
+        let deviations = xs.map { abs($0 - median) }
+        let mad = percentile(deviations, 50)
+        return 1.4826 * mad // MAD to sigma conversion factor
+    }
+    
+    // Convert time strings to Date objects with day handling
+    private func unwrapTimes(_ hhmmList: [String]) -> [Date] {
+        let cal = Calendar(identifier: .gregorian)
+        var out: [Date] = []
+        var day = 0
+        var last: Date? = nil
+        for s in hhmmList {
+            let parts = s.split(separator: ":")
+            guard parts.count == 2, let hh = Int(parts[0]), let mm = Int(parts[1]) else { continue }
+            var dc = DateComponents(year: 2000, month: 1, day: 1 + day, hour: hh, minute: mm)
+            var t = cal.date(from: dc)!
+            if let l = last, t < l {
+                day += 1
+                dc.day = 1 + day
+                t = cal.date(from: dc)!
+            }
+            out.append(t); last = t
+        }
+        return out
+    }
+
+    // Calculate percentiles using linear interpolation
+    private func percentiles(_ xs: [Double], ps: [Double]) -> [Double] {
+        guard !xs.isEmpty else { return Array(repeating: .nan, count: ps.count) }
+        let s = xs.sorted()
+        let n = s.count
+        return ps.map { p in
+            let r = max(0.0, min(1.0, p/100.0))
+            let idx = r * Double(n - 1)
+            let lo = Int(floor(idx))
+            let hi = Int(ceil(idx))
+            if lo == hi { return s[lo] }
+            let w = idx - Double(lo)
+            return s[lo] * (1 - w) + s[hi] * w
+        }
+    }
+        
+    // MARK: - trainNumber-less Timetable Generation
+    // Estimate departure times using advanced statistical methods when train numbers are not available
+    private func getEstimatedDepartureTime(
+        departureTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
+        arrivalTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
+        isWeekday: Bool,
+        approxRideTime: Int? = nil
+    ) async -> [String] {
+
+        _ = isWeekday // Used by caller, unused here
+
+        // 1) Build destination station and trainType sets from arrival data
+        var destFull = Set<String>(), destTail = Set<String>()
+        var destTypesArr = Set<String>(), destTypesDep = Set<String>()
+        for r in arrivalTimetableData {
+            if !r.destinationStation.isEmpty {
+                destFull.insert(r.destinationStation); destTail.insert(tail(r.destinationStation))
+            }
+            if !r.trainType.isEmpty {
+                destTypesArr.insert(r.trainType); destTypesDep.insert(r.trainType)
+            }
+        }
+
+        // 2) Filter departure station trains (destination match + strict trainType match)
+        struct OItem { let hhmm: String; let trainType: String; let finalTail: String }
+        var O: [OItem] = []
+        for r in departureTimetableData {
+            guard !r.departureTime.isEmpty else { continue }
+            let lastTail = tail(r.destinationStation)
+            let stationOK = !r.destinationStation.isEmpty &&
+                            (destFull.contains(r.destinationStation) || destTail.contains(lastTail))
+            let typeOK = !r.trainType.isEmpty &&
+                         (destTypesArr.contains(r.trainType) || destTypesDep.contains(r.trainType))
+            if stationOK && typeOK {
+                O.append(.init(hhmm: r.departureTime, trainType: r.trainType, finalTail: lastTail))
+            }
+        }
+        if O.isEmpty { return [] }
+
+        // 3) Build arrival station streams (arrival/departure) grouped by trainType
+        struct DItem { let hhmm: String; let trainType: String }
+        var Ddep = [String: [DItem]](), Darr = [String: [DItem]]()
+        for r in arrivalTimetableData {
+            guard !r.trainType.isEmpty else { continue }
+            if !r.departureTime.isEmpty { Ddep[r.trainType, default: []].append(.init(hhmm: r.departureTime, trainType: r.trainType)) }
+            // Note: Add arrival time to Darr[...] here if arrival time is available (adjust for input type)
+        }
+
+        // 4) Learn and match by trainType
+        let ObyType = Dictionary(grouping: O, by: { $0.trainType })
+        var picked: [String] = []
+
+        func buildStream(_ rows: [DItem]) -> (times: [Date], hhmm: [String]) {
+            let hh = rows.map { $0.hhmm }; let t = unwrapTimes(hh)
+            let pairs = zip(t, hh).sorted { $0.0 < $1.0 }
+            return (pairs.map{$0.0}, pairs.map{$0.1})
+        }
+
+        func tryStream(A_times: [Date], A_hhmm: [String], B_times: [Date]) -> (score: Int, out: [String]) {
+            if A_times.isEmpty || B_times.isEmpty { return (0, []) }
+            let Asec = A_times.map { $0.timeIntervalSince1970 }
+            let Bsec = B_times.map { $0.timeIntervalSince1970 }
+            let a10 = percentile(Asec, 10), a90 = percentile(Asec, 90)
+            let b10 = percentile(Bsec, 10), b90 = percentile(Bsec, 90)
+            var Tmin = Int(floor((b10 - a90) / 60.0))
+            var Tmax = Int(ceil ((b90 - a10) / 60.0))
+            if !Double(Tmin).isFinite || !Double(Tmax).isFinite || Tmax <= Tmin { Tmin = 1; Tmax = 240 }
+            Tmin = max(1, Tmin); Tmax = min(240, Tmax)
+            
+            // Use user input to refine search window if available
+            var roughMin = Double(Tmin * 60)
+            var roughMax = Double(Tmax * 60)
+            
+            if let approxMin = approxRideTime {
+                // Determine window width dynamically from "departure interval" (data-driven)
+                var head: [Double] = []
+                for i in 1..<Bsec.count { head.append(abs(Bsec[i] - Bsec[i-1])) }
+                let h75min = (percentile(head, 75) / 60.0).isFinite ? percentile(head, 75) / 60.0 : 10.0
+                // Window width = clamp(4 * p75(headway), 15, 40) [minutes] → adaptive width based on route congestion
+                let winMin = max(20, min(60, Int(ceil(6.0 * h75min))))
+                roughMin = Double(max(1, (approxMin - winMin)) * 60)  // 最低1分
+                roughMax = Double(min(240, (approxMin + winMin)) * 60)  // 最大240分
+            }
+
+            // Collect deltas using two-pointer technique
+            var deltas: [Double] = []; var j = 0
+            for a in Asec {
+                while j < Bsec.count && (Bsec[j] - a) < roughMin { j += 1 }
+                var k = j
+                while k < Bsec.count && (Bsec[k] - a) <= roughMax { deltas.append(Bsec[k] - a); k += 1 }
+                if j >= Bsec.count { break }
+            }
+            if deltas.isEmpty { return (0, []) }
+
+            // T* (representative travel time) estimation: prioritize bins close to user input
+            let bw = fdBinWidth(deltas); let dmin = deltas.min()!, dmax = deltas.max()!
+            let bins = max(1, Int(ceil((dmax - dmin) / bw)))
+            var counts = Array(repeating: 0, count: bins)
+            for d in deltas { let idx = min(bins - 1, max(0, Int((d - dmin) / bw))); counts[idx] += 1 }
+            
+            // Tie-breaker: prioritize bins closer to user input (minutes)
+            let preferredSec = approxRideTime.map { Double($0 * 60) }
+            let peakIdx = (0..<bins).max { (i, j) -> Bool in
+                if counts[i] != counts[j] { return counts[i] < counts[j] }
+                guard let pref = preferredSec else { return false }
+                let ci = dmin + (Double(i) + 0.5) * bw
+                let cj = dmin + (Double(j) + 0.5) * bw
+                return abs(ci - pref) > abs(cj - pref)
+            } ?? 0
+            let Tstar = dmin + (Double(peakIdx) + 0.5) * bw
+
+            // Calculate tau (p30 → MAD → minimum value)
+            var tau = Double.nan
+            if Bsec.count >= 3 {
+                var hw: [Double] = []; for i in 1..<Bsec.count { hw.append(abs(Bsec[i] - Bsec[i-1])) }
+                let p35 = percentile(hw, 35)
+                if p35.isFinite && p35 > 0 { tau = p35 }
+            }
+            if !tau.isFinite {
+                let local = deltas.filter { abs($0 - Tstar) <= bw }
+                let sigma = madSigma(local)
+                if sigma.isFinite && sigma > 0 { 
+                    // Use approxRideTime's 10% as maximum tolerance, rounded up
+                    let userToleranceMinutes = approxRideTime.map { Int(ceil(Double($0) * 0.10)) } ?? 3
+                    let tauMinutes = max(1, min(userToleranceMinutes, Int(ceil(2.0 * sigma / 60.0))))
+                    tau = Double(tauMinutes * 60)  // 分を秒に変換してTimeIntervalで使用
+                }
+            }
+            if !tau.isFinite { tau = 120.0 }
+
+            // Residuals → window (lower bound = p10, upper bound = Tukey upper fence)
+            var residuals: [Double] = []; j = 0
+            for a in A_times {
+                let target = a.addingTimeInterval(Tstar)
+                while j < B_times.count && B_times[j] < target.addingTimeInterval(-tau) { j += 1 }
+                if j >= B_times.count { break }
+                let diff = B_times[j].timeIntervalSince(target)
+                if abs(diff) <= tau { residuals.append(diff); j += 1 }
+            }
+            if residuals.isEmpty { return (0, []) }
+            let p05 = percentile(residuals, 5), q1 = percentile(residuals, 25), q3 = percentile(residuals, 75)
+            let iqr = q3 - q1
+            var lowerMin = Int(ceil(Tstar/60.0 + p05/60.0))
+            var upperMin = Int(ceil(Tstar/60.0 + (q3 + 2.0 * iqr)/60.0))
+            if upperMin < lowerMin { swap(&lowerMin, &upperMin) }
+            if upperMin - lowerMin < 2 { lowerMin = Int(ceil(Tstar/60.0)) - 1; upperMin = Int(ceil(Tstar/60.0)) + 1 }
+
+            // Two-pointer matching (return only departure HH:MM from origin station)
+            let lower = TimeInterval(lowerMin * 60), upper = TimeInterval(upperMin * 60)
+            var out: [String] = []; var j2 = 0
+            for (idx, a) in A_times.enumerated() {
+                while j2 < B_times.count && B_times[j2].timeIntervalSince(a) < lower { j2 += 1 }
+                if j2 >= B_times.count { break }
+                if B_times[j2].timeIntervalSince(a) <= upper { out.append(A_hhmm[idx]); j2 += 1 }
+            }
+            return (out.count, out)
+        }
+
+        for (ty, group) in ObyType {
+            // Origin station A
+            let Adep = group.map { $0.hhmm }; let At = unwrapTimes(Adep)
+            let Apairs = zip(At, Adep).sorted { $0.0 < $1.0 }
+            let A_times = Apairs.map { $0.0 }; let A_hhmm = Apairs.map { $0.1 }
+
+            // Destination station B (arrival/departure) - use departure only for scoring if arrival is not available
+            let dep = buildStream(Ddep[ty] ?? [])
+            let arr = buildStream(Darr[ty] ?? [])
+
+            let rArr = tryStream(A_times: A_times, A_hhmm: A_hhmm, B_times: arr.times)
+            let rDep = tryStream(A_times: A_times, A_hhmm: A_hhmm, B_times: dep.times)
+            let chosen = (rArr.score >= rDep.score) ? rArr.out : rDep.out
+            picked.append(contentsOf: chosen)
+        }
+
+        // 5) Remove duplicates and sort
+        let uniq = Array(Set(picked))
+        let sorted = uniq.sorted { (a, b) -> Bool in
+            let pa = a.split(separator: ":"), pb = b.split(separator: ":")
+            let ha = Int(pa.first ?? "0") ?? 0, ma = Int(pa.last ?? "0") ?? 0
+            let hb = Int(pb.first ?? "0") ?? 0, mb = Int(pb.last ?? "0") ?? 0
+            return ha == hb ? ma < mb : ha < hb
+        }
+        return sorted
+    }
 }
+
 

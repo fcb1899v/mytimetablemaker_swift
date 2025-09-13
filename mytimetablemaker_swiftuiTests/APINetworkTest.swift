@@ -20,8 +20,8 @@ final class APINetworkTest: XCTestCase {
         print(String(repeating: "=", count: 60))
         
         for dataSource in LocalDataSource.allCases {
-            let url = dataSource.lineInfomationLink
-            print("📡 \(dataSource.displayName): \(url)")
+            let url = dataSource.apiLink(for: .lineInfo)
+            print("📡 \(dataSource.operatorDisplayName): \(url)")
             
             guard let requestURL = URL(string: url) else {
                 print("❌ Invalid URL format")
@@ -60,12 +60,12 @@ final class APINetworkTest: XCTestCase {
                 switch status {
                 case 200:
                     if let data = responseData, !data.isEmpty {
-                        print("✅ \(dataSource.displayName): Success")
-                        print("📦 \(dataSource.displayName): Received \(data.count) bytes")
+                        print("✅ \(dataSource.operatorDisplayName): Success")
+                        print("📦 \(dataSource.operatorDisplayName): Received \(data.count) bytes")
                         do {
                             let json = try JSONSerialization.jsonObject(with: data)
                             if let jsonArray = json as? [[String: Any]] {
-                                print("📊 \(dataSource.displayName): Received \(jsonArray.count) items")
+                                print("📊 \(dataSource.operatorDisplayName): Received \(jsonArray.count) items")
                             }
                         } catch {
                             print("❌ JSON parsing error: \(error.localizedDescription)")
@@ -74,7 +74,7 @@ final class APINetworkTest: XCTestCase {
                         print("⚠️ Success but no data received")
                     }
                 case 304:
-                    print("🔄 \(dataSource.displayName): Not Modified (304) - Using cached data")
+                    print("🔄 \(dataSource.operatorDisplayName): Not Modified (304) - Using cached data")
                 case 401:
                     print("🔑 Authentication required (401) - Expected for protected endpoints")
                 case 403:
@@ -202,13 +202,13 @@ final class APINetworkTest: XCTestCase {
         print("")
         
         for transportOperator in allOperators {
-            print("🔄 Testing \(transportOperator.displayName) (\(transportOperator.transportationType == .railway ? "🚇" : "🚌"))...")
+            print("🔄 Testing \(transportOperator.operatorDisplayName) (\(transportOperator.transportationType == .railway ? "🚇" : "🚌"))...")
             
             do {
                 // Test individual operator data by making direct API calls
-                let urlString = transportOperator.lineInfomationLink
+                let urlString = transportOperator.apiLink(for: .lineInfo)
                 guard let url = URL(string: urlString) else {
-                    print("  ❌ Invalid URL for \(transportOperator.displayName)")
+                    print("  ❌ Invalid URL for \(transportOperator.operatorDisplayName)")
                     failedUpdates += 1
                     continue
                 }
@@ -231,7 +231,7 @@ final class APINetworkTest: XCTestCase {
                             busDataSize += dataSize
                         }
                         
-                        print("  ✅ \(transportOperator.displayName): \(dataSize) bytes")
+                        print("  ✅ \(transportOperator.operatorDisplayName): \(dataSize) bytes")
                         
                         // Try to parse JSON to get item count
                         if let json = try? JSONSerialization.jsonObject(with: data),
@@ -241,7 +241,7 @@ final class APINetworkTest: XCTestCase {
                         
                     } else {
                         failedUpdates += 1
-                        print("  ❌ \(transportOperator.displayName): HTTP \(httpResponse.statusCode)")
+                        print("  ❌ \(transportOperator.operatorDisplayName): HTTP \(httpResponse.statusCode)")
                     }
                 }
                 
@@ -250,7 +250,7 @@ final class APINetworkTest: XCTestCase {
                 
             } catch {
                 failedUpdates += 1
-                print("  ❌ \(transportOperator.displayName): Failed - \(error)")
+                print("  ❌ \(transportOperator.operatorDisplayName): Failed - \(error)")
             }
         }
         
@@ -320,13 +320,13 @@ final class APINetworkTest: XCTestCase {
         print("")
         
         for transportOperator in allOperators {
-            print("🔄 Testing \(transportOperator.displayName) (\(transportOperator.transportationType == .railway ? "🚇" : "🚌"))...")
+            print("🔄 Testing \(transportOperator.operatorDisplayName) (\(transportOperator.transportationType == .railway ? "🚇" : "🚌"))...")
             
             do {
                 // First request to get data and cache it
-                let urlString = transportOperator.lineInfomationLink
+                let urlString = transportOperator.apiLink(for: .lineInfo)
                 guard let url = URL(string: urlString) else {
-                    print("  ❌ Invalid URL for \(transportOperator.displayName)")
+                    print("  ❌ Invalid URL for \(transportOperator.operatorDisplayName)")
                     failedTests += 1
                     continue
                 }
@@ -387,7 +387,7 @@ final class APINetworkTest: XCTestCase {
                 }
                 
             } catch {
-                print("  ❌ Error testing \(transportOperator.displayName): \(error)")
+                print("  ❌ Error testing \(transportOperator.operatorDisplayName): \(error)")
                 failedTests += 1
             }
             
@@ -411,12 +411,12 @@ final class APINetworkTest: XCTestCase {
         for transportOperator in testOperators {
             let fileName = "odpt_\(transportOperator.operatorCode.lowercased()).meta.json"
             if let meta = cache.loadMeta(for: fileName) {
-                print("📄 \(transportOperator.displayName):")
+                print("📄 \(transportOperator.operatorDisplayName):")
                 print("   ETag: \(meta.eTag ?? "None")")
                 print("   Last-Modified: \(meta.lastModified ?? "None")")
                 print("   Downloaded: \(meta.downloadedAt)")
             } else {
-                print("📄 \(transportOperator.displayName): No cache metadata")
+                print("📄 \(transportOperator.operatorDisplayName): No cache metadata")
             }
         }
         

@@ -30,7 +30,7 @@ class APITest: XCTestCase {
             XCTAssertFalse(url.isEmpty, "URL should not be empty for \(dataSource)")
             
             // Log the URL for verification
-            print("Testing \(dataSource.displayName): \(url)")
+            print("Testing \(dataSource.operatorDisplayName): \(url)")
             
             // Test URL format
             XCTAssertTrue(url.hasPrefix("https://"), "URL should start with https:// for \(dataSource)")
@@ -49,7 +49,7 @@ class APITest: XCTestCase {
         let publicCases: [LocalDataSource] = [.toeiMetro, .toeiBus]
         
         for dataSource in publicCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: .lineInfo)
             XCTAssertTrue(url.contains("api-public.odpt.org"), "Should use public API for \(dataSource)")
             XCTAssertFalse(url.contains("acl:consumerKey"), "Public API should not require consumer key for \(dataSource)")
         }
@@ -63,7 +63,7 @@ class APITest: XCTestCase {
         ]
         
         for dataSource in standardCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: .lineInfo)
             XCTAssertTrue(url.contains("api.odpt.org"), "Should use standard API for \(dataSource)")
             XCTAssertTrue(url.contains("acl:consumerKey"), "Standard API should require consumer key for \(dataSource)")
         }
@@ -73,7 +73,7 @@ class APITest: XCTestCase {
         let challengeCases: [LocalDataSource] = [.jrEast, .tobu, .odakyuBus]
         
         for dataSource in challengeCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: .lineInfo)
             XCTAssertTrue(url.contains("api-challenge.odpt.org"), "Should use challenge API for \(dataSource)")
             XCTAssertTrue(url.contains("acl:consumerKey"), "Challenge API should require consumer key for \(dataSource)")
         }
@@ -89,7 +89,7 @@ class APITest: XCTestCase {
         ]
         
         for dataSource in railwayCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: .lineInfo)
             XCTAssertTrue(url.contains("odpt:Railway"), "Railway URL should contain odpt:Railway for \(dataSource)")
         }
     }
@@ -101,7 +101,7 @@ class APITest: XCTestCase {
         ]
         
         for dataSource in busCases {
-            let url = dataSource.lineInfomationLink
+            let url = dataSource.apiLink(for: .lineInfo)
             XCTAssertTrue(url.contains("odpt:BusroutePattern"), "Bus URL should contain odpt:BusroutePattern for \(dataSource)")
         }
     }

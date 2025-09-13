@@ -293,4 +293,35 @@
 "None" = "なし";
 "Time Settings" = "時間設定";
 
+// TrainType Localization
+"AccessExpress" = "アクセス特急";
+"AirportRapidLimitedExpress" = "エアポート快特";
+"ChuoSpecialRapid" = "中央特快";
+"CommuterExpress" = "通勤急行";
+"CommuterLimitedExpress" = "通勤特急";
+"CommuterRapid" = "通勤快速";
+"CommuterSemiExpress" = "通勤準急";
+"CommuterSpecialRapid" = "通勤特快";
+"EveningWing" = "イブニング・ウィング";
+"Express" = "急行";
+"F-Liner" = "Fライナー";
+"HaijimaLiner" = "拝島ライナー";
+"KawagoeLimitedExpress" = "川越特急";
+"LimitedExpress" = "特急";
+"Liner" = "ライナー";
+"Local" = "普通";
+"MorningWing" = "モーニング・ウィング";
+"OmeSpecialRapid" = "青梅特快";
+"Rapid" = "快速";
+"RapidExpress" = "快速急行";
+"RapidLimitedExpress" = "快特";
+"S-TRAIN" = "Sトレイン";
+"SemiExpress" = "準急";
+"SemiRapid" = "区間快速";
+"SectionExpress" = "区間急行";
+"SectionSemiExpress" = "区間準急";
+"SLTaiju" = "SL大樹";
+"SpecialRapid" = "特別快速";
+"TH-LINER" = "THライナー";
+"TJLiner" = "TJライナー";
 

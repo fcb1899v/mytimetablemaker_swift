@@ -200,7 +200,7 @@ final class SharedDataManager: ObservableObject {
                 ? (try? ODPTParser.parseLocalRailways(cachedData)) ?? []
                 : (try? ODPTParser.parseBusRoutes(cachedData)) ?? []
             
-            print("📁 Loading from cache: \(cacheKey) (\(cachedData.count) bytes): Parsed \(lines.count) lines for \(transportOperator.displayName)")
+            print("📁 Loading from cache: \(cacheKey) (\(cachedData.count) bytes): Parsed \(lines.count) lines for \(transportOperator.operatorDisplayName)")
             
             return (transportOperator, lines)
         }
@@ -208,7 +208,7 @@ final class SharedDataManager: ObservableObject {
         // Process results
         cacheLines = cacheResults.flatMap { $0.1 }
         cachedOperators = cacheResults.count
-        operatorDetails = cacheResults.map { "\($0.0.displayName): \($0.1.count) lines" }
+        operatorDetails = cacheResults.map { "\($0.0.operatorDisplayName): \($0.1.count) lines" }
         
         self.allLines = cacheLines
         print("📊 Shared data loaded: \(self.allLines.count) lines from \(cachedOperators) operators")
@@ -297,17 +297,17 @@ final class SharedDataManager: ObservableObject {
                                 
                                 // Check if data has actually changed
                                 if newLines.count != currentLines.count || !newLines.elementsEqual(currentLines, by: { $0.code == $1.code }) {
-                                    print("🔄 \(transportOperator.displayName): \(updateType) data updated (\(newLines.count) lines)")
+                                    print("🔄 \(transportOperator.operatorDisplayName): \(updateType) data updated (\(newLines.count) lines)")
                                     return (transportOperator, newLines)
                                 } else {
-                                    print("ℹ️ \(transportOperator.displayName): \(updateType) data unchanged (\(newLines.count) lines)")
+                                    print("ℹ️ \(transportOperator.operatorDisplayName): \(updateType) data unchanged (\(newLines.count) lines)")
                                     return (transportOperator, []) // Return empty array for unchanged data
                                 }
                             }
                             return (transportOperator, [])
                         }
                     case .failure(let error):
-                        print("❌ Failed to update \(transportOperator.displayName): \(error)")
+                        print("❌ Failed to update \(transportOperator.operatorDisplayName): \(error)")
                         return (transportOperator, [])
                     }
                 }
@@ -375,11 +375,11 @@ final class SharedDataManager: ObservableObject {
 
                     return .success(())
                 } else {
-                    print("✅ \(transportOperator.displayName): No update needed (304 or content unchanged)")
+                    print("✅ \(transportOperator.operatorDisplayName): No update needed (304 or content unchanged)")
                     return .success(())
                 }
             } catch {
-                print("❌ Failed to check \(transportOperator.displayName): \(error)")
+                print("❌ Failed to check \(transportOperator.operatorDisplayName): \(error)")
                 return .failure(error)
             }
         }

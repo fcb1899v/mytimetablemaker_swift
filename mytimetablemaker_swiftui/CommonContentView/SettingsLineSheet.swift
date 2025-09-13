@@ -49,7 +49,7 @@ struct SettingsLineSheet: View {
         
         for line in lines {
             // Create unique key combining operator code and display name
-            let key = "\(line.operatorCode ?? "")_\(vm.displayName(for: line))"
+            let key = "\(line.operatorCode ?? "")_\(vm.lineDisplayName(for: line))"
             if !seen.contains(key) {
                 seen.insert(key)
                 result.append(line)
@@ -288,7 +288,7 @@ struct SettingsLineSheet: View {
                                  .padding(.horizontal, screen.settingsLineSheetTagPaddingHorizontal)
                                  .background(Capsule().fill((line.lineColor?.safeColor ?? Color(0xAAAAAA)).opacity(0.5)))
                              
-                             Text(vm.displayName(for: line))
+                             Text(vm.lineDisplayName(for: line))
                                  .font(.system(size: screen.settingsLineSheetInputFontSize))
                                  .lineLimit(1)
                              
@@ -744,7 +744,7 @@ struct SettingsLineSheet: View {
                         .frame(height: screen.settingsLineSheetIconSize)
                         .foregroundColor(.black)
 
-                    Text(getTransportationType(label: vm.selectedTransportation).displayName)
+                    Text(getTransportationType(label: vm.selectedTransportation).transportationDisplayName)
                         .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .foregroundColor(.black)
                     
@@ -757,7 +757,7 @@ struct SettingsLineSheet: View {
                                     Image(systemName: type.iconName)
                                         .foregroundColor(.black)
                                         .frame(height: screen.settingsLineSheetIconSize)
-                                    Text(type.displayName)
+                                    Text(type.transportationDisplayName)
                                         .font(.system(size: screen.settingsLineSheetInputFontSize))
                                         .foregroundColor(.black)
                                 }
@@ -975,14 +975,14 @@ struct SettingsLineSheet: View {
         
         // Reset station selection when lineInput changes
         let currentLineName = vm.selectedLine?.name ?? ""
-        let currentDisplayName: String
+        let currentLineDisplayName: String
         if let selectedLine = vm.selectedLine {
-            currentDisplayName = vm.displayName(for: selectedLine)
+            currentLineDisplayName = vm.lineDisplayName(for: selectedLine)
         } else {
-            currentDisplayName = ""
+            currentLineDisplayName = ""
         }
         
-        let shouldResetSelection = newValue != currentLineName && newValue != currentDisplayName
+        let shouldResetSelection = newValue != currentLineName && newValue != currentLineDisplayName
         
         if shouldResetSelection {
             // Clear line selection and station data without resetting ride time
@@ -1020,7 +1020,7 @@ struct SettingsLineSheet: View {
         // Set selectedLine for proper filtering
         vm.selectedLine = line
         // Update display name with operator information on selection
-        vm.lineInput = vm.displayName(for: line)
+        vm.lineInput = vm.lineDisplayName(for: line)
         focused = false
         // Clear station fields when line is selected
         vm.departureStationInput = ""

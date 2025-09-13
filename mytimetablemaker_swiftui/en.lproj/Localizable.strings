@@ -287,3 +287,36 @@
 "Transfer Time" = "Transfer Time";
 "None" = "None";
 "Time Settings" = "Time Settings";
+
+// TrainType Localization
+"AccessExpress" = "Access Express";
+"AirportRapidLimitedExpress" = "Airport Rapid Limited Express";
+"ChuoSpecialRapid" = "Chuo Special Rapid";
+"CommuterExpress" = "Commuter Express";
+"CommuterLimitedExpress" = "Commuter Limited Express";
+"CommuterRapid" = "Commuter Rapid";
+"CommuterSemiExpress" = "Commuter Semi Express";
+"CommuterSpecialRapid" = "Commuter Special Rapid";
+"EveningWing" = "Evening Wing";
+"Express" = "Express";
+"F-Liner" = "F Liner";
+"HaijimaLiner" = "Haijima Liner";
+"KawagoeLimitedExpress" = "Kawagoe Limited Express";
+"LimitedExpress" = "Limited Express";
+"Liner" = "Liner";
+"Local" = "Local";
+"MorningWing" = "Morning Wing";
+"OmeSpecialRapid" = "Ome Special Rapid";
+"Rapid" = "Rapid";
+"RapidExpress" = "RapidExpress";
+"RapidLimitedExpress" = "Rapid Limited Express";
+"S-TRAIN" = "S TRAIN";
+"SemiExpress" = "Semi Express";
+"SemiRapid" = "Semi Rapid";
+"SectionExpress" = "Section Express";
+"SectionSemiExpress" = "Section Semi Express";
+"SLTaiju" = "SLTaiju";
+"SpecialRapid" = "Special Rapid";
+"TH-LINER" = "TH LINER";
+"TJLiner" = "TJ Liner";
+

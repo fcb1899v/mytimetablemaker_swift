@@ -288,7 +288,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     // MARK: - Individual Operator Data Fetching
     // Fetch data for individual transportation operators using their specific API endpoints
     func fetchIndividualOperatorData(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Data {
-        let urlString = transportOperator.lineInfomationLink
+        let urlString = transportOperator.apiLink(for: .lineInfo)
         guard let url = URL(string: urlString) else {
             throw ODPTError.invalidData
         }
@@ -316,10 +316,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                 group.addTask {
                     do {
                         let data = try await self.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
-                        print("✅ Successfully fetched data for \(transportOperator.displayName)")
+                        print("✅ Successfully fetched data for \(transportOperator.operatorDisplayName)")
                         return (transportOperator, .success(data))
                     } catch {
-                        print("❌ Failed to fetch data for \(transportOperator.displayName): \(error)")
+                        print("❌ Failed to fetch data for \(transportOperator.operatorDisplayName): \(error)")
                         return (transportOperator, .failure(error))
                     }
                 }
@@ -346,7 +346,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func saveETag(_ etag: String, for transportOperator: LocalDataSource) {
         let etagKey = "\(transportOperator.fileName)_etag"
         UserDefaults.standard.set(etag, forKey: etagKey)
-        print("💾 \(transportOperator.displayName): Saved ETag: \(etag)")
+        print("💾 \(transportOperator.operatorDisplayName): Saved ETag: \(etag)")
     }
     
     /// Get Last-Modified for a specific operator from UserDefaults
@@ -359,7 +359,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func saveLastModified(_ lastModified: String, for transportOperator: LocalDataSource) {
         let lastModifiedKey = "\(transportOperator.fileName)_last_modified"
         UserDefaults.standard.set(lastModified, forKey: lastModifiedKey)
-        print("💾 \(transportOperator.displayName): Saved Last-Modified: \(lastModified)")
+        print("💾 \(transportOperator.operatorDisplayName): Saved Last-Modified: \(lastModified)")
     }
     
     // MARK: - Conditional GET Request Check (ODPT API Optimized)
@@ -373,7 +373,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         // MARK: - Conditional GET Request Check
         // Use conditional GET request with ETag and Last-Modified headers
         do {
-            let urlString = transportOperator.lineInfomationLink
+            let urlString = transportOperator.apiLink(for: .lineInfo)
             guard let url = URL(string: urlString) else {
                 throw ODPTError.invalidData
             }
@@ -390,7 +390,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                 
                 // Handle 304 Not Modified response
                 if httpResponse.statusCode == 304 {
-                    print("✅ \(transportOperator.displayName): 304 Not Modified - No update needed")
+                    print("✅ \(transportOperator.operatorDisplayName): 304 Not Modified - No update needed")
                     return false // No update needed - server confirms data hasn't changed
                 }
                 
@@ -406,7 +406,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                     // MARK: - ETag Comparison (Fast Path)
                     // If ETags match, no update is needed (fastest check)
                     if let currentEtag = currentEtag, let newEtag = newEtag, currentEtag == newEtag {
-                        print("✅ \(transportOperator.displayName): ETag matches - No update needed")
+                        print("✅ \(transportOperator.operatorDisplayName): ETag matches - No update needed")
                         return false // No update needed - ETag confirms no change
                     }
                     
@@ -422,18 +422,18 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                     // MARK: - Data Content Comparison (Fallback)
                     // Compare actual data content to determine if update is needed
                     let dataMatches = cachedData != nil && data == cachedData!
-                    print(dataMatches ? "✅ \(transportOperator.displayName): Data content is identical - No update needed" : "🔄 \(transportOperator.displayName): Data content has changed - Update needed")
+                    print(dataMatches ? "✅ \(transportOperator.operatorDisplayName): Data content is identical - No update needed" : "🔄 \(transportOperator.operatorDisplayName): Data content has changed - Update needed")
                     return !dataMatches
                 } else {
-                    print("❌ \(transportOperator.displayName): Unexpected response status: \(httpResponse.statusCode)")
+                    print("❌ \(transportOperator.operatorDisplayName): Unexpected response status: \(httpResponse.statusCode)")
                     return false // Don't update on error
                 }
             } else {
-                print("❌ \(transportOperator.displayName): Invalid HTTP response")
+                print("❌ \(transportOperator.operatorDisplayName): Invalid HTTP response")
                 return false // Don't update on error
             }
         } catch {
-            print("❌ \(transportOperator.displayName): Request failed: \(error)")
+            print("❌ \(transportOperator.operatorDisplayName): Request failed: \(error)")
             return false // Don't update on error
         }
     }
@@ -443,7 +443,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func processOperatorUpdate(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> (data: Data, updated: Bool) {
         let needsUpdate = try await checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
             if needsUpdate {
-                print("📥 \(transportOperator.displayName): Fetching updated data...")
+                print("📥 \(transportOperator.operatorDisplayName): Fetching updated data...")
                 let data = try await fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
                 
                 // Write updated data to JSON file
@@ -453,10 +453,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                 let cacheKey = transportOperator.fileName
                 cache.saveData(data, for: cacheKey)
                 
-                print("✅ \(transportOperator.displayName): Successfully updated data (\(data.count) bytes)")
+                print("✅ \(transportOperator.operatorDisplayName): Successfully updated data (\(data.count) bytes)")
                 return (data, true)
             } else {
-                print("✅ \(transportOperator.displayName): No update needed")
+                print("✅ \(transportOperator.operatorDisplayName): No update needed")
                 return (Data(), false)
             }
     }
@@ -474,7 +474,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                         let (_, updated) = try await self.processOperatorUpdate(transportOperator, consumerKey: consumerKey)
                         return (transportOperator, updated)
                     } catch {
-                        print("❌ Failed to update \(transportOperator.displayName): \(error)")
+                        print("❌ Failed to update \(transportOperator.operatorDisplayName): \(error)")
                         return (transportOperator, false)
                     }
                 }
@@ -498,7 +498,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                         let needsUpdate = try await self.checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
                         return (transportOperator, needsUpdate)
                     } catch {
-                        print("Error checking updates for \(transportOperator.displayName): \(error)")
+                        print("Error checking updates for \(transportOperator.operatorDisplayName): \(error)")
                         return (transportOperator, false)
                     }
                 }
@@ -519,7 +519,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
             let (_, _) = try await processOperatorUpdate(transportOperator, consumerKey: consumerKey)
             return .success(())
         } catch {
-            print("❌ \(transportOperator.displayName): Failed to update data: \(error)")
+            print("❌ \(transportOperator.operatorDisplayName): Failed to update data: \(error)")
             return .failure(error)
         }
     }

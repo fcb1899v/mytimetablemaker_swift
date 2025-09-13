@@ -22,7 +22,7 @@ struct LocalFileParser {
     static func parseLocalData(from source: LocalDataSource, data: Data) -> [TransportationLine] {
         // Use already loaded data
         guard let json = try? JSONSerialization.jsonObject(with: data) else {
-            print("❌ Failed to parse JSON for \(source.displayName)")
+            print("❌ Failed to parse JSON for \(source.operatorDisplayName)")
             return []
         }
                 
@@ -30,45 +30,45 @@ struct LocalFileParser {
         // Determine the type of data by examining the first item
         if let array = json as? [[String: Any]], let firstItem = array.first {
             let type = firstItem["@type"] as? String ?? ""
-            print("🔍 \(source.displayName): Data type = '\(type)', items count = \(array.count)")
+            print("🔍 \(source.operatorDisplayName): Data type = '\(type)', items count = \(array.count)")
     
             // MARK: - Format-Based Processing
             // Process based on data type
             switch type {
             case "odpt:Railway":
                 // Standard railway data format
-                print("🚆 Processing \(source.displayName) as railway data")
+                print("🚆 Processing \(source.operatorDisplayName) as railway data")
                 return parseRailwaysFromArray(array, source: source)
             case "odpt:BusroutePattern":
                 // Bus route pattern data format
-                print("🚌 Processing \(source.displayName) as bus route pattern data")
+                print("🚌 Processing \(source.operatorDisplayName) as bus route pattern data")
                 return parseBusRoutesFromArray(array, source: source)
             case "odpt:Station":
                 // Station data format (e.g., JR East Japan)
-                print("🚉 Processing \(source.displayName) as station data")
+                print("🚉 Processing \(source.operatorDisplayName) as station data")
                 return parseStationsToLines(array, source: source)
             default:
-                print("⚠️ Unknown data type '\(type)' for \(source.displayName), trying fallback parsing")
+                print("⚠️ Unknown data type '\(type)' for \(source.operatorDisplayName), trying fallback parsing")
                 // MARK: - Fallback Parsing
                 // Fallback parsing when type is not explicitly specified
                 // Try processing as railway data
                 if let _ = firstItem["dc:title"], let _ = firstItem["odpt:operator"] {
-                    print("🔄 Fallback: Processing \(source.displayName) as railway data")
+                    print("🔄 Fallback: Processing \(source.operatorDisplayName) as railway data")
                     return parseRailwaysFromArray(array, source: source)
                 }
                 
                 // Try processing as station data
                 if let _ = firstItem["title"] as? [String: Any] {
-                    print("🔄 Fallback: Processing \(source.displayName) as station data")
+                    print("🔄 Fallback: Processing \(source.operatorDisplayName) as station data")
                     return parseStationsToLines(array, source: source)
                 }
                 
-                print("❌ No suitable parser found for \(source.displayName)")
+                print("❌ No suitable parser found for \(source.operatorDisplayName)")
                 return []
             }
         }
         
-        print("❌ Invalid JSON structure for \(source.displayName)")
+        print("❌ Invalid JSON structure for \(source.operatorDisplayName)")
         return []
     }
     
@@ -176,7 +176,7 @@ struct LocalFileParser {
     // Parse bus route pattern data from array format.
     // Used for bus data sources like Toei Bus and Yokohama Municipal Bus.
     static func parseBusRoutesFromArray(_ array: [[String: Any]], source: LocalDataSource) -> [TransportationLine] {
-        print("🚌 Starting bus route parsing for \(source.displayName) with \(array.count) items")
+        print("🚌 Starting bus route parsing for \(source.operatorDisplayName) with \(array.count) items")
         
         // MARK: - Bus Route Grouping using closures
         // Group bus routes by route name to avoid duplicates
@@ -227,7 +227,7 @@ struct LocalFileParser {
             }
         }
         
-        print("🚌 Processed \(busRoutes.count) unique bus routes for \(source.displayName)")
+        print("🚌 Processed \(busRoutes.count) unique bus routes for \(source.operatorDisplayName)")
         
         // MARK: - Object Conversion using closures
         // Convert route information to TransportationLine objects
@@ -257,7 +257,7 @@ struct LocalFileParser {
             )
         }
         
-        print("🚌 Created \(transportationLines.count) TransportationLine objects for \(source.displayName)")
+        print("🚌 Created \(transportationLines.count) TransportationLine objects for \(source.operatorDisplayName)")
         return transportationLines
     }
     

@@ -187,7 +187,7 @@ struct SettingsTransferSheet: View {
                 .foregroundColor(.black)
                 .frame(width: screen.settingsLineSheetIconSize)
             
-            Text(getTransportationType(label: selectedTransportation.wrappedValue).displayName)
+            Text(getTransportationType(label: selectedTransportation.wrappedValue).transportationDisplayName)
                 .font(.system(size: screen.settingsLineSheetInputFontSize))
                 .foregroundColor(.black)
                 .lineLimit(1)
@@ -201,7 +201,7 @@ struct SettingsTransferSheet: View {
                             Image(systemName: type.iconName)
                                 .foregroundColor(.black)
                                 .frame(width: screen.settingsLineSheetIconSize)
-                            Text(type.displayName)
+                            Text(type.transportationDisplayName)
                                 .font(.system(size: screen.settingsLineSheetInputFontSize))
                                 .foregroundColor(.black)
                         }
