@@ -29,14 +29,14 @@ struct SignUpContentView: View {
             Text("Create Account".localized)
                 .font(.system(size: screen.loginTitleFontSize))
                 .fontWeight(.bold)
-                .foregroundColor(Color.primaryColor)
+                .foregroundColor(.primary)
                 .padding(.top, screen.loginTitleTopMargin)
                 .padding(.bottom, screen.loginTitleBottomMargin)
             
             // MARK: - Email Input Field
             ZStack {
                 Rectangle()
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                     .cornerRadius(screen.loginTextCornerRadius)
                     .frame(height: screen.loginTextHeight)
                 TextField("Email".localized, text: $myLogin.email)
@@ -49,7 +49,7 @@ struct SignUpContentView: View {
             // MARK: - Password Input Field
             ZStack {
                 Rectangle()
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                     .cornerRadius(screen.loginTextCornerRadius)
                     .frame(height: screen.loginTextHeight)
                 SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
@@ -62,7 +62,7 @@ struct SignUpContentView: View {
             // MARK: - Confirm Password Input Field
             ZStack {
                 Rectangle()
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                     .cornerRadius(screen.loginTextCornerRadius)
                     .frame(height: screen.loginTextHeight)
                 SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
@@ -79,7 +79,7 @@ struct SignUpContentView: View {
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
-                        .background(myLogin.isValidSignUp ? Color.primaryColor: Color.grayColor)
+                        .background(myLogin.isValidSignUp ? Color.primary: Color.gray)
                         .cornerRadius(screen.loginButtonCornerRadius)
                     if myLogin.isLoading {
                         ProgressView().progressViewStyle(CircularProgressViewStyle())
@@ -101,7 +101,7 @@ struct SignUpContentView: View {
                 // Checkbox for terms agreement
                 Button(action: myLogin.toggle) {
                     Image(systemName: myLogin.isTermsAgree ? "checkmark.square.fill": "square")
-                        .foregroundColor(myLogin.isTermsAgree ? Color.primaryColor: .white)
+                        .foregroundColor(myLogin.isTermsAgree ? .primary: .white)
                         .padding(10)
                 }
                 // Terms and privacy policy link
@@ -112,7 +112,7 @@ struct SignUpContentView: View {
                 }) {
                     (
                         Text("I have read and agree to the ".localized)
-                        + Text("terms and privacy policy".localized).underline(color: Color.white)
+                        + Text("terms and privacy policy".localized).underline(color: .white)
                         + Text("kakunin".localized)
                     )
                     .font(.subheadline)
@@ -127,7 +127,7 @@ struct SignUpContentView: View {
             AdMobBannerView()
         }
         .edgesIgnoringSafeArea(.all)
-        .background(Color.accentColor)
+        .background(Color.accent)
     }
 }
 

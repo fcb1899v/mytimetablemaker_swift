@@ -108,6 +108,7 @@ extension String{
     func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
     func lineKindKey(_ num: Int) -> String { return "\(self)linekind\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
+    func rideTimeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)ridetime" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
     func transferTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transfertimee": "\(self)transfertime\(num)" }
     func timetableKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)" }
@@ -136,13 +137,13 @@ extension String{
     func departStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(num.departStationDefault)! }
     func arriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(num.arriveStationDefault)! }
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(num.lineNameDefault)! }
-    func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(accentColorString) }
+    func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(Color.accentString) }
     func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
     func lineKind(_ num: Int) -> TransportationLine.Kind { 
         let kindString = lineKindKey(num).userDefaultsValue("Railway")!
         return TransportationLine.Kind(rawValue: kindString) ?? .railway
     }
-    func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(accentColorString)! }
+    func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(Color.accentString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
     func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
@@ -156,10 +157,10 @@ extension String{
     func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue("Not set".localized)! }
     func settingsArriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue("Not set".localized)! }
     func settingsLineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue("Not set".localized)! }
-    func settingsLineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(grayColorString) }
-    func settingsLineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(grayColorString)! }
+    func settingsLineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(Color.grayString) }
+    func settingsLineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(Color.grayString)! }
     func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? "Not set".localized: "\(String(rideTime(num)))\("[min]".localized)"}
-    func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? Color.grayColor: lineColorArray[num] }
+    func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? .gray: lineColorArray[num] }
     func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue("Not set".localized)! }
     func settingsTransferTime(_ num: Int) -> String { return (transferTime(num) == 0) ? "Not set".localized: "\(transferTime(num))\("[min]".localized)"}
     
@@ -224,4 +225,178 @@ extension Int {
     var departStationDefault: String { return "\("Dep. St. ".localized)\(self + 1)" }
     var arriveStationDefault: String { return "\("Arr. St. ".localized)\(self + 1)" }
     var lineNameDefault: String { return "\("Line ".localized)\(self + 1)" }
+}
+
+// MARK: - TrainTime Extensions
+// Extensions for loading TrainTime objects from UserDefaults
+extension String {
+    
+    // MARK: - TrainTime Loading Methods
+    // Load TrainTime objects for a specific hour
+    func loadTrainTimes(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [TrainTime] {
+        let timetableKey = self.timetableKey(isWeekday, num, hour)
+        let rideTimeKey = self.rideTimeKey(isWeekday, num, hour)
+        let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
+                
+        guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else {
+            return []
+        }
+        
+        let departureTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        let rideTimes = UserDefaults.standard.string(forKey: rideTimeKey)?.components(separatedBy: " ").compactMap { Int($0) } ?? []
+        let trainTypes = UserDefaults.standard.string(forKey: trainTypeKey)?.components(separatedBy: " ") ?? []
+        
+        var trainTimes: [TrainTime] = []
+        for (index, departureTimeString) in departureTimes.enumerated() {
+            let rideTime = index < rideTimes.count ? rideTimes[index] : 0
+            let trainType = index < trainTypes.count && !trainTypes[index].isEmpty ? trainTypes[index] : nil
+            
+            let trainTime = TrainTime(
+                departureTime: departureTimeString, // Keep as minutes string for consistency
+                arrivalTime: "", // Arrival time not stored separately
+                trainNumber: nil, // Train number not stored separately
+                trainType: trainType,
+                rideTime: rideTime
+            )
+            trainTimes.append(trainTime)
+        }
+        return trainTimes
+    }
+    
+    // MARK: - Time Format Conversion
+    // Convert HH:MM format to minutes within the hour
+    private func convertHHMMToMinutes(_ timeString: String) -> Int {
+        let components = timeString.components(separatedBy: ":")
+        if components.count == 2, let minute = Int(components[1]) {
+            return minute  // Return only minutes within the hour
+        }
+        return 0
+    }
+    
+    // MARK: - TrainTime Saving Methods
+    // Save TrainTime objects for a specific hour
+    func saveTrainTimes(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int, _ hour: Int) {
+
+        let timetableKey = self.timetableKey(isWeekday, num, hour)
+        let rideTimeKey = self.rideTimeKey(isWeekday, num, hour)
+        let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
+        
+        if hour < 9 {
+            print("💾 saveTrainTimes: Saving \(trainTimes.count) TrainTime objects for hour \(hour) (\(isWeekday ? "weekday" : "weekend"))")
+        }
+        
+        // Clear existing data (always remove to ensure clean state)
+        UserDefaults.standard.removeObject(forKey: timetableKey)
+        UserDefaults.standard.removeObject(forKey: rideTimeKey)
+        UserDefaults.standard.removeObject(forKey: trainTypeKey)
+        
+        // Ensure UserDefaults changes are synchronized to disk
+        UserDefaults.standard.synchronize()
+        
+        if trainTimes.isEmpty { 
+            print("⚠️ No TrainTime objects to save for hour \(hour)")
+            return 
+        }
+        
+        // Prepare data arrays
+        var departureTimes: [String] = []
+        var rideTimes: [String] = []
+        var trainTypes: [String] = []
+        
+        for trainTime in trainTimes {
+            // Convert HH:MM format to minutes format for consistency with manual editing
+            let departureTimeInMinutes = convertHHMMToMinutes(trainTime.departureTime)
+            departureTimes.append(String(departureTimeInMinutes))
+            rideTimes.append(String(trainTime.rideTime))
+            trainTypes.append(trainTime.trainType ?? "")
+        }
+        
+        // Save to UserDefaults
+        let timetableString = departureTimes.joined(separator: " ")
+        let rideTimeString = rideTimes.joined(separator: " ")
+        let trainTypeString = trainTypes.joined(separator: " ")
+        
+        UserDefaults.standard.set(timetableString, forKey: timetableKey)
+        UserDefaults.standard.set(rideTimeString, forKey: rideTimeKey)
+        UserDefaults.standard.set(trainTypeString, forKey: trainTypeKey)
+        
+        if hour < 9 {
+            print("📊 Data: timetable='\(timetableString)', rideTime='\(rideTimeString)', trainType='\(trainTypeString)'")
+        }
+    }
+    
+    // MARK: - Save Train Type List
+    // Save unique train types list for the entire timetable
+    func saveTrainTypeList(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int) {
+        let trainTypeListKey = self.trainTypeListKey(isWeekday, num)
+        
+        print("💾 saveTrainTypeList: Saving train type list for (\(isWeekday ? "weekday" : "weekend"))")
+        
+        // Extract all train types from all train times
+        let allTrainTypes = trainTimes.compactMap { $0.trainType }
+            .compactMap { (trainType: String) -> String? in
+                guard !trainType.isEmpty else { return nil }
+                let components = trainType.components(separatedBy: ".")
+                return components.last ?? trainType
+            }
+        
+        // Remove duplicates and sort
+        let uniqueTrainTypes = Set<String>(allTrainTypes)
+        let trainTypeListString = Array(uniqueTrainTypes).sorted().joined(separator: " ")
+        
+        UserDefaults.standard.set(trainTypeListString, forKey: trainTypeListKey)
+        
+        print("📋 saveTrainTypeList: Saved train type list: '\(trainTypeListString)'")
+        print("📋 saveTrainTypeList: All train types found: \(Array(uniqueTrainTypes).sorted())")
+    }
+    
+    // MARK: - Load Train Type List
+    // Load existing train types from UserDefaults with color-based sorting
+    func loadTrainTypeList(_ isWeekday: Bool, _ num: Int) -> [String] {
+        let trainTypeListKey = self.trainTypeListKey(isWeekday, num)
+        
+        if let trainTypeListString = UserDefaults.standard.string(forKey: trainTypeListKey),
+           !trainTypeListString.isEmpty {
+            let trainTypes = Array(Set(trainTypeListString.components(separatedBy: " ")
+                .filter { !$0.isEmpty }))
+                .sorted { trainType1, trainType2 in
+                    let color1 = Color.colorForTrainType(trainType1)
+                    let color2 = Color.colorForTrainType(trainType2)
+                    
+                    // Define color priority: white, yellow-green, yellow, orange, pink, light blue
+                    let colorPriority: [Color: Int] = [
+                        .white: 0,
+                        .yelwgre: 1,
+                        .yellow: 2,
+                        .orange: 3,
+                        .pink: 4,
+                        .ligblue: 5
+                    ]
+                    
+                    let priority1 = colorPriority[color1] ?? 999
+                    let priority2 = colorPriority[color2] ?? 999
+                    
+                    if priority1 != priority2 {
+                        return priority1 < priority2
+                    } else {
+                        return trainType1 < trainType2
+                    }
+                }
+            return trainTypes
+        }
+        
+        return []
+    }
+    
+    // MARK: - TrainType Key Generation
+    // Generate UserDefaults key for train type data
+    func trainTypeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
+        return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)traintype"
+    }
+    
+    // MARK: - TrainType List Key Generation
+    // Generate UserDefaults key for train type list data
+    func trainTypeListKey(_ isWeekday: Bool, _ num: Int) -> String {
+        return "\(lineNameKey(num))\(isWeekday.weekdayTag)traintypelist"
+    }
 }

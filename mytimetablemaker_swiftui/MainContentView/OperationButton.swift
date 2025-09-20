@@ -31,7 +31,7 @@ struct OperationButton: View {
                 .font(.system(size: screen.operationButtonFontSize, weight: .semibold))
                 .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                 .foregroundColor(.white)
-                .background(isOn ? Color.accentColor: Color.grayColor)
+                .background(isOn ? Color.accent: Color.gray)
                 .cornerRadius(screen.operationButtonCornerRadius)
         }
     }

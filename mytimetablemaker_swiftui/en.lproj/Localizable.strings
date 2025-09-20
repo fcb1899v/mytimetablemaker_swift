@@ -207,26 +207,30 @@
 "Car" = "Car";
 
 //CustomColor
-"DEFAULT" = "DEFAULT";
 "RED" = "RED";
+"DARK RED" = "DARK RED";
 "ORANGE" = "ORANGE";
+"BROWN" = "BROWN";
 "YELLOW" = "YELLOW";
+"BEIGE" = "BEIGE";
 "YELLOW GREEN" = "YELLOW GREEN";
 "ORIVE" = "ORIVE";
 "GREEN" = "GREEN";
+"DARK GREEN" = "DARK GREEN";
 "BLUE GREEN" = "BLUE GREEN";
 "LIGHT BLUE" = "LIGHT BLUE";
 "BLUE" = "BLUE";
 "NAVY BLUE" = "NAVY BLUE";
+"INDIGO" = "INDIGO";
 "PURPLE" = "PURPLE";
+"MAGENTA" = "MAGENTA";
+"LAVENDER" = "LAVENDER";
 "PINK" = "PINK";
-"BEIGE" = "BEIGE";
-"DARK RED" = "DARK RED";
-"BROWN" = "BROWN";
 "GOLD" = "GOLD";
 "SILVER" = "SILVER";
 "GRAY" = "GRAY";
 "BLACK" = "BLACK";
+"DEFAULT" = "DEFAULT";
 
 //SelectLineView
 "Line Color" = "Line Color";
@@ -257,11 +261,13 @@
 "Select Line Color" = "Line Color Select";
 "Timetable Settings" = "Timetable Settings";
 "Auto Generate Timetable" = "Auto Generate Timetable";
+"Auto" = "Auto";
 "Update Line Data" = "Update Line Data";
 "Updated: " = "Updated: ";
 "Clear" = "Clear";
 "Select" = "Select";
 "Save" = "Save";
+"Input Save" = "Input Save";
 "Ride Time" = "Ride Time";
 "Line Name" = "Line Name";
 "Enter line name or bus route name" = "Enter line name or bus route name";
@@ -319,4 +325,14 @@
 "SpecialRapid" = "Special Rapid";
 "TH-LINER" = "TH LINER";
 "TJLiner" = "TJ Liner";
+"Edit Timetable" = "Edit Timetable";
+"Copy Timetable" = "Copy Timetable";
+"Select Type" = "Train Type";
+
+// Default train types
+"defaultLocal" = "Local";
+"defaultExpress" = "Express";
+"defaultRapid" = "Rapid";
+"defaultSpecialRapid" = "Special Rapid";
+"defaultLimitedExpress" = "Limited Express";
 

@@ -46,7 +46,8 @@ struct LoginContentView: View {
                     .frame(minWidth: screen.admobBannerMinWidth)
                     .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
                     .background(.white)
-            }.background(Color.accentColor)
+            }
+            .background(Color.accent)
             
             // MARK: - Login Form
             VStack(spacing: screen.loginMargin) {
@@ -54,14 +55,14 @@ struct LoginContentView: View {
                 Text("Login".localized)
                     .font(.system(size: screen.loginTitleFontSize))
                     .fontWeight(.bold)
-                    .foregroundColor(Color.primaryColor)
+                    .foregroundColor(.primary)
                     .padding(.top, screen.loginTitleTopMargin)
                     .padding(.bottom, screen.loginTitleBottomMargin)
                 
                 // Email text field
                 ZStack {
                     Rectangle()
-                        .foregroundColor(Color.white)
+                        .foregroundColor(.white)
                         .cornerRadius(screen.loginTextCornerRadius)
                         .frame(height: screen.loginTextHeight)
                     TextField("Email".localized, text: $myLogin.email)
@@ -74,7 +75,7 @@ struct LoginContentView: View {
                 // Password text field
                 ZStack {
                     Rectangle()
-                        .foregroundColor(Color.white)
+                        .foregroundColor(.white)
                         .cornerRadius(screen.loginTextCornerRadius)
                         .frame(height: screen.loginTextHeight)
                     SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
@@ -91,7 +92,7 @@ struct LoginContentView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
-                            .background(myLogin.isValidLogin ? Color.primaryColor: Color.grayColor)
+                            .background(myLogin.isValidLogin ? Color.primary: Color.gray)
                             .cornerRadius(screen.loginButtonCornerRadius)
                     }.padding(.bottom, 6)
                 }
@@ -110,7 +111,7 @@ struct LoginContentView: View {
                 Button(action: { isShowSignUp = true }) {
                     Text("Signup".localized)
                         .font(.headline)
-                        .foregroundColor(Color.primaryColor)
+                        .foregroundColor(.primary)
                         .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
                         .background(.white)
                         .cornerRadius(screen.loginButtonCornerRadius)
@@ -157,12 +158,12 @@ struct LoginContentView: View {
             // MARK: - Loading Indicator
             if myLogin.isLoading {
                 ZStack {
-                    Color.grayColor.opacity(0.3)
+                    Color.gray.opacity(0.3)
                         .edgesIgnoringSafeArea(.all)
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                         .padding()
-                        .background(Color.white)
+                        .background(.white)
                         .cornerRadius(10)
                 }
             }

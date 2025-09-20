@@ -234,6 +234,98 @@ struct DataStatistics {
     }
 }
 
+// MARK: - Train Time Model
+// Represents train time information with departure, arrival, and ride time data
+struct TrainTime {
+    let departureTime: String      // Departure time in HH:MM format
+    let arrivalTime: String        // Arrival time in HH:MM format
+    let trainNumber: String?      // Optional train number identifier
+    let trainType: String?        // Optional train type identifier
+    let rideTime: Int             // Ride time in minutes
+    
+    // MARK: - Initialization
+    // Initialize with all required parameters
+    init(departureTime: String, arrivalTime: String, trainNumber: String? = nil, trainType: String? = nil, rideTime: Int) {
+        self.departureTime = departureTime
+        self.arrivalTime = arrivalTime
+        self.trainNumber = trainNumber
+        self.trainType = trainType
+        self.rideTime = rideTime
+    }
+    
+    // MARK: - Computed Properties
+    // Calculate ride time from departure and arrival times
+    var calculatedRideTime: Int {
+        let departureComponents = departureTime.components(separatedBy: ":")
+        let arrivalComponents = arrivalTime.components(separatedBy: ":")
+        
+        guard departureComponents.count == 2,
+              arrivalComponents.count == 2,
+              let departureHour = Int(departureComponents[0]),
+              let departureMinute = Int(departureComponents[1]),
+              let arrivalHour = Int(arrivalComponents[0]),
+              let arrivalMinute = Int(arrivalComponents[1]) else {
+            return 0
+        }
+        
+        let departureTotalMinutes = departureHour * 60 + departureMinute
+        let arrivalTotalMinutes = arrivalHour * 60 + arrivalMinute
+        
+        // Handle day rollover (arrival time is next day)
+        return arrivalTotalMinutes >= departureTotalMinutes ?
+            arrivalTotalMinutes - departureTotalMinutes :
+            (24 * 60) - departureTotalMinutes + arrivalTotalMinutes
+    }
+    
+    // MARK: - Utility Methods
+    // Check if this train time has valid data
+    var isValid: Bool {
+        return !departureTime.isEmpty && !arrivalTime.isEmpty && rideTime > 0
+    }
+    
+    // Get formatted display string for ride time
+    var formattedRideTime: String {
+        let hours = rideTime / 60
+        let minutes = rideTime % 60
+        
+        if hours > 0 {
+            return "\(hours)時間\(minutes)分"
+        } else {
+            return "\(minutes)分"
+        }
+    }
+}
+
+// MARK: - Extensions
+// Additional functionality for TrainTime
+extension TrainTime: Equatable {
+    static func == (lhs: TrainTime, rhs: TrainTime) -> Bool {
+        return lhs.departureTime == rhs.departureTime &&
+               lhs.arrivalTime == rhs.arrivalTime &&
+               lhs.trainNumber == rhs.trainNumber &&
+               lhs.trainType == rhs.trainType &&
+               lhs.rideTime == rhs.rideTime
+    }
+}
+
+extension TrainTime: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(departureTime)
+        hasher.combine(arrivalTime)
+        hasher.combine(trainNumber)
+        hasher.combine(trainType)
+        hasher.combine(rideTime)
+    }
+}
+
+extension TrainTime: CustomStringConvertible {
+    var description: String {
+        let trainInfo = trainNumber != nil ? " (列車番号: \(trainNumber!))" : ""
+        let typeInfo = trainType != nil ? " (種別: \(trainType!))" : ""
+        return "\(departureTime) → \(arrivalTime) (\(formattedRideTime))\(trainInfo)\(typeInfo)"
+    }
+}
+
 // MARK: - PreferenceKey for Departure Station Position
 // This preference key tracks the position of the departure station input field
 // for proper positioning of suggestion overlays and UI elements.

@@ -20,7 +20,6 @@ extension Int {
     var HHMMSStoSS: Int { return self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         // Convert HHMMSS format to seconds
     var SStoHHMMSS: Int { return self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           // Convert seconds to HHMMSS format
     var HHMMSStoMMSS: Int { return (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      // Convert HHMMSS format to MMSS format
-    var MMSStoHHMMSS: Int { return (self / 100 / 60) * 10000 + (self / 100 % 60) * 100 + self % 100 }   // Convert MMSS format to HHMMSS format
     
     // MARK: - Time Arithmetic Operations
     // Addition operations for different time formats
@@ -50,17 +49,14 @@ extension Int {
     
     // MARK: - Countdown Functions
     // Countdown timer formatting and calculations
-    var countdownMM: String { return (self / 100).addZeroTime }
-    var countdownSS: String { return (self % 100).addZeroTime }
-    var countdown: String{ return (0...9999 ~= self) ? "\(countdownMM):\(countdownSS)": "--:--" }           // Convert MMSS format to countdown display
+    var countdown: String{ return (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }           // Convert MMSS format to countdown display
     func countdownTime(_ departtime: Int) -> String {
         return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown
     }
 
     // MARK: - Weekday Detection
     // Determine if time represents weekday or weekend
-    var isWeekend: Bool { return (self == 0 || self == 6) }
-    var isWeekday: Bool { return !isWeekend }
+    var isWeekday: Bool { return !(self == 0 || self == 6) }
     
     // MARK: - Choice Copy Time List Function
     // Generates copy time choice list for timetable editing
@@ -98,8 +94,84 @@ extension Date {
         formatter.dateFormat = "E"
         switch (formatter.string(from: self)) {
             case "Sat", "Sun", "土", "日": return false
-            default: return true
+            default: return !isJapaneseHoliday
         }
+    }
+    
+    // MARK: - Japanese Holiday Detection
+    // Check if the date is a Japanese public holiday
+    var isJapaneseHoliday: Bool {
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: self)
+        let month = calendar.component(.month, from: self)
+        let day = calendar.component(.day, from: self)
+        
+        // Fixed holidays
+        let fixedHolidays = [
+            (1, 1),   // 元日
+            (2, 11),  // 建国記念の日
+            (4, 29),  // 昭和の日
+            (5, 3),   // 憲法記念日
+            (5, 4),   // みどりの日
+            (5, 5),   // こどもの日
+            (8, 11),  // 山の日
+            (11, 3),  // 文化の日
+            (11, 23), // 勤労感謝の日
+            (12, 23)  // 天皇誕生日
+        ]
+        
+        // Check fixed holidays
+        for (holidayMonth, holidayDay) in fixedHolidays {
+            if month == holidayMonth && day == holidayDay {
+                return true
+            }
+        }
+        
+        // Variable holidays (approximate calculations)
+        // 春分の日 (around March 20-21)
+        if month == 3 && day >= 20 && day <= 21 {
+            return true
+        }
+        
+        // 秋分の日 (around September 22-23)
+        if month == 9 && day >= 22 && day <= 23 {
+            return true
+        }
+        
+        // 海の日 (3rd Monday of July)
+        if month == 7 {
+            let firstMonday = calendar.date(from: DateComponents(year: year, month: 7, day: 1))!
+            let weekday = calendar.component(.weekday, from: firstMonday)
+            let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
+            let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
+            if calendar.isDate(self, inSameDayAs: thirdMonday) {
+                return true
+            }
+        }
+        
+        // 敬老の日 (3rd Monday of September)
+        if month == 9 {
+            let firstMonday = calendar.date(from: DateComponents(year: year, month: 9, day: 1))!
+            let weekday = calendar.component(.weekday, from: firstMonday)
+            let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
+            let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
+            if calendar.isDate(self, inSameDayAs: thirdMonday) {
+                return true
+            }
+        }
+        
+        // スポーツの日 (2nd Monday of October)
+        if month == 10 {
+            let firstMonday = calendar.date(from: DateComponents(year: year, month: 10, day: 1))!
+            let weekday = calendar.component(.weekday, from: firstMonday)
+            let daysToAdd = weekday == 2 ? 7 : (9 - weekday) % 7
+            let secondMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
+            if calendar.isDate(self, inSameDayAs: secondMonday) {
+                return true
+            }
+        }
+        
+        return false
     }
 }
 
@@ -131,6 +203,17 @@ extension String {
     // MARK: - Time String Processing
     // Process time strings for timetable operations
     var timeString: String { return (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
+    
+    // MARK: - Leading Zero Removal
+    // Remove leading zero from time strings (e.g., "03" -> "3")
+    var trimmingLeadingZero: String {
+        // Remove leading zero if the string has more than one character and starts with "0"
+        if self.count > 1 && self.hasPrefix("0") {
+            return String(self.dropFirst())
+        }
+        return self
+    }
+    
     func addInputTime(_ inputText: String) -> String { return (self != "") ? "\(self) \(inputText)": inputText}
     func timeSorting(charactersin: String) -> [String] {
         return Array(Set(self.components(separatedBy: CharacterSet(charactersIn: charactersin))
@@ -144,8 +227,7 @@ extension String {
     
     // MARK: - Alert Message Generation
     // Dynamic alert title and message generation
-    func timetableAlertMessage(_ num: Int, _ hour: Int) -> String { return "\(lineNameArray[num]) (\(hour)\("Hour".localized))" }
-    func timetableAlertTitle(_ num: Int) -> String { return "(\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized))"}
+    func timetableLineTitle(_ num: Int) -> String { return "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)"}
     var routeTitle: String { return
         (self == "back1") ? "Setting Return Route 1".localized:
         (self == "back2") ? "Setting Return Route 2".localized:

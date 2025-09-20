@@ -80,7 +80,7 @@ struct SettingsTransferSheet: View {
             vm.loadSettings()
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color.white, for: .navigationBar)
+        .toolbarBackground(.white, for: .navigationBar)
         .toolbarColorScheme(.light, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -92,7 +92,7 @@ struct SettingsTransferSheet: View {
                     HStack {
                         Image(systemName: "arrowshape.backward.fill")
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(Color.black)
+                            .foregroundColor(.black)
                         Text("Back to homepage".localized)
                             .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.black)
@@ -108,8 +108,8 @@ struct SettingsTransferSheet: View {
     @ViewBuilder
     private func headerSection(title: String) -> some View {
         Text(title)
-            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
-            .foregroundColor(Color.black)
+            .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
+            .foregroundColor(.black)
             .padding(.vertical, screen.settingsLineSheetPadding)
     }
     
@@ -119,7 +119,7 @@ struct SettingsTransferSheet: View {
         HStack {
             Text(title)
                 .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                .foregroundColor(.primaryColor)
+                .foregroundColor(.primary)
 
             TextField(placeholder, text: text)
                 .textInputAutocapitalization(.never)
@@ -131,7 +131,7 @@ struct SettingsTransferSheet: View {
                 .overlay(styledBorder())
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(text.wrappedValue.isEmpty ? .gray : .accentColor)
+                .foregroundColor(text.wrappedValue.isEmpty ? .gray : .accent)
         }
     }
     
@@ -160,7 +160,7 @@ struct SettingsTransferSheet: View {
             GridRow {
                 Text("Transportation".localized)
                     .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                    .foregroundColor(.primaryColor)
+                    .foregroundColor(.primary)
 
                 transportationMethodSelector(selectedTransportation: transportation1)
                 transportationMethodSelector(selectedTransportation: transportation2)
@@ -170,7 +170,7 @@ struct SettingsTransferSheet: View {
             GridRow {
                 Text("Travel Time".localized)
                     .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                    .foregroundColor(.primaryColor)
+                    .foregroundColor(.primary)
 
                 timeSelector(selectedTime: transferTime1)
                 timeSelector(selectedTime: transferTime2)
@@ -267,7 +267,7 @@ struct SettingsTransferSheet: View {
             .frame(height: screen.settingsLineSheetButtonHeight)
             .background(
                 RoundedRectangle(cornerRadius: screen.settingsLineSheetButtonCornerRadius)
-                    .fill(vm.officeInput.isEmpty ? .gray: Color.accentColor)
+                    .fill(vm.officeInput.isEmpty ? .gray: .accent)
             )
             .padding(.vertical, screen.settingsLineSheetPadding)
         }

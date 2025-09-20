@@ -109,16 +109,20 @@ extension UIScreen {
 extension UIScreen {
     
     // Timetable responsive sizing based on screen height
-    var timetableTitleFontSize:  CGFloat { customWidth * 0.05 }
-    var timetableHeaderFontSize: CGFloat { customWidth * 0.04 }
-    var timetableButtonFontSize: CGFloat { customWidth * 0.04 }
-    var timetableButtonWidth:    CGFloat { customWidth * 0.20 }
-    var timetableButtonHeight:   CGFloat { customWidth * 0.08 }
-    var timetableGridHeight:     CGFloat { customWidth * 0.06 }
-    var timetableHourFrameWidth: CGFloat { customWidth * 0.06 }
-    var timetableTimeFontSize:   CGFloat { customWidth * 0.04 }
-    var timetablePadding:        CGFloat { customWidth * 0.03 }
-    var timetableSpacing:        CGFloat { customWidth * 0.01 }
+    var timetableTitleFontSize:   CGFloat { customWidth * 0.05 }
+    var timetableHeaderFontSize:  CGFloat { customWidth * 0.04 }
+    var timetableButtonFontSize:  CGFloat { customWidth * 0.04 }
+    var timetableButtonWidth:     CGFloat { customWidth * 0.20 }
+    var timetableButtonHeight:    CGFloat { customWidth * 0.08 }
+    var timetableGridHeight:      CGFloat { customWidth * 0.06 }
+    var timetableColorGridWidth:  CGFloat { customWidth * 0.30 }
+    var timetableHourFrameWidth:  CGFloat { customWidth * 0.06 }
+    var timetableTimeFontSize:    CGFloat { customWidth * 0.04 }
+    var timetablePadding:         CGFloat { customWidth * 0.03 }
+    var timetableSpacing:         CGFloat { customWidth * 0.01 }
+    var timetableSettingWidth:    CGFloat { customWidth * 0.98 }
+    var timetableEditButtonWidth: CGFloat { customWidth * 0.30 }
+    var timetableEditInputWidth:  CGFloat { customWidth * 0.50 }
 }
 
 // MARK: - Ad Banner Extensions
@@ -140,9 +144,8 @@ extension UIScreen {
     
     // Typography
     var settingsLineSheetTitleFontSize: CGFloat { bounds.size.height * 0.020 }
-    var settingsLineSheetHeaderFontSize: CGFloat { bounds.size.height * 0.018 }
     var settingsLineSheetInputFontSize: CGFloat { bounds.size.height * 0.018 }
-    var settingsLineSheetButtonFontSize: CGFloat { bounds.size.height * 0.018 }
+    var settingsLineSheetButtonFontSize: CGFloat { bounds.size.height * 0.020 }
     var settingsLineSheetHeadlineFontSize: CGFloat { bounds.size.height * 0.016 }
     var settingsLineSheetCaptionFontSize: CGFloat { bounds.size.height * 0.012 }
     

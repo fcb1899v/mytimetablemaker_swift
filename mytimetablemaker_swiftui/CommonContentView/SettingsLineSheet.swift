@@ -116,7 +116,7 @@ struct SettingsLineSheet: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color.white, for: .navigationBar)
+        .toolbarBackground(.white, for: .navigationBar)
         .toolbarColorScheme(.light, for: .navigationBar)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -128,7 +128,7 @@ struct SettingsLineSheet: View {
                     HStack {
                         Image(systemName: "arrowshape.backward.fill")
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(Color.black)
+                            .foregroundColor(.black)
                         Text("Back to homepage".localized)
                             .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.black)
@@ -338,8 +338,10 @@ struct SettingsLineSheet: View {
             colorSelectionHeader
             colorSelectionGrid
         }
-        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+        .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+        .fill(Color(.secondarySystemBackground)))
+        .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+        .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
         .padding(.horizontal, screen.settingsLineSheetPadding)
         .offset(y: screen.settingsLineSheetColorOffset)
         .zIndex(100)
@@ -349,7 +351,7 @@ struct SettingsLineSheet: View {
     private var colorSelectionHeader: some View {
         HStack {
             Text("Select Line Color".localized)
-                .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .semibold))
+                .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .semibold))
                 .foregroundColor(.black)
             Spacer()
             // Cancel button (only shown during manual color selection)
@@ -400,32 +402,84 @@ struct SettingsLineSheet: View {
     // MARK: - Save Button Section
     /// Save button for storing line configuration data
     private var saveButtonSection: some View {
-        actionButton(
-            title: "Save".localized,
-            icon: "square.and.arrow.down.on.square.fill",
-            color: vm.isAllNotEmpty ? .accentColor: .gray,
-        ) {
+        Button(action: {
             vm.handleLineSave(dismiss: dismiss)
+        }) {
+            HStack {
+                Image(systemName: "square.and.arrow.down.on.square.fill")
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
+                Text("Input Save".localized)
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: screen.settingsLineSheetButtonHeight)
+            .background(
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetButtonCornerRadius)
+                    .fill(vm.isAllNotEmpty ? Color.accent: Color.gray)
+            )
         }
-        .disabled(!vm.isCustomLineStationInputComplete())
+        .disabled(!vm.isCustomLineStationInputComplete() || !vm.isAllNotEmpty)
         .padding(.top, screen.settingsLineSheetPadding)
     }
     
     // MARK: - Timetable Settings Button Section
-    /// Button to open timetable configuration screen
+    /// Button to open timetable configuration screen with auto/manual toggle
     private var timetableSettingsButtonSection: some View {
-        actionButton(
-            title: vm.isAllSelected ? "Auto Generate Timetable".localized: "Timetable Settings".localized,
-            icon: vm.isAllSelected ? "clock.badge.checkmark.fill": "clock.fill",
-            color: vm.isAllSelected ? .accentColor: .primaryColor,
-        ) {
-            if vm.isAllSelected {
+        Button(action: {
+            // Auto mode: execute getTargetTimetableData if all selected, otherwise just open settings
+            if !vm.isTimetableManual && vm.isAllSelected {
                 Task {
                     await vm.getTargetTimetableData()
+                    showTimetableSettings = true
+                } 
+            } else if vm.isAllNotEmpty {
+                showTimetableSettings = true
+            }
+        }) {
+            HStack {
+                Spacer()
+                Image(systemName: vm.isTimetableManual ?
+                    "clock.badge.exclamationmark.fill" :
+                    (vm.isAllSelected ? "clock.badge.checkmark.fill" : "clock.fill"))
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
+                Text((vm.isTimetableManual || !vm.isAllSelected) ? "Timetable Settings".localized:
+                    "Auto Generate Timetable".localized)
+                    .font(.system(size: screen.settingsLineSheetButtonFontSize, weight: .bold))
+                // Custom toggle for manual/auto mode
+                Spacer()
+                if vm.isAllSelected {
+                    CustomToggle(
+                        isLeftSelected: Binding(
+                            get: { vm.isTimetableManual },
+                            set: { isManual in
+                                vm.isTimetableManual = isManual
+                            }
+                        ),
+                        leftText: "",
+                        leftColor: .white,
+                        rightText: "Auto".localized,
+                        rightColor: .white,
+                        circleColor: vm.isTimetableManual ? .accent: .primary,
+                        offColor: .white
+                    )
                 }
             }
-            showTimetableSettings = true
-        }.padding(.top, screen.settingsLineSheetPadding)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: screen.settingsLineSheetButtonHeight)
+            .padding(.horizontal, screen.settingsLineSheetPadding)
+            .background(
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetButtonCornerRadius)
+                    .fill(
+                        !vm.isAllNotEmpty ? Color.gray:
+                        (!vm.isTimetableManual && vm.isAllSelected) ? Color.primary:
+                        Color.accent
+                )
+            )
+        }
+        .disabled(!vm.isCustomLineStationInputComplete() || !vm.isAllNotEmpty)
+        .padding(.top, screen.settingsLineSheetPadding)
     }
     
     // MARK: - Action Button Helper
@@ -488,15 +542,15 @@ struct SettingsLineSheet: View {
             }) {
                 HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill")
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .foregroundColor(.white)
                     Text("Update Line Data".localized)
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                 }
             }
             .font(.system(size: screen.settingsLineSheetButtonFontSize))
             .buttonStyle(.borderedProminent)
-            .tint(vm.lastUpdatedDisplay != nil ? .accentColor: .secondary)
+            .tint(vm.lastUpdatedDisplay != nil ? .accent: .secondary)
         }
     }
     
@@ -515,10 +569,9 @@ struct SettingsLineSheet: View {
                 HStack {
                     Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
                         .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
-                        .foregroundColor(Color.black)
-                    
+                        .foregroundColor(.black)
                     Image(systemName: "chevron.down")
-                        .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .medium))
+                        .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .medium))
                         .foregroundColor(.black)
                 }
             }
@@ -536,10 +589,11 @@ struct SettingsLineSheet: View {
                     }
                 ),
                 leftText: "Railway".localized,
-                leftColor: .primaryColor,
+                leftColor: .primary,
                 rightText: "Bus".localized,
-                rightColor: .primaryColor,
-                circleColor: .white
+                rightColor: .primary,
+                circleColor: .white,
+                offColor: .secondary
             )
         }
         .padding(.top, screen.settingsLineSheetPadding)
@@ -561,16 +615,16 @@ struct SettingsLineSheet: View {
         let finalText = headerText + stationInfo
         
         return Text(finalText)
-            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
-            .foregroundColor(Color.black)
+            .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
+            .foregroundColor(.black)
             .padding(.top, screen.settingsLineSheetPadding)
     }
     
     /// Time header with simple text
     private var timeHeaderText: some View {
         Text("Time Settings".localized)
-            .font(.system(size: screen.settingsLineSheetHeaderFontSize, weight: .bold))
-            .foregroundColor(Color.black)
+            .font(.system(size: screen.settingsLineSheetTitleFontSize, weight: .bold))
+            .foregroundColor(.black)
             .padding(.top, screen.settingsLineSheetPadding)
     }
     
@@ -580,7 +634,7 @@ struct SettingsLineSheet: View {
             HStack {
                 Text("Line Name".localized)
                     .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                    .foregroundColor(.primaryColor)
+                    .foregroundColor(.primary)
 
                 TextField("Enter line name or bus route name".localized, text: $vm.lineInput)
                     .textInputAutocapitalization(.never)
@@ -588,8 +642,14 @@ struct SettingsLineSheet: View {
                     .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
                     .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
-                    .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                    .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                    .background(
+                        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                            .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+                    )
                     .focused($focused)
                     .onSubmit {
                         // Handle enter key press
@@ -613,7 +673,7 @@ struct SettingsLineSheet: View {
                     }
                 
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(vm.lineInput.isEmpty ? .gray : .accentColor)
+                    .foregroundColor(vm.lineInput.isEmpty ? .gray : .accent)
             }
             .onChange(of: vm.lineInput) { newValue in
                 handleLineInputChange(newValue)
@@ -627,17 +687,23 @@ struct SettingsLineSheet: View {
         HStack {
             Text("Line Color".localized)
                 .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                .foregroundColor(.primaryColor)
+                .foregroundColor(.primary)
 
             // Display selected color as a circle
             Circle()
-                .fill(vm.selectedLineColor?.safeColor ?? selected?.lineColor?.safeColor ?? Color.primaryColor)
+                .fill(vm.selectedLineColor?.safeColor ?? selected?.lineColor?.safeColor ?? .primary)
                 .frame(width: screen.settingsLineSheetColorCircleSmallSize, height: screen.settingsLineSheetColorCircleSmallSize)
-                .overlay(Circle().stroke(Color.primaryColor, lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                .overlay(Circle().stroke(.primary, lineWidth: screen.settingsLineSheetStrokeLineWidth))
                 .padding(.horizontal, screen.settingsLineSheetColorPaddingHorizontal)
                 .padding(.vertical, screen.settingsLineSheetColorPaddingVertical)
-                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                .background(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+                )
 
             // Color selection button
             Button(action: {
@@ -645,14 +711,14 @@ struct SettingsLineSheet: View {
             }) {
                 HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "paintpalette.fill")
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .foregroundColor(.white)
                     Text("Select".localized)
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                 }
             }
             .buttonStyle(.borderedProminent)
-            .tint(Color.primaryColor)
+            .tint(.primary)
             
             Spacer()
             
@@ -669,25 +735,25 @@ struct SettingsLineSheet: View {
                 vm.departureStationInput = ""
                 vm.arrivalStationInput = ""
                 
-                // Reset ride time to 5 minutes
-                vm.selectedRideTime = 5
+                // Reset ride time to 0 minutes
+                vm.selectedRideTime = 0
                 
                 // Reset line color to accent (not saved to UserDefaults)
-                vm.selectedLineColor = accentColorString
+                vm.selectedLineColor = Color.accentString
                 
                 // Reset transfer settings to none
                 vm.selectedTransportation = "none"
-                vm.selectedTransferTime = 5
+                vm.selectedTransferTime = 0
                 
                 // Hide color selection UI
                 vm.showColorSelection = false
             }) {
                 HStack(spacing: screen.settingsLineSheetIconSpacing) {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .foregroundColor(.white)
                     Text("Clear".localized)
-                        .font(.system(size: screen.settingsLineSheetButtonFontSize))
+                        .font(.system(size: screen.settingsLineSheetInputFontSize))
                         .buttonStyle(.borderedProminent)
                 }
             }
@@ -702,15 +768,15 @@ struct SettingsLineSheet: View {
         HStack(alignment: .center) {
             Text("Ride Time".localized)
                 .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                .foregroundColor(.primaryColor)
+                .foregroundColor(.primary)
             
             HStack {
-                Text("\(vm.selectedRideTime)\(" min".localized)")
+                Text(vm.selectedRideTime == 0 ? "-" : "\(vm.selectedRideTime)\(" min".localized)")
                     .font(.system(size: screen.settingsLineSheetInputFontSize))
                     .foregroundColor(.black)
                 
                 Menu {
-                    ForEach(0...99, id: \.self) { minute in
+                    ForEach(1...99, id: \.self) { minute in
                         Button("\(minute)" + " min".localized) {
                             vm.selectedRideTime = minute
                         }
@@ -723,8 +789,14 @@ struct SettingsLineSheet: View {
             }
             .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
             .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
-            .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-            .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+            .background(
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                    .fill(Color(.secondarySystemBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                    .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+            )
         }
     }
     
@@ -736,7 +808,7 @@ struct SettingsLineSheet: View {
             HStack {
                 Text("Next Transfer".localized)
                     .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                    .foregroundColor(Color.primaryColor)
+                    .foregroundColor(.primary)
                 
                 HStack {
                     // Display icon for selected transportation method
@@ -771,8 +843,14 @@ struct SettingsLineSheet: View {
                 }
                 .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
-                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                .background(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+                )
 
                 Spacer()
             }
@@ -782,15 +860,15 @@ struct SettingsLineSheet: View {
                 HStack {
                     Text("Transfer Time".localized)
                         .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                        .foregroundColor(Color.primaryColor)
+                        .foregroundColor(.primary)
                     
                     HStack {
-                        Text("\(vm.selectedTransferTime)" + " min".localized)
+                        Text(vm.selectedTransferTime == 0 ? "-" : "\(vm.selectedTransferTime)" + " min".localized)
                             .font(.system(size: screen.settingsLineSheetInputFontSize))
                             .foregroundColor(.black)
                         
                         Menu {
-                            ForEach(0...99, id: \.self) { minute in
+                            ForEach(1...99, id: \.self) { minute in
                                 Button("\(minute)" + " min".localized) {
                                     vm.selectedTransferTime = minute
                                 }
@@ -803,9 +881,14 @@ struct SettingsLineSheet: View {
                     }
                     .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
                     .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
-                    .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                    .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
-                    
+                    .background(
+                        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                            .fill(Color(.secondarySystemBackground))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                            .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+                    )
                     Spacer()
                 }
             }
@@ -818,7 +901,7 @@ struct SettingsLineSheet: View {
         HStack {
             Text(vm.selectedTransportationKind == .bus ? "Departure Stop".localized : "Departure Station".localized)
                 .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                .foregroundColor(.primaryColor)
+                .foregroundColor(.primary)
             
             TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStationInput)
                 .textInputAutocapitalization(.never)
@@ -858,7 +941,7 @@ struct SettingsLineSheet: View {
                 )
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.departureStationInput.isEmpty ? .gray : .accentColor)
+                .foregroundColor(vm.departureStationInput.isEmpty ? .gray : .accent)
         }
     }
     
@@ -868,7 +951,7 @@ struct SettingsLineSheet: View {
         HStack {
             Text(vm.selectedTransportationKind == .bus ? "Arrival Stop".localized : "Arrival Station".localized)
                 .font(.system(size: screen.settingsLineSheetHeadlineFontSize, weight: .semibold))
-                .foregroundColor(.primaryColor)
+                .foregroundColor(.primary)
 
             TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStationInput)
                 .textInputAutocapitalization(.never)
@@ -876,8 +959,14 @@ struct SettingsLineSheet: View {
                 .font(.system(size: screen.settingsLineSheetInputFontSize))
                 .padding(.vertical, screen.settingsLineSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsLineSheetInputPaddingHorizontal)
-                .background(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).fill(Color(.secondarySystemBackground)))
-                .overlay(RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius).stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth))
+                .background(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .fill(Color(.secondarySystemBackground))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: screen.settingsLineSheetCornerRadius)
+                        .stroke(Color(.separator), lineWidth: screen.settingsLineSheetStrokeLineWidth)
+                )
                 .onChange(of: vm.arrivalStationInput) { newValue in
                     handleArrivalStationInputChange(newValue)
                 }
@@ -908,7 +997,7 @@ struct SettingsLineSheet: View {
                 )
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.arrivalStationInput.isEmpty ? .gray : .accentColor)
+                .foregroundColor(vm.arrivalStationInput.isEmpty ? .gray : .accent)
         }
     }
     
@@ -1034,10 +1123,10 @@ struct SettingsLineSheet: View {
         vm.arrivalSuggestions = []
         vm.isDepartureFieldFocused = false
         vm.isArrivalFieldFocused = false
-        // Reset ride time to 5 minutes when line is selected
-        vm.selectedRideTime = 5
+        // Reset ride time to 0 minutes when line is selected
+        vm.selectedRideTime = 0
         // Set line color or default to accent color
-        vm.selectedLineColor = line.lineColor ?? accentColorString
+        vm.selectedLineColor = line.lineColor ?? Color.accentString
     }
     
     private func handleLineStations(_ line: TransportationLine) {

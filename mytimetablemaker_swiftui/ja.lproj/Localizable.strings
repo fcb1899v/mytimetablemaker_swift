@@ -212,26 +212,30 @@
 "Car" = "車";
 
 //CustomColor
-"DEFAULT" = "デフォルト";
 "RED" = "赤";
+"DARK RED" = "えんじ";
 "ORANGE" = "オレンジ";
+"BROWN" = "茶";
 "YELLOW" = "黄";
+"BEIGE" = "ベージュ";
 "YELLOW GREEN" = "黄緑";
 "ORIVE" = "オリーブ";
 "GREEN" = "緑";
+"DARK GREEN" = "深緑";
 "BLUE GREEN" = "青緑";
 "LIGHT BLUE" = "水色";
 "BLUE" = "青";
 "NAVY BLUE" = "紺";
+"INDIGO" = "インディゴ";
 "PURPLE" = "紫";
+"MAGENTA" = "マゼンタ";
+"LAVENDER" = "ラベンダー";
 "PINK" = "ピンク";
-"BEIGE" = "ベージュ";
-"DARK RED" = "えんじ";
-"BROWN" = "茶";
 "GOLD" = "ゴールド";
 "SILVER" = "シルバー";
 "GRAY" = "グレー";
 "BLACK" = "黒";
+"DEFAULT" = "デフォルト";
 
 //SelectLineView
 "Line Color" = "路線カラー";
@@ -262,8 +266,10 @@
 "Select Line Color" = "路線カラー選択";
 "Timetable Settings" = "時刻表設定";
 "Auto Generate Timetable" = "時刻表の自動生成";
+"Auto" = "自動";
 "Update Line Data" = "路線データの更新";
 "Save" = "保存";
+"Input Save" = "入力保存";
 "Select" = "選択";
 "Updated: " = "更新: ";
 "Clear" = "クリア";
@@ -324,4 +330,14 @@
 "SpecialRapid" = "特別快速";
 "TH-LINER" = "THライナー";
 "TJLiner" = "TJライナー";
+"Edit Timetable" = "時刻表の編集";
+"Copy Timetable" = "時刻表のコピー";
+"Select Type" = "列車種別";
+
+// Default train types
+"defaultLocal" = "普通";
+"defaultExpress" = "急行";
+"defaultRapid" = "快速";
+"defaultSpecialRapid" = "特別快速";
+"defaultLimitedExpress" = "特急";
 

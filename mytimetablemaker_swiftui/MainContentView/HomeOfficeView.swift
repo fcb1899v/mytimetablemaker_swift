@@ -40,7 +40,7 @@ struct HomeOfficeView: View {
             Text(time)
                 .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
         }
-        .foregroundColor(Color.primaryColor)
+        .foregroundColor(.primary)
     }
 }
 

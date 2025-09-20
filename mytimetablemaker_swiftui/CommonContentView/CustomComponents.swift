@@ -32,6 +32,7 @@ struct CustomToggle: View {
     let leftColor: Color
     let rightColor: Color
     let circleColor: Color
+    let offColor: Color
     
     // MARK: - Initializer
     init(
@@ -40,7 +41,8 @@ struct CustomToggle: View {
         leftColor: Color,
         rightText: String,
         rightColor: Color,
-        circleColor: Color = .white
+        circleColor: Color,
+        offColor: Color
     ) {
         self._isLeftSelected = isLeftSelected
         self.leftText = leftText
@@ -48,6 +50,7 @@ struct CustomToggle: View {
         self.rightText = rightText
         self.rightColor = rightColor
         self.circleColor = circleColor
+        self.offColor = offColor
     }
     
     var body: some View {
@@ -55,7 +58,7 @@ struct CustomToggle: View {
             // Left label
             Text(leftText)
                 .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
-                .foregroundColor(isLeftSelected ? leftColor : .secondary)
+                .foregroundColor(isLeftSelected ? leftColor : offColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
             
             // Toggle switch
@@ -80,7 +83,7 @@ struct CustomToggle: View {
             // Right label
             Text(rightText)
                 .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
-                .foregroundColor(isLeftSelected ? .secondary : rightColor)
+                .foregroundColor(isLeftSelected ? offColor : rightColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
         }
         .padding(.horizontal, screen.transportationTogglePaddingHorizontal)
@@ -94,9 +97,9 @@ extension CustomToggle {
         isLeftSelected: Binding<Bool>,
         leftText: String,
         rightText: String,
-        primaryColor: Color = .primaryColor,
+        primaryColor: Color = .primary,
         secondaryColor: Color = .secondary,
-        circleColor: Color = .white
+        circleColor: Color = .white,
     ) {
         self.init(
             isLeftSelected: isLeftSelected,
@@ -104,7 +107,8 @@ extension CustomToggle {
             leftColor: primaryColor,
             rightText: rightText,
             rightColor: secondaryColor,
-            circleColor: circleColor
+            circleColor: circleColor,
+            offColor: secondaryColor
         )
     }
     
@@ -113,7 +117,7 @@ extension CustomToggle {
         isOn: Binding<Bool>,
         onText: String,
         offText: String,
-        onColor: Color = .primaryColor,
+        onColor: Color = .primary,
         offColor: Color = .secondary,
         circleColor: Color = .white
     ) {
@@ -123,7 +127,8 @@ extension CustomToggle {
             leftColor: onColor,
             rightText: offText,
             rightColor: offColor,
-            circleColor: circleColor
+            circleColor: circleColor,
+            offColor: offColor
         )
     }
 }

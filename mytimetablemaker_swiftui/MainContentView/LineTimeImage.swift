@@ -66,7 +66,7 @@ struct LineTimeImage: View {
                         )
                 }
             }
-            .foregroundColor(Color.white)
+            .foregroundColor(.white)
             
             // MARK: - Line Code Text
             // Displays line code as text with appropriate styling
@@ -74,7 +74,7 @@ struct LineTimeImage: View {
                 .font(.system(size: 14, weight: .bold, design: .default))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
-                .foregroundColor(Color.white)
+                .foregroundColor(.white)
                 .shadow(color: .secondary, radius: 0, x: 0.5, y: 0)
                 .shadow(color: .secondary, radius: 0, x: -0.5, y: 0)
                 .shadow(color: .secondary, radius: 0, x: 0, y: 0.5)
@@ -108,13 +108,13 @@ struct lineTimeImage_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
             // Transfer example
-            LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
+            LineTimeImage(lineColor: .gray, lineCode: "", isTransfer: true, transportation: "walking")
             // Railway line example (JK for 京浜東北線)
             LineTimeImage(lineColor: Color.green, lineCode: "JK", isTransfer: false, transportation: "", transportationKind: .railway)
             // Bus line example
             LineTimeImage(lineColor: Color.blue, lineCode: "B01", isTransfer: false, transportation: "", transportationKind: .bus)
             // Default lightrail example
-            LineTimeImage(lineColor: Color.grayColor, lineCode: "", isTransfer: true, transportation: "walking")
+            LineTimeImage(lineColor: .gray, lineCode: "", isTransfer: true, transportation: "walking")
         }
     }
 }

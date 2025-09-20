@@ -54,6 +54,7 @@
 		02D3F5BF2E3A485100C33E15 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 023F304029DB2CBB00ECE4CF /* FirebaseFirestore */; };
 		02D3F5C02E3A485100C33E15 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 023F307529DB2E7300ECE4CF /* GoogleMobileAds */; };
 		02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D9765D2E50AC68003C3766 /* StationLineView.swift */; };
+		02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
 		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
@@ -134,6 +135,7 @@
 		02A7302428F3A67A00BE48A5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		02C15510262BC9170037EEC0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		02D9765D2E50AC68003C3766 /* StationLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationLineView.swift; sourceTree = "<group>"; };
+		02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTimetableSheet.swift; sourceTree = "<group>"; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
@@ -395,6 +397,7 @@
 			children = (
 				02E7F7272620856100C00545 /* TimetableContentView.swift */,
 				0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */,
+				02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */,
 				027F23F52AC8437600852C89 /* ImagePicker.swift */,
 			);
 			path = TimetableContentView;
@@ -587,6 +590,7 @@
 				027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
 				02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */,
 				026257D32AD3E366001CF251 /* GetFirestoreButton.swift in Sources */,
+				02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */,
 				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
 				0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */,
 				027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */,

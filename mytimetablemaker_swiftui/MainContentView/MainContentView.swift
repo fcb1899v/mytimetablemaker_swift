@@ -97,7 +97,7 @@ struct MainContentView: View {
                         }
                     }
                     .font(.custom("GenEiGothicN-Regular", size: screen.headerDateFontSize))
-                    .foregroundColor(Color.white)
+                    .foregroundColor(.white)
                     .padding(.top, screen.headerTopMargin)
                     
                     // MARK: - Operation Buttons
@@ -122,7 +122,7 @@ struct MainContentView: View {
                     .padding(.bottom, screen.headerSpace)
                 }
                 .frame(width: screen.bounds.size.width)
-                .background(Color.primaryColor)
+                .background(Color.primary)
                 .frame(height: screen.headerHeight)
                 
                 // MARK: - Transfer Information Display
@@ -152,7 +152,7 @@ struct MainContentView: View {
                             if(screen.bounds.size.width > 600) { Spacer() }
                             Divider()
                                 .frame(width: 1.5, height: screen.bounds.size.height - screen.admobBannerHeight - screen.headerHeight)
-                                .background(Color.primaryColor)
+                                .background(Color.primary)
                             if(screen.bounds.size.width > 600) { Spacer() }
                             VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                                 Spacer().frame(height: screen.routeCountdownTopSpace)

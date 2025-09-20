@@ -46,7 +46,7 @@ struct TransferView: View {
                 print("num: \(num)")
             }) {
                 LineTimeImage(
-                    lineColor: Color.grayColor,
+                    lineColor: .gray,
                     lineCode: "",
                     isTransfer: true,
                     transportation: transportationArray[num],

@@ -56,7 +56,7 @@ struct SettingsContentView: View {
                             Text("Display Return Route 2".localized)
                                 .font(.system(size: screen.settingsFontSize))
                         }
-                        .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
+                        .toggleStyle(SwitchToggleStyle(tint: .accent))
                         .onChange(of: myTransfer.isShowBackRoute2) { _ in
                             myTransfer.saveRoute2Settings()
                         }
@@ -70,7 +70,7 @@ struct SettingsContentView: View {
                             Text("Display Outbound Route 2".localized)
                                 .font(.system(size: screen.settingsFontSize))
                         }
-                        .toggleStyle(SwitchToggleStyle(tint: Color.accentColor))
+                        .toggleStyle(SwitchToggleStyle(tint: .accent))
                         .onChange(of: myTransfer.isShowGoRoute2) { _ in
                             myTransfer.saveRoute2Settings()
                         }
@@ -124,7 +124,7 @@ struct SettingsContentView: View {
                 
                 // MARK: - Loading Indicator
                 if myFirestore.isLoading {
-                    Color.grayColor.opacity(0.8)
+                    Color.gray.opacity(0.8)
                         .edgesIgnoringSafeArea(.all)
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
@@ -143,7 +143,7 @@ struct SettingsContentView: View {
             }
         }
         .navigationBarColor(
-            backgroundColor: UIColor(Color.primaryColor),
+            backgroundColor: UIColor(.primary),
             titleColor: .white,
         )
         .navigationBarBackButtonHidden(true)
@@ -167,7 +167,7 @@ struct SettingsContentView: View {
                      HStack {
                         Image(systemName: "arrowshape.backward.fill")
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(Color.white)
+                            .foregroundColor(.white)
                         Text("Back to homepage".localized)
                             .font(.system(size: screen.settingsFontSize, weight: .bold))
                             .foregroundColor(.white)

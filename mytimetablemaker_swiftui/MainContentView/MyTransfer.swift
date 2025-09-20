@@ -47,6 +47,8 @@ class MyTransfer: ObservableObject {
     @Published var transportationArray2: [String]
     @Published var transferTimeArray1: [Int]
     @Published var transferTimeArray2: [Int]
+    @Published var rideTimeArray1: [Int]
+    @Published var rideTimeArray2: [Int]
     
 
     // MARK: - Initialization
@@ -74,6 +76,8 @@ class MyTransfer: ObservableObject {
         self.transportationArray2 = "back2".transportationArray
         self.transferTimeArray1 = "back1".transferTimeArray
         self.transferTimeArray2 = "back2".transferTimeArray
+        self.rideTimeArray1 = "back1".rideTimeArray
+        self.rideTimeArray2 = "back2".rideTimeArray
     }
     
     // MARK: - Route Management
@@ -101,6 +105,8 @@ class MyTransfer: ObservableObject {
         lineNameArray2 = goOrBack2.lineNameArray
         lineColorArray1 = goOrBack1.lineColorArray
         lineColorArray2 = goOrBack2.lineColorArray
+        rideTimeArray1 = goOrBack1.rideTimeArray
+        rideTimeArray2 = goOrBack2.rideTimeArray
     }
     
     func setTransferData() {
@@ -134,8 +140,7 @@ class MyTransfer: ObservableObject {
         setLineData()
         // Update time
         timeLabel = Date().setTime
-        // Force UI update by triggering objectWillChange
-        objectWillChange.send()
+        // Remove objectWillChange.send() to prevent SwiftUI state modification errors
     }
     
     // MARK: - Direction Control

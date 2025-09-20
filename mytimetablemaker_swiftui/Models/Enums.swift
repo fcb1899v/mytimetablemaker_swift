@@ -8,52 +8,32 @@
 import SwiftUI
 
 // MARK: - Custom Color Enumeration
-// Defines color options for line customization with RGB values
+// Defines color options for line customization
 enum CustomColor: String, CaseIterable {
-    case accent = "DEFAULT"
-    case red    = "RED"
-    case orange = "ORANGE"
-    case yellow = "YELLOW"
-    case yelgre = "YELLOW GREEN"
-    case green  = "GREEN"
-    case orive  = "ORIVE"
-    case blugre = "BLUE GREEN"
-    case ligblr = "LIGHT BLUE"
-    case blue   = "BLUE"
-    case navblu = "NAVY BLUE"
-    case purple = "PURPLE"
-    case pink   = "PINK"
-    case beige  = "BEIGE"
-    case darred = "DARK RED"
-    case brown  = "BROWN"
-    case gold   = "GOLD"
-    case silver = "SILVER"
-    case gray   = "GRAY"
-    case black  = "BLACK"
-    var RGB: String {
-        switch self {
-            case .accent: return "#03DAC5"
-            case .red   : return "#FF0000"
-            case .orange: return "#F68B1E"
-            case .yellow: return "#FFD400"
-            case .yelgre: return "#99CC00"
-            case .orive : return "#9FB01C"
-            case .green : return "#009933"
-            case .blugre: return "#00AC9A"
-            case .ligblr: return "#00BAE8"
-            case .blue  : return "#0000FF"
-            case .navblu: return "#003686"
-            case .purple: return "#A757A8"
-            case .pink  : return "#E85298"
-            case .beige : return "#C1A470"
-            case .darred: return "#C9252F"
-            case .brown : return "#BB6633"
-            case .gold  : return "#C5C544"
-            case .silver: return "#89A1AD"
-            case .gray  : return "#9E9E9F"
-            case .black : return "#000000"
-        }
-    }
+    case red     = "RED"          // Pure red - #E60012
+    case darkred = "DARK RED"     // Dark red - #A22041
+    case orange  = "ORANGE"       // Orange - #FF6600
+    case brown   = "BROWN"        // Brown - #8F4C38
+    case yellow  = "YELLOW"       // Bright yellow - #FFD400
+    case beige   = "BEIGE"        // Beige - #C1A470
+    case orive   = "ORIVE"        // Olive green - #9FB01C
+    case yelwgre = "YELLOW GREEN" // Yellow green - #9ACD32
+    case green   = "GREEN"        // Green - #009739
+    case darkgre = "DARK GREEN"   // Dark green - #004E2E
+    case bluegre = "BLUE GREEN"   // Blue green - #00AC9A
+    case ligblue = "LIGHT BLUE"   // Light blue - #00BFFF
+    case blue    = "BLUE"         // Pure blue - #0000FF
+    case navblue = "NAVY BLUE"    // Navy blue - #003580
+    case primary = "INDIGO"       // Indigo - #3700B3
+    case lavend  = "LAVENDER"     // Lavender - #8F76D6
+    case purple  = "PURPLE"       // Purple - #B22C8D
+    case magenta = "MAGENTA"      // Magenta - #E4007F
+    case pink    = "PINK"         // Pink - #E85298
+    case gray    = "GRAY"         // Gray - #9C9C9C
+    case silver  = "SILVER"       // Silver - #89A1AD
+    case gold    = "GOLD"         // Gold - #C5C544
+    case black   = "BLACK"        // Black - #000000
+    case accent  = "DEFAULT"      // Default accent color - #03DAC5
 }
 
 // MARK: - Data Source Definitions
@@ -312,293 +292,97 @@ enum LocalDataSource: CaseIterable {
             return []
         }
     }
-    
-    // MARK: - API Data Type Enum
-    // Defines the type of data to request from the API
-    enum APIDataType {
-        case lineInfo       // Railway line or bus route information
-        case timetable      // Timetable data
         
-        var railwayOdpTDataType: ODPTDataType {
-            switch self {
-            case .lineInfo: return .railwayLine
-            case .timetable: return .railwayTimetable
-            }
+    // MARK: - Train Type Helper Methods
+    // Get display name for a specific train type using localization
+    func getDisplayName(for trainType: String?) -> String {
+        guard let trainType = trainType else { 
+            return NSLocalizedString("Unknown", comment: "Unknown train type")
         }
         
-        var busOdpTDataType: ODPTDataType {
-            switch self {
-            case .lineInfo: return .busRoutePattern
-            case .timetable: return .busTimetable
-            }
+        // Split by "." and get the last component
+        let components = trainType.components(separatedBy: ".")
+        guard let lastComponent = components.last else {
+            return NSLocalizedString("Unknown", comment: "Unknown train type")
         }
+        
+        return NSLocalizedString(lastComponent, comment: "Train type display name")
     }
     
     // MARK: - Unified API Link Generation
     // Generate API links using clean enum-based approach
     func apiLink(for dataType: APIDataType) -> String {
-        let odptDataType = transportationType == .railway ? 
-            dataType.railwayOdpTDataType : 
+        let odptDataType = transportationType == .railway ?
+            dataType.railwayOdpTDataType :
             dataType.busOdpTDataType
         return operatorCode.odptURL(dataType: odptDataType, apiType: apiType)
     }
 }
 
-// MARK: - Train Type Enumeration
-// Comprehensive enumeration of all train types from ODPT API data
-enum TrainType: String, CaseIterable {
-    // Sotetsu Railway
-    case sotetsuCommuterExpress = "odpt.TrainType:Sotetsu.CommuterExpress"
-    case sotetsuCommuterLimitedExpress = "odpt.TrainType:Sotetsu.CommuterLimitedExpress"
-    case sotetsuExpress = "odpt.TrainType:Sotetsu.Express"
-    case sotetsuLimitedExpress = "odpt.TrainType:Sotetsu.LimitedExpress"
-    case sotetsuLocal = "odpt.TrainType:Sotetsu.Local"
-    case sotetsuRapid = "odpt.TrainType:Sotetsu.Rapid"
+// MARK: - API Data Type Enum
+// Defines the type of data to request from the API
+enum APIDataType {
+    case lineInfo       // Railway line or bus route information
+    case timetable      // Timetable data
     
-    // Odakyu Railway
-    case odakyuCommuterExpress = "odpt.TrainType:Odakyu.CommuterExpress"
-    case odakyuCommuterSemiExpress = "odpt.TrainType:Odakyu.CommuterSemiExpress"
-    case odakyuExpress = "odpt.TrainType:Odakyu.Express"
-    case odakyuLimitedExpress = "odpt.TrainType:Odakyu.LimitedExpress"
-    case odakyuLocal = "odpt.TrainType:Odakyu.Local"
-    case odakyuRapidExpress = "odpt.TrainType:Odakyu.RapidExpress"
-    case odakyuSemiExpress = "odpt.TrainType:Odakyu.SemiExpress"
-    
-    // Keikyu Railway
-    case keikyuAccessExpress = "odpt.TrainType:Keikyu.AccessExpress"
-    case keikyuAirportRapidLimitedExpress = "odpt.TrainType:Keikyu.AirportRapidLimitedExpress"
-    case keikyuCommuterLimitedExpress = "odpt.TrainType:Keikyu.CommuterLimitedExpress"
-    case keikyuEveningWing = "odpt.TrainType:Keikyu.EveningWing"
-    case keikyuExpress = "odpt.TrainType:Keikyu.Express"
-    case keikyuLimitedExpress = "odpt.TrainType:Keikyu.LimitedExpress"
-    case keikyuLocal = "odpt.TrainType:Keikyu.Local"
-    case keikyuMorningWing = "odpt.TrainType:Keikyu.MorningWing"
-    case keikyuRapidLimitedExpress = "odpt.TrainType:Keikyu.RapidLimitedExpress"
-    case keikyuRapid = "odpt.TrainType:Keikyu.Rapid"
-    
-    // Seibu Railway
-    case seibuCommuterExpress = "odpt.TrainType:Seibu.CommuterExpress"
-    case seibuCommuterSemiExpress = "odpt.TrainType:Seibu.CommuterSemiExpress"
-    case seibuExpress = "odpt.TrainType:Seibu.Express"
-    case seibuFLiner = "odpt.TrainType:Seibu.F-Liner"
-    case seibuHaijimaLiner = "odpt.TrainType:Seibu.HaijimaLiner"
-    case seibuLimitedExpress = "odpt.TrainType:Seibu.LimitedExpress"
-    case seibuLocal = "odpt.TrainType:Seibu.Local"
-    case seibuRapidExpress = "odpt.TrainType:Seibu.RapidExpress"
-    case seibuRapid = "odpt.TrainType:Seibu.Rapid"
-    case seibuSTrain = "odpt.TrainType:Seibu.S-TRAIN"
-    case seibuSemiExpress = "odpt.TrainType:Seibu.SemiExpress"
-    
-    // Tokyu Railway
-    case tokyuCommuterLimitedExpress = "odpt.TrainType:Tokyu.CommuterLimitedExpress"
-    case tokyuExpress = "odpt.TrainType:Tokyu.Express"
-    case tokyuFLiner = "odpt.TrainType:Tokyu.F-Liner"
-    case tokyuLimitedExpress = "odpt.TrainType:Tokyu.LimitedExpress"
-    case tokyuLocal = "odpt.TrainType:Tokyu.Local"
-    case tokyuSTrain = "odpt.TrainType:Tokyu.S-TRAIN"
-    case tokyuSemiExpress = "odpt.TrainType:Tokyu.SemiExpress"
-    
-    // Tobu Railway
-    case tobuExpress = "odpt.TrainType:Tobu.Express"
-    case tobuFLiner = "odpt.TrainType:Tobu.F-Liner"
-    case tobuKawagoeLimitedExpress = "odpt.TrainType:Tobu.KawagoeLimitedExpress"
-    case tobuLimitedExpress = "odpt.TrainType:Tobu.LimitedExpress"
-    case tobuLocal = "odpt.TrainType:Tobu.Local"
-    case tobuRapidExpress = "odpt.TrainType:Tobu.RapidExpress"
-    case tobuRapid = "odpt.TrainType:Tobu.Rapid"
-    case tobuSLTaiju = "odpt.TrainType:Tobu.SL-Taiju"
-    case tobuSectionExpress = "odpt.TrainType:Tobu.SectionExpress"
-    case tobuSectionSemiExpress = "odpt.TrainType:Tobu.SectionSemiExpress"
-    case tobuSemiExpress = "odpt.TrainType:Tobu.SemiExpress"
-    case tobuTHLiner = "odpt.TrainType:Tobu.TH-LINER"
-    case tobuTJLiner = "odpt.TrainType:Tobu.TJ-Liner"
-    
-    // JR-East
-    case jrEastChuoSpecialRapid = "odpt.TrainType:JR-East.ChuoSpecialRapid"
-    case jrEastCommuterRapid = "odpt.TrainType:JR-East.CommuterRapid"
-    case jrEastCommuterSpecialRapid = "odpt.TrainType:JR-East.CommuterSpecialRapid"
-    case jrEastExpress = "odpt.TrainType:JR-East.Express"
-    case jrEastLimitedExpress = "odpt.TrainType:JR-East.LimitedExpress"
-    case jrEastLiner = "odpt.TrainType:JR-East.Liner"
-    case jrEastLocal = "odpt.TrainType:JR-East.Local"
-    case jrEastOmeSpecialRapid = "odpt.TrainType:JR-East.OmeSpecialRapid"
-    case jrEastRapid = "odpt.TrainType:JR-East.Rapid"
-    case jrEastSpecialRapid = "odpt.TrainType:JR-East.SpecialRapid"
-    
-    // Toei Subway
-    case toeiAccessExpress = "odpt.TrainType:Toei.AccessExpress"
-    case toeiAirportRapidLimitedExpress = "odpt.TrainType:Toei.AirportRapidLimitedExpress"
-    case toeiCommuterLimitedExpress = "odpt.TrainType:Toei.CommuterLimitedExpress"
-    case toeiExpress = "odpt.TrainType:Toei.Express"
-    case toeiLimitedExpress = "odpt.TrainType:Toei.LimitedExpress"
-    case toeiLocal = "odpt.TrainType:Toei.Local"
-    case toeiRapidLimitedExpress = "odpt.TrainType:Toei.RapidLimitedExpress"
-    case toeiRapid = "odpt.TrainType:Toei.Rapid"
-    
-    // Yokohama Municipal Subway
-    case yokohamaMunicipalLocal = "odpt.TrainType:YokohamaMunicipal.Local"
-    case yokohamaMunicipalRapid = "odpt.TrainType:YokohamaMunicipal.Rapid"
-    
-    // Yurikamome
-    case yurikamomeLocal = "odpt.TrainType:Yurikamome.Local"
-    
-    // MIR (Tsukuba Express)
-    case mirCommuterRapid = "odpt.TrainType:MIR.CommuterRapid"
-    case mirLocal = "odpt.TrainType:MIR.Local"
-    case mirRapid = "odpt.TrainType:MIR.Rapid"
-    case mirSemiRapid = "odpt.TrainType:MIR.SemiRapid"
-    
-    // Tama Monorail
-    case tamaMonorailLocal = "odpt.TrainType:TamaMonorail.Local"
-    
-    // Tokyo Metro
-    case tokyoMetroCommuterExpress = "odpt.TrainType:TokyoMetro.CommuterExpress"
-    case tokyoMetroCommuterLimitedExpress = "odpt.TrainType:TokyoMetro.CommuterLimitedExpress"
-    case tokyoMetroCommuterRapid = "odpt.TrainType:TokyoMetro.CommuterRapid"
-    case tokyoMetroExpress = "odpt.TrainType:TokyoMetro.Express"
-    case tokyoMetroFLiner = "odpt.TrainType:TokyoMetro.F-Liner"
-    case tokyoMetroLimitedExpress = "odpt.TrainType:TokyoMetro.LimitedExpress"
-    case tokyoMetroLocal = "odpt.TrainType:TokyoMetro.Local"
-    case tokyoMetroRapidExpress = "odpt.TrainType:TokyoMetro.RapidExpress"
-    case tokyoMetroRapid = "odpt.TrainType:TokyoMetro.Rapid"
-    case tokyoMetroSTrain = "odpt.TrainType:TokyoMetro.S-TRAIN"
-    case tokyoMetroSemiExpress = "odpt.TrainType:TokyoMetro.SemiExpress"
-    case tokyoMetroTHLiner = "odpt.TrainType:TokyoMetro.TH-LINER"
-    
-    // TWR (Rinkai Line)
-    case twrCommuterRapid = "odpt.TrainType:TWR.CommuterRapid"
-    case twrLocal = "odpt.TrainType:TWR.Local"
-    case twrRapid = "odpt.TrainType:TWR.Rapid"
-    
-    // MARK: - Display Name
-    // Get localized display name for train type
-    var displayName: String {
+    var railwayOdpTDataType: ODPTDataType {
         switch self {
-        // Sotetsu
-        case .sotetsuCommuterExpress: return "CommuterExpress".localized
-        case .sotetsuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
-        case .sotetsuExpress: return "Express".localized
-        case .sotetsuLimitedExpress: return "LimitedExpress".localized
-        case .sotetsuLocal: return "Local".localized
-        case .sotetsuRapid: return "Rapid".localized
-        
-        // Odakyu
-        case .odakyuCommuterExpress: return "CommuterExpress".localized
-        case .odakyuCommuterSemiExpress: return "CommuterSemiExpress".localized
-        case .odakyuExpress: return "Express".localized
-        case .odakyuLimitedExpress: return "LimitedExpress".localized
-        case .odakyuLocal: return "Local".localized
-        case .odakyuRapidExpress: return "RapidExpress".localized
-        case .odakyuSemiExpress: return "SemiExpress".localized
-        
-        // Keikyu
-        case .keikyuAccessExpress: return "AccessExpress".localized
-        case .keikyuAirportRapidLimitedExpress: return "AirportRapidLimitedExpress".localized
-        case .keikyuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
-        case .keikyuEveningWing: return "EveningWing".localized
-        case .keikyuExpress: return "Express".localized
-        case .keikyuLimitedExpress: return "LimitedExpress".localized
-        case .keikyuLocal: return "Local".localized
-        case .keikyuMorningWing: return "MorningWing".localized
-        case .keikyuRapidLimitedExpress: return "RapidLimitedExpress".localized
-        case .keikyuRapid: return "Rapid".localized
-        
-        // Seibu
-        case .seibuCommuterExpress: return "CommuterExpress".localized
-        case .seibuCommuterSemiExpress: return "CommuterSemiExpress".localized
-        case .seibuExpress: return "Express".localized
-        case .seibuFLiner: return "FLiner".localized
-        case .seibuHaijimaLiner: return "HaijimaLiner".localized
-        case .seibuLimitedExpress: return "LimitedExpress".localized
-        case .seibuLocal: return "Local".localized
-        case .seibuRapidExpress: return "RapidExpress".localized
-        case .seibuRapid: return "Rapid".localized
-        case .seibuSTrain: return "STrain".localized
-        case .seibuSemiExpress: return "SemiExpress".localized
-        
-        // Tokyu
-        case .tokyuCommuterLimitedExpress: return "CommuterLimitedExpress".localized
-        case .tokyuExpress: return "Express".localized
-        case .tokyuFLiner: return "FLiner".localized
-        case .tokyuLimitedExpress: return "LimitedExpress".localized
-        case .tokyuLocal: return "Local".localized
-        case .tokyuSTrain: return "STrain".localized
-        case .tokyuSemiExpress: return "SemiExpress".localized
-        
-        // Tobu
-        case .tobuExpress: return "Express".localized
-        case .tobuFLiner: return "FLiner".localized
-        case .tobuKawagoeLimitedExpress: return "KawagoeLimitedExpress".localized
-        case .tobuLimitedExpress: return "LimitedExpress".localized
-        case .tobuLocal: return "Local".localized
-        case .tobuRapidExpress: return "RapidExpress".localized
-        case .tobuRapid: return "Rapid".localized
-        case .tobuSLTaiju: return "SLTaiju".localized
-        case .tobuSectionExpress: return "SectionExpress".localized
-        case .tobuSectionSemiExpress: return "SectionSemiExpress".localized
-        case .tobuSemiExpress: return "SemiExpress".localized
-        case .tobuTHLiner: return "THLiner".localized
-        case .tobuTJLiner: return "TJLiner".localized
-        
-        // JR-East
-        case .jrEastChuoSpecialRapid: return "ChuoSpecialRapid".localized
-        case .jrEastCommuterRapid: return "CommuterRapid".localized
-        case .jrEastCommuterSpecialRapid: return "CommuterSpecialRapid".localized
-        case .jrEastExpress: return "Express".localized
-        case .jrEastLimitedExpress: return "LimitedExpress".localized
-        case .jrEastLiner: return "Liner".localized
-        case .jrEastLocal: return "Local".localized
-        case .jrEastOmeSpecialRapid: return "OmeSpecialRapid".localized
-        case .jrEastRapid: return "Rapid".localized
-        case .jrEastSpecialRapid: return "SpecialRapid".localized
-        
-        // Toei
-        case .toeiAccessExpress: return "AccessExpress".localized
-        case .toeiAirportRapidLimitedExpress: return "AirportRapidLimitedExpress".localized
-        case .toeiCommuterLimitedExpress: return "CommuterLimitedExpress".localized
-        case .toeiExpress: return "Express".localized
-        case .toeiLimitedExpress: return "LimitedExpress".localized
-        case .toeiLocal: return "Local".localized
-        case .toeiRapidLimitedExpress: return "RapidLimitedExpress".localized
-        case .toeiRapid: return "Rapid".localized
-        
-        // Yokohama Municipal
-        case .yokohamaMunicipalLocal: return "Local".localized
-        case .yokohamaMunicipalRapid: return "Rapid".localized
-        
-        // Yurikamome
-        case .yurikamomeLocal: return "Local".localized
-        
-        // MIR
-        case .mirCommuterRapid: return "CommuterRapid".localized
-        case .mirLocal: return "Local".localized
-        case .mirRapid: return "Rapid".localized
-        case .mirSemiRapid: return "SemiRapid".localized
-        
-        // Tama Monorail
-        case .tamaMonorailLocal: return "Local".localized
-        
-        // Tokyo Metro
-        case .tokyoMetroCommuterExpress: return "CommuterExpress".localized
-        case .tokyoMetroCommuterLimitedExpress: return "CommuterLimitedExpress".localized
-        case .tokyoMetroCommuterRapid: return "CommuterRapid".localized
-        case .tokyoMetroExpress: return "Express".localized
-        case .tokyoMetroFLiner: return "FLiner".localized
-        case .tokyoMetroLimitedExpress: return "LimitedExpress".localized
-        case .tokyoMetroLocal: return "Local".localized
-        case .tokyoMetroRapidExpress: return "RapidExpress".localized
-        case .tokyoMetroRapid: return "Rapid".localized
-        case .tokyoMetroSTrain: return "STrain".localized
-        case .tokyoMetroSemiExpress: return "SemiExpress".localized
-        case .tokyoMetroTHLiner: return "THLiner".localized
-        
-        // TWR
-        case .twrCommuterRapid: return "CommuterRapid".localized
-        case .twrLocal: return "Local".localized
-        case .twrRapid: return "Rapid".localized
+        case .lineInfo: return .railwayLine
+        case .timetable: return .railwayTimetable
+        }
+    }
+    
+    var busOdpTDataType: ODPTDataType {
+        switch self {
+        case .lineInfo: return .busRoutePattern
+        case .timetable: return .busTimetable
         }
     }
 }
+
+// MARK: - Display Train Type Enum
+// Common train type categories for color mapping
+enum DisplayTrainType: String, CaseIterable {
+    // MARK: - Default Train Types
+    case defaultLocal = "defaultLocal"
+    case defaultExpress = "defaultExpress"
+    case defaultRapid = "defaultRapid"
+    case defaultSpecialRapid = "defaultSpecialRapid"
+    case defaultLimitedExpress = "defaultLimitedExpress"
+    
+    // MARK: - Standard Train Types
+    case local = "Local"
+    case rapid = "Rapid"
+    case semiExpress = "SemiExpress"
+    case express = "Express"
+    case commuterExpress = "CommuterExpress"
+    case commuterRapid = "CommuterRapid"
+    case commuterLimitedExpress = "CommuterLimitedExpress"
+    case rapidExpress = "RapidExpress"
+    case rapidLimitedExpress = "RapidLimitedExpress"
+    case limitedExpress = "LimitedExpress"
+    case accessExpress = "AccessExpress"
+    case airportRapidLimitedExpress = "AirportRapidLimitedExpress"
+    case kawagoeLimitedExpress = "KawagoeLimitedExpress"
+    case specialRapid = "SpecialRapid"
+    case commuterSpecialRapid = "CommuterSpecialRapid"
+    case chuoSpecialRapid = "ChuoSpecialRapid"
+    case omeSpecialRapid = "OmeSpecialRapid"
+    case sectionExpress = "SectionExpress"
+    case sectionSemiExpress = "SectionSemiExpress"
+    case semiRapid = "SemiRapid"
+    case liner = "Liner"
+    case fLiner = "FLiner"
+    case thLiner = "ThLiner"
+    case tjLiner = "TjLiner"
+    case haijimaLiner = "HaijimaLiner"
+    case sTrain = "STrain"
+    case slTaiju = "SlTaiju"
+    case eveningWing = "EveningWing"
+    case morningWing = "MorningWing"
+    case unknown = "Unknown"
+}
+
 
 // MARK: - Station Data Files
 // Get railway data files dynamically from LocalDataSource

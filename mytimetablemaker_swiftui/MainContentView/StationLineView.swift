@@ -58,7 +58,7 @@ struct StationLineView: View {
                 Text(departureTime)
                     .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
             }
-            .foregroundColor(Color.primaryColor)
+            .foregroundColor(.primary)
 
             // MARK: - Setting Button
             Button (action: {
@@ -99,7 +99,7 @@ struct StationLineView: View {
                 Text(arrivalTime)
                     .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
             }
-            .foregroundColor(Color.primaryColor)
+            .foregroundColor(.primary)
         }
     }
 }

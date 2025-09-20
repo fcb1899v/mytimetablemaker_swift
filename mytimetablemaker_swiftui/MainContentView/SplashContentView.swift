@@ -33,13 +33,13 @@ struct SplashContentView: View {
         NavigationStack {
             ZStack {
                 // MARK: - Background and Content
-                Color.accentColor
+                Color.accent
                 VStack {
                     Spacer()
                     Text(appTitle)
                         .font(.system(size: screen.splashTitleFontSize))
                         .fontWeight(.bold)
-                        .foregroundColor(Color.primaryColor)
+                        .foregroundColor(.primary)
                     Spacer()
                     Image("icon")
                         .resizable()
