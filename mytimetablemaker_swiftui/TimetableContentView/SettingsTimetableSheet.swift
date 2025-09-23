@@ -206,7 +206,7 @@ struct SettingsTimetableSheet: View {
             LazyVGrid(columns: Array(repeating: GridItem(.fixed(screen.timetableNumberWidth), spacing: 0), count: screen.timetableNumberWidth > 0 ? max(1, Int(screen.timetableDisplayWidth / screen.timetableNumberWidth) - 1): 1), spacing: 0) {
                 ForEach(trainTimes, id: \.self) { trainTime in
                     Text(trainTime.departureTime.trimmingLeadingZero)
-                        .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
+                        .font(.system(size: screen.timetableMinuteFontSize(for: 1), weight: .semibold))
                         .foregroundColor(trainTime.trainType != nil ? Color.colorForTrainType(trainTime.trainType) : .white)
                         .frame(width: screen.timetableNumberWidth, height: screen.timetableGridHeight)
                         .lineLimit(1)
@@ -214,7 +214,7 @@ struct SettingsTimetableSheet: View {
             }
             .frame(width: screen.timetableDisplayWidth, height: screen.timetableDisplayHeight)
             .background(Color.primary)
-            .padding(.horizontal, screen.timetableHorizontalSpacing)
+            .padding(.horizontal, screen.timetableMinuteSpacing(for: 1))
         } else {
             Color.primary
                 .frame(width: screen.timetableDisplayWidth, height: screen.timetableDisplayHeight)
@@ -229,46 +229,48 @@ struct SettingsTimetableSheet: View {
             Text("Select Type".localized)
                 .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primary)
-                .frame(height: screen.timetableEditTitleHeight)
             
             // Custom dropdown for train type selection
-            VStack(spacing: 0) {
-                Button(action: {
-                    isTrainTypeDropdownOpen.toggle()
-                }) {
-                    HStack {
-                        // Display icon for selected train type
-                        if (selectedTrainType != nil) {
-                            Image(systemName: "train.side.front.car")
-                                .frame(height: screen.settingsSheetIconSize)
-                                .foregroundColor(Color.colorForTrainType(selectedTrainType))
-                        }
-                        Text(selectedTrainType?.localized ?? "-".localized)
-                            .font(.system(size: screen.settingsSheetInputFontSize))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                            .lineLimit(1)
-                            .scaledToFit()
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.down")
-                            .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
-                            .foregroundColor(.white)
-                            .rotationEffect(.degrees(isTrainTypeDropdownOpen ? 180 : 0))
+            Button(action: {
+                isTrainTypeDropdownOpen.toggle()
+            }) {
+                HStack {
+                    // Display icon for selected train type
+                    if (selectedTrainType != nil) {
+                        Image(systemName: "train.side.front.car")
+                            .frame(height: screen.settingsSheetIconSize)
+                            .foregroundColor(Color.colorForTrainType(selectedTrainType))
                     }
-                    .padding(.vertical, screen.settingsSheetInputPaddingVertical)
-                    .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                    .background(StyledBackground(backgroundColor: Color.primary))
-                    .overlay(StyledBorder(borderColor: Color(.separator)))
+                    Text(selectedTrainType?.localized ?? "-".localized)
+                        .font(.system(size: screen.settingsSheetInputFontSize))
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .scaledToFit()
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                        .foregroundColor(.white)
+                        .rotationEffect(.degrees(isTrainTypeDropdownOpen ? 180 : 0))
                 }
-                 .buttonStyle(.plain)
-             }
+                .frame(height: screen.settingsSheetPickerDisplayHeight)
+                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                .background(CustomBackground(backgroundColor: Color.primary))
+                .overlay(CustomBorder(borderColor: Color(.separator)))
+            }
+            .buttonStyle(.plain)
 
-             // Checkmark indicator
-             Image(systemName: "checkmark.circle.fill")
-                 .foregroundColor(selectedTrainType == nil ? .red : .accent)
-         }
+            // Checkmark indicator
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(
+                    (selectedTrainType != nil && !isTimeExistsForDeletion()) ? .accent:
+                    (selectedTrainType != nil && isTimeExistsForDeletion()) ? .primary:
+                    .red
+                )
+        }
     }
     
     // MARK: - Computed Properties
@@ -294,6 +296,7 @@ struct SettingsTimetableSheet: View {
                     .padding(.vertical, screen.settingsSheetInputPaddingVertical)
                     .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                     .background(Color.clear)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 
@@ -304,9 +307,9 @@ struct SettingsTimetableSheet: View {
                 }
             }
         }
-        .background(StyledBackground(backgroundColor: Color.primary))
-        .overlay(StyledBorder(borderColor: .white))
         .frame(width: screen.timetableTypeMenuWidth)
+        .background(CustomBackground(backgroundColor: Color.primary))
+        .overlay(CustomBorder(borderColor: .white))
         .offset(
             x: screen.timetableTypeMenuOffsetX,
             y: screen.timetableTypeMenuOffsetY,
@@ -321,7 +324,15 @@ struct SettingsTimetableSheet: View {
                     .foregroundColor(.primary)
                 
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(departureTime == nil ? .gray : .accent)
+                    .foregroundColor(
+                        departureTime == nil ? .gray: 
+                        goorback.lineKind(num) != .railway && !isTimeExistsForDeletion() ? .accent: 
+                        goorback.lineKind(num) != .railway && isTimeExistsForDeletion() ? .primary: 
+                        selectedTrainType != nil && !isTimeExistsForDeletion() ? .accent: 
+                        selectedTrainType != nil && isTimeExistsForDeletion() ? .primary: 
+                        isTimeExistsForDeletion() ? .red:
+                        .gray
+                    )
             }
 
             // Departure time picker (0-59 minutes)
@@ -335,8 +346,8 @@ struct SettingsTimetableSheet: View {
                 .frame(height: screen.settingsSheetPickerDisplayHeight)
                 .padding(.vertical, screen.settingsSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                .background(StyledBackground())
-                .overlay(StyledBorder())
+                .background(CustomBackground())
+                .overlay(CustomBorder())
                 
                 HStack {
                     Spacer()
@@ -366,7 +377,11 @@ struct SettingsTimetableSheet: View {
                     .foregroundColor(.primary)
                                                     // Checkmark indicator
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(rideTime == 0 ? .red : .accent)
+                    .foregroundColor(
+                        (rideTime != 0 && !isTimeExistsForDeletion()) ? .accent:
+                        (rideTime != 0 && isTimeExistsForDeletion()) ? .primary:
+                        .red
+                    )
             }
             
             // Ride time picker (0-99 minutes)
@@ -380,8 +395,8 @@ struct SettingsTimetableSheet: View {
                 .frame(height: screen.settingsSheetPickerDisplayHeight)
                 .padding(.vertical, screen.settingsSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                .background(StyledBackground())
-                .overlay(StyledBorder())
+                .background(CustomBackground())
+                .overlay(CustomBorder())
                 
                 HStack {
                     Spacer()
@@ -407,10 +422,21 @@ struct SettingsTimetableSheet: View {
     var addDeleteButtonSection: some View {
         HStack {
             CustomButton(
-                title: "Add".localized,
-                icon: "plus.circle.fill",
-                backgroundColor: Color.accent,
-                isEnabled: !(rideTime == 0 || departureTime == nil || (goorback.lineKind(num) == .railway && selectedTrainType == nil)),
+                title: isTimeExistsForDeletion() ? "Update".localized: "Add".localized,
+                icon: isTimeExistsForDeletion() ? "arrow.clockwise.circle.fill" : "plus.circle.fill",
+                backgroundColor: (
+                    departureTime == nil ? Color.gray: 
+                    goorback.lineKind(num) != .railway && !isTimeExistsForDeletion() ? Color.accent: 
+                    goorback.lineKind(num) != .railway && isTimeExistsForDeletion() ? Color.primary: 
+                    selectedTrainType != nil && !isTimeExistsForDeletion() ? Color.accent: 
+                    selectedTrainType != nil && isTimeExistsForDeletion() ? Color.primary: 
+                    Color.gray
+                ),
+                isEnabled: !(
+                    rideTime == 0 || 
+                    departureTime == nil || 
+                    (goorback.lineKind(num) == .railway && selectedTrainType == nil)
+                ),
                 action: {
                     addTime()
                 }
@@ -422,8 +448,8 @@ struct SettingsTimetableSheet: View {
             CustomButton(
                 title: "Delete".localized,
                 icon: "minus.circle.fill",
-                backgroundColor: Color.red,
-                isEnabled: departureTime != nil,
+                backgroundColor: (departureTime != nil && isTimeExistsForDeletion()) ? Color.red : Color.gray,
+                isEnabled: departureTime != nil && isTimeExistsForDeletion(),
                 action: {
                     deleteTime()
                 }
@@ -436,16 +462,8 @@ struct SettingsTimetableSheet: View {
     private func addTime() {
         guard let departureTime = departureTime else { return }
         
-        // Update UserDefaults with new timetable string
-        UserDefaults.standard.set(
-            goorback.addTimeFromTimetable(String(format: "%02d", departureTime), weekflag, num, hour),
-            forKey: goorback.timetableKey(weekflag, num, hour)
-        )
-        
-        // Save train type if selected
-        if let trainType = selectedTrainType {
-            saveTrainType(trainType)
-        }
+        // Add time and train type as a pair, then sort both together
+        addTimeAndTrainTypePair(departureTime: departureTime, trainType: selectedTrainType)
         
         // Save ride time if entered
         if rideTime > 0 {
@@ -465,25 +483,8 @@ struct SettingsTimetableSheet: View {
     private func deleteTime() {
         guard let departureTime = departureTime else { return }
         
-        // Update UserDefaults with new timetable string
-        // Try both single digit and double digit formats to ensure deletion works
-        let singleDigitTime = String(departureTime)
-        let doubleDigitTime = String(format: "%02d", departureTime)
-        
-        var timetableString = goorback.timetableTime(weekflag, num, hour)
-            .trimmingCharacters(in: .whitespaces)
-            .timeSorting(charactersin: " ")
-        
-        // Remove both single and double digit formats if they exist
-        timetableString = timetableString.filter { $0 != singleDigitTime && $0 != doubleDigitTime }
-        
-        UserDefaults.standard.set(
-            timetableString.joined(separator: " "),
-            forKey: goorback.timetableKey(weekflag, num, hour)
-        )
-        
-        // Delete corresponding train type
-        deleteTrainType()
+        // Delete time and train type as a pair
+        deleteTimeAndTrainTypePair(departureTime: departureTime)
         
         // Update trainTimes array with fresh data from UserDefaults
         trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
@@ -498,6 +499,62 @@ struct SettingsTimetableSheet: View {
     private func saveRideTime() {
         let rideTimeKey = goorback.rideTimeKeyForHour(weekflag, num, hour)
         UserDefaults.standard.set(rideTime, forKey: rideTimeKey)
+    }
+    
+    // MARK: - Time Validation
+    /// Checks if the selected departure time already exists in the timetable with the same train type
+    private func isTimeAlreadyExists() -> Bool {
+        guard let departureTime = departureTime else { return false }
+        
+        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let trainTypeKey = goorback.trainTypeKey(weekflag, num, hour)
+        
+        guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
+        let existingTrainTypes = UserDefaults.standard.string(forKey: trainTypeKey)?.components(separatedBy: " ") ?? []
+        
+        let existingTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        
+        // Check both single digit and double digit formats
+        let singleDigitTime = String(departureTime)
+        let doubleDigitTime = String(format: "%02d", departureTime)
+        
+        // Find the index of the existing time
+        var existingIndex: Int?
+        for (index, time) in existingTimes.enumerated() {
+            if time == singleDigitTime || time == doubleDigitTime {
+                existingIndex = index
+                break
+            }
+        }
+        
+        // If time doesn't exist, it's not a duplicate
+        guard let index = existingIndex else { return false }
+        
+        // If train type is the same, it's a duplicate
+        let existingTrainType = index < existingTrainTypes.count ? existingTrainTypes[index] : ""
+        let newTrainType = selectedTrainType ?? ""
+        
+        return existingTrainType == newTrainType
+    }
+        /// Checks if the selected departure time exists in the timetable (for deletion)
+    private func isTimeExistsForDeletion() -> Bool {
+        guard let departureTime = departureTime else { return false }
+        
+        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
+        
+        let existingTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        
+        // Check both single digit and double digit formats
+        let singleDigitTime = String(departureTime)
+        let doubleDigitTime = String(format: "%02d", departureTime)
+        
+        return existingTimes.contains(singleDigitTime) || existingTimes.contains(doubleDigitTime)
+    }
+    
+    /// Checks if the Add button is enabled
+    private func isAddButtonEnabled() -> Bool {
+        return !(rideTime == 0 || departureTime == nil || (goorback.lineKind(num) == .railway && selectedTrainType == nil) || (goorback.lineKind(num) != .railway && isTimeAlreadyExists()) || (goorback.lineKind(num) == .railway && isTimeAlreadyExists()))
     }
     
     private func getAvailableTrainTypes() -> [String] {
@@ -589,6 +646,124 @@ struct SettingsTimetableSheet: View {
             updatedList.append(trainType)
             UserDefaults.standard.set(updatedList.joined(separator: " "), forKey: trainTypeListKey)
         }
+    }
+    
+    // MARK: - Time and Train Type Pair Management
+    /// Adds a new time and train type pair, then sorts both arrays together
+    /// If the same time exists with a different train type, it will be overwritten
+    private func addTimeAndTrainTypePair(departureTime: Int, trainType: String?) {
+        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let trainTypeKey = goorback.trainTypeKey(weekflag, num, hour)
+        
+        // Get current data
+        let currentTimetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
+        let currentTrainTypeString = UserDefaults.standard.string(forKey: trainTypeKey) ?? ""
+        
+        // Convert to arrays
+        var departureTimes = currentTimetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        var trainTypes = currentTrainTypeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        
+        let newTimeString = String(format: "%02d", departureTime)
+        let newTrainType = trainType ?? ""
+        
+        // Check if the same time already exists
+        var existingIndex: Int?
+        for (index, time) in departureTimes.enumerated() {
+            if time == newTimeString || time == String(departureTime) {
+                existingIndex = index
+                break
+            }
+        }
+        
+        if let index = existingIndex {
+            // Overwrite existing time with new train type
+            trainTypes[index] = newTrainType
+        } else {
+            // Add new time and train type
+            departureTimes.append(newTimeString)
+            trainTypes.append(newTrainType)
+        }
+        
+        // Create pairs and sort by departure time
+        var timeTypePairs: [(time: String, type: String)] = []
+        for i in 0..<departureTimes.count {
+            timeTypePairs.append((time: departureTimes[i], type: i < trainTypes.count ? trainTypes[i] : ""))
+        }
+        
+        // Sort pairs by time (convert to Int for proper sorting)
+        timeTypePairs.sort { (pair1, pair2) in
+            let time1 = Int(pair1.time) ?? 0
+            let time2 = Int(pair2.time) ?? 0
+            return time1 < time2
+        }
+        
+        // Extract sorted arrays
+        let sortedTimes = timeTypePairs.map { $0.time }
+        let sortedTypes = timeTypePairs.map { $0.type }
+        
+        // Save to UserDefaults
+        UserDefaults.standard.set(sortedTimes.joined(separator: " "), forKey: timetableKey)
+        UserDefaults.standard.set(sortedTypes.joined(separator: " "), forKey: trainTypeKey)
+        
+        // Update train type list if new type was added
+        if let trainType = trainType {
+            updateTrainTypeList(trainType)
+        }
+    }
+    
+    /// Deletes a time and its corresponding train type, then sorts remaining pairs
+    private func deleteTimeAndTrainTypePair(departureTime: Int) {
+        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let trainTypeKey = goorback.trainTypeKey(weekflag, num, hour)
+        
+        // Get current data
+        let currentTimetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
+        let currentTrainTypeString = UserDefaults.standard.string(forKey: trainTypeKey) ?? ""
+        
+        // Convert to arrays
+        var departureTimes = currentTimetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        var trainTypes = currentTrainTypeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        
+        // Find and remove the time (try both single and double digit formats)
+        let singleDigitTime = String(departureTime)
+        let doubleDigitTime = String(format: "%02d", departureTime)
+        
+        var indexToRemove: Int?
+        for (index, time) in departureTimes.enumerated() {
+            if time == singleDigitTime || time == doubleDigitTime {
+                indexToRemove = index
+                break
+            }
+        }
+        
+        // Remove the time and corresponding train type
+        if let index = indexToRemove {
+            departureTimes.remove(at: index)
+            if index < trainTypes.count {
+                trainTypes.remove(at: index)
+            }
+        }
+        
+        // Create pairs and sort by departure time
+        var timeTypePairs: [(time: String, type: String)] = []
+        for i in 0..<departureTimes.count {
+            timeTypePairs.append((time: departureTimes[i], type: i < trainTypes.count ? trainTypes[i] : ""))
+        }
+        
+        // Sort pairs by time (convert to Int for proper sorting)
+        timeTypePairs.sort { (pair1, pair2) in
+            let time1 = Int(pair1.time) ?? 0
+            let time2 = Int(pair2.time) ?? 0
+            return time1 < time2
+        }
+        
+        // Extract sorted arrays
+        let sortedTimes = timeTypePairs.map { $0.time }
+        let sortedTypes = timeTypePairs.map { $0.type }
+        
+        // Save to UserDefaults
+        UserDefaults.standard.set(sortedTimes.joined(separator: " "), forKey: timetableKey)
+        UserDefaults.standard.set(sortedTypes.joined(separator: " "), forKey: trainTypeKey)
     }
 }
 

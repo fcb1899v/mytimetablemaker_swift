@@ -2,7 +2,7 @@
 //  CommonComponent.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/08/24.
+//  Created by Nakajima Masao on 2025/08/24.
 //  Common UI components used across the application
 //  Provides reusable UI elements for consistent design
 //
@@ -155,7 +155,8 @@ struct Custom2DigitPicker: View {
     }
     
     private var onesRange: ClosedRange<Int> {
-        let baseRange = isZeroToFive ? 0...5 : 0...9
+        // Always allow 0-9 for ones digit regardless of isZeroToFive setting
+        let baseRange = 0...9
         let minTens = minValue / 10
         let maxTens = maxValue / 10
         
@@ -301,11 +302,11 @@ struct CustomRectangleButton: View {
     }
 }
 
-// MARK: - Styling Helpers
-// Common styling components for consistent UI appearance
+// MARK: - Custom Styling Helpers
+// Common custom styling components for consistent UI appearance
 
-/// Styled background for input fields
-struct StyledBackground: View {
+/// Custom background for input fields
+struct CustomBackground: View {
     let backgroundColor: Color
     
     init(backgroundColor: Color = Color(.secondarySystemBackground)) {
@@ -318,8 +319,8 @@ struct StyledBackground: View {
     }
 }
 
-/// Styled border for input fields
-struct StyledBorder: View {
+/// Custom border for input fields
+struct CustomBorder: View {
     let borderColor: Color
     
     init(borderColor: Color = Color(.separator)) {

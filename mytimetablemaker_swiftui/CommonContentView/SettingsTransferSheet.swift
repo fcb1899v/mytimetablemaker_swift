@@ -176,8 +176,8 @@ struct SettingsTransferSheet: View {
                 .font(.system(size: screen.settingsSheetInputFontSize))
                 .padding(.vertical, screen.settingsSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                .background(StyledBackground())
-                .overlay(StyledBorder())
+                .background(CustomBackground())
+                .overlay(CustomBorder())
 
             Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(text.wrappedValue.isEmpty ? .gray : .accent)
@@ -251,8 +251,8 @@ struct SettingsTransferSheet: View {
         .frame(height: screen.settingsSheetPickerDisplayHeight)
         .padding(.vertical, screen.settingsSheetInputPaddingVertical)
         .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-        .background(StyledBackground())
-        .overlay(StyledBorder())
+        .background(CustomBackground())
+        .overlay(CustomBorder())
     }
     
     /// Time selector component using Custom2DigitPicker for better UX
@@ -269,8 +269,8 @@ struct SettingsTransferSheet: View {
             .frame(height: screen.settingsSheetPickerDisplayHeight)
             .padding(.vertical, screen.settingsSheetInputPaddingVertical)
             .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-            .background(StyledBackground())
-            .overlay(StyledBorder())
+            .background(CustomBackground())
+            .overlay(CustomBorder())
             
             HStack {
                 Spacer()

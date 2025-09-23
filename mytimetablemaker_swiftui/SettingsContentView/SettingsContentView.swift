@@ -38,7 +38,7 @@ struct SettingsContentView: View {
 
                     // MARK: - Direction Settings
                     Section(
-                        header: Text("Direction Settings".localized)
+                        header: Text("Various settings".localized)
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(.gray)
                             .padding(.top, screen.settingsHeaderFontSize)
@@ -56,6 +56,10 @@ struct SettingsContentView: View {
                                 showLineSheet = true
                             }
                         )
+                        if myLogin.isLoginSuccess {
+                            GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
+                            SetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
+                        }
                     }
                     
                     // MARK: - Account Management
@@ -64,8 +68,6 @@ struct SettingsContentView: View {
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                     ) {
                         if myLogin.isLoginSuccess {
-                            GetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
-                            SetFirestoreButton(myTransfer: myTransfer, myFirestore: myFirestore)
                             LogOutButton(myLogin: myLogin)
                             DeleteAccountButton(myLogin: myLogin)
                         } else {

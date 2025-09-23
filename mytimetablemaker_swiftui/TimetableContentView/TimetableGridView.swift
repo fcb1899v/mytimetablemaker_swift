@@ -52,10 +52,10 @@ struct TimetableGridView: View {
                 }
                 .background(Color.black.opacity(0.25))
 
-                HStack(spacing: screen.timetableMinuteSpacing) {
+                HStack(spacing: screen.timetableMinuteSpacing(for: trainTimes.count)) {
                     ForEach(trainTimes, id: \.self) { trainTime in
                         Text(trainTime.departureTime.trimmingLeadingZero)
-                            .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
+                            .font(.system(size: screen.timetableMinuteFontSize(for: trainTimes.count), weight: .semibold))
                             .foregroundColor(Color.colorForTrainType(trainTime.trainType))
                     }
                 }

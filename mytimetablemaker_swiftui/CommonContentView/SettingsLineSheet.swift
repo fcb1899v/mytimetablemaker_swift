@@ -249,8 +249,8 @@ struct SettingsLineSheet: View {
             .font(.system(size: screen.settingsSheetInputFontSize))
             .padding(.vertical, screen.settingsSheetInputPaddingVertical)
             .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-            .background(StyledBackground())
-            .overlay(StyledBorder())
+            .background(CustomBackground())
+            .overlay(CustomBorder())
             .onChange(of: vm.lineInput) { newValue in
                 vm.processLineInput(newValue)
                 // Ensure focus is maintained when typing
@@ -332,8 +332,8 @@ struct SettingsLineSheet: View {
             Spacer()
         }
         .frame(maxHeight: min(CGFloat(vm.lineSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
-        .background(StyledBackground())
-        .overlay(StyledBorder())
+        .background(CustomBackground())
+        .overlay(CustomBorder())
         .animation(.default, value: vm.lineSuggestions)
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
@@ -452,8 +452,8 @@ struct SettingsLineSheet: View {
             }
             .frame(width: screen.settingsLineSheetColorSettingWidth)
             .padding(screen.settingsLineSheetColorHorizontalPadding)
-            .background(StyledBackground())
-            .overlay(StyledBorder())
+            .background(CustomBackground())
+            .overlay(CustomBorder())
             Spacer()
         }
         .offset(y: screen.settingsLineSheetColorOffset)
@@ -496,8 +496,8 @@ struct SettingsLineSheet: View {
                 .font(.system(size: screen.settingsSheetInputFontSize))
                 .padding(.vertical, screen.settingsSheetInputPaddingVertical)
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                .background(StyledBackground())
-                .overlay(StyledBorder())
+                .background(CustomBackground())
+                .overlay(CustomBorder())
                 .onChange(of: vm.departureStationInput) { newValue in
                     vm.processDepartureStationInput(newValue)
                 }
@@ -559,8 +559,8 @@ struct SettingsLineSheet: View {
             }
         }
         .frame(maxHeight: min(CGFloat(vm.departureSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
-        .background(StyledBackground())
-        .overlay(StyledBorder())
+        .background(CustomBackground())
+        .overlay(CustomBorder())
         .animation(.default, value: vm.departureSuggestions)
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
@@ -652,8 +652,8 @@ struct SettingsLineSheet: View {
             }
         }
         .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
-        .background(StyledBackground())
-        .overlay(StyledBorder())
+        .background(CustomBackground())
+        .overlay(CustomBorder())
         .animation(.default, value: vm.arrivalSuggestions)
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))

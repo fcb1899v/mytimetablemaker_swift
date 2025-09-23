@@ -107,15 +107,33 @@ extension UIScreen {
 extension UIScreen {
     
     var timetableDisplayWidth:    CGFloat { customWidth * 0.90 }
-    var timetableNumberWidth:     CGFloat { customWidth * 0.06 }
     var timetableHourFontSize:    CGFloat { customWidth * 0.036 }
-    var timetableMinuteFontSize:  CGFloat { customWidth * 0.032 }
-    var timetableMinuteSpacing:   CGFloat { customWidth * 0.006 }
-    var timetableHourFrameWidth:  CGFloat { customWidth * 0.048 }
+    var timetableMinuteFontSize:  CGFloat { customWidth * 0.036 }
+    // Dynamic size based on train count
+    func timetableMinuteFontSize(for trainCount: Int) -> CGFloat {
+        return customWidth * (
+            (trainCount < 16) ? 0.036:
+            (trainCount < 20) ? 0.032:
+            (trainCount < 24) ? 0.028:
+            (trainCount < 28) ? 0.024:
+            0.020
+        )
+    }
+    func timetableMinuteSpacing(for trainCount: Int) -> CGFloat {
+        return customWidth * (
+            (trainCount < 16) ? 0.010:
+            (trainCount < 20) ? 0.009:
+            (trainCount < 24) ? 0.008:
+            (trainCount < 28) ? 0.007:
+            0.006
+        )
+    }
     var timetableHorizontalSpacing: CGFloat { customWidth * 0.04 }
     var timetableWeekToggleSpacing: CGFloat { customWidth * 0.016 }
 
-    var timetableTypeMenuWidth:   CGFloat { customWidth * 0.60 }
+    var timetableHourFrameWidth:  CGFloat { customWidth * 0.048 }
+    var timetableNumberWidth:     CGFloat { customWidth * 0.06 }
+    var timetableTypeMenuWidth:   CGFloat { customWidth * 0.50 }
     var timetableEditButtonWidth: CGFloat { customWidth * 0.44 }
     var timetablePickerWidth:     CGFloat { customWidth * 0.43 }
     var timetableTypeMenuOffsetX: CGFloat { customWidth * 0.00 }
@@ -125,15 +143,12 @@ extension UIScreen {
     var timetableDisplayHeight:   CGFloat { screenHeight * 0.06 }
     var timetableEditTitleHeight: CGFloat { screenHeight * 0.06 }
 
+    var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
     var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
     var timetablePickerSpacing:   CGFloat { screenHeight * 0.02 }
     var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.04 }
     var timetablePickerTopPadding    : CGFloat { screenHeight * -0.036 }
     var timetablePickerBottomPadding : CGFloat { screenHeight * -0.012 }
-    
-    var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
-
-
 }
 
 // MARK: - Ad Banner Extensions

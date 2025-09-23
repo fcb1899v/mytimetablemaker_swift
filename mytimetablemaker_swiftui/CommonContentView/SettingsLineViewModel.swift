@@ -2181,6 +2181,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             // Reset station selection flags to allow suggestions to show
             departureStationSelected = false
             arrivalStationSelected = false
+            lineSelected = false
         }
         
         // Show station selection UI for custom line input

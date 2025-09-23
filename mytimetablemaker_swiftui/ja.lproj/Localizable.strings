@@ -121,6 +121,7 @@
 
 //TimetableContentView
 "Add" = "追加";
+"Update" = "更新";
 "Delete" = "削除";
 "Add and delete departure time [min]" = "時刻の追加と削除 [分]";
 "Copying your timetable" = "発車時刻のコピー";

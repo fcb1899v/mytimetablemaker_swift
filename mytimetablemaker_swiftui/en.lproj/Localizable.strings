@@ -120,6 +120,7 @@
 
 //TimetableContentView
 "Add" = "Add";
+"Update" = "Update";
 "Delete" = "Delete";
 "Add and delete departure time [min]" = "Add and delete departure time [min]";
 "Copying your timetable" = "Copying your timetable";
