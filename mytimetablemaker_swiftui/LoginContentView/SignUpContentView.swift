@@ -73,19 +73,22 @@ struct SignUpContentView: View {
             }.frame(width: screen.loginButtonWidth).padding(.bottom, 6)
             
             // MARK: - Sign Up Button
-            Button(action: myLogin.signUp) {
-                ZStack {
-                    Text("Signup".localized)
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
-                        .background(myLogin.isValidSignUp ? Color.primary: Color.gray)
-                        .cornerRadius(screen.loginButtonCornerRadius)
+            CustomButton(
+                title: "Signup".localized,
+                backgroundColor: myLogin.isValidSignUp ? Color.primary : Color.gray,
+                isEnabled: myLogin.isValidSignUp,
+                action: myLogin.signUp
+            )
+            .frame(width: screen.loginButtonWidth)
+            .padding(.bottom, 6)
+            .overlay(
+                Group {
                     if myLogin.isLoading {
-                        ProgressView().progressViewStyle(CircularProgressViewStyle())
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
                     }
-                } .padding(.bottom, 6)
-            }.alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
+                }
+            ).alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                                     Button("OK".localized, role: .none){
                     myLogin.isShowMessage = false
                     if myLogin.isSignUpSuccess {

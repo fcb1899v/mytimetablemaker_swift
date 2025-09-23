@@ -86,16 +86,14 @@ struct LoginContentView: View {
                 }.frame(width: screen.loginButtonWidth).padding(.bottom, 6)
                 
                 // MARK: - Login Button
-                Button(action: myLogin.login) {
-                    ZStack {
-                        Text("Login".localized)
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
-                            .background(myLogin.isValidLogin ? Color.primary: Color.gray)
-                            .cornerRadius(screen.loginButtonCornerRadius)
-                    }.padding(.bottom, 6)
-                }
+                CustomButton(
+                    title: "Login".localized,
+                    backgroundColor: myLogin.isValidLogin ? Color.primary : Color.gray,
+                    isEnabled: myLogin.isValidLogin,
+                    action: myLogin.login
+                )
+                .frame(width: screen.loginButtonWidth)
+                .padding(.bottom, 6)
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                     Button("OK".localized, role: .none){
                         myLogin.isShowMessage = false
@@ -108,15 +106,14 @@ struct LoginContentView: View {
                 }
                 
                 // MARK: - Sign Up Button
-                Button(action: { isShowSignUp = true }) {
-                    Text("Signup".localized)
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                        .frame(width: screen.loginButtonWidth, height: screen.loginButtonHeight)
-                        .background(.white)
-                        .cornerRadius(screen.loginButtonCornerRadius)
-                        .padding(.bottom, 6)
-                }.sheet(isPresented: $isShowSignUp) {
+                CustomButton(
+                    title: "Signup".localized,
+                    backgroundColor: .white,
+                    action: { isShowSignUp = true }
+                )
+                .frame(width: screen.loginButtonWidth)
+                .padding(.bottom, 6)
+                .sheet(isPresented: $isShowSignUp) {
                     SignUpContentView(myLogin)
                 }
                 

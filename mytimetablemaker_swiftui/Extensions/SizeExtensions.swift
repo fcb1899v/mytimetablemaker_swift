@@ -18,7 +18,6 @@ extension UIScreen {
     var screenWidth: CGFloat { bounds.size.width }
     var screenHeight: CGFloat { bounds.size.height }
     var customWidth: CGFloat { bounds.size.width < 600 ? bounds.size.width : 600 }
-    var halfScreenWidth: CGFloat { bounds.size.width / 2 }
     
     // Dynamic status bar height calculation for different devices
     var statusBarHeight: CGFloat {
@@ -53,9 +52,7 @@ extension UIScreen {
     // Operation button styling and layout
     var operationButtonWidth: CGFloat { customWidth / 6 }
     var operationButtonHeight: CGFloat { customWidth / 12 }
-    var operationButtonCornerRadius: CGFloat { customWidth / 28 }
     var operationButtonMargin: CGFloat { customWidth / 24 }
-    var operationButtonFontSize: CGFloat { customWidth / 24 }
 }
 
 // MARK: - Route Layout Extensions
@@ -63,7 +60,7 @@ extension UIScreen {
     // Direction display sizing and responsive layout
     var routeSingleWidth: CGFloat { customWidth - 10 * routeSidePadding }
     var routeDoubleWidth: CGFloat { customWidth / 2 - 4 * routeSidePadding }
-    var routeHeight: CGFloat { bounds.size.height - admobBannerHeight - headerHeight }
+    var routeHeight: CGFloat { screenHeight - admobBannerHeight - headerHeight }
     var routeSidePadding: CGFloat { customWidth / 40 }
     var routeBottomSpace: CGFloat { routeHeight / 150 }
 }
@@ -78,10 +75,11 @@ extension UIScreen {
 
 // MARK: - Route Content Extensions
 extension UIScreen {
+    
     // Direction information display sizing and typography
     var stationFontSize: CGFloat { customWidth / 27 }
-    var transferHeight: CGFloat { bounds.size.height * 0.036 }
-    var lineNameHeight: CGFloat { bounds.size.height * 0.045 }
+    var transferHeight: CGFloat { screenHeight * 0.036 }
+    var lineNameHeight: CGFloat { screenHeight * 0.045 }
     var lineFontSize: CGFloat { customWidth / 27 }
     var lineImageForegroundSize: CGFloat { customWidth / 20 }
     var lineImageForegroundPadding: CGFloat { customWidth / 80 }
@@ -108,87 +106,115 @@ extension UIScreen {
 // MARK: - Timetable Extensions
 extension UIScreen {
     
-    // Timetable responsive sizing based on screen height
-    var timetableTitleFontSize:   CGFloat { customWidth * 0.05 }
-    var timetableHeaderFontSize:  CGFloat { customWidth * 0.04 }
-    var timetableButtonFontSize:  CGFloat { customWidth * 0.04 }
-    var timetableButtonWidth:     CGFloat { customWidth * 0.20 }
-    var timetableButtonHeight:    CGFloat { customWidth * 0.08 }
-    var timetableGridHeight:      CGFloat { customWidth * 0.06 }
-    var timetableColorGridWidth:  CGFloat { customWidth * 0.30 }
-    var timetableHourFrameWidth:  CGFloat { customWidth * 0.06 }
-    var timetableTimeFontSize:    CGFloat { customWidth * 0.04 }
-    var timetablePadding:         CGFloat { customWidth * 0.03 }
-    var timetableSpacing:         CGFloat { customWidth * 0.01 }
-    var timetableSettingWidth:    CGFloat { customWidth * 0.98 }
-    var timetableEditButtonWidth: CGFloat { customWidth * 0.30 }
-    var timetableEditInputWidth:  CGFloat { customWidth * 0.50 }
+    var timetableDisplayWidth:    CGFloat { customWidth * 0.90 }
+    var timetableNumberWidth:     CGFloat { customWidth * 0.06 }
+    var timetableHourFontSize:    CGFloat { customWidth * 0.036 }
+    var timetableMinuteFontSize:  CGFloat { customWidth * 0.032 }
+    var timetableMinuteSpacing:   CGFloat { customWidth * 0.006 }
+    var timetableHourFrameWidth:  CGFloat { customWidth * 0.048 }
+    var timetableHorizontalSpacing: CGFloat { customWidth * 0.04 }
+    var timetableWeekToggleSpacing: CGFloat { customWidth * 0.016 }
+
+    var timetableTypeMenuWidth:   CGFloat { customWidth * 0.60 }
+    var timetableEditButtonWidth: CGFloat { customWidth * 0.44 }
+    var timetablePickerWidth:     CGFloat { customWidth * 0.43 }
+    var timetableTypeMenuOffsetX: CGFloat { customWidth * 0.00 }
+
+    var timetableButtonHeight:    CGFloat { screenHeight * 0.08 }
+    var timetableGridHeight:      CGFloat { screenHeight * 0.028 }
+    var timetableDisplayHeight:   CGFloat { screenHeight * 0.06 }
+    var timetableEditTitleHeight: CGFloat { screenHeight * 0.06 }
+
+    var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
+    var timetablePickerSpacing:   CGFloat { screenHeight * 0.02 }
+    var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.04 }
+    var timetablePickerTopPadding    : CGFloat { screenHeight * -0.036 }
+    var timetablePickerBottomPadding : CGFloat { screenHeight * -0.012 }
+    
+    var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
+
+
 }
 
 // MARK: - Ad Banner Extensions
 extension UIScreen {
     // AdMob banner sizing and responsive layout
-    var admobBannerWidth: CGFloat { bounds.size.width - 100 }
+    var admobBannerWidth: CGFloat { customWidth - 100 }
     var admobBannerMinWidth: CGFloat { 320 }
-    var admobBannerHeight: CGFloat { ((bounds.size.height - headerHeight - 75) < 500) ? 50 : (bounds.size.height - headerHeight - 75) / 10 }
+    var admobBannerHeight: CGFloat { ((screenHeight - headerHeight - 75) < 500) ? 50 : (screenHeight - headerHeight - 75) / 10 }
+}
+
+// MARK: - Settings Sheet Common Extensions
+extension UIScreen {
+    
+    // Common horizontal parameters
+    var settingsSheetHorizontalPadding: CGFloat { screenWidth * 0.06 }
+    var settingsSheetHorizontalSpacing: CGFloat { screenWidth * 0.015 }
+    
+    // Common font sizes
+    var settingsSheetTitleFontSize: CGFloat { customWidth * 0.040 }
+    var settingsSheetHeadlineFontSize: CGFloat { customWidth * 0.032 }
+    var settingsSheetInputFontSize: CGFloat { customWidth * 0.036 }
+    var settingsSheetButtonFontSize: CGFloat { customWidth * 0.040 }
+    
+    // Common padding and sizing
+    var settingsSheetInputPaddingHorizontal: CGFloat { customWidth * 0.04 }
+    var settingsSheetStrokeLineWidth: CGFloat { customWidth * 0.002 }
+    var settingsSheetIconSize: CGFloat { customWidth * 0.016 }
+    var settingsSheetPickerSelectWidth: CGFloat { customWidth * 0.10 }
+    var settingsSheetPickerSpacing: CGFloat { screenWidth * -0.030 }
+    var settingsSheetIconSpacing: CGFloat { screenWidth * 0.02 }
+
+    // Common vertical parameters
+    var settingsSheetVerticalSpacing: CGFloat { screenHeight * 0.012 }
+    var settingsSheetSaveButtonSpacing: CGFloat { screenHeight * 0.03 }
+    var settingsSheetInputPaddingVertical: CGFloat { screenHeight * 0.008 }
+    var settingsSheetCornerRadius: CGFloat { screenHeight * 0.01 }
+    var settingsSheetPickerSelectHeight: CGFloat { screenHeight * 0.10 }
+    var settingsSheetPickerDisplayHeight: CGFloat { screenHeight * 0.022 }
+
+    // Common button parameters
+    var settingsSheetButtonHeight: CGFloat { screenHeight * 0.044 }
+    var settingsSheetButtonCornerRadius: CGFloat { screenHeight * 0.022 }
 }
 
 // MARK: - Settings Line Sheet Extensions
 extension UIScreen {
-    // Basic Layout
-    var settingsLineSheetPadding: CGFloat { bounds.size.width * 0.03 }
-    var settingsLineSheetSpacing: CGFloat { bounds.size.height * 0.012 }
-    var settingsLineSheetIconSpacing: CGFloat { bounds.size.height * 0.005 }
-    var settingsLineSheetCornerRadius: CGFloat { bounds.size.height * 0.01 }
-    var settingsLineSheetButtonCornerRadius: CGFloat { bounds.size.height * 0.020 }
     
-    // Typography
-    var settingsLineSheetTitleFontSize: CGFloat { bounds.size.height * 0.020 }
-    var settingsLineSheetInputFontSize: CGFloat { bounds.size.height * 0.018 }
-    var settingsLineSheetButtonFontSize: CGFloat { bounds.size.height * 0.020 }
-    var settingsLineSheetHeadlineFontSize: CGFloat { bounds.size.height * 0.016 }
-    var settingsLineSheetCaptionFontSize: CGFloat { bounds.size.height * 0.012 }
+    var settingsLineSheetPickerPadding: CGFloat { screenHeight * -0.032 }
+    var settingsLineSheetShadowRadius: CGFloat { screenHeight * 0.006 }
+    var settingsLineSheetTitleSpacing: CGFloat { screenHeight * 0.012 }
+    var settingsLineSheetGridSpacing: CGFloat { screenHeight * 0.02 }
+    var settingsLineSheetColorVerticalPadding: CGFloat { screenHeight * 0.008 }
+    var settingsLineSheetSuggestionItemHeight: CGFloat { screenHeight * 0.056 }
+    var settingsLineSheetMaxSuggestionHeight: CGFloat { screenHeight * 0.4 }
+    var settingsLineSheetTagPaddingVertical: CGFloat { screenHeight * 0.003 }
+    var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.12 }
+    var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.19 }
+    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.27 }
+    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.32 }
+
+    var settingsLineSheetCaptionFontSize: CGFloat { customWidth * 0.024 }
+    var settingsLineSheetColorSettingWidth: CGFloat { customWidth * 0.80 }
+    var settingsLineSheetColorHorizontalPadding: CGFloat { customWidth * 0.04 }
+    var settingsLineSheetColorCircleSize: CGFloat { customWidth * 0.08 }
+    var settingsLineSheetColorCircleSmallSize: CGFloat { customWidth * 0.04 }
+    var settingsLineSheetTagPaddingHorizontal: CGFloat { customWidth * 0.006 }
+}
+
+// MARK: - Settings Transfer Sheet Extensions
+extension UIScreen {
     
-    // Component Heights
-    var settingsLineSheetButtonHeight: CGFloat { bounds.size.height * 0.044 }
-    var settingsLineSheetSuggestionItemHeight: CGFloat { bounds.size.height * 0.056 }
-    var settingsLineSheetMaxSuggestionHeight: CGFloat { bounds.size.height * 0.4 }
-    
-    // Color Elements
-    var settingsLineSheetColorCircleSize: CGFloat { bounds.size.height * 0.03 }
-    var settingsLineSheetColorCircleSmallSize: CGFloat { bounds.size.height * 0.02 }
-    var settingsLineSheetColorPaddingHorizontal: CGFloat { bounds.size.width * 0.04 }
-    var settingsLineSheetColorPaddingVertical: CGFloat { bounds.size.height * 0.008 }
-    
-    // Input Elements
-    var settingsLineSheetInputPaddingHorizontal: CGFloat { bounds.size.width * 0.04 }
-    var settingsLineSheetInputPaddingVertical: CGFloat { bounds.size.height * 0.008 }
-    
-    // Tags and Icons
-    var settingsLineSheetTagPaddingHorizontal: CGFloat { bounds.size.height * 0.006 }
-    var settingsLineSheetTagPaddingVertical: CGFloat { bounds.size.height * 0.003 }
-    var settingsLineSheetIconSize: CGFloat { bounds.size.height * 0.016 }
-    
-    // Grid and Spacing
-    var settingsLineSheetGridSpacing: CGFloat { bounds.size.height * 0.02 }
-    var settingsLineSheetHStackSpacing: CGFloat { bounds.size.height * 0.008 }
-    
-    // Visual Effects
-    var settingsLineSheetShadowRadius: CGFloat { bounds.size.height * 0.006 }
-    var settingsLineSheetStrokeLineWidth: CGFloat { bounds.size.height * 0.001 }
-    
-    // Sheet Offsets
-    var settingsLineSheetLineOffset: CGFloat { bounds.size.height * 0.12 }
-    var settingsLineSheetColorOffset: CGFloat { bounds.size.height * 0.19 }
-    var settingsLineSheetDepartureOffset: CGFloat { bounds.size.height * 0.27 }
-    var settingsLineSheetArrivalOffset: CGFloat { bounds.size.height * 0.32 }
+    var settingsTransferSheetPickerSpacing: CGFloat { screenHeight * 0.009 }
+    var settingsTransferSheetRoute2Spacing: CGFloat { screenHeight * -0.02 }
+    var settingsTransferSheetCheckmarkSpacing: CGFloat { screenHeight * 0.009 }
 }
 
 // MARK: - Settings Extensions
 extension UIScreen {
-    var settingsTitleFontSize: CGFloat { bounds.size.height * 0.024 }
-    var settingsHeaderFontSize: CGFloat { bounds.size.height * 0.016 }
-    var settingsFontSize: CGFloat { bounds.size.height * 0.018 }
+    var settingsTitleFontSize: CGFloat { screenHeight * 0.022 }
+    var settingsHeaderFontSize: CGFloat { screenHeight * 0.016 }
+    var settingsFontSize: CGFloat { screenHeight * 0.018 }
 }
 
 // MARK: - Transportation Toggle Extensions
@@ -200,7 +226,7 @@ extension UIScreen {
     var transportationToggleHeight: CGFloat { bounds.size.height * 0.029 }
     var transportationToggleCircleSize: CGFloat { bounds.size.height * 0.022 }
     var transportationToggleCircleOffset: CGFloat { bounds.size.height * 0.011 }
-    var transportationTogglePaddingHorizontal: CGFloat { bounds.size.width * 0.02 }
+    var transportationTogglePaddingHorizontal: CGFloat { customWidth * 0.02 }
 }
 
 // MARK: - Bool Extension for Route Width

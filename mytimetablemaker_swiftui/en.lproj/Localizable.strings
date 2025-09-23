@@ -79,6 +79,8 @@
 "Setting your timetable" = "Setting your timetable";
 
 //SettingsTransferSheet
+"Home & Destination Settings" = "Home & Destination Settings";
+"Home & Destination" = "Home & Destination";
 "Destination" = "Destination";
 "Your home" = "Your home";
 "Enter destination" = "Enter destination";
@@ -130,6 +132,9 @@
 "Sat/Sun/PH" = "Sat/Sun/PH";
 "Weekdays (Except Public Holidays)" = "Weekdays (Except Public Holidays)";
 "Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
+"Departure Time" = "Departure Time";
+"Ride Time" = "Ride Time";
+
 
 "E, MMM d, yyyy" = "E, MMM d, yyyy";
 "Hour" = ":00-";
@@ -258,6 +263,7 @@
 "TokyuBus" = "Tokyu";
 
 //SettingsLineSheet
+"Route Settings" = "Route Settings";
 "Select Line Color" = "Line Color Select";
 "Timetable Settings" = "Timetable Settings";
 "Auto Generate Timetable" = "Auto Generate Timetable";
@@ -270,6 +276,8 @@
 "Input Save" = "Input Save";
 "Ride Time" = "Ride Time";
 "Line Name" = "Line Name";
+"Enter line name" = "Enter line name";
+"Enter bus route name" = "Enter bus route name";
 "Enter line name or bus route name" = "Enter line name or bus route name";
 "Line" = "Line";
 "Input" = "Input";
@@ -335,4 +343,16 @@
 "defaultRapid" = "Rapid";
 "defaultSpecialRapid" = "Special Rapid";
 "defaultLimitedExpress" = "Limited Express";
+
+// Weekday/Holiday Toggle
+"Weekday" = "Weekday";
+"Holiday" = "Holiday";
+
+// SettingsTransferSheet
+"Home transportation settings" = "Home Transportation Settings";
+"Destination transportation settings" = "Destination Transportation Settings";
+"Route" = "Route";
+"Route 2 Display" = "Route 2 Display";
+"Display" = "Display";
+"Hide" = "Hide";
 

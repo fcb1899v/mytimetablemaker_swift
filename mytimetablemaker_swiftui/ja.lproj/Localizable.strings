@@ -79,6 +79,8 @@
 "Setting your timetable" = "時刻表設定";
 
 //SettingsTransferSheet
+"Home & Destination Settings" = "自宅・行き先設定";
+"Home & Destination" = "自宅・行き先設定";
 "Destination" = "行き先";
 "Your home" = "自宅";
 "Enter destination" = "行き先を入力";
@@ -117,7 +119,6 @@
 "Account deleted successfully" = "アカウントの削除成功";
 "Account could not be deleted" = "アカウントの削除失敗";
 
-
 //TimetableContentView
 "Add" = "追加";
 "Delete" = "削除";
@@ -125,6 +126,9 @@
 "Copying your timetable" = "発車時刻のコピー";
 "Copying all the time?" = "全時刻をコピーしますか？";
 "Select your timetable picture" =  "時刻表写真の選択";
+"Departure Time" = "発車時刻";
+"Ride Time" = "乗車時間";
+
 
 //Timetable.swift
 "Weekdays" = "平日";
@@ -263,6 +267,7 @@
 "TokyuBus" = "東急";
 
 //SettingsLineSheet
+"Route Settings" = "ルート設定";
 "Select Line Color" = "路線カラー選択";
 "Timetable Settings" = "時刻表設定";
 "Auto Generate Timetable" = "時刻表の自動生成";
@@ -275,6 +280,8 @@
 "Clear" = "クリア";
 "Ride Time" = "乗車時間";
 "Line Name" = "路線名";
+"Enter line name" = "路線名を入力";
+"Enter bus route name" = "バス路線名を入力";
 "Enter line name or bus route name" = "路線名・バス路線名を入力";
 "Line" = "路線";
 "Input" = "の入力";
@@ -330,8 +337,8 @@
 "SpecialRapid" = "特別快速";
 "TH-LINER" = "THライナー";
 "TJLiner" = "TJライナー";
-"Edit Timetable" = "時刻表の編集";
-"Copy Timetable" = "時刻表のコピー";
+"Edit Timetable" = "時刻表編集";
+"Copy Timetable" = "時刻表コピー";
 "Select Type" = "列車種別";
 
 // Default train types
@@ -340,4 +347,16 @@
 "defaultRapid" = "快速";
 "defaultSpecialRapid" = "特別快速";
 "defaultLimitedExpress" = "特急";
+
+// Weekday/Holiday Toggle
+"Weekday" = "平日";
+"Holiday" = "土日祝";
+
+// SettingsTransferSheet
+"Home transportation settings" = "移動手段設定：自宅〜";
+"Destination transportation settings" = "移動手段設定：目的地〜";
+"Route" = "ルート";
+"Route 2 Display" = "ルート2表示";
+"Display" = "表示";
+"Hide" = "非表示";
 

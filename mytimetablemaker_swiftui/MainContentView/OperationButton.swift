@@ -1,51 +1,16 @@
 //
-//  stateButton.swift
+//  OperationButton.swift
 //  mytimetablemaker_swiftui
 //
 //  Created by Masao Nakajima on 2021/02/06.
 //
+//  DEPRECATED: This file is no longer needed.
+//  OperationButton functionality has been replaced with CustomButton.
+//  This file can be safely deleted from the project.
+//
 
 import SwiftUI
 
-// MARK: - Operation Button
-// Custom button component for header operation controls
-struct OperationButton: View {
-    
-    private let isOn: Bool
-    private let label: String
-    private let action: () -> Void
-
-    init(
-        isOn: Bool,
-        label: String,
-        action: @escaping () -> Void
-    ){
-        self.isOn = isOn
-        self.label = label
-        self.action = action
-    }
-
-    var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(.system(size: screen.operationButtonFontSize, weight: .semibold))
-                .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
-                .foregroundColor(.white)
-                .background(isOn ? Color.accent: Color.gray)
-                .cornerRadius(screen.operationButtonCornerRadius)
-        }
-    }
-}
-
-// MARK: - Preview Provider
-// Provides preview data for SwiftUI previews in Xcode
-struct stateButton_Previews: PreviewProvider {
-    static var previews: some View {
-        OperationButton(
-            isOn: true,
-            label: "Back",
-            action: {}
-        )
-    }
-}
-
+// MARK: - Deprecated Operation Button
+// This component has been replaced with CustomButton for consistency
+// across the application. All usage has been migrated to CustomButton.

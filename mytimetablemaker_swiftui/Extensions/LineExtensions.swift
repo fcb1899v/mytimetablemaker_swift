@@ -108,7 +108,7 @@ extension String{
     func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
     func lineKindKey(_ num: Int) -> String { return "\(self)linekind\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
-    func rideTimeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)ridetime" }
+    func rideTimeKeyForHour(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)ridetime" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
     func transferTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transfertimee": "\(self)transfertime\(num)" }
     func timetableKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)" }
@@ -235,7 +235,7 @@ extension String {
     // Load TrainTime objects for a specific hour
     func loadTrainTimes(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [TrainTime] {
         let timetableKey = self.timetableKey(isWeekday, num, hour)
-        let rideTimeKey = self.rideTimeKey(isWeekday, num, hour)
+        let rideTimeKey = self.rideTimeKeyForHour(isWeekday, num, hour)
         let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
                 
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else {
@@ -278,7 +278,7 @@ extension String {
     func saveTrainTimes(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int, _ hour: Int) {
 
         let timetableKey = self.timetableKey(isWeekday, num, hour)
-        let rideTimeKey = self.rideTimeKey(isWeekday, num, hour)
+        let rideTimeKey = self.rideTimeKeyForHour(isWeekday, num, hour)
         let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
         
         if hour < 9 {

@@ -16,9 +16,18 @@ import SwiftUI
 // Core data structure representing a railway line or transportation route.
 // Contains all necessary information for line identification, display, and configuration.
 struct TransportationLine: Identifiable, Hashable {
-    enum Kind: String { 
+    enum Kind: String, CaseIterable { 
         case railway = "Railway"
         case bus = "Bus"
+        
+        var displayName: String {
+            switch self {
+            case .railway:
+                return "Railway".localized
+            case .bus:
+                return "Bus".localized
+            }
+        }
     }
     
     let id = UUID()

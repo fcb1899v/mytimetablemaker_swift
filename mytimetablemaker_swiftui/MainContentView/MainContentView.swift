@@ -103,13 +103,40 @@ struct MainContentView: View {
                     // MARK: - Operation Buttons
                     HStack(alignment: .center, spacing: screen.operationButtonMargin) {
                         // Display return route button
-                        OperationButton(isOn: myTransfer.isBack, label: "Back".localized, action: myTransfer.backButton)
+                        CustomButton(
+                            title: "Back".localized,
+                            backgroundColor: myTransfer.isBack ? Color.accent : Color.gray,
+                            isEnabled: true,
+                            action: myTransfer.backButton
+                        )
+                        .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
+                        
                         // Display outbound route button
-                        OperationButton(isOn: !myTransfer.isBack, label: "Go".localized, action: myTransfer.goButton)
+                        CustomButton(
+                            title: "Go".localized,
+                            backgroundColor: !myTransfer.isBack ? Color.accent : Color.gray,
+                            isEnabled: true,
+                            action: myTransfer.goButton
+                        )
+                        .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
+                        
                         // Time Start Button
-                        OperationButton(isOn: !myTransfer.isTimeStop, label: "Start".localized, action: myTransfer.startButton)
+                        CustomButton(
+                            title: "Start".localized,
+                            backgroundColor: !myTransfer.isTimeStop ? Color.accent : Color.gray,
+                            isEnabled: true,
+                            action: myTransfer.startButton
+                        )
+                        .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
+                        
                         // Time Stop Button
-                        OperationButton(isOn: myTransfer.isTimeStop, label: "Stop".localized, action: myTransfer.stopButton)
+                        CustomButton(
+                            title: "Stop".localized,
+                            backgroundColor: myTransfer.isTimeStop ? Color.accent : Color.gray,
+                            isEnabled: true,
+                            action: myTransfer.stopButton
+                        )
+                        .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                         // To Settings Button
                         Button(action: {
                             isMoveSettings = true
@@ -191,6 +218,10 @@ struct MainContentView: View {
         .navigationBarBackButtonHidden(true)
         // SettingsLineSheetの保存完了を監視してMyTransferのデータを更新
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsLineUpdated"))) { _ in
+            myTransfer.updateAllDataFromUserDefaults()
+        }
+        // SettingsTransferSheetの保存完了を監視してMyTransferのデータを更新
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsTransferUpdated"))) { _ in
             myTransfer.updateAllDataFromUserDefaults()
         }
         // 帰宅/外出の切り替えを監視して全ての表示を更新

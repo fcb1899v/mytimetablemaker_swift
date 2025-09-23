@@ -32,14 +32,13 @@ struct TimetableContentView: View {
         NavigationStack {
             ZStack {
                 Color.primary
-                VStack(alignment: .leading) {
-
+                VStack(alignment: .leading, spacing: screen.timetableVerticalSpacing) {
 
                     // MARK: - Weekday/Weekend Toggle Button
                     HStack {
 
                         Text(goorback.stationArray[2 * num])
-                            .font(.system(size: screen.timetableTitleFontSize, weight: .semibold))
+                            .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
                             .foregroundColor(.white)
 
                         Spacer()
@@ -57,17 +56,18 @@ struct TimetableContentView: View {
                             rightText: "Sat/Sun/PH".localized,
                             rightColor: .red,
                             circleColor: .primary,
-                            offColor: .secondary
+                            offColor: .secondary,
                         )
                     }
-                    .padding(.horizontal, screen.timetablePadding)
+                    .padding(.leading, screen.timetableHorizontalSpacing)
+                    .padding(.trailing, screen.timetableWeekToggleSpacing)
+
 
                     // MARK: - Header Section
                     Text(goorback.timetableLineTitle(num))
-                        .font(.system(size: screen.timetableHeaderFontSize, weight: .semibold))
+                        .font(.system(size: screen.settingsSheetInputFontSize, weight: .semibold))
                         .foregroundColor(.white)
-                        .padding(.leading, screen.timetablePadding)
-                        .padding(.bottom, screen.timetableSpacing)
+                        .padding(.leading, screen.timetableHorizontalSpacing)
 
                     // MARK: - Timetable Grid
                     VStack(spacing: 0) {
@@ -77,7 +77,7 @@ struct TimetableContentView: View {
                             Color.white.frame(width: 1)
                             Spacer()
                             Text(weekflag.weekdayLabel)
-                                .font(.system(size: screen.timetableHeaderFontSize, weight: .semibold))
+                                .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
                                 .foregroundColor(weekflag.weekLabelColor)
                             Spacer()
                             Color.white.frame(width: 1)
@@ -96,7 +96,7 @@ struct TimetableContentView: View {
                         }
                     }
                     
-                    ColorLegendView(trainTypes: loadTrainTypeList())
+                    colorLegendView(trainTypes: loadTrainTypeList())
                     
                     Spacer()
                 }
@@ -114,7 +114,7 @@ struct TimetableContentView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("Timetable Settings".localized)
-                        .font(.system(size: screen.timetableTitleFontSize, weight: .bold))
+                        .font(.system(size: screen.settingsTitleFontSize, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
@@ -126,10 +126,10 @@ struct TimetableContentView: View {
                     }) {
                         HStack {
                             Image(systemName: "arrowshape.backward.fill")
-                                .font(.system(size: screen.timetableHeaderFontSize, weight: .bold))
+                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                                 .foregroundColor(.white)
                             Text("Back to homepage".localized)
-                                .font(.system(size: screen.timetableButtonFontSize, weight: .bold))
+                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                                 .foregroundColor(.white)
                         }
                     }
@@ -139,6 +139,13 @@ struct TimetableContentView: View {
                 // Set weekflag based on current date
                 weekflag = Date().isWeekday
                 print("📱 TimetableContentView loaded: weekflag=\(weekflag) (\(weekflag ? "Weekdays" : "Weekend")), label='\(weekflag.weekdayLabel)'")
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("WeekdayChanged"))) { notification in
+                if let userInfo = notification.userInfo,
+                   let isWeekday = userInfo["isWeekday"] as? Bool {
+                    weekflag = isWeekday
+                    print("🔄 Weekday changed from SettingsTimetableSheet: weekflag=\(weekflag)")
+                }
             }
         }
     }
@@ -181,24 +188,19 @@ struct TimetableContentView: View {
             return []
         }
     }
-}
-
-// MARK: - Color Legend View
-// Displays color legend for train types based on saved train type list
-struct ColorLegendView: View {
-    let trainTypes: [String]
     
-    // Filter out nil and empty train types
-    private var validTrainTypes: [String] {
-        return trainTypes.filter { !$0.isEmpty }
-    }
-    
-    var body: some View {
+    // MARK: - Color Legend View Function
+    // Displays color legend for train types based on saved train type list
+    @ViewBuilder
+    private func colorLegendView(trainTypes: [String]) -> some View {
+        // Filter out nil and empty train types
+        let validTrainTypes = trainTypes.filter { !$0.isEmpty }
+        
         HStack {
             Spacer()
-            VStack(spacing: screen.timetableSpacing) {
+            VStack(spacing: screen.timetableVerticalSpacing) {
                 ForEach(0..<((validTrainTypes.count + 2) / 3), id: \.self) { rowIndex in
-                    HStack(spacing: screen.timetableSpacing) {
+                    HStack(spacing: screen.timetableHorizontalSpacing) {
                         ForEach(0..<min(3, validTrainTypes.count - rowIndex * 3), id: \.self) { colIndex in
                             let trainTypeIndex = rowIndex * 3 + colIndex
                             let trainType = validTrainTypes[trainTypeIndex]
@@ -207,20 +209,19 @@ struct ColorLegendView: View {
                             HStack {
                                 Image(systemName: "circle.fill")
                                     .foregroundColor(Color.colorForTrainType(trainType))
-                                    .font(.system(size: screen.timetableHeaderFontSize))
+                                    .font(.system(size: screen.settingsSheetInputFontSize))
                                 Text(displayText.localized)
-                                    .font(.system(size: screen.timetableHeaderFontSize, weight: .medium))
+                                    .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                                     .foregroundColor(.white)
                                     .lineLimit(1)
                                     .scaledToFit()
                             }
-                            .padding(.horizontal, screen.timetableSpacing)
+                            .padding(.horizontal, screen.timetableHorizontalSpacing)
                         }
                     }
                 }
             }
-            .padding(.horizontal, screen.timetablePadding)
-            .padding(.vertical, screen.timetableSpacing)
+            .padding(.horizontal, screen.timetableHorizontalSpacing)
             Spacer()
         }
     }

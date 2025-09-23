@@ -57,7 +57,7 @@ struct CustomToggle: View {
         HStack(spacing: screen.transportationToggleSpacing) {
             // Left label
             Text(leftText)
-                .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
+                .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                 .foregroundColor(isLeftSelected ? leftColor : offColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
             
@@ -82,7 +82,7 @@ struct CustomToggle: View {
             
             // Right label
             Text(rightText)
-                .font(.system(size: screen.settingsLineSheetInputFontSize, weight: .medium))
+                .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                 .foregroundColor(isLeftSelected ? offColor : rightColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
         }
@@ -130,6 +130,205 @@ extension CustomToggle {
             circleColor: circleColor,
             offColor: offColor
         )
+    }
+}
+
+// MARK: - Two Digit Number Picker
+// Picker component for selecting two-digit numbers with separate tens and ones place
+struct Custom2DigitPicker: View {
+    @Binding var value: Int
+    
+    let isZeroToFive: Bool
+    
+    // MARK: - Computed Properties
+    private var minValue: Int { 0 }    
+    private var maxValue: Int { isZeroToFive ? 59 : 99 }
+    
+    // MARK: - Computed Properties
+    private var tensDigit: Int { value / 10 }
+    private var onesDigit: Int { value % 10 }
+    
+    private var tensRange: ClosedRange<Int> {
+        let minTens = minValue / 10
+        let maxTens = maxValue / 10
+        return minTens...maxTens
+    }
+    
+    private var onesRange: ClosedRange<Int> {
+        let baseRange = isZeroToFive ? 0...5 : 0...9
+        let minTens = minValue / 10
+        let maxTens = maxValue / 10
+        
+        // Determine range based on tens digit position
+        let lowerBound = tensDigit == minTens ? max(baseRange.lowerBound, minValue % 10) : baseRange.lowerBound
+        let upperBound = tensDigit == maxTens ? min(baseRange.upperBound, maxValue % 10) : baseRange.upperBound
+        
+        return lowerBound...upperBound
+    }
+    
+    // MARK: - Initializer
+    init(value: Binding<Int>, isZeroToFive: Bool = false) {
+        self._value = value
+        self.isZeroToFive = isZeroToFive
+    }
+    
+    // MARK: - Body
+    var body: some View {
+        HStack(spacing: screen.settingsSheetPickerSpacing) {
+            // Tens digit picker
+            Picker("Tens", selection: Binding(
+                get: { tensDigit },
+                set: { newTens in
+                    let newValue = newTens * 10 + onesDigit
+                    if newValue >= minValue && newValue <= maxValue {
+                        value = newValue
+                    }
+                }
+            )) {
+                ForEach(tensRange, id: \.self) { digit in
+                    Text("\(digit)")
+                        .tag(digit)
+                        .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                        .foregroundColor(.black)
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            .frame(width: screen.settingsSheetPickerSelectWidth, height: screen.settingsSheetPickerSelectHeight)
+            
+            // Ones digit picker
+            Picker("Ones", selection: Binding(
+                get: { onesDigit },
+                set: { newOnes in
+                    let newValue = tensDigit * 10 + newOnes
+                    if newValue >= minValue && newValue <= maxValue {
+                        value = newValue
+                    }
+                }
+            )) {
+                ForEach(onesRange, id: \.self) { digit in
+                    Text("\(digit)")
+                        .tag(digit)
+                        .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                        .foregroundColor(.black)                        
+                }
+            }
+            .pickerStyle(WheelPickerStyle())
+            .frame(width: screen.settingsSheetPickerSelectWidth, height: screen.settingsSheetPickerSelectHeight)
+        }
+        .frame(height: screen.settingsSheetPickerSelectHeight)
+    }
+}
+
+/// Custom button component for consistent styling
+struct CustomButton: View {
+    let title: String
+    let icon: String?
+    let backgroundColor: Color
+    let isEnabled: Bool
+    let action: () -> Void
+    
+    init(
+        title: String,
+        icon: String? = nil,
+        backgroundColor: Color = Color.accent,
+        isEnabled: Bool = true,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.icon = icon
+        self.backgroundColor = backgroundColor
+        self.isEnabled = isEnabled
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: icon != nil ? screen.settingsSheetIconSpacing : 0) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: screen.settingsSheetButtonFontSize, weight: .medium))
+                }
+                Text(title)
+                    .font(.system(size: screen.settingsSheetButtonFontSize, weight: .bold))
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: screen.settingsSheetButtonHeight)
+            .background(
+                RoundedRectangle(cornerRadius: screen.settingsSheetButtonCornerRadius)
+                    .fill(isEnabled ? backgroundColor : Color.gray)
+            )
+        }
+        .disabled(!isEnabled)
+    }
+}
+
+/// Custom rectangle button component for consistent styling
+struct CustomRectangleButton: View {
+    let title: String
+    let icon: String?
+    let tintColor: Color
+    let action: () -> Void
+    
+    init(
+        title: String,
+        icon: String? = nil,
+        tintColor: Color = Color.accent,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.icon = icon
+        self.tintColor = tintColor
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: icon != nil ? screen.settingsSheetIconSpacing : 0) {
+                if let icon = icon {
+                    Image(systemName: icon)
+                        .font(.system(size: screen.settingsSheetInputFontSize))
+                        .foregroundColor(.white)
+                }
+                Text(title)
+                    .font(.system(size: screen.settingsSheetInputFontSize))
+                    .foregroundColor(.white)
+            }
+        }
+        .font(.system(size: screen.settingsSheetButtonFontSize))
+        .buttonStyle(.borderedProminent)
+        .tint(tintColor)
+    }
+}
+
+// MARK: - Styling Helpers
+// Common styling components for consistent UI appearance
+
+/// Styled background for input fields
+struct StyledBackground: View {
+    let backgroundColor: Color
+    
+    init(backgroundColor: Color = Color(.secondarySystemBackground)) {
+        self.backgroundColor = backgroundColor
+    }
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: screen.settingsSheetCornerRadius)
+            .fill(backgroundColor)
+    }
+}
+
+/// Styled border for input fields
+struct StyledBorder: View {
+    let borderColor: Color
+    
+    init(borderColor: Color = Color(.separator)) {
+        self.borderColor = borderColor
+    }
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: screen.settingsSheetCornerRadius)
+            .stroke(borderColor, lineWidth: screen.settingsSheetStrokeLineWidth)
     }
 }
 

@@ -144,9 +144,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("   Current selectedGoorback: \(selectedGoorback)")
         print("   Current selectedLineNumber: \(selectedLineNumber)")
         
-        // Clear all route data when switching directions
+        // Update selectedGoorback without clearing any data
         if selectedGoorback != newGoorback {
-            clearAllRouteData()
+            selectedGoorback = newGoorback
         }
         
         // Set flag to indicate route is changing
@@ -1588,6 +1588,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         print("✅ \(isWeekday ? "Weekday" : "Weekend") Common Trains Found: \(trainTimes.count)")
+        
         return trainTimes
     }
     
@@ -1719,7 +1720,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 // Clear all hours (4-24) for each line and day type
                 for hour in 4...24 {
                     let timetableKey = selectedGoorback.timetableKey(isWeekday, lineIndex, hour)
-                    let rideTimeKey = selectedGoorback.rideTimeKey(isWeekday, lineIndex, hour)
+                    let rideTimeKey = selectedGoorback.rideTimeKeyForHour(isWeekday, lineIndex, hour)
                     let trainTypeKey = selectedGoorback.trainTypeKey(isWeekday, lineIndex, hour)
                     
                     UserDefaults.standard.removeObject(forKey: timetableKey)
@@ -1768,7 +1769,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Clear all hours (4-24) for the specified day type and line
         for hour in 4...24 {
             let timetableKey = selectedGoorback.timetableKey(isWeekday, selectedLineNumber - 1, hour)
-            let rideTimeKey = selectedGoorback.rideTimeKey(isWeekday, selectedLineNumber - 1, hour)
+            let rideTimeKey = selectedGoorback.rideTimeKeyForHour(isWeekday, selectedLineNumber - 1, hour)
             let trainTypeKey = selectedGoorback.trainTypeKey(isWeekday, selectedLineNumber - 1, hour)
             UserDefaults.standard.removeObject(forKey: timetableKey)
             UserDefaults.standard.removeObject(forKey: rideTimeKey)
@@ -1786,9 +1787,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Transportation Kind Switching
     // Handle transportation kind switching with proper state management
     func switchTransportationKind(_ isRailway: Bool) {
-        // Clear all route data when switching transportation types
-        clearAllRouteData()
-        
         // Update transportation kind immediately for responsive UI
         selectedTransportationKind = isRailway ? .railway : .bus
         
@@ -2105,6 +2103,150 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         return trainTimes
+    }
+    
+    // MARK: - Input Processing
+    /// Processes departure station input changes
+    func processDepartureStationInput(_ newValue: String) {
+        // Don't show suggestions if line number is being changed
+        if isLineNumberChanging {
+            return
+        }
+        
+        // Set focus state and reset selection flag when input changes
+        isDepartureFieldFocused = true
+        departureStationSelected = false
+        
+        // Clear input if same station as arrival station is entered
+        let isSameAsArrival = selectedArrivalStation?.getLocalizedName() == newValue
+        if isSameAsArrival {
+            departureStationInput = ""
+            selectedDepartureStation = nil
+        } else {
+            // Filter suggestions
+            filterDepartureStations(newValue)
+        }
+    }
+    
+    /// Processes arrival station input changes
+    func processArrivalStationInput(_ newValue: String) {
+        // Don't show suggestions if line number is being changed
+        if isLineNumberChanging {
+            return
+        }
+        
+        // Set focus state and reset selection flag when input changes
+        isArrivalFieldFocused = true
+        arrivalStationSelected = false
+        
+        // Clear input message on input
+        let isSameAsDeparture = selectedDepartureStation?.getLocalizedName() == newValue
+        if isSameAsDeparture {
+            arrivalStationInput = ""
+            selectedArrivalStation = nil
+        } else {
+            // Filter suggestions
+            filterArrivalStations(newValue)
+        }
+    }
+    
+    /// Processes line input changes
+    func processLineInput(_ newValue: String) {
+        // Don't reset station selection if line number is being changed
+        if isLineNumberChanging {
+            return
+        }
+        
+        // Trigger filtering when lineInput changes
+        Task { await filter(newValue) }
+        
+        // Reset station selection when lineInput changes
+        let currentLineName = selectedLine?.name ?? ""
+        let currentLineDisplayName = selectedLine != nil ? lineDisplayName(for: selectedLine!) : ""
+        let shouldResetSelection = newValue != currentLineName && newValue != currentLineDisplayName
+        
+        if shouldResetSelection {
+            // Clear line selection and station data without resetting ride time
+            selectedLine = nil
+            departureStationInput = ""
+            arrivalStationInput = ""
+            selectedDepartureStation = nil
+            selectedArrivalStation = nil
+            showDepartureSuggestions = false
+            departureSuggestions = []
+            showArrivalSuggestions = false
+            arrivalSuggestions = []
+            isDepartureFieldFocused = false
+            isArrivalFieldFocused = false
+            // Reset station selection flags to allow suggestions to show
+            departureStationSelected = false
+            arrivalStationSelected = false
+        }
+        
+        // Show station selection UI for custom line input
+        if !newValue.isEmpty {
+            showStationSelection = true
+        }
+    }
+    
+    // MARK: - Line Selection Management
+    /// Handles line selection and updates all related state
+    func selectLine(_ line: TransportationLine) {
+        // Set line number changing flag to prevent unwanted suggestions
+        isLineNumberChanging = true
+        
+        // Set selectedLine for proper filtering
+        selectedLine = line
+        
+        // Update display name with operator information on selection
+        lineInput = lineDisplayName(for: line)
+        
+        // Clear station fields when line is selected
+        departureStationInput = ""
+        arrivalStationInput = ""
+        selectedDepartureStation = nil
+        selectedArrivalStation = nil
+        
+        // Clear suggestion displays
+        showDepartureSuggestions = false
+        departureSuggestions = []
+        showArrivalSuggestions = false
+        arrivalSuggestions = []
+        isDepartureFieldFocused = false
+        isArrivalFieldFocused = false
+        
+        // Reset ride time to 0 minutes when line is selected
+        selectedRideTime = 0
+        
+        // Set line color or default to accent color
+        selectedLineColor = line.lineColor ?? Color.accentString
+    }
+    
+    // MARK: - Form Data Management
+    /// Clears all form data and resets to initial state
+    func clearAllFormData() {
+        // Clear line name
+        lineInput = ""
+        
+        // Reset station selection
+        resetStationSelection()
+        
+        // Clear departure and arrival station input fields
+        departureStationInput = ""
+        arrivalStationInput = ""
+        
+        // Reset ride time to 0 minutes
+        selectedRideTime = 0
+        
+        // Reset line color to accent (not saved to UserDefaults)
+        selectedLineColor = Color.accentString
+        
+        // Reset transfer settings to none
+        selectedTransportation = "none"
+        selectedTransferTime = 0
+        
+        // Hide color selection UI
+        showColorSelection = false
     }
 }
 

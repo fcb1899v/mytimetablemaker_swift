@@ -35,45 +35,27 @@ struct SettingsContentView: View {
         NavigationStack {
             ZStack {
                 Form {
+
                     // MARK: - Direction Settings
                     Section(
                         header: Text("Direction Settings".localized)
                             .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                             .foregroundColor(.gray)
+                            .padding(.top, screen.settingsHeaderFontSize)
                     ) {
                         // Home and Destination button
                         createSettingsButton(
-                            title: "Setting home and destination".localized,
+                            title: "Home & Destination Settings".localized,
                             action: { showTransferSheet = true }
                         )
-
-                        // Settings return route
-                        createRouteButton(goorback: "back1")
-                        if (myTransfer.isShowBackRoute2) {
-                            createRouteButton(goorback: "back2")
-                        }
-                        Toggle(isOn: $myTransfer.isShowBackRoute2){
-                            Text("Display Return Route 2".localized)
-                                .font(.system(size: screen.settingsFontSize))
-                        }
-                        .toggleStyle(SwitchToggleStyle(tint: .accent))
-                        .onChange(of: myTransfer.isShowBackRoute2) { _ in
-                            myTransfer.saveRoute2Settings()
-                        }
-
-                        // Settings outbound route
-                        createRouteButton(goorback: "go1")
-                        if (myTransfer.isShowGoRoute2) {
-                            createRouteButton(goorback: "go2")
-                        }
-                        Toggle(isOn: $myTransfer.isShowGoRoute2){
-                            Text("Display Outbound Route 2".localized)
-                                .font(.system(size: screen.settingsFontSize))
-                        }
-                        .toggleStyle(SwitchToggleStyle(tint: .accent))
-                        .onChange(of: myTransfer.isShowGoRoute2) { _ in
-                            myTransfer.saveRoute2Settings()
-                        }
+                        // Settings route
+                        createSettingsButton(
+                            title: "Route Settings".localized,
+                            action: {
+                                selectedRoute = "back1"
+                                showLineSheet = true
+                            }
+                        )
                     }
                     
                     // MARK: - Account Management
@@ -130,7 +112,7 @@ struct SettingsContentView: View {
                         .progressViewStyle(CircularProgressViewStyle())
                         .padding()
                         .background(Color.white)
-                        .cornerRadius(screen.settingsLineSheetCornerRadius)
+                        .cornerRadius(screen.settingsSheetCornerRadius)
                 }
             }
         }
@@ -138,7 +120,7 @@ struct SettingsContentView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Settings".localized)
-                    .font(.system(size: screen.settingsTitleFontSize, weight: .bold))
+                    .font(.system(size: screen.settingsTitleFontSize, weight: .semibold))
                     .foregroundColor(.white)
             }
         }
@@ -197,20 +179,6 @@ struct SettingsContentView: View {
                     .foregroundColor(.gray)
             }
         }
-    }
-    
-    /// Creates a direction button for line settings
-    /// - Parameter route: Direction identifier (back1, back2, go1, go2)
-    /// - Returns: Configured direction button view
-    @ViewBuilder
-    private func createRouteButton(goorback: String) -> some View {
-        createSettingsButton(
-            title: goorback.routeTitle,
-            action: {
-                selectedRoute = goorback
-                showLineSheet = true
-            }
-        )
     }
 }
 

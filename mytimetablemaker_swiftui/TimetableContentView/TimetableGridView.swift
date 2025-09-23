@@ -42,17 +42,20 @@ struct TimetableGridView: View {
                 HStack {
                     Color.white.frame(width: 1)
                     Text(hour.addZeroTime)
-                        .font(.system(size: screen.timetableTimeFontSize, weight: .semibold))
+                        .font(.system(size: screen.timetableHourFontSize, weight: .semibold))
                         .foregroundColor(.accent)
                         .frame(width: screen.timetableHourFrameWidth)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                        .scaledToFit()
                     Color.white.frame(width: 1)
                 }
                 .background(Color.black.opacity(0.25))
 
-                HStack(spacing: screen.timetableSpacing) {
+                HStack(spacing: screen.timetableMinuteSpacing) {
                     ForEach(trainTimes, id: \.self) { trainTime in
                         Text(trainTime.departureTime.trimmingLeadingZero)
-                            .font(.system(size: screen.timetableTimeFontSize, weight: .semibold))
+                            .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
                             .foregroundColor(Color.colorForTrainType(trainTime.trainType))
                     }
                 }
@@ -99,5 +102,6 @@ struct TimetableGridView: View {
 struct TimetableGridView_Previews: PreviewProvider {
     static var previews: some View {
         TimetableGridView("back1", .constant(!Date().isWeekday), 0, 4)
+            .background(Color.primary)
     }
 }
