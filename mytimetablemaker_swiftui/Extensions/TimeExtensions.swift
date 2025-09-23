@@ -101,77 +101,172 @@ extension Date {
     // MARK: - Japanese Holiday Detection
     // Check if the date is a Japanese public holiday
     var isJapaneseHoliday: Bool {
-        let calendar = Calendar.current
-        let year = calendar.component(.year, from: self)
-        let month = calendar.component(.month, from: self)
-        let day = calendar.component(.day, from: self)
+        // Check for regular or substitute or  national holidays
+        return isRegularHoliday || isSubstituteHoliday || isNationalHoliday
+    }
+    
+    // MARK: - Regular Holiday Detection
+    // Check if the date is a regular Japanese public holiday
+    private var isRegularHoliday: Bool {
+        let year = Calendar.current.component(.year, from: self)
+        let holidays = getAllHolidaysForYear(year)
         
-        // Fixed holidays
+        // Check if this date matches any regular holiday
+        return holidays.contains { holiday in
+            Calendar.current.isDate(self, inSameDayAs: holiday)
+        }
+    }
+    
+    // MARK: - Substitute Holiday Detection
+    // Check if the date is a substitute holiday (振替休日)
+    private var isSubstituteHoliday: Bool {
+        let year = Calendar.current.component(.year, from: self)
+        let substituteHolidays = getSubstituteHolidaysForYear(year)
+        
+        // Check if this date matches any substitute holiday
+        return substituteHolidays.contains { holiday in
+            Calendar.current.isDate(self, inSameDayAs: holiday)
+        }
+    }
+    
+    // MARK: - National Holiday Detection
+    // Check if the date is a national holiday (国民の休日)
+    private var isNationalHoliday: Bool {
+        let year = Calendar.current.component(.year, from: self)
+        let nationalHolidays = getNationalHolidaysForYear(year)
+        
+        // Check if this date matches any national holiday
+        return nationalHolidays.contains { holiday in
+            Calendar.current.isDate(self, inSameDayAs: holiday)
+        }
+    }
+    
+    // MARK: - Helper Methods
+    // Get all holidays for a specific year
+    private func getAllHolidaysForYear(_ year: Int) -> [Date] {
+        let calendar = Calendar.current
+        var holidays: [Date] = []
+        
+        // Fixed holidays (updated for current era)
         let fixedHolidays = [
             (1, 1),   // 元日
             (2, 11),  // 建国記念の日
+            (2, 23),  // 天皇誕生日 (新)
             (4, 29),  // 昭和の日
             (5, 3),   // 憲法記念日
             (5, 4),   // みどりの日
             (5, 5),   // こどもの日
             (8, 11),  // 山の日
             (11, 3),  // 文化の日
-            (11, 23), // 勤労感謝の日
-            (12, 23)  // 天皇誕生日
+            (11, 23)  // 勤労感謝の日
         ]
         
-        // Check fixed holidays
-        for (holidayMonth, holidayDay) in fixedHolidays {
-            if month == holidayMonth && day == holidayDay {
-                return true
+        // Add fixed holidays
+        for (month, day) in fixedHolidays {
+            if let date = calendar.date(from: DateComponents(year: year, month: month, day: day)) {
+                holidays.append(date)
             }
         }
         
-        // Variable holidays (approximate calculations)
+        // Add variable holidays
+        holidays.append(contentsOf: getVariableHolidaysForYear(year))
+        
+        // Sort holidays by date
+        return holidays.sorted()
+    }
+    
+    // MARK: - Variable Holiday Calculation
+    // Calculate variable holidays for a specific year
+    private func getVariableHolidaysForYear(_ year: Int) -> [Date] {
+        let calendar = Calendar.current
+        var holidays: [Date] = []
+        
         // 春分の日 (around March 20-21)
-        if month == 3 && day >= 20 && day <= 21 {
-            return true
+        if let date = calendar.date(from: DateComponents(year: year, month: 3, day: 20)) {
+            holidays.append(date)
         }
         
         // 秋分の日 (around September 22-23)
-        if month == 9 && day >= 22 && day <= 23 {
-            return true
+        if let date = calendar.date(from: DateComponents(year: year, month: 9, day: 22)) {
+            holidays.append(date)
         }
         
         // 海の日 (3rd Monday of July)
-        if month == 7 {
-            let firstMonday = calendar.date(from: DateComponents(year: year, month: 7, day: 1))!
+        if let firstMonday = calendar.date(from: DateComponents(year: year, month: 7, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
-            let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
-            if calendar.isDate(self, inSameDayAs: thirdMonday) {
-                return true
+            if let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday) {
+                holidays.append(thirdMonday)
             }
         }
         
         // 敬老の日 (3rd Monday of September)
-        if month == 9 {
-            let firstMonday = calendar.date(from: DateComponents(year: year, month: 9, day: 1))!
+        if let firstMonday = calendar.date(from: DateComponents(year: year, month: 9, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
-            let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
-            if calendar.isDate(self, inSameDayAs: thirdMonday) {
-                return true
+            if let thirdMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday) {
+                holidays.append(thirdMonday)
             }
         }
         
         // スポーツの日 (2nd Monday of October)
-        if month == 10 {
-            let firstMonday = calendar.date(from: DateComponents(year: year, month: 10, day: 1))!
+        if let firstMonday = calendar.date(from: DateComponents(year: year, month: 10, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 7 : (9 - weekday) % 7
-            let secondMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday)!
-            if calendar.isDate(self, inSameDayAs: secondMonday) {
-                return true
+            if let secondMonday = calendar.date(byAdding: .day, value: daysToAdd, to: firstMonday) {
+                holidays.append(secondMonday)
             }
         }
         
-        return false
+        return holidays
+    }
+    
+    // MARK: - Substitute Holiday Calculation
+    // Calculate substitute holidays for a specific year
+    private func getSubstituteHolidaysForYear(_ year: Int) -> [Date] {
+        let calendar = Calendar.current
+        let holidays = getAllHolidaysForYear(year)
+        var substituteHolidays: [Date] = []
+        
+        // Check if any holiday falls on Sunday
+        for holiday in holidays {
+            if calendar.component(.weekday, from: holiday) == 1 { // Sunday
+                // Calculate substitute holiday (next Monday)
+                if let substituteHoliday = calendar.date(byAdding: .day, value: 1, to: holiday) {
+                    substituteHolidays.append(substituteHoliday)
+                }
+            }
+        }
+        
+        return substituteHolidays
+    }
+    
+    // MARK: - National Holiday Calculation
+    // Calculate national holidays for a specific year
+    private func getNationalHolidaysForYear(_ year: Int) -> [Date] {
+        let calendar = Calendar.current
+        let holidays = getAllHolidaysForYear(year)
+        var nationalHolidays: [Date] = []
+        
+        // Check if this date is between two holidays
+        for i in 0..<holidays.count - 1 {
+            let currentHoliday = holidays[i]
+            let nextHoliday = holidays[i + 1]
+            
+            // Check if there's exactly one day between holidays
+            if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday),
+               calendar.isDate(dayBetween, inSameDayAs: nextHoliday) {
+                // There's no day between, so check next pair
+                continue
+            }
+            
+            // Check if there's a day between two holidays
+            if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday) {
+                nationalHolidays.append(dayBetween)
+            }
+        }
+        
+        return nationalHolidays
     }
 }
 

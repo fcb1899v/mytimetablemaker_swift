@@ -144,31 +144,37 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("   Current selectedGoorback: \(selectedGoorback)")
         print("   Current selectedLineNumber: \(selectedLineNumber)")
         
-        // Update selectedGoorback without clearing any data
-        if selectedGoorback != newGoorback {
-            selectedGoorback = newGoorback
+        // Early return if same value to avoid unnecessary processing
+        if selectedGoorback == newGoorback {
+            return
         }
         
         // Set flag to indicate route is changing
         isGoorBackChanging = true
         
-        // Hide all suggestions during direction change (same as line number change)
-        showDepartureSuggestions = false
-        showArrivalSuggestions = false
-        showLineSuggestions = false
-        isDepartureFieldFocused = false
-        isArrivalFieldFocused = false
-        lineSuggestions = []
-        
+        // Update selectedGoorback and process changes
         selectedGoorback = newGoorback
-        updateAvailableLineNumbers()
+        
+        // Update available line numbers based on new direction
+        // Preserve current line number when switching directions
+        updateAvailableLineNumbers(shouldPreserveLineNumber: true)
+        
+        // Load settings for the selected line after line numbers are updated
         loadSettingsForSelectedLine()
         
-        // Check if saved line exists in loaded data and restore it (same as initialization)
+        // Check if saved line exists in loaded data and restore it asynchronously
         Task {
             await checkSavedLineInData()
+
+            // Hide all suggestions during direction change to prevent UI conflicts
+            showDepartureSuggestions = false
+            showArrivalSuggestions = false
+            showLineSuggestions = false
+            isDepartureFieldFocused = false
+            isArrivalFieldFocused = false
+            lineSuggestions = []
         }
-        
+
         // Reset flag after processing
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.isGoorBackChanging = false
@@ -754,15 +760,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     // Update transportation kind to match found line
                     selectedTransportationKind = foundLine.kind
                     
-                    // Ensure station information is properly restored
-                    // Re-load station settings to ensure they are correctly restored
-                    loadStationSettings()
-                    
-                    // Update station selection flags based on current station data
-                    departureStationSelected = selectedDepartureStation != nil
-                    arrivalStationSelected = selectedArrivalStation != nil
-                    lineSelected = selectedLine != nil
-                    
                     print("✅ Restored saved line: \(foundLine.name) (\(foundLine.kind.rawValue))")
                 }
             } else {
@@ -773,11 +770,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     lineStations = []
                     showStationSelection = false
                     
-                    // Reset station selection flags when line is not found
-                    lineSelected = false
-                    departureStationSelected = false
-                    arrivalStationSelected = false
-                    
                     // Set lineSelected flag to false when line is not found
                     let lineSelectedKey = selectedGoorback.lineSelectedKey(selectedLineNumber - 1)
                     UserDefaults.standard.set(false, forKey: lineSelectedKey)
@@ -785,45 +777,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     print("⚠️ Saved line '\(lineInput)' not found in current data - keeping user input")
                 }
             }
-        } else {
-            // Even if lineInput is empty, ensure station information is restored
-            await MainActor.run {
-                // Re-load station settings to ensure they are correctly restored
-                loadStationSettings()
-                
-                // Update station selection flags based on current station data
-                departureStationSelected = selectedDepartureStation != nil
-                arrivalStationSelected = selectedArrivalStation != nil
-                lineSelected = selectedLine != nil
-                
-                print("✅ Restored station information for empty line input")
-            }
         }
         
-        // Always ensure station information is properly restored after all processing
+        // Always load station settings regardless of line status
+        // Station information is independent of line information
         await MainActor.run {
-            print("🔄 Final station restoration check")
-            print("   departureStationInput: '\(departureStationInput)'")
-            print("   arrivalStationInput: '\(arrivalStationInput)'")
-            print("   selectedDepartureStation: \(selectedDepartureStation?.getLocalizedName() ?? "nil")")
-            print("   selectedArrivalStation: \(selectedArrivalStation?.getLocalizedName() ?? "nil")")
-            
-            // If station inputs exist but station objects are nil, try to restore them
-            if !departureStationInput.isEmpty && selectedDepartureStation == nil {
-                print("   Attempting to restore departure station: \(departureStationInput)")
-                selectedDepartureStation = findStationByName(departureStationInput)
-                departureStationSelected = selectedDepartureStation != nil
-            }
-            
-            if !arrivalStationInput.isEmpty && selectedArrivalStation == nil {
-                print("   Attempting to restore arrival station: \(arrivalStationInput)")
-                selectedArrivalStation = findStationByName(arrivalStationInput)
-                arrivalStationSelected = selectedArrivalStation != nil
-            }
-            
-            print("   Final departureStation: \(selectedDepartureStation?.getLocalizedName() ?? "nil")")
-            print("   Final arrivalStation: \(selectedArrivalStation?.getLocalizedName() ?? "nil")")
+            loadStationSettings()
+            print("✅ Loaded station settings independently of line status")
         }
+        
+        // Station information is now loaded directly from UserDefaults
+        // No need for complex station object restoration
+        print("✅ Station information loaded from UserDefaults")
     }
     
     // Helper method to find saved line in current data
@@ -1125,48 +1090,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         print("   Departure key: \(departureKey)")
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            print("   Found saved departure: '\(savedDeparture)'")
             self.departureStationInput = savedDeparture
-            self.selectedDepartureStation = findStationByName(savedDeparture)
-            self.departureStationSelected = self.selectedDepartureStation != nil
-            print(self.selectedDepartureStation != nil ?
-                  "✅ Restored departure station: \(savedDeparture)" :
-                    "⚠️ Departure station '\(savedDeparture)' not found in current data")
+            print("✅ Restored departure station: \(savedDeparture)")
         } else {
-            print("   No saved departure found")
             self.departureStationInput = ""
-            self.selectedDepartureStation = nil
-            self.departureStationSelected = false
+            print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         print("   Arrival key: \(arrivalKey)")
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            print("   Found saved arrival: '\(savedArrival)'")
             self.arrivalStationInput = savedArrival
-            self.selectedArrivalStation = findStationByName(savedArrival)
-            self.arrivalStationSelected = self.selectedArrivalStation != nil
-            print(self.selectedArrivalStation != nil ?
-                  "✅ Restored arrival station: \(savedArrival)" :
-                    "⚠️ Arrival station '\(savedArrival)' not found in current data")
+            print("✅ Restored arrival station: \(savedArrival)")
         } else {
-            print("   No saved arrival found")
             self.arrivalStationInput = ""
-            self.selectedArrivalStation = nil
-            self.arrivalStationSelected = false
-        }
-        
-        // Ensure station objects are created even if not found in data
-        if !self.departureStationInput.isEmpty && self.selectedDepartureStation == nil {
-            print("   Creating departure station object for: \(self.departureStationInput)")
-            self.selectedDepartureStation = findStationByName(self.departureStationInput)
-            self.departureStationSelected = self.selectedDepartureStation != nil
-        }
-        
-        if !self.arrivalStationInput.isEmpty && self.selectedArrivalStation == nil {
-            print("   Creating arrival station object for: \(self.arrivalStationInput)")
-            self.selectedArrivalStation = findStationByName(self.arrivalStationInput)
-            self.arrivalStationSelected = self.selectedArrivalStation != nil
+            print("   No saved arrival found")
         }
     }
     
@@ -1214,6 +1152,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Line Selection Management
     // Update available line numbers based on changeLine setting
     func updateAvailableLineNumbers() {
+        updateAvailableLineNumbers(shouldPreserveLineNumber: false)
+    }
+    
+    // Update available line numbers with option to preserve current line number
+    private func updateAvailableLineNumbers(shouldPreserveLineNumber: Bool) {
         let changeLineValue = UserDefaults.standard.integer(forKey: selectedGoorback.changeLineKey)
         
         availableLineNumbers = Array(1...min(changeLineValue + 1, 3))
@@ -1224,7 +1167,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             UserDefaults.standard.set("none", forKey: transportationKey)
         }
         
-        if selectedLineNumber == 1 && lineIndex > 0 {
+        // Only change selectedLineNumber if not preserving it (e.g., during initialization or notification)
+        if !shouldPreserveLineNumber && selectedLineNumber == 1 && lineIndex > 0 {
             selectedLineNumber = min(lineIndex + 1, availableLineNumbers.last ?? 1)
         }
     }
@@ -1277,31 +1221,19 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             self.departureStationInput = savedDeparture
-            self.selectedDepartureStation = findStationByName(savedDeparture)
-            self.departureStationSelected = self.selectedDepartureStation != nil
-            if self.selectedDepartureStation != nil {
-                print("✅ Restored departure station: \(savedDeparture)")
-            } else {
-                print("⚠️ Departure station '\(savedDeparture)' not found in current data")
-            }
+            print("✅ Restored departure station: \(savedDeparture)")
         } else {
             self.departureStationInput = ""
-            self.selectedDepartureStation = nil
-            self.departureStationSelected = false
+            print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             self.arrivalStationInput = savedArrival
-            self.selectedArrivalStation = findStationByName(savedArrival)
-            self.arrivalStationSelected = self.selectedArrivalStation != nil
-            print(self.selectedArrivalStation != nil ?
-                  "✅ Restored arrival station: \(savedArrival)" :
-                    "⚠️ Arrival station '\(savedArrival)' not found in current data")
+            print("✅ Restored arrival station: \(savedArrival)")
         } else {
             self.arrivalStationInput = ""
-            self.selectedArrivalStation = nil
-            self.arrivalStationSelected = false
+            print("   No saved arrival found")
         }
         
         let rideTimeKey = selectedGoorback.rideTimeKey(currentLineIndex)
