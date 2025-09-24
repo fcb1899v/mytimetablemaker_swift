@@ -2,7 +2,7 @@
 //  FirestoreViewModel.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by Masao Nakajima on 2021/03/16.
+//  Created by Nakajima Masao on 2021/03/16.
 //
 
 import Foundation
@@ -175,10 +175,10 @@ class MyFirestore: ObservableObject {
                     UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
                     UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
                     UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
-                    UserDefaults.standard.set(data["transfertime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))
+                    UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))
                 }
                 UserDefaults.standard.set(data["transportatione"], forKey: goorback.transportationKey(0))
-                UserDefaults.standard.set(data["transfertimee"], forKey: goorback.transferTimeKey(0))
+                UserDefaults.standard.set(data["transittimee"], forKey: goorback.transferTimeKey(0))
                 if (goorback == "go2") {
                     title = "Data got successfully".localized
                     message = ""

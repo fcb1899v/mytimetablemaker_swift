@@ -2,7 +2,8 @@
 //  SettingsLineSheet.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2025/08/12.
+//  Created by Nakajima Masao on 2025/08/12.
+//
 //  Sheet view for configuring railway lines and bus routes in settings
 //  Provides functionality to search, select, and configure transportation lines
 //  including predefined railway data from ODPT API and custom line configurations.

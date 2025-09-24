@@ -2,7 +2,7 @@
 //  mytimetablemaker_swiftuiTests.swift
 //  mytimetablemaker_swiftuiTests
 //
-//  Created by Masao Nakajima on 2021/04/06.
+//  Created by Nakajima Masao on 2021/04/06.
 //
 
 import XCTest

@@ -2,7 +2,7 @@
 //  LoginContentView.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by Masao Nakajima on 2021/03/09.
+//  Created by Nakajima Masao on 2021/03/09.
 //
 import Foundation
 import SwiftUI
@@ -34,18 +34,22 @@ struct LoginContentView: View {
     var body: some View {
         ZStack(alignment: .top) {
             // MARK: - Background and Ad Banner
-            VStack {
+            VStack(spacing: 0) {
                 Spacer()
                 Image("splash")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding(0)
-                    .frame(width: screen.bounds.size.width)
+                    .frame(width: screen.screenWidth)
                 // AdMob banner at bottom
-                AdMobBannerView()
-                    .frame(minWidth: screen.admobBannerMinWidth)
-                    .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
-                    .background(.white)
+                ZStack {
+                    Color.primary
+                        .frame(width: screen.screenWidth)
+                    AdMobBannerView()
+                        .frame(minWidth: screen.admobBannerMinWidth)
+                        .frame(width: screen.admobBannerWidth)
+                }
+                .frame(height: screen.admobBannerHeight)
             }
             .background(Color.accent)
             
@@ -58,32 +62,28 @@ struct LoginContentView: View {
                     .foregroundColor(.primary)
                     .padding(.top, screen.loginTitleTopMargin)
                     .padding(.bottom, screen.loginTitleBottomMargin)
-                
+
                 // Email text field
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.white)
-                        .cornerRadius(screen.loginTextCornerRadius)
-                        .frame(height: screen.loginTextHeight)
-                    TextField("Email".localized, text: $myLogin.email)
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .padding()
-                        .onChange(of: myLogin.email) { _ in myLogin.loginCheck() }
-                }.frame(width: screen.loginButtonWidth)
+                TextField("Email".localized, text: $myLogin.email)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .padding()
+                    .frame(height: screen.loginTextHeight)
+                    .background(CustomBackground(backgroundColor: .white))
+                    .overlay(CustomBorder())
+                    .onChange(of: myLogin.email) { _ in myLogin.loginCheck() }
+                    .frame(width: screen.loginButtonWidth)
                 
                 // Password text field
-                ZStack {
-                    Rectangle()
-                        .foregroundColor(.white)
-                        .cornerRadius(screen.loginTextCornerRadius)
-                        .frame(height: screen.loginTextHeight)
-                    SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .padding()
-                        .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
-                }.frame(width: screen.loginButtonWidth).padding(.bottom, 6)
+                SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
+                    .font(.subheadline)
+                    .lineLimit(1)
+                    .padding()
+                    .frame(height: screen.loginTextHeight)
+                    .background(CustomBackground(backgroundColor: .white))
+                    .overlay(CustomBorder())
+                    .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
+                    .frame(width: screen.loginButtonWidth)
                 
                 // MARK: - Login Button
                 CustomButton(
@@ -93,7 +93,6 @@ struct LoginContentView: View {
                     action: myLogin.login
                 )
                 .frame(width: screen.loginButtonWidth)
-                .padding(.bottom, 6)
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                     Button("OK".localized, role: .none){
                         myLogin.isShowMessage = false
@@ -108,11 +107,10 @@ struct LoginContentView: View {
                 // MARK: - Sign Up Button
                 CustomButton(
                     title: "Signup".localized,
-                    backgroundColor: .white,
+                    backgroundColor: Color.primary,
                     action: { isShowSignUp = true }
                 )
                 .frame(width: screen.loginButtonWidth)
-                .padding(.bottom, 6)
                 .sheet(isPresented: $isShowSignUp) {
                     SignUpContentView(myLogin)
                 }

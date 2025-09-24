@@ -2,7 +2,7 @@
 //  TimetableContentView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2021/03/02.
+//  Created by Nakajima Masao on 2021/03/02.
 //
 
 import SwiftUI
@@ -90,7 +90,7 @@ struct TimetableContentView: View {
     
                         Color.white.frame(width: screen.customWidth, height: 1)
                         
-                        ForEach(4...24, id: \.self) { hour in
+                        ForEach(4...25, id: \.self) { hour in
                             TimetableGridView(goorback, $weekflag, num, hour)
                             Color.white.frame(width: screen.customWidth, height: 1)
                         }

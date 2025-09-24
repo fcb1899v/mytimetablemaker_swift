@@ -54,7 +54,7 @@ struct CustomToggle: View {
     }
     
     var body: some View {
-        HStack(spacing: screen.transportationToggleSpacing) {
+        HStack(spacing: screen.customToggleSpacing) {
             // Left label
             Text(leftText)
                 .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
@@ -64,16 +64,16 @@ struct CustomToggle: View {
             // Toggle switch
             ZStack {
                 // Background
-                RoundedRectangle(cornerRadius: screen.transportationToggleCornerRadius)
+                RoundedRectangle(cornerRadius: screen.customToggleCornerRadius)
                     .fill(isLeftSelected ? leftColor : rightColor)
-                    .frame(width: screen.transportationToggleWidth, height: screen.transportationToggleHeight)
+                    .frame(width: screen.customToggleWidth, height: screen.customToggleHeight)
                     .animation(.easeInOut(duration: 0.1), value: isLeftSelected)
                 
                 // Toggle circle
                 Circle()
                     .fill(circleColor)
-                    .frame(width: screen.transportationToggleCircleSize, height: screen.transportationToggleCircleSize)
-                    .offset(x: isLeftSelected ? -screen.transportationToggleCircleOffset : screen.transportationToggleCircleOffset)
+                    .frame(width: screen.customToggleCircleSize, height: screen.customToggleCircleSize)
+                    .offset(x: isLeftSelected ? -screen.customToggleCircleOffset : screen.customToggleCircleOffset)
                     .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
             }
             .onTapGesture {
@@ -86,7 +86,7 @@ struct CustomToggle: View {
                 .foregroundColor(isLeftSelected ? offColor : rightColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
         }
-        .padding(.horizontal, screen.transportationTogglePaddingHorizontal)
+        .padding(.horizontal, screen.customTogglePaddingHorizontal)
     }
 }
 

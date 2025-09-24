@@ -2,7 +2,7 @@
 //  SettingsLineViewModel.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2025/08/12.
+//  Created by Nakajima  on 2025/08/12.
 //
 //  ViewModel for SettingsLineSheet view that manages railway line configuration.
 //  Handles data loading from ODPT API and local JSON files, search functionality,
@@ -1650,7 +1650,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         for lineIndex in 0..<3 {
             for isWeekday in [true, false] {
                 // Clear all hours (4-24) for each line and day type
-                for hour in 4...24 {
+                for hour in 4...25 {
                     let timetableKey = selectedGoorback.timetableKey(isWeekday, lineIndex, hour)
                     let rideTimeKey = selectedGoorback.rideTimeKeyForHour(isWeekday, lineIndex, hour)
                     let trainTypeKey = selectedGoorback.trainTypeKey(isWeekday, lineIndex, hour)
@@ -1699,7 +1699,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("🧹 Clearing timetable data for \(isWeekday ? "weekdays" : "weekends")")
         
         // Clear all hours (4-24) for the specified day type and line
-        for hour in 4...24 {
+        for hour in 4...25 {
             let timetableKey = selectedGoorback.timetableKey(isWeekday, selectedLineNumber - 1, hour)
             let rideTimeKey = selectedGoorback.rideTimeKeyForHour(isWeekday, selectedLineNumber - 1, hour)
             let trainTypeKey = selectedGoorback.trainTypeKey(isWeekday, selectedLineNumber - 1, hour)

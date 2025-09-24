@@ -2,7 +2,7 @@
 //  TransportationModels.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/08/26.
+//  Created by Nakajima Masao on 2025/08/26.
 //
 
 import Foundation

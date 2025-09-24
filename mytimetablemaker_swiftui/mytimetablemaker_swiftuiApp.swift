@@ -2,7 +2,7 @@
 //  mytimetablemaker_swiftuiApp.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2021/04/06.
+//  Created by Nakajima Masao on 2021/04/06.
 //
 
 import UIKit

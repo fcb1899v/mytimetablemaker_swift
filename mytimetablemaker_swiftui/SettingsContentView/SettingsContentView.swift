@@ -2,7 +2,7 @@
 //  SettingsContentView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2021/02/11.
+//  Created by Nakajima Masao on 2021/02/11.
 //
 
 import SwiftUI

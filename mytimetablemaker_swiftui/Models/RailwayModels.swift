@@ -2,7 +2,7 @@
 //  RailwayModels.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/08/24.
+//  Created by Nakajima Masao on 2025/08/24.
 //
 //  MARK: - Overview
 //  Core data models for railway lines, stations, and related structures.

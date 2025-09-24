@@ -1,7 +1,7 @@
 //
 //  MainContentView.swift
 //  mytimetablemaker_swiftui
-//  Created by Masao Nakajima on 2020/12/25.
+//  Created by Nakajima Masao on 2020/12/25.
 //
 
 import SwiftUI
@@ -49,12 +49,14 @@ struct SplashContentView: View {
                     Spacer()
                     Spacer()
                 }
-                VStack {
+                VStack(spacing: 0) {
                     Spacer()
                     Image("splash")
                         .resizable()
                         .scaledToFit()
                         .frame(width: screen.screenWidth)
+                    Color.primary
+                        .frame(width: screen.screenWidth, height: screen.admobBannerHeight)
                 }
             }
             .frame(width: screen.screenWidth, height: screen.screenHeight)

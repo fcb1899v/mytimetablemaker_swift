@@ -2,7 +2,7 @@
 //  Color.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2021/05/02.
+//  Created by Nakajima Masao on 2021/05/02.
 //
 
 import Foundation

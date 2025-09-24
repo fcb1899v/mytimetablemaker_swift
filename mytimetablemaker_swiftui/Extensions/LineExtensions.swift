@@ -2,7 +2,7 @@
 //  LineData.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2020/12/27.
+//  Created by Nakajima Masao on 2020/12/27.
 //
 
 import SwiftUI

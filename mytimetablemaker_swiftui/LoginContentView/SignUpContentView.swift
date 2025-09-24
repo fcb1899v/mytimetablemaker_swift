@@ -2,7 +2,7 @@
 //  signUpView.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by Masao Nakajima on 2021/03/12.
+//  Created by Nakajima Masao on 2021/03/12.
 //
 
 import SwiftUI
@@ -34,43 +34,37 @@ struct SignUpContentView: View {
                 .padding(.bottom, screen.loginTitleBottomMargin)
             
             // MARK: - Email Input Field
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.white)
-                    .cornerRadius(screen.loginTextCornerRadius)
-                    .frame(height: screen.loginTextHeight)
-                TextField("Email".localized, text: $myLogin.email)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .padding()
-                    .onChange(of: myLogin.email) { _ in myLogin.signUpCheck() }
-            }.frame(width: screen.loginButtonWidth)
+            TextField("Email".localized, text: $myLogin.email)
+                .font(.subheadline)
+                .lineLimit(1)
+                .padding()
+                .frame(height: screen.loginTextHeight)
+                .background(CustomBackground(backgroundColor: .white))
+                .overlay(CustomBorder())
+                .onChange(of: myLogin.email) { _ in myLogin.signUpCheck() }
+                .frame(width: screen.loginButtonWidth)
             
             // MARK: - Password Input Field
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.white)
-                    .cornerRadius(screen.loginTextCornerRadius)
-                    .frame(height: screen.loginTextHeight)
-                SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .padding()
-                    .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
-            }.frame(width: screen.loginButtonWidth)
+            SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
+                .font(.subheadline)
+                .lineLimit(1)
+                .padding()
+                .frame(height: screen.loginTextHeight)
+                .background(CustomBackground(backgroundColor: .white))
+                .overlay(CustomBorder())
+                .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
+                .frame(width: screen.loginButtonWidth)
             
             // MARK: - Confirm Password Input Field
-            ZStack {
-                Rectangle()
-                    .foregroundColor(.white)
-                    .cornerRadius(screen.loginTextCornerRadius)
-                    .frame(height: screen.loginTextHeight)
-                SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .padding()
-                    .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
-            }.frame(width: screen.loginButtonWidth).padding(.bottom, 6)
+            SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
+                .font(.subheadline)
+                .lineLimit(1)
+                .padding()
+                .frame(height: screen.loginTextHeight)
+                .background(CustomBackground(backgroundColor: .white))
+                .overlay(CustomBorder())
+                .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
+                .frame(width: screen.loginButtonWidth)
             
             // MARK: - Sign Up Button
             CustomButton(
@@ -80,7 +74,6 @@ struct SignUpContentView: View {
                 action: myLogin.signUp
             )
             .frame(width: screen.loginButtonWidth)
-            .padding(.bottom, 6)
             .overlay(
                 Group {
                     if myLogin.isLoading {
@@ -100,12 +93,11 @@ struct SignUpContentView: View {
             }
             
             // MARK: - Terms and Conditions Agreement
-            HStack {
+            HStack(spacing: screen.settingsSheetHorizontalSpacing) {
                 // Checkbox for terms agreement
                 Button(action: myLogin.toggle) {
                     Image(systemName: myLogin.isTermsAgree ? "checkmark.square.fill": "square")
                         .foregroundColor(myLogin.isTermsAgree ? .primary: .white)
-                        .padding(10)
                 }
                 // Terms and privacy policy link
                 Button(action: {
@@ -122,7 +114,7 @@ struct SignUpContentView: View {
                     .foregroundColor(.white)
                 }
             }
-            .frame(width: screen.loginButtonWidth, height: 40 ,alignment: .top)
+            .frame(width: screen.loginButtonWidth, alignment: .top)
 
             Spacer()
 

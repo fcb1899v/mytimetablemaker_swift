@@ -2,7 +2,7 @@
 //  AccountExtensions.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/09/03.
+//  Created by Nakajima Masao on 2025/09/03.
 //
 
 import Foundation

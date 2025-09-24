@@ -2,7 +2,7 @@
 //  lineTimeButton.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2023/10/01.
+//  Created by Nakajima Masao on 2023/10/01.
 //
 
 import SwiftUI

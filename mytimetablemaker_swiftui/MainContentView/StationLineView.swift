@@ -2,7 +2,7 @@
 //  StationLineView.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/08/16.
+//  Created by Nakajima Masao on 2025/08/16.
 //
 
 import SwiftUI

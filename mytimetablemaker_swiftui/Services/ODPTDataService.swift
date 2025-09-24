@@ -2,7 +2,7 @@
 //  ODPTDataService.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/08/24.
+//  Created by Nakajima Masao on 2025/08/24.
 //
 //  MARK: - Overview
 //  Service for managing ODPT API communication and data parsing.

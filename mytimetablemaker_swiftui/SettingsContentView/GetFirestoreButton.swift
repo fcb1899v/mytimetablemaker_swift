@@ -2,7 +2,7 @@
 //  GetFirestoreButton.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2023/10/09.
+//  Created by Nakajima Masao on 2023/10/09.
 //
 
 import SwiftUI

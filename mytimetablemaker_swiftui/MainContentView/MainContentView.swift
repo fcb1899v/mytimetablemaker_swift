@@ -1,7 +1,7 @@
 //
 //  MainContentView.swift
 //  mytimetablemaker_swiftui
-//  Created by Masao Nakajima on 2020/12/25.
+//  Created by Nakajima Masao on 2020/12/25.
 //
 
 import SwiftUI
@@ -50,7 +50,7 @@ struct MainContentView: View {
     var body: some View {
         NavigationStack {
             // MARK: - Main View Layout
-            VStack {
+            VStack(spacing: 0) {
                 // MARK: - Header Section
                 VStack(alignment: .center, spacing: screen.headerSpace) {
 
@@ -153,60 +153,61 @@ struct MainContentView: View {
                 .frame(height: screen.headerHeight)
                 
                 // MARK: - Transfer Information Display
-                VStack(alignment: .center) {
-                    HStack(alignment: .top) {
-                        if(screen.bounds.size.width > 600) { Spacer() }
+                HStack(alignment: .top) {
+                    if(screen.screenWidth > 600) { Spacer() }
+                    VStack(alignment: .center, spacing: screen.routeBottomSpace) {
+                        Spacer().frame(height: screen.routeCountdownTopSpace)
+                        Text(myTransfer.countdownTime1)
+                            .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
+                            .foregroundColor(myTransfer.countdownColor1)
+                            .padding(.vertical, screen.routeCountdownPadding)
+                        HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
+                        ForEach(0...myTransfer.changeLine1, id: \.self) { num in
+                            TransferView(myTransfer.goOrBack1, num + 1)
+                            StationLineView(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
+                        }
+                        TransferView(myTransfer.goOrBack1, 0)
+                        HomeOfficeView(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
+                        Spacer()
+                    }
+                    .frame(width: myTransfer.routeWidth, alignment: .top)
+                    .padding(.horizontal, screen.routeSidePadding)
+                    
+                    // MARK: - Second Direction Display (if enabled)
+                    if (myTransfer.isShowRoute2) {
+                        Divider()
+                            .frame(width: 1.5, height: .infinity)
+                            .background(Color.primary)
                         VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                             Spacer().frame(height: screen.routeCountdownTopSpace)
-                            Text(myTransfer.countdownTime1)
-                                .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
-                                .foregroundColor(myTransfer.countdownColor1)
+                            Text(myTransfer.countdownTime2)
+                                .font(.system(size: screen.routeCountdownFontSize))
+                                .foregroundColor(myTransfer.countdownColor2)
                                 .padding(.vertical, screen.routeCountdownPadding)
-                            HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
-                            ForEach(0...myTransfer.changeLine1, id: \.self) { num in
-                                TransferView(myTransfer.goOrBack1, num + 1)
-                                StationLineView(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
+                            HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
+                            ForEach(0...myTransfer.changeLine2, id: \.self) { num in
+                                TransferView(myTransfer.goOrBack2, num + 1)
+                                StationLineView(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
                             }
-                            TransferView(myTransfer.goOrBack1, 0)
-                            HomeOfficeView(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
+                            TransferView(myTransfer.goOrBack2, 0)
+                            HomeOfficeView(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
                             Spacer()
                         }
-                        .frame(width: myTransfer.routeWidth, alignment: .top)
+                        .frame(width: myTransfer.routeWidth)
                         .padding(.horizontal, screen.routeSidePadding)
-                        
-                        // MARK: - Second Direction Display (if enabled)
-                        if (myTransfer.isShowRoute2) {
-                            if(screen.bounds.size.width > 600) { Spacer() }
-                            Divider()
-                                .frame(width: 1.5, height: screen.bounds.size.height - screen.admobBannerHeight - screen.headerHeight)
-                                .background(Color.primary)
-                            if(screen.bounds.size.width > 600) { Spacer() }
-                            VStack(alignment: .center, spacing: screen.routeBottomSpace) {
-                                Spacer().frame(height: screen.routeCountdownTopSpace)
-                                Text(myTransfer.countdownTime2)
-                                    .font(.system(size: screen.routeCountdownFontSize))
-                                    .foregroundColor(myTransfer.countdownColor2)
-                                    .padding(.vertical, screen.routeCountdownPadding)
-                                HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
-                                ForEach(0...myTransfer.changeLine2, id: \.self) { num in
-                                    TransferView(myTransfer.goOrBack2, num + 1)
-                                    StationLineView(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
-                                }
-                                TransferView(myTransfer.goOrBack2, 0)
-                                HomeOfficeView(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
-                                Spacer()
-                            }
-                            .frame(width: myTransfer.routeWidth)
-                            .padding(.horizontal, screen.routeSidePadding)
-                        }
-                        if(screen.bounds.size.width > 600) { Spacer() }
                     }
+                    if(screen.screenWidth > 600) { Spacer() }
+                }
                     
-                    // MARK: - Ad Banner
+                // MARK: - Ad Banner
+                ZStack {
+                    Color.primary
+                        .frame(width: screen.screenWidth, height: screen.admobBannerHeight)
+
                     AdMobBannerView()
                         .frame(minWidth: screen.admobBannerMinWidth)
                         .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
-                        .background(.white)
+                        .background(Color.primary)
                 }
             }
             .background(.white)

@@ -84,7 +84,6 @@
 		02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0262C261C94E600655E54 /* LoginContentView.swift */; };
 		02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* SignUpContentView.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
-		02F026E2261DEC7100655E54 /* OperationButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026E1261DEC7100655E54 /* OperationButton.swift */; };
 		02F026F1261DED0400655E54 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* TransferView.swift */; };
 		E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */; };
 /* End PBXBuildFile section */
@@ -172,7 +171,6 @@
 		02F0262C261C94E600655E54 /* LoginContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginContentView.swift; sourceTree = "<group>"; };
 		02F0263F261C95E400655E54 /* SignUpContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpContentView.swift; sourceTree = "<group>"; };
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
-		02F026E1261DEC7100655E54 /* OperationButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationButton.swift; sourceTree = "<group>"; };
 		02F026F0261DED0400655E54 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
 		02F026F1261DED0500655E54 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Debug.xcconfig; sourceTree = "<group>"; };
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
@@ -359,7 +357,6 @@
 				02F025EC261BE5A500655E54 /* MyTransfer.swift */,
 				02F026C8261D38F900655E54 /* MainContentView.swift */,
 				027F24292ACEB7B500852C89 /* SplashContentView.swift */,
-				02F026E1261DEC7100655E54 /* OperationButton.swift */,
 				027F23FC2AC9852800852C89 /* LineTimeImage.swift */,
 				02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */,
 				02D9765D2E50AC68003C3766 /* StationLineView.swift */,
@@ -583,7 +580,6 @@
 				026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
-				02F026E2261DEC7100655E54 /* OperationButton.swift in Sources */,
 				02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */,
 				02F026F1261DED0400655E54 /* TransferView.swift in Sources */,
 				0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */,

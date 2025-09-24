@@ -2,7 +2,7 @@
 //  SizeExtensions.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2021/05/03.
+//  Created by Nakajima Masao on 2021/05/03.
 //
 
 import Foundation
@@ -90,17 +90,15 @@ extension UIScreen {
 }
 
 // MARK: - Login Extensions
+// Login form layout and button styling
 extension UIScreen {
-    // Login form layout and button styling
-    var loginTitleFontSize: CGFloat { customWidth / 15 }
-    var loginTitleTopMargin: CGFloat { statusBarHeight + 20 + routeHeight / 10 }
-    var loginTitleBottomMargin: CGFloat { routeHeight / 40 }
+    var loginTitleFontSize: CGFloat { customWidth * 0.06 }
     var loginButtonWidth: CGFloat { customWidth * 0.8 }
-    var loginButtonHeight: CGFloat { 40.0 }
-    var loginButtonCornerRadius: CGFloat { 20.0 }
-    var loginTextHeight: CGFloat { 40.0 }
-    var loginTextCornerRadius: CGFloat { 5.0 }
-    var loginMargin: CGFloat { customWidth / 30 }
+
+    var loginTitleTopMargin: CGFloat { screenHeight * 0.12 }
+    var loginTitleBottomMargin: CGFloat { screenHeight * 0.02 }
+    var loginTextHeight: CGFloat { screenHeight * 0.045 }
+    var loginMargin: CGFloat { screenHeight * 0.03 }
 }
 
 // MARK: - Timetable Extensions
@@ -219,7 +217,6 @@ extension UIScreen {
 
 // MARK: - Settings Transfer Sheet Extensions
 extension UIScreen {
-    
     var settingsTransferSheetPickerSpacing: CGFloat { screenHeight * 0.009 }
     var settingsTransferSheetRoute2Spacing: CGFloat { screenHeight * -0.02 }
     var settingsTransferSheetCheckmarkSpacing: CGFloat { screenHeight * 0.009 }
@@ -235,13 +232,13 @@ extension UIScreen {
 // MARK: - Transportation Toggle Extensions
 extension UIScreen {
     // Transportation toggle component sizing and responsive layout
-    var transportationToggleSpacing: CGFloat { bounds.size.height * 0.013 }
-    var transportationToggleCornerRadius: CGFloat { bounds.size.height * 0.026 }
-    var transportationToggleWidth: CGFloat { bounds.size.height * 0.051 }
-    var transportationToggleHeight: CGFloat { bounds.size.height * 0.029 }
-    var transportationToggleCircleSize: CGFloat { bounds.size.height * 0.022 }
-    var transportationToggleCircleOffset: CGFloat { bounds.size.height * 0.011 }
-    var transportationTogglePaddingHorizontal: CGFloat { customWidth * 0.02 }
+    var customToggleSpacing: CGFloat { screenHeight * 0.013 }
+    var customToggleCornerRadius: CGFloat { screenHeight * 0.026 }
+    var customToggleWidth: CGFloat { screenHeight * 0.051 }
+    var customToggleHeight: CGFloat { screenHeight * 0.029 }
+    var customToggleCircleSize: CGFloat { screenHeight * 0.022 }
+    var customToggleCircleOffset: CGFloat { screenHeight * 0.011 }
+    var customTogglePaddingHorizontal: CGFloat { customWidth * 0.02 }
 }
 
 // MARK: - Bool Extension for Route Width

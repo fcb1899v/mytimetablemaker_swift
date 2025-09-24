@@ -2,7 +2,7 @@
 //  MainViewModel.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by Masao Nakajima on 2021/02/08.
+//  Created by Nakajima Masao on 2021/02/08.
 //
 
 import Foundation

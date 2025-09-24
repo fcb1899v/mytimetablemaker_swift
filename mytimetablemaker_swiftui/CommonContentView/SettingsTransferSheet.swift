@@ -2,7 +2,7 @@
 //  SettingsTransferSheet.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by Masao Nakajima on 2025/08/21.
+//  Created by Nakajima Masao on 2025/08/21.
 // 
 //  Sheet view for configuring transfer time and transportation methods in settings.
 //  Provides functionality to set transfer times and select transportation methods for line changes.

@@ -2,7 +2,7 @@
 //  NavigationBarModifier.swift
 //  mytimetablemakers_swiftui
 //
-//  Created by Masao Nakajima on 2021/03/04.
+//  Created by Nakajima Masao on 2021/03/04.
 //
 
 import SwiftUI
