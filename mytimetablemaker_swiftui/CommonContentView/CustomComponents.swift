@@ -332,4 +332,3 @@ struct CustomBorder: View {
             .stroke(borderColor, lineWidth: screen.settingsSheetStrokeLineWidth)
     }
 }
-

@@ -152,7 +152,7 @@
 
 //LoginContentView
 "Email" = "Eメールアドレス";
-"Password (8+ chars: alnum & !@#$&~)" = "パスワード(8字以上：半角英数字記号!@#$&~)";
+"Password (8+ chars: alnum !@#$&~)" = "パスワード (8字以上：半角英数字!@#$&~)";
 "Login" = "ログイン";
 "Signup" = "アカウント登録";
 "Forgot Password?" = "パスワードを忘れた場合";

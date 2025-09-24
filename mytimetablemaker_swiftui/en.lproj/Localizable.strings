@@ -148,7 +148,7 @@
 
 //LoginContentView
 "Email" = "Email";
-"Password (8+ chars: alnum & !@#$&~)" = "Password (8+ chars: alnum & !@#$&~)";
+"Password (8+ chars: alnum !@#$&~)" = "Password (8+ chars: alnum !@#$&~)";
 "Login" = "Login";
 "Signup" = "Sign up";
 "Forgot Password?" = "Forgot Password?";

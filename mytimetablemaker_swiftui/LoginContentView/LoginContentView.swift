@@ -20,6 +20,10 @@ struct LoginContentView: View {
     @State private var isShowSignUp = false
     @State private var isShowReset = false
     @State private var isShowSplash = true
+    @State private var isPasswordVisible = false
+    @State private var isNavigateToMain = false
+    @State private var isNavigateToSettings = false
+    @State private var isShowLoginResultAlert = false
 
     init(
         _ myTransfer: MyTransfer,
@@ -32,7 +36,8 @@ struct LoginContentView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
+        NavigationStack {
+            ZStack(alignment: .top) {
             // MARK: - Background and Ad Banner
             VStack(spacing: 0) {
                 Spacer()
@@ -65,7 +70,7 @@ struct LoginContentView: View {
 
                 // Email text field
                 TextField("Email".localized, text: $myLogin.email)
-                    .font(.subheadline)
+                    .font(.system(size: screen.loginTextFieldFontSize))
                     .lineLimit(1)
                     .padding()
                     .frame(height: screen.loginTextHeight)
@@ -75,15 +80,31 @@ struct LoginContentView: View {
                     .frame(width: screen.loginButtonWidth)
                 
                 // Password text field
-                SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .padding()
-                    .frame(height: screen.loginTextHeight)
-                    .background(CustomBackground(backgroundColor: .white))
-                    .overlay(CustomBorder())
-                    .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
-                    .frame(width: screen.loginButtonWidth)
+                HStack {
+                    if isPasswordVisible {
+                        TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                            .font(.system(size: screen.loginTextFieldFontSize))
+                            .lineLimit(1)
+                    } else {
+                        SecureField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                            .font(.system(size: screen.loginTextFieldFontSize))
+                            .lineLimit(1)
+                    }
+                    
+                    Button(action: {
+                        isPasswordVisible.toggle()
+                    }) {
+                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                            .font(.system(size: screen.loginEyeIconSize))
+                            .foregroundColor(.gray)
+                    }
+                }
+                .padding()
+                .frame(height: screen.loginTextHeight)
+                .background(CustomBackground(backgroundColor: .white))
+                .overlay(CustomBorder())
+                .onChange(of: myLogin.password)  { _ in myLogin.loginCheck() }
+                .frame(width: screen.loginButtonWidth)
                 
                 // MARK: - Login Button
                 CustomButton(
@@ -93,16 +114,19 @@ struct LoginContentView: View {
                     action: myLogin.login
                 )
                 .frame(width: screen.loginButtonWidth)
-                .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
+                .alert(myLogin.alertTitle, isPresented: $isShowLoginResultAlert) {
                     Button("OK".localized, role: .none){
-                        myLogin.isShowMessage = false
+                        isShowLoginResultAlert = false
                         if myLogin.isLoginSuccess {
-                            presentationMode.wrappedValue.dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                isNavigateToSettings = true
+                            }
                         }
                     }
                 } message: {
                     Text(myLogin.alertMessage)
                 }
+                .tint(.primary)
                 
                 // MARK: - Sign Up Button
                 CustomButton(
@@ -138,6 +162,8 @@ struct LoginContentView: View {
                 } message: {
                     Text("Reset your password?".localized)
                 }
+                .tint(.primary)
+                
                 // Message alert
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                     Button("OK".localized, role: .none){
@@ -146,7 +172,7 @@ struct LoginContentView: View {
                 } message: {
                     Text(myLogin.alertMessage)
                 }
-                Spacer()
+                .tint(.primary)
                 Spacer()
             }
             
@@ -162,9 +188,46 @@ struct LoginContentView: View {
                         .cornerRadius(10)
                 }
             }
+            }
+            .navigationBarBackButtonHidden(true)
+            .edgesIgnoringSafeArea(.all)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading){
+                    // Back button
+                    Button(action: {
+                        isNavigateToMain = true
+                    }) {
+                         HStack {
+                            Image(systemName: "arrowshape.backward.fill")
+                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+                                .foregroundColor(.primary)
+                            Text("Back to homepage".localized)
+                                .font(.system(size: screen.settingsFontSize, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+            }
+            .onAppear {
+                // Clear text fields when login screen appears
+                myLogin.email = ""
+                myLogin.password = ""
+                myLogin.loginCheck()
+            }
+            .onChange(of: myLogin.isShowMessage) { newValue in
+                if newValue {
+                    isShowLoginResultAlert = true
+                    myLogin.isShowMessage = false  // Reset to prevent duplicate alerts
+                }
+            }
+            .navigationDestination(isPresented: $isNavigateToSettings) {
+                SettingsContentView(myTransfer, myLogin, myFirestore)
+            }
+            .navigationDestination(isPresented: $isNavigateToMain) {
+                MainContentView(myTransfer, myLogin, myFirestore)
+            }
+            .toolbarBackground(Color.accent, for: .navigationBar)
         }
-        .navigationBarHidden(true)
-        .edgesIgnoringSafeArea(.all)
     }
 }
 

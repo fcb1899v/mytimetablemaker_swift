@@ -176,7 +176,8 @@ struct MainContentView: View {
                     // MARK: - Second Direction Display (if enabled)
                     if (myTransfer.isShowRoute2) {
                         Divider()
-                            .frame(width: 1.5, height: .infinity)
+                            .frame(width: 1.5)
+                            .frame(maxHeight: .infinity)
                             .background(Color.primary)
                         VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                             Spacer().frame(height: screen.routeCountdownTopSpace)

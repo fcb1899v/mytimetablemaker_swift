@@ -10,60 +10,54 @@ import FirebaseAuth
 
 // MARK: - Log Out Button
 // Button component for logging out current user account
-struct LogOutButton: View {
+struct AccountButton: View {
     
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject private var myLogin: MyLogin
+    private let isDeleteAccount: Bool
     @State private var isShowAlert = false
-
+    
     init(
-        myLogin: MyLogin
+        myLogin: MyLogin,
+        isDeleteAccount: Bool
     ) {
         self.myLogin = myLogin
+        self.isDeleteAccount = isDeleteAccount
     }
-
+    
     var body: some View {
         Button(action: {
             isShowAlert = true
         }) {
-            Text("Logout".localized)
+            Text(isDeleteAccount ? "Delete Account".localized: "Logout".localized)
                 .font(.system(size: screen.settingsFontSize))
                 .foregroundColor(.black)
         }
         // MARK: - Logout Confirmation Alert
-        .alert("Logout".localized, isPresented: $isShowAlert) {
+        .alert(isDeleteAccount ? "Delete Account".localized: "Logout".localized, isPresented: $isShowAlert) {
             // OK button
-            Button("OK".localized, role: .none){
-                myLogin.logOut()
+            Button("OK".localized, role:  isDeleteAccount ? .destructive: .none) {
                 isShowAlert = false
+                isDeleteAccount ? myLogin.delete(): myLogin.logOut()
             }
             // Cancel button
-            Button("Cancel".localized, role: .cancel){
+            Button("Cancel".localized, role: .cancel) {
                 isShowAlert = false
             }
         } message: {
-            Text("Logout your account?".localized)
+            Text(isDeleteAccount ? ("⚠️ " + "Delete your account?".localized): "Logout your account?".localized)
+                .foregroundColor(isDeleteAccount ? .red: .primary)
         }
-        // MARK: - Logout Result Alert
-        .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-            Button("OK".localized, role: .none){
-                myLogin.isShowMessage = false
-                if (!myLogin.isLoginSuccess) {
-                    presentationMode.wrappedValue.dismiss()
-                }
-            }
-        } message: {
-            Text(myLogin.alertMessage)
-        }
+        .tint(.primary)
     }
 }
 
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode
-struct LogOutButton_Previews: PreviewProvider {
+struct AccountButton_Previews: PreviewProvider {
     static var previews: some View {
         let myLogin = MyLogin()
-        LogOutButton(myLogin: myLogin)
+        AccountButton(myLogin: myLogin, isDeleteAccount: false)
     }
 }
 

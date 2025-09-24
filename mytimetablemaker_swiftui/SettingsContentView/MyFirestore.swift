@@ -105,6 +105,12 @@ class MyFirestore: ObservableObject {
                 "linecolor1" : goorback.lineColorStringArray[0],
                 "linecolor2" : goorback.lineColorStringArray[1],
                 "linecolor3" : goorback.lineColorStringArray[2],
+                "linecode1" : goorback.lineCodeArray[0],
+                "linecode2" : goorback.lineCodeArray[1],
+                "linecode3" : goorback.lineCodeArray[2],
+                "linekind1" : goorback.lineKindArray[0].rawValue,
+                "linekind2" : goorback.lineKindArray[1].rawValue,
+                "linekind3" : goorback.lineKindArray[2].rawValue,
                 "ridetime1" : "\(goorback.rideTimeArray[0])",
                 "ridetime2" : "\(goorback.rideTimeArray[1])",
                 "ridetime3" : "\(goorback.rideTimeArray[2])",
@@ -173,6 +179,7 @@ class MyFirestore: ObservableObject {
                     UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))
                     UserDefaults.standard.set(data["linecolor\(num + 1)"], forKey: goorback.lineColorKey(num))
                     UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
+                    UserDefaults.standard.set(data["linekind\(num + 1)"], forKey: goorback.lineKindKey(num))
                     UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
                     UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
                     UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))

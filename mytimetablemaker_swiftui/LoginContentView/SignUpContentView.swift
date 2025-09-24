@@ -16,6 +16,8 @@ struct SignUpContentView: View {
     @Environment(\.presentationMode) var presentationMode
     @ObservedObject private var myLogin: MyLogin
     @State private var isSignUpAlert = false
+    @State private var isPasswordVisible = false
+    @State private var isConfirmPasswordVisible = false
 
     init(
         _ myLogin: MyLogin
@@ -24,18 +26,22 @@ struct SignUpContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: screen.loginMargin) {
+        ZStack {
+            // Background color for entire view
+            Color.primary
+                .ignoresSafeArea(.all)
+            
+            VStack(spacing: screen.loginMargin) {
             // MARK: - Title
             Text("Create Account".localized)
                 .font(.system(size: screen.loginTitleFontSize))
                 .fontWeight(.bold)
-                .foregroundColor(.primary)
-                .padding(.top, screen.loginTitleTopMargin)
+                .foregroundColor(.accent)
                 .padding(.bottom, screen.loginTitleBottomMargin)
             
             // MARK: - Email Input Field
             TextField("Email".localized, text: $myLogin.email)
-                .font(.subheadline)
+                .font(.system(size: screen.loginTextFieldFontSize))
                 .lineLimit(1)
                 .padding()
                 .frame(height: screen.loginTextHeight)
@@ -45,31 +51,62 @@ struct SignUpContentView: View {
                 .frame(width: screen.loginButtonWidth)
             
             // MARK: - Password Input Field
-            SecureField("Password (8+ chars: alnum & !@#$&~)".localized, text: $myLogin.password)
-                .font(.subheadline)
-                .lineLimit(1)
-                .padding()
-                .frame(height: screen.loginTextHeight)
-                .background(CustomBackground(backgroundColor: .white))
-                .overlay(CustomBorder())
-                .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
-                .frame(width: screen.loginButtonWidth)
+            HStack {
+                if isPasswordVisible {
+                    TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                        .font(.system(size: screen.loginTextFieldFontSize))
+                        .lineLimit(1)
+                } else {
+                    SecureField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                        .font(.system(size: screen.loginTextFieldFontSize))
+                        .lineLimit(1)
+                }
+                
+                Button(action: {
+                    isPasswordVisible.toggle()
+                }) {
+                    Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                        .font(.system(size: screen.loginEyeIconSize))
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding()
+            .frame(height: screen.loginTextHeight)
+            .background(CustomBackground(backgroundColor: .white))
+            .overlay(CustomBorder())
+            .onChange(of: myLogin.password) { _ in myLogin.signUpCheck() }
+            .frame(width: screen.loginButtonWidth)
             
             // MARK: - Confirm Password Input Field
-            SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
-                .font(.subheadline)
-                .lineLimit(1)
-                .padding()
-                .frame(height: screen.loginTextHeight)
-                .background(CustomBackground(backgroundColor: .white))
-                .overlay(CustomBorder())
-                .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
-                .frame(width: screen.loginButtonWidth)
+            HStack {
+                if isConfirmPasswordVisible {
+                    TextField("Confirm Password".localized, text: $myLogin.passwordConfirm)
+                        .font(.system(size: screen.loginTextFieldFontSize))
+                        .lineLimit(1)
+                } else {
+                    SecureField("Confirm Password".localized, text: $myLogin.passwordConfirm)
+                        .font(.system(size: screen.loginTextFieldFontSize))
+                        .lineLimit(1)
+                }
+                
+                Button(action: {
+                    isConfirmPasswordVisible.toggle()
+                }) {
+                    Image(systemName: isConfirmPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                        .font(.system(size: screen.loginEyeIconSize))
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding()
+            .frame(width: screen.loginButtonWidth, height: screen.loginTextHeight)
+            .background(CustomBackground(backgroundColor: .white))
+            .overlay(CustomBorder())
+            .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
             
             // MARK: - Sign Up Button
             CustomButton(
                 title: "Signup".localized,
-                backgroundColor: myLogin.isValidSignUp ? Color.primary : Color.gray,
+                backgroundColor: myLogin.isValidSignUp ? Color.accent : Color.gray,
                 isEnabled: myLogin.isValidSignUp,
                 action: myLogin.signUp
             )
@@ -91,13 +128,14 @@ struct SignUpContentView: View {
             } message: {
                 Text(myLogin.alertMessage)
             }
+            .tint(.primary)
             
             // MARK: - Terms and Conditions Agreement
             HStack(spacing: screen.settingsSheetHorizontalSpacing) {
                 // Checkbox for terms agreement
                 Button(action: myLogin.toggle) {
                     Image(systemName: myLogin.isTermsAgree ? "checkmark.square.fill": "square")
-                        .foregroundColor(myLogin.isTermsAgree ? .primary: .white)
+                        .foregroundColor(myLogin.isTermsAgree ? .accent: .white)
                 }
                 // Terms and privacy policy link
                 Button(action: {
@@ -115,14 +153,17 @@ struct SignUpContentView: View {
                 }
             }
             .frame(width: screen.loginButtonWidth, alignment: .top)
-
-            Spacer()
-
-            // MARK: - Ad Banner
-            AdMobBannerView()
+            }
         }
-        .edgesIgnoringSafeArea(.all)
-        .background(Color.accent)
+        .presentationDetents([.fraction(0.7)])
+        .onAppear {
+            // Clear text fields when signup screen appears
+            myLogin.email = ""
+            myLogin.password = ""
+            myLogin.passwordConfirm = ""
+            myLogin.isTermsAgree = false
+            myLogin.signUpCheck()
+        }
     }
 }
 

@@ -93,7 +93,9 @@ extension UIScreen {
 // Login form layout and button styling
 extension UIScreen {
     var loginTitleFontSize: CGFloat { customWidth * 0.06 }
-    var loginButtonWidth: CGFloat { customWidth * 0.8 }
+    var loginButtonWidth: CGFloat { customWidth * 0.88 }
+    var loginTextFieldFontSize: CGFloat { customWidth * 0.036 }
+    var loginEyeIconSize: CGFloat { customWidth * 0.042 }
 
     var loginTitleTopMargin: CGFloat { screenHeight * 0.12 }
     var loginTitleBottomMargin: CGFloat { screenHeight * 0.02 }

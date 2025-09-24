@@ -12,10 +12,8 @@
 		0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1B1263FE1120007EDC8 /* SizeExtensions.swift */; };
 		022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 022E53442633B3C0007921D9 /* InfoPlist.strings */; };
 		0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* ColorExtensions.swift */; };
-		026257D32AD3E366001CF251 /* GetFirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D22AD3E366001CF251 /* GetFirestoreButton.swift */; };
-		026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */; };
-		026257D72AD3E515001CF251 /* LogOutButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D62AD3E515001CF251 /* LogOutButton.swift */; };
-		026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D82AD3E573001CF251 /* DeleteAccountButton.swift */; };
+		026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D22AD3E366001CF251 /* FirestoreButton.swift */; };
+		026257D72AD3E515001CF251 /* AccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D62AD3E515001CF251 /* AccountButton.swift */; };
 		02723C472E63BF3E00F1528E /* APITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C462E63BEFE00F1528E /* APITest.swift */; };
 		02723C492E63BF4E00F1528E /* APINetworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C482E63BF4D00F1528E /* APINetworkTest.swift */; };
 		02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723E5C2E688CB000F1528E /* AccountExtensions.swift */; };
@@ -112,10 +110,8 @@
 		022E53432633B3C0007921D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mytimetablemaker_swiftuiRelease.entitlements; sourceTree = "<group>"; };
 		0257E431263E1B3D00D45CFB /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
-		026257D22AD3E366001CF251 /* GetFirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetFirestoreButton.swift; sourceTree = "<group>"; };
-		026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveFirestoreButton.swift; sourceTree = "<group>"; };
-		026257D62AD3E515001CF251 /* LogOutButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogOutButton.swift; sourceTree = "<group>"; };
-		026257D82AD3E573001CF251 /* DeleteAccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAccountButton.swift; sourceTree = "<group>"; };
+		026257D22AD3E366001CF251 /* FirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreButton.swift; sourceTree = "<group>"; };
+		026257D62AD3E515001CF251 /* AccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountButton.swift; sourceTree = "<group>"; };
 		02723C462E63BEFE00F1528E /* APITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITest.swift; sourceTree = "<group>"; };
 		02723C482E63BF4D00F1528E /* APINetworkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APINetworkTest.swift; sourceTree = "<group>"; };
 		02723E5C2E688CB000F1528E /* AccountExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExtensions.swift; sourceTree = "<group>"; };
@@ -370,10 +366,8 @@
 			children = (
 				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
 				02F02622261C935A00655E54 /* MyFirestore.swift */,
-				026257D22AD3E366001CF251 /* GetFirestoreButton.swift */,
-				026257D42AD3E3D6001CF251 /* SaveFirestoreButton.swift */,
-				026257D62AD3E515001CF251 /* LogOutButton.swift */,
-				026257D82AD3E573001CF251 /* DeleteAccountButton.swift */,
+				026257D22AD3E366001CF251 /* FirestoreButton.swift */,
+				026257D62AD3E515001CF251 /* AccountButton.swift */,
 			);
 			path = SettingsContentView;
 			sourceTree = "<group>";
@@ -577,7 +571,6 @@
 				02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */,
 				02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */,
 				02F025E7261BE54700655E54 /* MyLogin.swift in Sources */,
-				026257D52AD3E3D6001CF251 /* SaveFirestoreButton.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
 				02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */,
@@ -585,7 +578,7 @@
 				0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */,
 				027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
 				02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */,
-				026257D32AD3E366001CF251 /* GetFirestoreButton.swift in Sources */,
+				026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */,
 				02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */,
 				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
 				0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */,
@@ -599,11 +592,10 @@
 				02F025CA261BDF0600655E54 /* LineExtensions.swift in Sources */,
 				02EBD4BA2E5B088400450D16 /* CacheService.swift in Sources */,
 				02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */,
-				026257D92AD3E573001CF251 /* DeleteAccountButton.swift in Sources */,
 				02F025BD261BDEA000655E54 /* TimeExtensions.swift in Sources */,
 				02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */,
 				E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */,
-				026257D72AD3E515001CF251 /* LogOutButton.swift in Sources */,
+				026257D72AD3E515001CF251 /* AccountButton.swift in Sources */,
 				02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */,
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
 				02F025C5261BDED100655E54 /* Enums.swift in Sources */,

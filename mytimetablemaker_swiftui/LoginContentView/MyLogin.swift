@@ -45,7 +45,6 @@ class MyLogin : ObservableObject {
                 isLoginSuccess = false
                 isLoading = false
                 isShowMessage = true
-                presentationMode.wrappedValue.dismiss()
             } catch {
                 UserDefaults.standard.set(true, forKey: "Login")
                 isLoginSuccess = true
@@ -89,11 +88,13 @@ class MyLogin : ObservableObject {
                         isLoginSuccess = true
                         isLoading = false
                         isShowMessage = true
+                        print("🔍 Login Debug: Login successful, isLoginSuccess = \(isLoginSuccess)")
                     } else {
                         alertTitle = "Not verified account".localized
                         alertMessage = "Confirm your email".localized
                         isLoading = false
                         isShowMessage = true
+                        print("🔍 Login Debug: Email not verified")
                     }
                 } else {
                     if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
