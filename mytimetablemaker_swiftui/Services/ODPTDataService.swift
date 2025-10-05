@@ -35,6 +35,8 @@ struct ODPTParser {
                 railwayTitle: dto.railwayTitle,
                 lineCode: dto.lineCode,
                 lineDirection: nil,
+                ascendingRailDirection: nil,
+                descendingRailDirection: nil,
                 busRoute: nil,
                 pattern: nil,
                 busDirection: nil,
@@ -68,6 +70,8 @@ struct ODPTParser {
                 railwayTitle: RailwayTitle(ja: dto.title, en: englishName),
                 lineCode: nil,
                 lineDirection: nil,
+                ascendingRailDirection: nil,
+                descendingRailDirection: nil,
                 busRoute: dto.busRoute,
                 pattern: dto.pattern,
                 busDirection: dto.direction,
@@ -149,7 +153,9 @@ struct ODPTParser {
                     }()
                     
                     // MARK: - Rail Direction Information
-                    let lineDirection = element["odpt:ascendingRailDirection"] as? String
+                    let ascendingRailDirection = element["odpt:ascendingRailDirection"] as? String
+                    let descendingRailDirection = element["odpt:descendingRailDirection"] as? String
+                    let lineDirection = ascendingRailDirection // Keep for backward compatibility
                     
                     // MARK: - Line Creation
                     return TransportationLine(
@@ -164,6 +170,8 @@ struct ODPTParser {
                         railwayTitle: railwayTitle,
                         lineCode: lineCode,
                         lineDirection: lineDirection,
+                        ascendingRailDirection: ascendingRailDirection,
+                        descendingRailDirection: descendingRailDirection,
                         busRoute: nil,
                         pattern: nil,
                         busDirection: nil,

@@ -19,6 +19,7 @@ struct TimetableGridView: View {
     @Binding private var weekflag: Bool
     private let num: Int
     private let hour: Int
+
     init(
         _ goorback: String,
         _ weekflag: Binding<Bool>,
@@ -34,58 +35,55 @@ struct TimetableGridView: View {
 
     var body: some View {
         // MARK: - Time Edit Button
-        Button (action: {
-            self.isShowingTimetableSheet = true
-        }) {
-            HStack {
-                // MARK: - Hour Display
-                HStack {
+        HStack(spacing: 0) {
+            // MARK: - Hour Display
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
                     Color.white.frame(width: 1)
+                    Spacer()
                     Text(hour.addZeroTime)
                         .font(.system(size: screen.timetableHourFontSize, weight: .semibold))
                         .foregroundColor(.accent)
-                        .frame(width: screen.timetableHourFrameWidth)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
                         .scaledToFit()
+                    Spacer()
                     Color.white.frame(width: 1)
                 }
+                .frame(width: screen.timetableHourFrameWidth, height: screen.calculateContentHeight(trainTimes.count))
                 .background(Color.black.opacity(0.25))
-
-                HStack(spacing: screen.timetableMinuteSpacing(for: trainTimes.count)) {
-                    ForEach(trainTimes, id: \.self) { trainTime in
-                        Text(trainTime.departureTime.trimmingLeadingZero)
-                            .font(.system(size: screen.timetableMinuteFontSize(for: trainTimes.count), weight: .semibold))
-                            .foregroundColor(Color.colorForTrainType(trainTime.trainType))
-                    }
-                }
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .scaledToFit()
-                .contentShape(Rectangle()) // Make entire area tappable
-                .onAppear {
-                    // Load initial data
-                    label = goorback.timetableTime(weekflag, num, hour)
-                    trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
-                }
-                .onChange(of: goorback.timetableTime(weekflag, num, hour)) {
-                    newValue in 
-                    label = newValue
-                    trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
-                }
-                .onChange(of: weekflag) { _ in
-                    label = goorback.timetableTime(weekflag, num, hour)
-                    trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
-                }
-                // Listen for timetable data updates from API
-                .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TimetableDataUpdated"))) { _ in
-                    trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
-                }
-                Spacer()
-                Color.white.frame(width: 1)
             }
+            
+            
+            Button (action: {
+                self.isShowingTimetableSheet = true
+            }) {
+                timetableGridContent()
+                    .contentShape(Rectangle()) // Make entire area tappable
+            }
+            .frame(width: screen.timetableMinuteFrameWidth)
+            .onAppear {
+                // Load initial data
+                label = goorback.timetableTime(weekflag, num, hour)
+                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+            }
+            .onChange(of: goorback.timetableTime(weekflag, num, hour)) { newValue in
+                label = newValue
+                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+            }
+            .onChange(of: weekflag) { _ in
+                label = goorback.timetableTime(weekflag, num, hour)
+                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+            }
+            // Listen for timetable data updates from API
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TimetableDataUpdated"))) { _ in
+                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+            }
+            
+            Color.white
+                .frame(width: 1, height: screen.calculateContentHeight(trainTimes.count))
         }
-        .frame(width: screen.customWidth, height: screen.timetableGridHeight)
+        .frame(width: screen.customWidth)
         .sheet(isPresented: $isShowingTimetableSheet) {
             SettingsTimetableSheet(
                 goorback: goorback,
@@ -94,7 +92,50 @@ struct TimetableGridView: View {
                 hour: hour
             )
         }
-    }    
+    }
+    
+    
+    // MARK: - Grid Content View
+    // Train times display grid with proper wrapping
+    @ViewBuilder
+    private func timetableGridContent() -> some View {
+        let maxItemsPerRow = 10 // Maximum 3 time entries per row
+        let totalRows = (trainTimes.count + maxItemsPerRow - 1) / maxItemsPerRow
+        
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(0..<totalRows, id: \.self) { rowIndex in
+                timetableRowContent(startIndex: rowIndex * maxItemsPerRow, maxItems: maxItemsPerRow)
+            }
+        }
+        .frame(width: screen.timetableMinuteFrameWidth, alignment: .leading)
+    }
+    
+    // MARK: - Row Content
+    // Individual row content with proper spacing
+    @ViewBuilder
+    private func timetableRowContent(startIndex: Int, maxItems: Int) -> some View {
+        HStack(spacing: 0) {
+            Spacer()
+                .frame(width: screen.timetableMinuteSpacing)
+            ForEach(startIndex..<min(startIndex + maxItems, trainTimes.count), id: \.self) { index in
+                HStack(spacing: 0) {
+                    Text(trainTimes[index].departureTime.trimmingLeadingZero)
+                        .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
+                        .foregroundColor(Color.colorForTrainType(trainTimes[index].trainType))
+                        .lineLimit(1)
+                    
+                    Text("(\(String(trainTimes[index].rideTime)))")
+                        .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
+                        .foregroundColor(Color.white)
+                        .lineLimit(1)
+                    Spacer()
+                        .frame(width: screen.timetableMinuteSpacing)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(width: screen.timetableMinuteFrameWidth, height: screen.timetableNumberHeight)
+    }
 }
 
 // MARK: - Preview Provider

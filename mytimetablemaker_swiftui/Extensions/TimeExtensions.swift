@@ -13,55 +13,54 @@ extension Int {
     
     // MARK: - Time Format Conversions
     // Convert between different time formats (HHMM, MM, HHMMSS, etc.)
-    var HHMMtoMM: Int { return self / 100 * 60 + self % 100 }   // Convert HHMM format to minutes
-    var MMtoHHMM: Int { return self / 60 * 100 + self % 60 }    // Convert minutes to HHMM format
-    var MMSStoSS: Int { return self / 100 * 60 + self % 100 }   // Convert MMSS format to seconds
-    var SStoMMSS: Int { return self / 60 * 100 + self % 60 }    // Convert seconds to MMSS format
-    var HHMMSStoSS: Int { return self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         // Convert HHMMSS format to seconds
-    var SStoHHMMSS: Int { return self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           // Convert seconds to HHMMSS format
-    var HHMMSStoMMSS: Int { return (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      // Convert HHMMSS format to MMSS format
+    var HHMMtoMM: Int { self / 100 * 60 + self % 100 }   // Convert HHMM format to minutes
+    var MMtoHHMM: Int { self / 60 * 100 + self % 60 }    // Convert minutes to HHMM format
+    var MMSStoSS: Int { self / 100 * 60 + self % 100 }   // Convert MMSS format to seconds
+    var SStoMMSS: Int { self / 60 * 100 + self % 60 }    // Convert seconds to MMSS format
+    var HHMMSStoSS: Int { self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         // Convert HHMMSS format to seconds
+    var SStoHHMMSS: Int { self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           // Convert seconds to HHMMSS format
+    var HHMMSStoMMSS: Int { (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      // Convert HHMMSS format to MMSS format
     
     // MARK: - Time Arithmetic Operations
     // Addition operations for different time formats
-    func plusHHMM(_ time: Int) -> Int { return (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }            // Add HHMM format times
-    func plusHHMMSS(_ time: Int) -> Int { return (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }    // Add HHMMSS format times
-    func plusMMSS(_ time: Int) -> Int { return (MMSStoSS + time.MMSStoSS).SStoMMSS }            // Add MMSS format times
+    func plusHHMM(_ time: Int) -> Int { (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }            // Add HHMM format times
+    func plusHHMMSS(_ time: Int) -> Int { (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }    // Add HHMMSS format times
+    func plusMMSS(_ time: Int) -> Int { (MMSStoSS + time.MMSStoSS).SStoMMSS }            // Add MMSS format times
     
     // MARK: - Time Subtraction Operations
     // Subtraction operations for different time formats
-    func minusHHMM(_ time: Int) -> Int { return (HHMMtoMM < time.HHMMtoMM) ?                    // Subtract HHMM format times
+    func minusHHMM(_ time: Int) -> Int { (HHMMtoMM < time.HHMMtoMM) ?                    // Subtract HHMM format times
         ((self + 2400).HHMMtoMM - time.HHMMtoMM).MMtoHHMM:
         (HHMMtoMM - time.HHMMtoMM).MMtoHHMM }
-    func minusHHMMSS(_ time: Int) -> Int { return (self.HHMMSStoSS < time.HHMMSStoSS) ?         // Subtract HHMMSS format times
+    func minusHHMMSS(_ time: Int) -> Int { (self.HHMMSStoSS < time.HHMMSStoSS) ?         // Subtract HHMMSS format times
         ((self + 240000).HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS:
         (HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS }
-    func minusMMSS(_ time: Int) -> Int { return (self.MMSStoSS - time.MMSStoSS).SStoMMSS }      // Subtract MMSS format times
+    func minusMMSS(_ time: Int) -> Int { (self.MMSStoSS - time.MMSStoSS).SStoMMSS }      // Subtract MMSS format times
     
     // MARK: - Time Display Formatting
     // Format time for display purposes
-    var addZeroTime: String { return (0...9 ~= self) ? "0\(self)": "\(self)" }                              // Add leading zero for single digits
-    func overTime(_ beforeTime: Int) -> Int { return (beforeTime == 2700) ? 2700: (self > 2700) ? 2700: self }
+    var addZeroTime: String { (0...9 ~= self) ? "0\(self)": "\(self)" }                              // Add leading zero for single digits
+    func overTime(_ beforeTime: Int) -> Int { (beforeTime == 2700) ? 2700: (self > 2700) ? 2700: self }
 
-    var timeHH: String { return (self / 100 + (self % 100) / 60).addZeroTime }
-    var timeMM: String { return (self % 100 % 60).addZeroTime }
-    var stringTime: String { return ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }   // Convert HHMM format to display time
-
+    var timeHH: String { (self / 100 + (self % 100) / 60).addZeroTime }
+    var timeMM: String { (self % 100 % 60).addZeroTime }
+    var stringTime: String { ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }   // Convert HHMM format to display time
+    
+    var timetableHour: Int { (self > 3) ? self: self + 24 }
     
     // MARK: - Countdown Functions
     // Countdown timer formatting and calculations
-    var countdown: String{ return (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }           // Convert MMSS format to countdown display
-    func countdownTime(_ departtime: Int) -> String {
-        return (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown
-    }
+    var countdown: String{ (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }           // Convert MMSS format to countdown display
+    func countdownTime(_ departtime: Int) -> String { (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown }
 
     // MARK: - Weekday Detection
     // Determine if time represents weekday or weekend
-    var isWeekday: Bool { return !(self == 0 || self == 6) }
+    var isWeekday: Bool { !(self == 0 || self == 6) }
     
     // MARK: - Choice Copy Time List Function
     // Generates copy time choice list for timetable editing
     func choiceCopyTimeList(_ isWeekday: Bool) -> [String] {
-        return [
+        [
             "\(self - 1)\("Hour".localized)",
             "\(self + 1)\("Hour".localized)",
             isWeekday.weekendLabel,
@@ -99,18 +98,14 @@ extension Date {
     }
     
     // MARK: - Japanese Holiday Detection
-    // Check if the date is a Japanese public holiday
-    var isJapaneseHoliday: Bool {
-        // Check for regular or substitute or  national holidays
-        return isRegularHoliday || isSubstituteHoliday || isNationalHoliday
-    }
+    // Check for regular or substitute or Japanese national holidays
+    var isJapaneseHoliday: Bool { isRegularHoliday || isSubstituteHoliday || isNationalHoliday }
     
     // MARK: - Regular Holiday Detection
     // Check if the date is a regular Japanese public holiday
     private var isRegularHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let holidays = getAllHolidaysForYear(year)
-        
         // Check if this date matches any regular holiday
         return holidays.contains { holiday in
             Calendar.current.isDate(self, inSameDayAs: holiday)
@@ -122,7 +117,6 @@ extension Date {
     private var isSubstituteHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let substituteHolidays = getSubstituteHolidaysForYear(year)
-        
         // Check if this date matches any substitute holiday
         return substituteHolidays.contains { holiday in
             Calendar.current.isDate(self, inSameDayAs: holiday)
@@ -134,7 +128,6 @@ extension Date {
     private var isNationalHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let nationalHolidays = getNationalHolidaysForYear(year)
-        
         // Check if this date matches any national holiday
         return nationalHolidays.contains { holiday in
             Calendar.current.isDate(self, inSameDayAs: holiday)
@@ -146,7 +139,6 @@ extension Date {
     private func getAllHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         var holidays: [Date] = []
-        
         // Fixed holidays (updated for current era)
         let fixedHolidays = [
             (1, 1),   // 元日
@@ -167,10 +159,8 @@ extension Date {
                 holidays.append(date)
             }
         }
-        
         // Add variable holidays
         holidays.append(contentsOf: getVariableHolidaysForYear(year))
-        
         // Sort holidays by date
         return holidays.sorted()
     }
@@ -180,17 +170,14 @@ extension Date {
     private func getVariableHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         var holidays: [Date] = []
-        
         // 春分の日 (around March 20-21)
         if let date = calendar.date(from: DateComponents(year: year, month: 3, day: 20)) {
             holidays.append(date)
         }
-        
         // 秋分の日 (around September 22-23)
         if let date = calendar.date(from: DateComponents(year: year, month: 9, day: 22)) {
             holidays.append(date)
         }
-        
         // 海の日 (3rd Monday of July)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 7, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
@@ -199,7 +186,6 @@ extension Date {
                 holidays.append(thirdMonday)
             }
         }
-        
         // 敬老の日 (3rd Monday of September)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 9, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
@@ -208,7 +194,6 @@ extension Date {
                 holidays.append(thirdMonday)
             }
         }
-        
         // スポーツの日 (2nd Monday of October)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 10, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
@@ -217,7 +202,6 @@ extension Date {
                 holidays.append(secondMonday)
             }
         }
-        
         return holidays
     }
     
@@ -227,7 +211,6 @@ extension Date {
         let calendar = Calendar.current
         let holidays = getAllHolidaysForYear(year)
         var substituteHolidays: [Date] = []
-        
         // Check if any holiday falls on Sunday
         for holiday in holidays {
             if calendar.component(.weekday, from: holiday) == 1 { // Sunday
@@ -247,25 +230,21 @@ extension Date {
         let calendar = Calendar.current
         let holidays = getAllHolidaysForYear(year)
         var nationalHolidays: [Date] = []
-        
         // Check if this date is between two holidays
         for i in 0..<holidays.count - 1 {
             let currentHoliday = holidays[i]
             let nextHoliday = holidays[i + 1]
-            
             // Check if there's exactly one day between holidays
             if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday),
                calendar.isDate(dayBetween, inSameDayAs: nextHoliday) {
                 // There's no day between, so check next pair
                 continue
             }
-            
             // Check if there's a day between two holidays
             if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday) {
                 nationalHolidays.append(dayBetween)
             }
         }
-        
         return nationalHolidays
     }
 }
@@ -297,44 +276,92 @@ extension String {
     
     // MARK: - Time String Processing
     // Process time strings for timetable operations
-    var timeString: String { return (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
+    var timeString: String { (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
     
     // MARK: - Leading Zero Removal
     // Remove leading zero from time strings (e.g., "03" -> "3")
-    var trimmingLeadingZero: String {
-        // Remove leading zero if the string has more than one character and starts with "0"
-        if self.count > 1 && self.hasPrefix("0") {
-            return String(self.dropFirst())
-        }
-        return self
-    }
+    var trimmingLeadingZero: String { (self.count > 1 && self.hasPrefix("0")) ? String(self.dropFirst()): self }
     
     func addInputTime(_ inputText: String) -> String { return (self != "") ? "\(self) \(inputText)": inputText}
+    
+    // MARK: - Ride Time Calculation
+    // Calculate ride time in minutes between departure and arrival times
+    func calculateRideTime(arrivalTime: String) -> Int {
+        let departureComponents = self.components(separatedBy: ":")
+        let arrivalComponents = arrivalTime.components(separatedBy: ":")
+        
+        guard departureComponents.count == 2,
+              arrivalComponents.count == 2,
+              let departureHour = Int(departureComponents[0]),
+              let departureMinute = Int(departureComponents[1]),
+              let arrivalHour = Int(arrivalComponents[0]),
+              let arrivalMinute = Int(arrivalComponents[1]) else {
+            return 0
+        }
+        
+        let departureTotalMinutes = departureHour * 60 + departureMinute
+        let arrivalTotalMinutes = arrivalHour * 60 + arrivalMinute
+        
+        // Handle day rollover (arrival time is next day)
+        let rideTimeMinutes = arrivalTotalMinutes >= departureTotalMinutes ?
+            arrivalTotalMinutes - departureTotalMinutes :
+            (24 * 60) - departureTotalMinutes + arrivalTotalMinutes
+        
+        return rideTimeMinutes
+    }
+    
+    // MARK: - Time Conversion Helper
+    // Convert HH:MM format to total minutes for sorting
+    var timeToMinutes: Int {
+        let components = self.components(separatedBy: ":")
+        if components.count == 2,
+           let hour = Int(components[0]),
+           let minute = Int(components[1]) {
+            return hour.timetableHour * 60 + minute
+        }
+        return 0
+    }
+    
+    // MARK: - Time Adjustment Helper
+    // Adjust departure time for timetable display (0-3 AM times are previous day)
+    var adjustedForTimetable: String {
+        let components = self.components(separatedBy: ":")
+        guard components.count == 2,
+              let hour = Int(components[0]),
+              let minute = Int(components[1]) else {
+            return self
+        }
+        
+        // Use timetableHour extension to add 24 for 0-3 AM times
+        let adjustedHour = hour.timetableHour
+        return String(format: "%02d:%02d", adjustedHour, minute)
+    }
+    
     func timeSorting(charactersin: String) -> [String] {
-        return Array(Set(self.components(separatedBy: CharacterSet(charactersIn: charactersin))
-                .map{Int($0) ?? 60}
-                .filter{$0 < 60}
-                .filter{$0 > -1}
-            ))
-            .sorted()
-            .map{String($0)}
+        Array(Set(self.components(separatedBy: CharacterSet(charactersIn: charactersin))
+            .map{Int($0) ?? 60}
+            .filter{$0 < 60}
+            .filter{$0 > -1}
+        ))
+        .sorted()
+        .map{String($0)}
     }
     
     // MARK: - Alert Message Generation
     // Dynamic alert title and message generation
-    func timetableLineTitle(_ num: Int) -> String { return "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)"}
-    var routeTitle: String { return
+    func timetableLineTitle(_ num: Int) -> String { "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)"}
+    var routeTitle: String {
         (self == "back1") ? "Setting Return Route 1".localized:
         (self == "back2") ? "Setting Return Route 2".localized:
         (self == "go1") ? "Setting Outbound Route 1".localized:
         "Setting Outbound Route 2".localized
     }
-    var otherroute: String { return self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
+    var otherroute: String { self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
     // MARK: - Timetable Management
     // Timetable data processing and manipulation
     func timetable(_ isWeekday: Bool, _ num: Int) -> [Int] {
-        return  (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
+        (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
             .components(separatedBy: CharacterSet(charactersIn: " "))
             .compactMap { Int($0) }
             .map { $0 + hour * 100 }
@@ -342,9 +369,7 @@ extension String {
             .sorted()
         }
     }
-    func timetableArray(_ isWeekday: Bool) -> [[Int]] {
-        return (0...2).map { num in timetable(isWeekday, num) }
-    }
+    func timetableArray(_ isWeekday: Bool) -> [[Int]] { (0...2).map { num in timetable(isWeekday, num) } }
 
     // MARK: - Time Array Generation
     // Generate departure and arrival times for current route
@@ -371,14 +396,14 @@ extension String {
     // MARK: - Timetable Modification
     // Add time to timetable
     func addTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
-        return timetableTime(isWeekday, num, hour)
+        timetableTime(isWeekday, num, hour)
             .addInputTime(inputText)
             .timeSorting(charactersin: " ")
             .joined(separator: " ")
     }
     // Delete time from timetable
     func deleteTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
-        return timetableTime(isWeekday, num, hour)
+        timetableTime(isWeekday, num, hour)
             .trimmingCharacters(in: .whitespaces)
             .timeSorting(charactersin: " ")
             .filter{$0 != inputText}

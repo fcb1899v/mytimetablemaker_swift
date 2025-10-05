@@ -142,19 +142,7 @@ struct SettingsContentView: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading){
-                // Back button
-                Button(action: {
-                    isNavigateToMain = true
-                }) {
-                     HStack {
-                        Image(systemName: "arrowshape.backward.fill")
-                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(.white)
-                        Text("Back to homepage".localized)
-                            .font(.system(size: screen.settingsFontSize, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
+                CustomBackButton(action: { isNavigateToMain = true })
             }
         }
         .navigationDestination(isPresented: $isNavigateToMain) {

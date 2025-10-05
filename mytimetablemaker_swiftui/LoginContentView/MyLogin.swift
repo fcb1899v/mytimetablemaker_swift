@@ -209,7 +209,8 @@ class MyLogin : ObservableObject {
     // Toggles terms agreement state with haptic feedback
     func toggle() {
         isTermsAgree = !isTermsAgree
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        // Suppress haptic feedback to avoid console errors
+        // UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         signUpCheck()
     }
     

@@ -15,6 +15,7 @@ struct TimetableContentView: View {
     @State private var weekflag = Date().isWeekday
     @State private var image = UIImage()
     @State private var isShowImagePicker = false
+    @State private var scrollViewHeight: CGFloat = 0
     @Environment(\.dismiss) private var dismiss
 
     private let goorback: String
@@ -28,9 +29,17 @@ struct TimetableContentView: View {
         self.num = num
     }
     
+    // MARK: - Action Variables
+    /// Action to dismiss timetable view and return to homepage
+    private var backToHomepageAction: () -> Void {
+        return {
+            dismiss()
+        }
+    }
+    
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .top) {
                 Color.primary
                 VStack(alignment: .leading, spacing: screen.timetableVerticalSpacing) {
 
@@ -69,6 +78,7 @@ struct TimetableContentView: View {
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
 
+                        
                     // MARK: - Timetable Grid
                     VStack(spacing: 0) {
                         Color.white.frame(width: screen.customWidth, height: 1)
@@ -90,48 +100,44 @@ struct TimetableContentView: View {
     
                         Color.white.frame(width: screen.customWidth, height: 1)
                         
-                        ForEach(4...25, id: \.self) { hour in
-                            TimetableGridView(goorback, $weekflag, num, hour)
-                            Color.white.frame(width: screen.customWidth, height: 1)
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                ForEach(validHourRange(), id: \.self) { hour in
+                                    TimetableGridView(goorback, $weekflag, num, hour)
+                                    Color.white.frame(width: screen.customWidth, height: 1)
+                                }
+                            }
                         }
+                        .frame(height: screen.calculateScrollViewHeight(trainTimesCounts: getTrainTimesCounts()))
                     }
                     
                     colorLegendView(trainTypes: loadTrainTypeList())
-                    
-                    Spacer()
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
             .navigationBarColor(
-                backgroundColor: UIColor(Color.primary),
+                backgroundColor: UIColor(.primary),
                 titleColor: .white,
             )
-            .toolbarColorScheme(.light, for: .navigationBar)
-            .navigationViewStyle(StackNavigationViewStyle())
             .navigationBarBackButtonHidden(true)
             .edgesIgnoringSafeArea(.bottom)
-            .preferredColorScheme(.dark)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Timetable Settings".localized)
+                    Text("Timetable (Riding Time)".localized)
                         .font(.system(size: screen.settingsTitleFontSize, weight: .semibold))
                         .foregroundColor(.white)
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    // Back button
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrowshape.backward.fill")
-                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                                .foregroundColor(.white)
-                            Text("Back to homepage".localized)
-                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                                .foregroundColor(.white)
-                        }
+                if #available(iOS 26.0, *) {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        // iOS 26+ specific back button styling
+                        CustomBackButton(action: backToHomepageAction)
+                    }
+                    .sharedBackgroundVisibility(.hidden)
+                } else {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        // iOS 16-25 back button styling
+                        CustomBackButton(action: backToHomepageAction)
                     }
                 }
             }
@@ -148,6 +154,37 @@ struct TimetableContentView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - Valid Hour Range Calculation
+    // Calculate the range of hours with data, including gaps
+    private func validHourRange() -> [Int] {
+        let allHours = Array(4...25)
+        
+        // Find hours with train times
+        let hoursWithData = allHours.filter { hour in
+            !goorback.loadTrainTimes(weekflag, num, hour).isEmpty
+        }
+        
+        // Return range from first to last hour with data
+        guard let firstHour = hoursWithData.min(),
+              let lastHour = hoursWithData.max() else {
+            return [] // No data found
+        }
+        
+        return Array(firstHour...lastHour)
+    }
+    
+    // MARK: - Get Train Times Counts
+    // Get train times count for each hour in the valid range
+    private func getTrainTimesCounts() -> [Int] {
+        let hours = validHourRange()
+        var counts: [Int] = []
+        for hour in hours {
+            let trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+            counts.append(trainTimes.count)
+        }
+        return counts
     }
     
     // MARK: - Load Train Type List
@@ -196,21 +233,51 @@ struct TimetableContentView: View {
         // Filter out nil and empty train types
         let validTrainTypes = trainTypes.filter { !$0.isEmpty }
         
+        // Group train types by color
+        let groupedByColor = Dictionary(grouping: validTrainTypes) { trainType in
+            Color.colorForTrainType(trainType)
+        }
+        
+        // Convert to array of (color, trainTypes) tuples
+        let colorGroups = groupedByColor.map { (color, types) in
+            (color: color, trainTypes: types)
+        }.sorted { group1, group2 in
+            // Sort by color priority
+            let colorPriority: [Color: Int] = [
+                .white: 0,
+                .yelwgre: 1,
+                .yellow: 2,
+                .orange: 3,
+                .pink: 4,
+                .ligblue: 5
+            ]
+            let priority1 = colorPriority[group1.color] ?? 999
+            let priority2 = colorPriority[group2.color] ?? 999
+            return priority1 < priority2
+        }
+        
         HStack {
             Spacer()
             VStack(spacing: screen.timetableVerticalSpacing) {
-                ForEach(0..<((validTrainTypes.count + 2) / 3), id: \.self) { rowIndex in
+                ForEach(0..<((colorGroups.count + 1) / 2), id: \.self) { rowIndex in
                     HStack(spacing: screen.timetableHorizontalSpacing) {
-                        ForEach(0..<min(3, validTrainTypes.count - rowIndex * 3), id: \.self) { colIndex in
-                            let trainTypeIndex = rowIndex * 3 + colIndex
-                            let trainType = validTrainTypes[trainTypeIndex]
-                            let displayText = trainType.components(separatedBy: ".").last ?? trainType
+                        ForEach(0..<min(2, colorGroups.count - rowIndex * 2), id: \.self) { colIndex in
+                            let groupIndex = rowIndex * 2 + colIndex
+                            let colorGroup = colorGroups[groupIndex]
+                            
+                            // Create combined display text
+                            let displayTexts = colorGroup.trainTypes.map { trainType in
+                                trainType.components(separatedBy: ".").last ?? trainType
+                            }.map { $0.localized }
+                            
+                            let separator = Locale.current.language.languageCode?.identifier == "ja" ? "・" : ", "
+                            let combinedText = displayTexts.joined(separator: separator)
                             
                             HStack {
                                 Image(systemName: "circle.fill")
-                                    .foregroundColor(Color.colorForTrainType(trainType))
+                                    .foregroundColor(colorGroup.color)
                                     .font(.system(size: screen.settingsSheetInputFontSize))
-                                Text(displayText.localized)
+                                Text(combinedText)
                                     .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                                     .foregroundColor(.white)
                                     .lineLimit(1)

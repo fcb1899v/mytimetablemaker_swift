@@ -105,6 +105,8 @@ struct LocalFileParser {
                 railwayTitle: RailwayTitle(ja: firstStation, en: nil),
                 lineCode: nil,
                 lineDirection: nil,
+                ascendingRailDirection: nil,
+                descendingRailDirection: nil,
                 busRoute: nil,
                 pattern: nil,
                 busDirection: nil,
@@ -164,6 +166,8 @@ struct LocalFileParser {
                 railwayTitle: railwayTitle,
                 lineCode: lineCode,
                 lineDirection: lineDirection,
+                ascendingRailDirection: nil,
+                descendingRailDirection: nil,
                 busRoute: nil,
                 pattern: nil,
                 busDirection: nil,
@@ -180,7 +184,7 @@ struct LocalFileParser {
         
         // MARK: - Bus Route Grouping using closures
         // Group bus routes by route name to avoid duplicates
-        let busRoutes = array.reduce(into: [String: (name: String, operatorCode: String, patterns: Set<String>, directions: Set<String>, busStops: Set<String>, busRouteCode: String)]()) { result, element in
+        let busRoutes = array.reduce(into: [String: (name: String, operatorCode: String?, patterns: Set<String>, directions: Set<String>, busStops: Set<String>, busRouteCode: String)]()) { result, element in
             guard let title = element["dc:title"] as? String else { 
                 print("⚠️ Missing dc:title in bus route item")
                 return 
@@ -248,6 +252,8 @@ struct LocalFileParser {
                 railwayTitle: RailwayTitle(ja: info.name, en: englishName),
                 lineCode: nil,
                 lineDirection: nil, // Will be calculated based on station index comparison
+                ascendingRailDirection: nil,
+                descendingRailDirection: nil,
                 busRoute: info.busRouteCode,
                 pattern: Array(info.patterns).first,
                 busDirection: Array(info.directions).first,

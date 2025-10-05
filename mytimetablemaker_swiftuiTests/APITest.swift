@@ -59,7 +59,7 @@ class APITest: XCTestCase {
         let standardCases: [LocalDataSource] = [
             .tokyoMetro, .tokyu, .keikyu, .odakyu, .seibu, .sotetsu,
             .yokohamaMetro, .tsukuba, .tama, .yurikamome, .rinkai,
-            .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus, .kanachuBus, .kokusaiKogyo
+            .yokohamaBus, .tokyuBus, .keioBus, .nishitokyoBus, .seibuBus, .sotetsuBus, .kanachuBus, .kokusaiKogyo
         ]
         
         for dataSource in standardCases {
@@ -70,7 +70,7 @@ class APITest: XCTestCase {
     }
     
     func testChallengeAPIEndpoints() throws {
-        let challengeCases: [LocalDataSource] = [.jrEast, .tobu, .odakyuBus]
+        let challengeCases: [LocalDataSource] = [.jrEast, .tobu]
         
         for dataSource in challengeCases {
             let url = dataSource.apiLink(for: .lineInfo)
@@ -96,7 +96,7 @@ class APITest: XCTestCase {
     
     func testBusURLFormat() throws {
         let busCases: [LocalDataSource] = [
-            .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus,
+            .toeiBus, .yokohamaBus, .tokyuBus, .keioBus, .nishitokyoBus, .seibuBus,
             .sotetsuBus, .kanachuBus, .kokusaiKogyo
         ]
         
@@ -127,7 +127,7 @@ class APITest: XCTestCase {
         ]
         
         let busCases: [LocalDataSource] = [
-            .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus,
+            .toeiBus, .yokohamaBus, .tokyuBus, .keioBus, .nishitokyoBus, .seibuBus,
             .sotetsuBus, .kanachuBus, .kokusaiKogyo
         ]
         

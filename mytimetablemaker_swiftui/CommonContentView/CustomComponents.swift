@@ -332,3 +332,117 @@ struct CustomBorder: View {
             .stroke(borderColor, lineWidth: screen.settingsSheetStrokeLineWidth)
     }
 }
+
+// MARK: - Custom Back Button Button
+// Reusable back button component with consistent styling across iOS versions
+struct CustomBackButton: View {
+    let foregroundColor: Color
+    let action: () -> Void
+    
+    init(
+        foregroundColor: Color = .white,
+        action: @escaping () -> Void,
+    ) {
+        self.foregroundColor = foregroundColor
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: "arrowshape.backward.fill")
+                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+                    .foregroundColor(foregroundColor)
+                Text("Back to homepage".localized)
+                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+                    .foregroundColor(foregroundColor)
+            }
+        }
+    }
+}
+
+// MARK: - Custom Account Button
+// Generic button component for account-related operations with confirmation and result alerts
+struct CustomAccountButton: View {
+    
+    @Environment(\.presentationMode) var presentationMode
+    @ObservedObject private var myTransfer: MyTransfer
+    @ObservedObject private var myLogin: MyLogin
+    @ObservedObject private var myFirestore: MyFirestore
+    
+    @State private var isShowAlert = false
+    @State private var isShowResultAlert = false
+    @State private var isNavigateToMain = false
+    
+    // Configuration properties
+    let buttonTitle: String
+    let alertTitle: String
+    let alertMessage: String
+    let action: () -> Void
+    let isSuccess: () -> Bool
+    
+    init(
+        myTransfer: MyTransfer,
+        myLogin: MyLogin,
+        myFirestore: MyFirestore,
+        buttonTitle: String,
+        alertTitle: String,
+        alertMessage: String,
+        action: @escaping () -> Void,
+        isSuccess: @escaping () -> Bool
+    ) {
+        self.myTransfer = myTransfer
+        self.myLogin = myLogin
+        self.myFirestore = myFirestore
+        self.buttonTitle = buttonTitle
+        self.alertTitle = alertTitle
+        self.alertMessage = alertMessage
+        self.action = action
+        self.isSuccess = isSuccess
+    }
+    
+    var body: some View {
+        Button(action: {
+            isShowAlert = true
+        }) {
+            Text(buttonTitle.localized)
+                .font(.system(size: screen.settingsFontSize))
+                .foregroundColor(.black)
+        }
+        // MARK: - Confirmation Alert
+        .alert(alertTitle.localized, isPresented: $isShowAlert) {
+            // OK button
+            Button("OK".localized, role: .destructive) {
+                action()
+                isShowAlert = false
+                // Show result alert after action
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isShowResultAlert = true
+                }
+            }
+            // Cancel button
+            Button("Cancel".localized, role: .cancel) {
+                isShowAlert = false
+            }
+        } message: {
+            Text(alertMessage.localized)
+        }
+        .tint(.primary)
+        
+        // MARK: - Result Alert
+        .alert(myLogin.alertTitle, isPresented: $isShowResultAlert) {
+            Button("OK".localized, role: .none) {
+                isShowResultAlert = false
+                if isSuccess() {
+                    isNavigateToMain = true
+                }
+            }
+        } message: {
+            Text(myLogin.alertMessage)
+        }
+        .tint(.primary)
+        .navigationDestination(isPresented: $isNavigateToMain) {
+            MainContentView(myTransfer, myLogin, myFirestore)
+        }
+    }
+}

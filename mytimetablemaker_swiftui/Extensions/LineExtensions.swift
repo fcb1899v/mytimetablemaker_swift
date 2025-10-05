@@ -12,17 +12,19 @@ import Combine
 // MARK: - ODPT Data Type Enum
 // Enumeration for different ODPT data types with associated values
 enum ODPTDataType: CaseIterable {
-    case railwayLine
+    case railway
+    case trainTimetable
+    case stationTimetable
     case busRoutePattern
-    case railwayTimetable
     case busTimetable
     
     // MARK: - API Endpoint
     var apiEndpoint: String {
         switch self {
-        case .railwayLine: return "odpt:Railway"
+        case .railway: return "odpt:Railway"
+        case .trainTimetable: return "odpt:TrainTimetable"
+        case .stationTimetable: return "odpt:StationTimetable"
         case .busRoutePattern: return "odpt:BusroutePattern"
-        case .railwayTimetable: return "odpt:StationTimetable"
         case .busTimetable: return "odpt:BusTimetable"
         }
     }
@@ -34,6 +36,7 @@ enum ODPTAPIType: CaseIterable {
     case standard    // Standard API with access key
     case publicAPI   // Public API without access key
     case challenge   // Challenge API with challenge key
+    case gtfs        // No API (Use GTFS Data)
 }
 
 // MARK: - App Constants
@@ -108,10 +111,12 @@ extension String{
     func lineCodeKey(_ num: Int) -> String { return "\(self)linecode\(num + 1)" }
     func lineKindKey(_ num: Int) -> String { return "\(self)linekind\(num + 1)" }
     func rideTimeKey(_ num: Int) -> String { return "\(self)ridetime\(num + 1)" }
-    func rideTimeKeyForHour(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)ridetime" }
     func transportationKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transporte": "\(self)transport\(num)" }
     func transferTimeKey(_ num: Int) ->  String { return (num == 0) ? "\(self)transfertimee": "\(self)transfertime\(num)" }
     func timetableKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)" }
+    func timetableRideTimeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)ridetime" }
+    func timetableTrainTypeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)traintype" }
+    func trainTypeListKey(_ isWeekday: Bool, _ num: Int) -> String { return "\(lineNameKey(num))\(isWeekday.weekdayTag)traintypelist" }
     func choiceCopyTimeKeyArray(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [String] {
         return [
             "\(lineNameKey(num))\(isWeekday.weekdayTag)\((hour - 1).addZeroTime)",
@@ -148,6 +153,7 @@ extension String{
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
     func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
     func timetableTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
+    func timetableRideTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
     func choiceCopyTime(_ isWeekday: Bool, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(isWeekday, num, hour)[i].userDefaultsValue("")! }
     
     // MARK: - Settings View Data Access
@@ -212,7 +218,7 @@ extension Bool {
     // self = isWeekDay
     var weekdayTag: String { return self ? "weekday": "weekend" }
     var weekendTag: String { return self ? "weekend": "weekday" }
-    var weekdayLabel: String { return self ? "Weekdays (Except Public Holidays)".localized: "Saturday & Sunday $ Public Holidays".localized }
+    var weekdayLabel: String { return self ? "Weekdays except Public Holidays".localized: "Saturday & Sunday $ Public Holidays".localized }
     var weekendLabel: String { return self ? "Sat/Sun/PH".localized: "Weekdays".localized }
 }
 
@@ -235,16 +241,16 @@ extension String {
     // Load TrainTime objects for a specific hour
     func loadTrainTimes(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [TrainTime] {
         let timetableKey = self.timetableKey(isWeekday, num, hour)
-        let rideTimeKey = self.rideTimeKeyForHour(isWeekday, num, hour)
-        let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
+        let timetableRideTimeKey = self.timetableRideTimeKey(isWeekday, num, hour)
+        let timetableTrainTypeKey = self.timetableTrainTypeKey(isWeekday, num, hour)
                 
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else {
             return []
         }
         
         let departureTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        let rideTimes = UserDefaults.standard.string(forKey: rideTimeKey)?.components(separatedBy: " ").compactMap { Int($0) } ?? []
-        let trainTypes = UserDefaults.standard.string(forKey: trainTypeKey)?.components(separatedBy: " ") ?? []
+        let rideTimes = UserDefaults.standard.string(forKey: timetableRideTimeKey)?.components(separatedBy: " ").compactMap { Int($0) } ?? []
+        let trainTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
         
         var trainTimes: [TrainTime] = []
         for (index, departureTimeString) in departureTimes.enumerated() {
@@ -278,8 +284,8 @@ extension String {
     func saveTrainTimes(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int, _ hour: Int) {
 
         let timetableKey = self.timetableKey(isWeekday, num, hour)
-        let rideTimeKey = self.rideTimeKeyForHour(isWeekday, num, hour)
-        let trainTypeKey = self.trainTypeKey(isWeekday, num, hour)
+        let timetableRideTimeKey = self.timetableRideTimeKey(isWeekday, num, hour)
+        let timetableTrainTypeKey = self.timetableTrainTypeKey(isWeekday, num, hour)
         
         if hour < 9 {
             print("💾 saveTrainTimes: Saving \(trainTimes.count) TrainTime objects for hour \(hour) (\(isWeekday ? "weekday" : "weekend"))")
@@ -287,8 +293,8 @@ extension String {
         
         // Clear existing data (always remove to ensure clean state)
         UserDefaults.standard.removeObject(forKey: timetableKey)
-        UserDefaults.standard.removeObject(forKey: rideTimeKey)
-        UserDefaults.standard.removeObject(forKey: trainTypeKey)
+        UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
+        UserDefaults.standard.removeObject(forKey: timetableTrainTypeKey)
         
         // Ensure UserDefaults changes are synchronized to disk
         UserDefaults.standard.synchronize()
@@ -313,15 +319,21 @@ extension String {
         
         // Save to UserDefaults
         let timetableString = departureTimes.joined(separator: " ")
-        let rideTimeString = rideTimes.joined(separator: " ")
-        let trainTypeString = trainTypes.joined(separator: " ")
+        let timetableRideTimeString = rideTimes.joined(separator: " ")
+        let timetableTrainTypeString = trainTypes.joined(separator: " ")
         
         UserDefaults.standard.set(timetableString, forKey: timetableKey)
-        UserDefaults.standard.set(rideTimeString, forKey: rideTimeKey)
-        UserDefaults.standard.set(trainTypeString, forKey: trainTypeKey)
+        UserDefaults.standard.set(timetableRideTimeString, forKey: timetableRideTimeKey)
+        UserDefaults.standard.set(timetableTrainTypeString, forKey: timetableTrainTypeKey)
         
         if hour < 9 {
-            print("📊 Data: timetable='\(timetableString)', rideTime='\(rideTimeString)', trainType='\(trainTypeString)'")
+            print("📊 Data: timetable='\(timetableString)', rideTime='\(timetableRideTimeString)', trainType='\(timetableTrainTypeString)'")
+            
+            // Print detailed ride time information for verification
+            print("🚉 Ride Time Details for hour \(hour):")
+            for (index, trainTime) in trainTimes.enumerated() {
+                print("   \(index + 1). \(trainTime.departureTime) → \(trainTime.arrivalTime) (\(trainTime.rideTime)分)")
+            }
         }
     }
     
@@ -388,15 +400,78 @@ extension String {
         return []
     }
     
-    // MARK: - TrainType Key Generation
-    // Generate UserDefaults key for train type data
-    func trainTypeKey(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
-        return "\(lineNameKey(num))\(isWeekday.weekdayTag)\(hour.addZeroTime)traintype"
+}
+
+// MARK: - Timetable Data Extensions
+// Extensions for timetable data processing and analysis
+extension Array where Element == (trainNumber: String, departureTime: String, destinationStation: String, trainType: String) {
+    
+    // MARK: - Train Type Extraction
+    // Extract unique train types from timetable data array
+    var uniqueTrainTypes: Set<String> {
+        return Set(self.compactMap { record in
+            let trainType = record.trainType
+            guard !trainType.isEmpty else { return nil }
+            
+            // Extract the actual train type name from ODPT format
+            // Example: "odpt.TrainType:JR-East.Local" -> "Local"
+            if trainType.contains(".") {
+                let components = trainType.components(separatedBy: ".")
+                return components.last ?? trainType
+            }
+            
+            return trainType
+        })
     }
     
-    // MARK: - TrainType List Key Generation
-    // Generate UserDefaults key for train type list data
-    func trainTypeListKey(_ isWeekday: Bool, _ num: Int) -> String {
-        return "\(lineNameKey(num))\(isWeekday.weekdayTag)traintypelist"
+    // MARK: - Train Type List
+    // Get sorted list of unique train types
+    var trainTypeList: [String] {
+        return uniqueTrainTypes.sorted()
     }
+    
+    // MARK: - Train Type Count
+    // Count occurrences of each train type
+    var trainTypeCounts: [String: Int] {
+        var counts: [String: Int] = [:]
+        
+        for record in self {
+            let trainType = record.trainType
+            guard !trainType.isEmpty else { continue }
+            
+            // Extract the actual train type name
+            let actualTrainType: String
+            if trainType.contains(".") {
+                let components = trainType.components(separatedBy: ".")
+                actualTrainType = components.last ?? trainType
+            } else {
+                actualTrainType = trainType
+            }
+            
+            counts[actualTrainType, default: 0] += 1
+        }
+        
+        return counts
+    }
+    
+    // MARK: - Filter by Train Type
+    // Filter records by specific train type
+    func filtered(by trainType: String) -> [Element] {
+        return self.filter { record in
+            let recordTrainType = record.trainType
+            guard !recordTrainType.isEmpty else { return false }
+            
+            // Extract the actual train type name
+            let actualTrainType: String
+            if recordTrainType.contains(".") {
+                let components = recordTrainType.components(separatedBy: ".")
+                actualTrainType = components.last ?? recordTrainType
+            } else {
+                actualTrainType = recordTrainType
+            }
+            
+            return actualTrainType == trainType
+        }
+    }
+    
 }

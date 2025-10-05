@@ -106,40 +106,25 @@ extension UIScreen {
 // MARK: - Timetable Extensions
 extension UIScreen {
     
-    var timetableDisplayWidth:    CGFloat { customWidth * 0.90 }
-    var timetableHourFontSize:    CGFloat { customWidth * 0.036 }
-    var timetableMinuteFontSize:  CGFloat { customWidth * 0.036 }
-    // Dynamic size based on train count
-    func timetableMinuteFontSize(for trainCount: Int) -> CGFloat {
-        return customWidth * (
-            (trainCount < 16) ? 0.036:
-            (trainCount < 20) ? 0.032:
-            (trainCount < 24) ? 0.028:
-            (trainCount < 28) ? 0.024:
-            0.020
-        )
-    }
-    func timetableMinuteSpacing(for trainCount: Int) -> CGFloat {
-        return customWidth * (
-            (trainCount < 16) ? 0.010:
-            (trainCount < 20) ? 0.009:
-            (trainCount < 24) ? 0.008:
-            (trainCount < 28) ? 0.007:
-            0.006
-        )
-    }
+    var timetableDisplayWidth:     CGFloat { customWidth * 0.90 }
+    var timetableHourFontSize:     CGFloat { customWidth * 0.036 }
+    var timetableMinuteFontSize:   CGFloat { customWidth * 0.032 }
+    var timetableRideTimeFontSize: CGFloat { customWidth * 0.020 }
+    var timetableMinuteSpacing:    CGFloat { customWidth * 0.008 }
+
     var timetableHorizontalSpacing: CGFloat { customWidth * 0.04 }
     var timetableWeekToggleSpacing: CGFloat { customWidth * 0.016 }
 
-    var timetableHourFrameWidth:  CGFloat { customWidth * 0.048 }
-    var timetableNumberWidth:     CGFloat { customWidth * 0.06 }
-    var timetableTypeMenuWidth:   CGFloat { customWidth * 0.50 }
-    var timetableEditButtonWidth: CGFloat { customWidth * 0.44 }
-    var timetablePickerWidth:     CGFloat { customWidth * 0.43 }
-    var timetableTypeMenuOffsetX: CGFloat { customWidth * 0.00 }
+    var timetableHourFrameWidth:   CGFloat { customWidth * 0.1 }
+    var timetableMinuteFrameWidth: CGFloat { customWidth - timetableHourFrameWidth - 1 }
+    var timetableNumberWidth:      CGFloat { customWidth * 0.048 }
+    var timetableTypeMenuWidth:    CGFloat { customWidth * 0.50 }
+    var timetableEditButtonWidth:  CGFloat { customWidth * 0.44 }
+    var timetablePickerWidth:      CGFloat { customWidth * 0.43 }
+    var timetableTypeMenuOffsetX:  CGFloat { customWidth * 0.00 }
 
-    var timetableButtonHeight:    CGFloat { screenHeight * 0.08 }
-    var timetableGridHeight:      CGFloat { screenHeight * 0.028 }
+    var timetableNumberHeight:    CGFloat { screenHeight * 0.018 }
+    var timetableGridHeight:      CGFloat { screenHeight * 0.024 }
     var timetableDisplayHeight:   CGFloat { screenHeight * 0.06 }
     var timetableEditTitleHeight: CGFloat { screenHeight * 0.06 }
 
@@ -149,6 +134,30 @@ extension UIScreen {
     var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.04 }
     var timetablePickerTopPadding    : CGFloat { screenHeight * -0.036 }
     var timetablePickerBottomPadding : CGFloat { screenHeight * -0.012 }
+    var timetableScrollViewMaxHeight : CGFloat { screenHeight * 0.6 }
+
+        // Calculate content height for timetable grid based on train times count
+    func calculateContentHeight(_ trainTimesCount: Int) -> CGFloat {
+        let maxItemsPerRow = 10
+        return trainTimesCount > maxItemsPerRow ?
+            CGFloat((trainTimesCount + maxItemsPerRow - 1) / maxItemsPerRow) * timetableNumberHeight:
+            timetableGridHeight 
+    }
+    
+    // Calculate optimal height for ScrollView based on content
+    func calculateScrollViewHeight(trainTimesCounts: [Int]) -> CGFloat {
+        guard !trainTimesCounts.isEmpty else { return 0.0 }
+        
+        // Calculate total content height
+        var totalHeight: CGFloat = 0
+        for count in trainTimesCounts {
+            let contentHeight = calculateContentHeight(count)
+            totalHeight += contentHeight + 1 // +1 for separator line
+        }
+        
+        // Set minimum and maximum heights
+        return min(totalHeight, timetableScrollViewMaxHeight)
+    }
 }
 
 // MARK: - Ad Banner Extensions

@@ -58,14 +58,19 @@ enum LocalDataSource: CaseIterable {
     case sotetsuBus    // Sotetsu Bus
     case kokusaiKogyo  // Kokusai Kogyo Bus
     case kanachuBus    // Kanachu Bus
-    case odakyuBus     // Odakyu Bus
     case seibuBus      // Seibu Bus
     case tokyuBus      // Tokyu Bus
+    case odakyuBus     // Odakyu Bus
+    case keioBus       // Keio Bus
+    case nishitokyoBus // Nishitokyo Bus
     
     // MARK: - File Name Mapping
     // Generate filename dynamically from operatorCode with transportation type included
     var fileName: String {
         // Extract operator name from operatorCode (remove "odpt.Operator:" prefix)
+        guard let operatorCode = operatorCode else {
+            return ""
+        }
         let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
         // Convert to lowercase and keep hyphens
         let normalizedName = operatorName.lowercased().replacingOccurrences(of: " ", with: "")
@@ -94,17 +99,19 @@ enum LocalDataSource: CaseIterable {
         case .toeiBus: return "都営バス"
         case .yokohamaBus: return "横浜市営バス"
         case .tokyuBus: return "東急バス"
-        case .odakyuBus: return "小田急バス"
         case .seibuBus: return "西武バス"
         case .sotetsuBus: return "相鉄バス"
         case .kanachuBus: return "神奈中バス"
         case .kokusaiKogyo: return "国際興業"
+        case .odakyuBus: return "小田急バス"
+        case .keioBus: return "京王バス"
+        case .nishitokyoBus: return "西東京バス"
         }
     }
     
     // MARK: - ODPT Operator Code Mapping
     // Get ODPT operator code for API queries and data matching
-    var operatorCode: String {
+    var operatorCode: String? {
         switch self {
         case .jrEast: return "odpt.Operator:JR-East"
         case .tokyoMetro: return "odpt.Operator:TokyoMetro"
@@ -123,11 +130,13 @@ enum LocalDataSource: CaseIterable {
         case .toeiBus: return "odpt.Operator:Toei"
         case .yokohamaBus: return "odpt.Operator:YokohamaMunicipal"
         case .tokyuBus: return "odpt.Operator:TokyuBus"
-        case .odakyuBus: return "odpt.Operator:OdakyuBus"
         case .seibuBus: return "odpt.Operator:SeibuBus"
         case .sotetsuBus: return "odpt.Operator:SotetsuBus"
         case .kanachuBus: return "odpt.Operator:Kanachu"
         case .kokusaiKogyo: return "odpt.Operator:KokusaiKogyoBus"
+        case .odakyuBus: return nil
+        case .keioBus: return nil
+        case .nishitokyoBus: return nil
         }
     }
     
@@ -138,8 +147,8 @@ enum LocalDataSource: CaseIterable {
         case .jrEast, .tokyoMetro, .toeiMetro, .tokyu, .keikyu, .odakyu, .tobu,
              .seibu, .sotetsu, .yokohamaMetro, .rinkai, .yurikamome, .tsukuba, .tama:
             return .railway
-        case .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus, .sotetsuBus,
-             .kanachuBus, .kokusaiKogyo:
+        case .toeiBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus,
+             .kanachuBus, .kokusaiKogyo, .odakyuBus, .keioBus, .nishitokyoBus:
             return .bus
         }
     }
@@ -151,11 +160,31 @@ enum LocalDataSource: CaseIterable {
         case .toeiMetro, .toeiBus:
             return .publicAPI
         case .tokyoMetro, .yokohamaMetro, .tsukuba, .tama, .yurikamome, .rinkai,
-             .odakyuBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus:
+             .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus:
             return .standard
         case .jrEast, .tokyu, .odakyu, .keikyu, .tobu, .seibu, .sotetsu,
              .kanachuBus, .kokusaiKogyo:
             return .challenge
+        case .odakyuBus, .keioBus, .nishitokyoBus:
+            return .gtfs
+        }
+    }
+
+    var hasTrainTimeTable: Bool {
+        switch self {
+        case .jrEast, .tobu, .sotetsu, .tokyoMetro, .toeiMetro, .yokohamaMetro, .rinkai, .tsukuba, .tama:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var hasBusTimeTable: Bool {
+        switch self {
+        case .toeiBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus, .kanachuBus, .kokusaiKogyo:
+            return true
+        default:
+            return false
         }
     }
     
@@ -287,8 +316,8 @@ enum LocalDataSource: CaseIterable {
             "odpt.TrainType:TamaMonorail.Local"
         ]
         // Bus operators don't have train types
-        case .toeiBus, .yokohamaBus, .tokyuBus, .odakyuBus, .seibuBus, .sotetsuBus,
-             .kanachuBus, .kokusaiKogyo:
+        case .toeiBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus,
+            .kanachuBus, .kokusaiKogyo, .odakyuBus, .keioBus, .nishitokyoBus:
             return []
         }
     }
@@ -312,6 +341,9 @@ enum LocalDataSource: CaseIterable {
     // MARK: - Unified API Link Generation
     // Generate API links using clean enum-based approach
     func apiLink(for dataType: APIDataType) -> String {
+        guard let operatorCode = operatorCode else {
+            return ""
+        }
         let odptDataType = transportationType == .railway ?
             dataType.railwayOdpTDataType :
             dataType.busOdpTDataType
@@ -322,13 +354,15 @@ enum LocalDataSource: CaseIterable {
 // MARK: - API Data Type Enum
 // Defines the type of data to request from the API
 enum APIDataType {
-    case lineInfo       // Railway line or bus route information
-    case timetable      // Timetable data
+    case lineInfo           // Railway line or bus route information
+    case timetable          // Train timetable data
+    case stationTimetable   // Station timetable data
     
     var railwayOdpTDataType: ODPTDataType {
         switch self {
-        case .lineInfo: return .railwayLine
-        case .timetable: return .railwayTimetable
+        case .lineInfo: return .railway
+        case .timetable: return .trainTimetable
+        case .stationTimetable: return .stationTimetable
         }
     }
     
@@ -336,6 +370,7 @@ enum APIDataType {
         switch self {
         case .lineInfo: return .busRoutePattern
         case .timetable: return .busTimetable
+        case .stationTimetable: return .busTimetable
         }
     }
 }
@@ -356,6 +391,7 @@ enum DisplayTrainType: String, CaseIterable {
     case semiExpress = "SemiExpress"
     case express = "Express"
     case commuterExpress = "CommuterExpress"
+    case commuterSemiExpress = "CommuterSemiExpress"
     case commuterRapid = "CommuterRapid"
     case commuterLimitedExpress = "CommuterLimitedExpress"
     case rapidExpress = "RapidExpress"

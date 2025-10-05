@@ -132,19 +132,7 @@ struct SettingsLineSheet: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                // Back button
-                Button(action: {
-                    dismiss()
-                }) {
-                    HStack {
-                        Image(systemName: "arrowshape.backward.fill")
-                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(.black)
-                        Text("Back to homepage".localized)
-                            .font(.system(size: screen.settingsFontSize, weight: .bold))
-                            .foregroundColor(.black)
-                    }
-                }
+                CustomBackButton(foregroundColor: .black, action: { dismiss() })
             }
         }
     }
@@ -835,10 +823,13 @@ struct SettingsLineSheet: View {
             backgroundColor: !vm.isAllNotEmpty ? Color.gray : (!vm.isTimetableManual && vm.isAllSelected) ? Color.primary : Color.accent,
             isEnabled: vm.isAllNotEmpty,
             action: {
-                // Auto mode: execute getTargetTimetableData if all selected, otherwise just open settings
+                // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
                 if !vm.isTimetableManual && vm.isAllSelected {
                     Task {
-                        await vm.getTargetTimetableData()
+                        let result = vm.hasTrainTimetableSupport() 
+                            ? await vm.getTrainTimeTableData()
+                            : await vm.getStationTimetableData()
+                        await vm.finalizeTimetableData(weekdayTrainTimes: result.weekday, weekendTrainTimes: result.weekend)
                         showTimetableSettings = true
                     } 
                 } else if vm.isAllNotEmpty {

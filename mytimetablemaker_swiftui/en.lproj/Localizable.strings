@@ -131,6 +131,9 @@
 "weekends" = "weekends";
 "weekdays" = "weekdays";
 "Sat/Sun/PH" = "Sat/Sun/PH";
+"Weekdays except Public Holidays" = "Weekdays except Public Holidays" ;
+"Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
+
 "Weekdays (Except Public Holidays)" = "Weekdays (Except Public Holidays)";
 "Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
 "Departure Time" = "Departure Time";
@@ -267,6 +270,7 @@
 "Route Settings" = "Route Settings";
 "Select Line Color" = "Line Color Select";
 "Timetable Settings" = "Timetable Settings";
+"Timetable (Riding Time)" = "Timetable (Riding Time)";
 "Auto Generate Timetable" = "Auto Generate Timetable";
 "Auto" = "Auto";
 "Update Line Data" = "Update Line Data";

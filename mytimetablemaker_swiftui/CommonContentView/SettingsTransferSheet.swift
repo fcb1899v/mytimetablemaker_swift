@@ -116,18 +116,7 @@ struct SettingsTransferSheet: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 // Back button
-                Button(action: {
-                    dismiss()
-                }) {
-                    HStack {
-                        Image(systemName: "arrowshape.backward.fill")
-                            .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                            .foregroundColor(.black)
-                        Text("Back to homepage".localized)
-                            .font(.system(size: screen.settingsFontSize, weight: .bold))
-                            .foregroundColor(.black)
-                    }
-                }
+                CustomBackButton(foregroundColor: .black, action: { dismiss() })
             }
         }
     }

@@ -193,19 +193,11 @@ struct LoginContentView: View {
             .edgesIgnoringSafeArea(.all)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading){
-                    // Back button
-                    Button(action: {
-                        isNavigateToMain = true
-                    }) {
-                         HStack {
-                            Image(systemName: "arrowshape.backward.fill")
-                                .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                                .foregroundColor(.primary)
-                            Text("Back to homepage".localized)
-                                .font(.system(size: screen.settingsFontSize, weight: .bold))
-                                .foregroundColor(.primary)
+                    CustomBackButton(foregroundColor: .primary,
+                        action: { 
+                            isNavigateToMain = true 
                         }
-                    }
+                    )
                 }
             }
             .onAppear {

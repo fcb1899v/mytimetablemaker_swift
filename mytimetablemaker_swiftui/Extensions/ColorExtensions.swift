@@ -205,7 +205,7 @@ extension DisplayTrainType {
         case .defaultLocal, .local, .unknown:
             return .white
         // Express trains - Yellow Green
-        case .defaultExpress, .express, .semiExpress, .sectionExpress, .sectionSemiExpress, .commuterExpress:
+        case .defaultExpress, .express, .semiExpress, .sectionExpress, .sectionSemiExpress, .commuterExpress, .commuterSemiExpress:
             return .yelwgre
         // Rapid trains - Yellow
         case .defaultRapid, .rapid, .rapidExpress, .semiRapid, .commuterRapid:

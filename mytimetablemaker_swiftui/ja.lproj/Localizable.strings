@@ -76,7 +76,6 @@
 "Setting your ride time [min]" = "乗車時間の設定 [分]";
 "Setting your transportation" = "移動手段の設定";
 "Setting your transfer time [min]" = "乗換時間の設定 [分]";
-"Setting your timetable" = "時刻表設定";
 
 //SettingsTransferSheet
 "Home & Destination Settings" = "自宅・行き先設定";
@@ -137,7 +136,7 @@
 "weekends" = "土日";
 "weekdays" = "平日";
 "Sat/Sun/PH" = "土日祝";
-"Weekdays (Except Public Holidays)" = "平日（祝日を除く）";
+"Weekdays except Public Holidays" = "平日・祝日を除く";
 "Saturday & Sunday $ Public Holidays" = "土曜・日曜・祝日";
 
 "E, MMM d, yyyy" = "yyyy/M/d (E)";
@@ -271,6 +270,7 @@
 "Route Settings" = "ルート設定";
 "Select Line Color" = "路線カラー選択";
 "Timetable Settings" = "時刻表設定";
+"Timetable (Riding Time)" = "時刻表（乗車時間）";
 "Auto Generate Timetable" = "時刻表の自動生成";
 "Auto" = "自動";
 "Update Line Data" = "路線データの更新";
@@ -338,7 +338,7 @@
 "SpecialRapid" = "特別快速";
 "TH-LINER" = "THライナー";
 "TJLiner" = "TJライナー";
-"Edit Timetable" = "時刻表編集";
+"Edit Timetable" = "時刻表設定";
 "Copy Timetable" = "時刻表コピー";
 "Select Type" = "列車種別";
 

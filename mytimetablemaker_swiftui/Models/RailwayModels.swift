@@ -41,7 +41,9 @@ struct TransportationLine: Identifiable, Hashable {
     let destinationStation: String?     // odpt:destinationStation - destination station (first element from array)
     let railwayTitle: RailwayTitle?     // odpt:railwayTitle - multi-language support
     let lineCode: String?               // odpt:lineCode (e.g., "JY", "TT", etc.)
-    let lineDirection: String?          // Calculated direction based on station index comparison
+    let lineDirection: String?          // Direction information for timetable API calls
+    let ascendingRailDirection: String? // odpt:ascendingRailDirection - ascending direction from JSON
+    let descendingRailDirection: String? // odpt:descendingRailDirection - descending direction from JSON
     
     // MARK: - Bus-specific properties
     let busRoute: String?           // odpt:busroute - bus route identifier
@@ -277,8 +279,8 @@ struct TrainTime {
             return 0
         }
         
-        let departureTotalMinutes = departureHour * 60 + departureMinute
-        let arrivalTotalMinutes = arrivalHour * 60 + arrivalMinute
+        let departureTotalMinutes = departureHour.timetableHour * 60 + departureMinute
+        let arrivalTotalMinutes = arrivalHour.timetableHour * 60 + arrivalMinute
         
         // Handle day rollover (arrival time is next day)
         return arrivalTotalMinutes >= departureTotalMinutes ?
@@ -290,18 +292,6 @@ struct TrainTime {
     // Check if this train time has valid data
     var isValid: Bool {
         return !departureTime.isEmpty && !arrivalTime.isEmpty && rideTime > 0
-    }
-    
-    // Get formatted display string for ride time
-    var formattedRideTime: String {
-        let hours = rideTime / 60
-        let minutes = rideTime % 60
-        
-        if hours > 0 {
-            return "\(hours)時間\(minutes)分"
-        } else {
-            return "\(minutes)分"
-        }
     }
 }
 
@@ -324,14 +314,6 @@ extension TrainTime: Hashable {
         hasher.combine(trainNumber)
         hasher.combine(trainType)
         hasher.combine(rideTime)
-    }
-}
-
-extension TrainTime: CustomStringConvertible {
-    var description: String {
-        let trainInfo = trainNumber != nil ? " (列車番号: \(trainNumber!))" : ""
-        let typeInfo = trainType != nil ? " (種別: \(trainType!))" : ""
-        return "\(departureTime) → \(arrivalTime) (\(formattedRideTime))\(trainInfo)\(typeInfo)"
     }
 }
 
