@@ -11,39 +11,68 @@
 
 import Foundation
 
+// MARK: - ODPT Data Transfer Objects
+// DTOs for handling external data formats from ODPT API.
+
+// MARK: - ODPT Railway DTO
+// DTO for railway data from ODPT API.
+// Maps external JSON structure to internal data model.
+struct RailwayDTO: Decodable {
+    let title: String
+    let sameAs: String
+    let operatorCode: String?
+    let lineColor: String?
+    let startStation: String?
+    let endStation: String?
+    let destinationStation: String?
+    let railwayTitle: LocalizedTitle?
+    let lineCode: String?
+    let date: String?
+
+    enum CodingKeys: String, CodingKey {
+        case title = "dc:title"                   // Dublin Core title
+        case sameAs = "owl:sameAs"                // OWL sameAs identifier
+        case operatorCode = "odpt:operator"       // Railway operator code
+        case lineColor = "odpt:lineColor"         // Line color in hex format
+        case startStation = "odpt:startStation"   // First station on the line
+        case endStation = "odpt:endStation"       // Last station on the line
+        case destinationStation = "odpt:destinationStation" // Destination station (first element from array)
+        case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
+        case lineCode = "odpt:lineCode"           // Line identifier code
+        case date = "dc:date"                     // Data update date
+    }
+}
+
+// MARK: - ODPT Bus Route Pattern DTO
+// DTO for bus route pattern data from ODPT API.
+// Maps external JSON structure to internal bus data model.
+struct BusRoutePatternDTO: Decodable {
+    let title: String
+    let sameAs: String
+    let operatorCode: String?
+    let busRoute: String?
+    let pattern: String?
+    let direction: String?
+    let busstopPoleOrder: [BusStop]?
+    let note: String?
+    let date: String?
+
+    enum CodingKeys: String, CodingKey {
+        case title = "dc:title"           // Dublin Core title
+        case sameAs = "owl:sameAs"        // OWL sameAs identifier
+        case operatorCode = "odpt:operator"       // Bus operator code
+        case busRoute = "odpt:busroute"            // Bus route identifier
+        case pattern = "odpt:pattern"             // Bus route pattern
+        case direction = "odpt:direction"        // Bus direction
+        case busstopPoleOrder = "odpt:busstopPoleOrder"  // Bus stop sequence
+        case note = "odpt:note"                   // Bus route note/description
+        case date = "dc:date"                     // Data update date
+    }
+}
+
 // MARK: - ODPT Data Parser
 // Converts raw JSON data from ODPT API to internal TransportationLine models.
 struct ODPTParser {
-    
-    // MARK: - Railway Data Parsing
-    // Parse railway data from JSON and convert to TransportationLine objects.
-    static func parseRailways(_ data: Data) throws -> [TransportationLine] {
-        let dec = JSONDecoder()
-        let dtos = try dec.decode([RailwayDTO].self, from: data)
-        
-        // MARK: - DTO to Model Mapping using closures
-        return dtos.map { dto in
-            TransportationLine(
-                kind: .railway,
-                name: dto.title,
-                code: dto.sameAs,
-                operatorCode: dto.operatorCode,
-                lineColor: dto.lineColor,
-                startStation: dto.startStation,
-                endStation: dto.endStation,
-                destinationStation: dto.destinationStation,
-                railwayTitle: dto.railwayTitle,
-                lineCode: dto.lineCode,
-                lineDirection: nil,
-                ascendingRailDirection: nil,
-                descendingRailDirection: nil,
-                busRoute: nil,
-                pattern: nil,
-                busDirection: nil,
-                busstopPoleOrder: nil
-            )
-        }
-    }
     
     // MARK: - Bus Data Parsing
     // Parse bus route pattern data from JSON and convert to TransportationLine objects.
@@ -67,7 +96,7 @@ struct ODPTParser {
                 startStation: nil,
                 endStation: nil,
                 destinationStation: nil,
-                railwayTitle: RailwayTitle(ja: dto.title, en: englishName),
+                railwayTitle: LocalizedTitle(ja: dto.title, en: englishName),
                 lineCode: nil,
                 lineDirection: nil,
                 ascendingRailDirection: nil,
@@ -75,7 +104,8 @@ struct ODPTParser {
                 busRoute: dto.busRoute,
                 pattern: dto.pattern,
                 busDirection: dto.direction,
-                busstopPoleOrder: dto.busstopPoleOrder
+                busstopPoleOrder: dto.busstopPoleOrder,
+                title: dto.title
             )
         }
         
@@ -131,9 +161,9 @@ struct ODPTParser {
                     let lineCode = element["odpt:lineCode"] as? String
                     
                     // MARK: - Multi-Language Title Processing using closure
-                    let railwayTitle: RailwayTitle? = {
+                    let railwayTitle: LocalizedTitle? = {
                         guard let railwayTitleDict = element["odpt:railwayTitle"] as? [String: String] else { return nil }
-                        return RailwayTitle(
+                        return LocalizedTitle(
                             ja: railwayTitleDict["ja"],
                             en: railwayTitleDict["en"]
                         )
@@ -175,7 +205,8 @@ struct ODPTParser {
                         busRoute: nil,
                         pattern: nil,
                         busDirection: nil,
-                        busstopPoleOrder: nil
+                        busstopPoleOrder: nil,
+                        title: nil
                     )
                 }
             }
@@ -267,36 +298,10 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         }
     }
     
-    // MARK: - Common Cache Metadata Creation
-    // Common function to create cache metadata from response
-    private func createCacheMeta(from response: URLResponse) -> CacheMeta {
-        let httpResponse = response as? HTTPURLResponse
-        return CacheMeta(
-            eTag: httpResponse?.value(forHTTPHeaderField: "ETag"),
-            lastModified: httpResponse?.value(forHTTPHeaderField: "Last-Modified"),
-            downloadedAt: Date()
-        )
-    }
-    
-    // Load cached data by custom key
-    func loadCachedData(for key: String) -> Data? { cache.loadData(for: key) }
-    
-    // MARK: - Date Extraction Helper
-    // Common function to extract latest date from JSON data
-    private func extractLatestDate(from data: Data) -> String? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]]
-            return json?.compactMap { $0["dc:date"] as? String }.max()
-        } catch {
-            print("Error extracting date: \(error)")
-            return nil
-        }
-    }
-    
     // MARK: - Individual Operator Data Fetching
     // Fetch data for individual transportation operators using their specific API endpoints
     func fetchIndividualOperatorData(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Data {
-        let urlString = transportOperator.apiLink(for: .lineInfo)
+        let urlString = transportOperator.apiLink(for: .line)
         guard let url = URL(string: urlString) else {
             throw ODPTError.invalidData
         }
@@ -316,30 +321,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         return data
     }
     
-    // MARK: - All Operators Data Fetching
-    // Fetch data for all 22 transportation operators
-    func fetchAllOperatorsData(consumerKey: String) async -> [LocalDataSource: Result<Data, Error>] {
-        return await withTaskGroup(of: (LocalDataSource, Result<Data, Error>).self) { group in
-            for transportOperator in LocalDataSource.allCases {
-                group.addTask {
-                    do {
-                        let data = try await self.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
-                        print("✅ Successfully fetched data for \(transportOperator.operatorDisplayName)")
-                        return (transportOperator, .success(data))
-                    } catch {
-                        print("❌ Failed to fetch data for \(transportOperator.operatorDisplayName): \(error)")
-                        return (transportOperator, .failure(error))
-                    }
-                }
-            }
-            
-            var results: [LocalDataSource: Result<Data, Error>] = [:]
-            for await (transportOperator, result) in group {
-                results[transportOperator] = result
-            }
-            return results
-        }
-    }
     
     // MARK: - ETag Management Helper Methods
     // Helper methods for efficient ETag management
@@ -381,7 +362,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         // MARK: - Conditional GET Request Check
         // Use conditional GET request with ETag and Last-Modified headers
         do {
-            let urlString = transportOperator.apiLink(for: .lineInfo)
+            let urlString = transportOperator.apiLink(for: .line)
             guard let url = URL(string: urlString) else {
                 throw ODPTError.invalidData
             }
@@ -469,57 +450,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
             }
     }
     
-    // MARK: - Railway Operators Update
-    // Update only railway operators (exclude bus operators)
-    func updateRailwayOperators(consumerKey: String) async -> [LocalDataSource: Bool] {
-        // Filter only railway operators
-        let railwayOperators = LocalDataSource.allCases.filter { $0.transportationType == .railway }
-        
-        return await withTaskGroup(of: (LocalDataSource, Bool).self) { group in
-            for transportOperator in railwayOperators {
-                group.addTask {
-                    do {
-                        let (_, updated) = try await self.processOperatorUpdate(transportOperator, consumerKey: consumerKey)
-                        return (transportOperator, updated)
-                    } catch {
-                        print("❌ Failed to update \(transportOperator.operatorDisplayName): \(error)")
-                        return (transportOperator, false)
-                    }
-                }
-            }
-            
-            var results: [LocalDataSource: Bool] = [:]
-            for await (transportOperator, updated) in group {
-                results[transportOperator] = updated
-            }
-            return results
-        }
-    }
-    
-    // MARK: - All Operators Update Check
-    // Check all 22 operators for updates
-    func checkAllOperatorsForUpdates(consumerKey: String) async -> [LocalDataSource: Bool] {
-        return await withTaskGroup(of: (LocalDataSource, Bool).self) { group in
-            for transportOperator in LocalDataSource.allCases {
-                group.addTask {
-                    do {
-                        let needsUpdate = try await self.checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
-                        return (transportOperator, needsUpdate)
-                    } catch {
-                        print("Error checking updates for \(transportOperator.operatorDisplayName): \(error)")
-                        return (transportOperator, false)
-                    }
-                }
-            }
-            
-            var results: [LocalDataSource: Bool] = [:]
-            for await (transportOperator, needsUpdate) in group {
-                results[transportOperator] = needsUpdate
-            }
-            return results
-        }
-    }
-    
     // MARK: - Individual Operator Update
     // Update individual operator data and save to Documents directory
     func updateIndividualOperator(_ transportOperator: LocalDataSource, consumerKey: String) async -> Result<Void, Error> {
@@ -554,21 +484,3 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     }
 }
 
-// MARK: - ODPT Error Types
-// Custom error types for ODPT operations
-enum ODPTError: Error, LocalizedError {
-    case dateExtractionFailed
-    case networkError(String)
-    case invalidData
-    
-    var errorDescription: String? {
-        switch self {
-        case .dateExtractionFailed:
-            return "Failed to extract date from API response"
-        case .networkError(let message):
-            return "Network error: \(message)"
-        case .invalidData:
-            return "Invalid data structure"
-        }
-    }
-}

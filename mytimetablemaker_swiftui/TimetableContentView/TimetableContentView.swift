@@ -16,6 +16,7 @@ struct TimetableContentView: View {
     @State private var image = UIImage()
     @State private var isShowImagePicker = false
     @State private var scrollViewHeight: CGFloat = 0
+    @State private var showWeekdaySheet = false
     @Environment(\.dismiss) private var dismiss
 
     private let goorback: String
@@ -43,42 +44,17 @@ struct TimetableContentView: View {
                 Color.primary
                 VStack(alignment: .leading, spacing: screen.timetableVerticalSpacing) {
 
-                    // MARK: - Weekday/Weekend Toggle Button
-                    HStack {
-
-                        Text(goorback.stationArray[2 * num])
-                            .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
-                            .foregroundColor(.white)
-
-                        Spacer()
-                        
-                        CustomToggle(
-                            isLeftSelected: Binding(
-                                get: { weekflag },
-                                set: { newValue in
-                                    weekflag = newValue
-                                    print("✅ Toggle updated: weekflag=\(weekflag), label='\(weekflag.weekdayLabel)'")
-                                }
-                            ),
-                            leftText: "Weekdays".localized,
-                            leftColor: .white,
-                            rightText: "Sat/Sun/PH".localized,
-                            rightColor: .red,
-                            circleColor: .primary,
-                            offColor: .secondary,
-                        )
-                    }
-                    .padding(.leading, screen.timetableHorizontalSpacing)
-                    .padding(.trailing, screen.timetableWeekToggleSpacing)
-
-
                     // MARK: - Header Section
-                    Text(goorback.timetableLineTitle(num))
+                    Text(goorback.lineNameArray[num])
                         .font(.system(size: screen.settingsSheetInputFontSize, weight: .semibold))
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
 
-                        
+                    Text("\(goorback.stationArray[2 * num])\(" >".localized)\(goorback.stationArray[2 * num + 1])")
+                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.leading, screen.timetableHorizontalSpacing)
+        
                     // MARK: - Timetable Grid
                     VStack(spacing: 0) {
                         Color.white.frame(width: screen.customWidth, height: 1)
@@ -86,9 +62,22 @@ struct TimetableContentView: View {
                         HStack {
                             Color.white.frame(width: 1)
                             Spacer()
-                            Text(weekflag.weekdayLabel)
-                                .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
-                                .foregroundColor(weekflag.weekLabelColor)
+                            // Weekday/Weekend Dropdown Button for Header
+                            Button(action: {
+                                showWeekdaySheet = true
+                            }) {
+                                HStack {
+                                    Text(weekflag ? "Weekdays".localized : "Sat/Sun/PH".localized)
+                                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
+                                        .foregroundColor(weekflag.weekLabelColor)
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
+                                        .foregroundColor(weekflag.weekLabelColor)
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.clear)
+                            }
                             Spacer()
                             Color.white.frame(width: 1)
                         }
@@ -153,6 +142,9 @@ struct TimetableContentView: View {
                     print("🔄 Weekday changed from SettingsTimetableSheet: weekflag=\(weekflag)")
                 }
             }
+            .sheet(isPresented: $showWeekdaySheet) {
+                WeekdaySelectionSheet(weekflag: $weekflag)
+            }
         }
     }
     
@@ -163,7 +155,7 @@ struct TimetableContentView: View {
         
         // Find hours with train times
         let hoursWithData = allHours.filter { hour in
-            !goorback.loadTrainTimes(weekflag, num, hour).isEmpty
+            !goorback.loadTransportationTimes(weekflag, num, hour).isEmpty
         }
         
         // Return range from first to last hour with data
@@ -181,8 +173,8 @@ struct TimetableContentView: View {
         let hours = validHourRange()
         var counts: [Int] = []
         for hour in hours {
-            let trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
-            counts.append(trainTimes.count)
+            let transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+            counts.append(transportationTimes.count)
         }
         return counts
     }
@@ -294,6 +286,82 @@ struct TimetableContentView: View {
     }
 }
 
+// MARK: - Weekday Selection Sheet
+// Custom sheet for weekday/weekend selection with responsive sizing
+struct WeekdaySelectionSheet: View {
+    @Binding var weekflag: Bool
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: screen.settingsSheetVerticalSpacing) {
+                // Selection buttons
+                VStack(spacing: screen.settingsSheetVerticalSpacing) {
+                    Button(action: {
+                        weekflag = true
+                        dismiss()
+                        print("✅ Weekday selected: weekflag=\(weekflag)")
+                    }) {
+                        HStack {
+                            Image(systemName: weekflag ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: screen.settingsSheetInputFontSize))
+                            Text("Weekdays")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                            Spacer()
+                        }
+                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                        .padding(.vertical, screen.settingsSheetVerticalSpacing)
+                        .background(weekflag ? Color.accent : Color.gray)
+                        .cornerRadius(screen.settingsSheetVerticalSpacing)
+                    }
+                    
+                    Button(action: {
+                        weekflag = false
+                        dismiss()
+                        print("✅ Weekend selected: weekflag=\(weekflag)")
+                    }) {
+                        HStack {
+                            Image(systemName: !weekflag ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: screen.settingsSheetInputFontSize))
+                            Text("Sat/Sun/PH")
+                                .foregroundColor(Color.white)
+                                .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                            Spacer()
+                        }
+                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                        .padding(.vertical, screen.settingsSheetVerticalSpacing)
+                        .background(!weekflag ? Color.accent : Color.gray)
+                        .cornerRadius(screen.settingsSheetVerticalSpacing)
+                    }
+                }
+                .padding(.horizontal, screen.settingsSheetHorizontalPadding)
+                .padding(.top, screen.settingsSheetVerticalSpacing)
+                .padding(.bottom, screen.settingsSheetVerticalSpacing)
+                
+                Spacer()
+            }
+            .background(.white)
+            .navigationBarColor(
+                backgroundColor: UIColor(.white),
+                titleColor: .black,
+            )
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.white, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    CustomBackButton(foregroundColor: .black, action: { dismiss() })
+                }
+            }
+        }
+        .presentationDetents([.medium, .large]) // コンテンツに応じて動的に調整
+    }
+}
+
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode
 struct TimetableContentView_Previews: PreviewProvider {
@@ -301,3 +369,4 @@ struct TimetableContentView_Previews: PreviewProvider {
         TimetableContentView("back1", 0)
     }
 }
+

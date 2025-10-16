@@ -13,7 +13,7 @@ struct TimetableGridView: View {
 
     @State private var isShowingTimetableSheet = false
     @State private var label: String
-    @State private var trainTimes: [TrainTime] = []
+    @State private var transportationTimes: [any TransportationTime] = []
 
     private let goorback: String
     @Binding private var weekflag: Bool
@@ -50,7 +50,7 @@ struct TimetableGridView: View {
                     Spacer()
                     Color.white.frame(width: 1)
                 }
-                .frame(width: screen.timetableHourFrameWidth, height: screen.calculateContentHeight(trainTimes.count))
+                .frame(width: screen.timetableHourFrameWidth, height: screen.calculateContentHeight(transportationTimes.count))
                 .background(Color.black.opacity(0.25))
             }
             
@@ -65,23 +65,23 @@ struct TimetableGridView: View {
             .onAppear {
                 // Load initial data
                 label = goorback.timetableTime(weekflag, num, hour)
-                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
             }
             .onChange(of: goorback.timetableTime(weekflag, num, hour)) { newValue in
                 label = newValue
-                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
             }
             .onChange(of: weekflag) { _ in
                 label = goorback.timetableTime(weekflag, num, hour)
-                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
             }
             // Listen for timetable data updates from API
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TimetableDataUpdated"))) { _ in
-                trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
             }
             
             Color.white
-                .frame(width: 1, height: screen.calculateContentHeight(trainTimes.count))
+                .frame(width: 1, height: screen.calculateContentHeight(transportationTimes.count))
         }
         .frame(width: screen.customWidth)
         .sheet(isPresented: $isShowingTimetableSheet) {
@@ -100,7 +100,7 @@ struct TimetableGridView: View {
     @ViewBuilder
     private func timetableGridContent() -> some View {
         let maxItemsPerRow = 10 // Maximum 3 time entries per row
-        let totalRows = (trainTimes.count + maxItemsPerRow - 1) / maxItemsPerRow
+        let totalRows = (transportationTimes.count + maxItemsPerRow - 1) / maxItemsPerRow
         
         VStack(alignment: .leading, spacing: 0) {
             ForEach(0..<totalRows, id: \.self) { rowIndex in
@@ -117,14 +117,14 @@ struct TimetableGridView: View {
         HStack(spacing: 0) {
             Spacer()
                 .frame(width: screen.timetableMinuteSpacing)
-            ForEach(startIndex..<min(startIndex + maxItems, trainTimes.count), id: \.self) { index in
+            ForEach(startIndex..<min(startIndex + maxItems, transportationTimes.count), id: \.self) { index in
                 HStack(spacing: 0) {
-                    Text(trainTimes[index].departureTime.trimmingLeadingZero)
+                    Text(transportationTimes[index].departureTime.trimmingLeadingZero)
                         .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
-                        .foregroundColor(Color.colorForTrainType(trainTimes[index].trainType))
+                        .foregroundColor(Color.colorForTrainType((transportationTimes[index] as? TrainTime)?.trainType))
                         .lineLimit(1)
                     
-                    Text("(\(String(trainTimes[index].rideTime)))")
+                    Text("(\(String(transportationTimes[index].rideTime)))")
                         .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
                         .foregroundColor(Color.white)
                         .lineLimit(1)

@@ -119,6 +119,7 @@
 "Account could not be deleted" = "アカウントの削除失敗";
 
 //TimetableContentView
+" > " = "→";
 "Add" = "追加";
 "Update" = "更新";
 "Delete" = "削除";
@@ -360,4 +361,16 @@
 "Route 2 Display" = "ルート2表示";
 "Display" = "表示";
 "Hide" = "非表示";
+
+// ODPT Calendar Types
+"Weekday" = "平日";
+"Holiday" = "休日";
+"Saturday/Holiday" = "土休日";
+"Sunday" = "日曜日";
+"Monday" = "月曜日";
+"Tuesday" = "火曜日";
+"Wednesday" = "水曜日";
+"Thursday" = "木曜日";
+"Friday" = "金曜日";
+"Saturday" = "土曜日";
 

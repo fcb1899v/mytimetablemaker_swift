@@ -47,7 +47,7 @@ struct LineTimeImage: View {
                 if isTransfer {
                     // MARK: - Transfer Icon
                     // Displays transportation method icon for transfer scenarios
-                    Image(systemName: transportation != "" ? getTransportationType(label: transportation).iconName: "figure.walk")
+                    Image(systemName: transportation != "" ? transferType(from: transportation).iconName: "figure.walk")
                         .resizable()
                         .scaledToFit()
                         .frame(

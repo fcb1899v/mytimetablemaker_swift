@@ -14,8 +14,6 @@
 		0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* ColorExtensions.swift */; };
 		026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D22AD3E366001CF251 /* FirestoreButton.swift */; };
 		026257D72AD3E515001CF251 /* AccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D62AD3E515001CF251 /* AccountButton.swift */; };
-		02723C472E63BF3E00F1528E /* APITest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C462E63BEFE00F1528E /* APITest.swift */; };
-		02723C492E63BF4E00F1528E /* APINetworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723C482E63BF4D00F1528E /* APINetworkTest.swift */; };
 		02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723E5C2E688CB000F1528E /* AccountExtensions.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
@@ -60,9 +58,6 @@
 		02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */; };
 		02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */; };
 		02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */; };
-		02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A62E5B023400450D16 /* RailwayModels.swift */; };
-		02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */; };
-		02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B12E5B080300450D16 /* LocalDataService.swift */; };
 		02EBD4B82E5B087400450D16 /* ODPTDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B72E5B087200450D16 /* ODPTDataService.swift */; };
 		02EBD4BA2E5B088400450D16 /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4B92E5B088200450D16 /* CacheService.swift */; };
 		02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4BD2E5D770700450D16 /* TransportationModels.swift */; };
@@ -112,8 +107,6 @@
 		0257E431263E1B3D00D45CFB /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
 		026257D22AD3E366001CF251 /* FirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreButton.swift; sourceTree = "<group>"; };
 		026257D62AD3E515001CF251 /* AccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountButton.swift; sourceTree = "<group>"; };
-		02723C462E63BEFE00F1528E /* APITest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APITest.swift; sourceTree = "<group>"; };
-		02723C482E63BF4D00F1528E /* APINetworkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APINetworkTest.swift; sourceTree = "<group>"; };
 		02723E5C2E688CB000F1528E /* AccountExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExtensions.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
@@ -139,9 +132,6 @@
 		02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransferSheet.swift; sourceTree = "<group>"; };
 		02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineViewModel.swift; sourceTree = "<group>"; };
 		02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomComponents.swift; sourceTree = "<group>"; };
-		02EBD4A62E5B023400450D16 /* RailwayModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RailwayModels.swift; sourceTree = "<group>"; };
-		02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataTransferObjects.swift; sourceTree = "<group>"; };
-		02EBD4B12E5B080300450D16 /* LocalDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDataService.swift; sourceTree = "<group>"; };
 		02EBD4B72E5B087200450D16 /* ODPTDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ODPTDataService.swift; sourceTree = "<group>"; };
 		02EBD4B92E5B088200450D16 /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		02EBD4BD2E5D770700450D16 /* TransportationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportationModels.swift; sourceTree = "<group>"; };
@@ -243,7 +233,6 @@
 			children = (
 				02EBD4B92E5B088200450D16 /* CacheService.swift */,
 				02EBD4B72E5B087200450D16 /* ODPTDataService.swift */,
-				02EBD4B12E5B080300450D16 /* LocalDataService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -321,8 +310,6 @@
 			children = (
 				02F02592261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift */,
 				02F02594261BDD7F00655E54 /* Info.plist */,
-				02723C462E63BEFE00F1528E /* APITest.swift */,
-				02723C482E63BF4D00F1528E /* APINetworkTest.swift */,
 			);
 			path = mytimetablemaker_swiftuiTests;
 			sourceTree = "<group>";
@@ -376,8 +363,6 @@
 			isa = PBXGroup;
 			children = (
 				02F025C4261BDED100655E54 /* Enums.swift */,
-				02EBD4A62E5B023400450D16 /* RailwayModels.swift */,
-				02EBD4A82E5B024D00450D16 /* DataTransferObjects.swift */,
 				02EBD4BD2E5D770700450D16 /* TransportationModels.swift */,
 			);
 			path = Models;
@@ -464,7 +449,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					02F02577261BDD7E00655E54 = {
 						CreatedOnToolsVersion = 12.4;
@@ -573,11 +558,9 @@
 				02F025E7261BE54700655E54 /* MyLogin.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
-				02EBD4A72E5B023700450D16 /* RailwayModels.swift in Sources */,
 				02F026F1261DED0400655E54 /* TransferView.swift in Sources */,
 				0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */,
 				027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
-				02EBD4A92E5B025000450D16 /* DataTransferObjects.swift in Sources */,
 				026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */,
 				02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */,
 				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
@@ -585,7 +568,6 @@
 				027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */,
 				02C15511262BC9170037EEC0 /* ContentView.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
-				02EBD4B22E5B080800450D16 /* LocalDataService.swift in Sources */,
 				02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */,
 				0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */,
 				02EBD4B82E5B087400450D16 /* ODPTDataService.swift in Sources */,
@@ -610,8 +592,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F02593261BDD7F00655E54 /* mytimetablemaker_swiftuiTests.swift in Sources */,
-				02723C492E63BF4E00F1528E /* APINetworkTest.swift in Sources */,
-				02723C472E63BF3E00F1528E /* APITest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -720,6 +700,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -778,6 +759,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;

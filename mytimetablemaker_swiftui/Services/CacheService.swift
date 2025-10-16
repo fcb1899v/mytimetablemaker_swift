@@ -39,30 +39,9 @@ final class CacheStore {
     func saveData(_ data: Data, for file: String) {
         let url = path(for: file)
         try? data.write(to: url, options: [.atomic])
-    }
-
-    // MARK: - Metadata Operations
-    // Load cache metadata for validation and update checking.
-    func loadMeta(for file: String) -> CacheMeta? {
-        guard let data = loadData(for: file) else { return nil }
-        return try? JSONDecoder().decode(CacheMeta.self, from: data)
-    }
-    
-    // Save cache metadata for tracking data freshness.
-    func saveMeta(_ meta: CacheMeta, for file: String) {
-        let data = try? JSONEncoder().encode(meta)
-        if let data { saveData(data, for: file) }
-    }
+    }   
 }
 
-// MARK: - Cache Meta Information
-// Metadata for cached ODPT data including ETag and last modified information.
-// Used for efficient cache validation and updates.
-struct CacheMeta: Codable {
-    var eTag: String?           // HTTP ETag for cache validation
-    var lastModified: String?   // Last-Modified header value
-    var downloadedAt: Date      // When the data was cached locally
-}
 
 // MARK: - Shared Data Manager
 // Singleton service for managing transportation line data across the app.
@@ -79,7 +58,6 @@ final class SharedDataManager: ObservableObject {
     @Published var allLines: [TransportationLine] = []
     @Published var isLoading: Bool = false
     @Published var lastUpdated: Date?
-    @Published var statistics: DataStatistics = DataStatistics()
     
     // MARK: - Private Properties
     // Internal state management
@@ -169,7 +147,6 @@ final class SharedDataManager: ObservableObject {
             }
         }
         
-        await updateStatistics()
         isLoading = false
         isInitialized = true
         
@@ -433,29 +410,6 @@ final class SharedDataManager: ObservableObject {
         }
     }
     
-    // MARK: - Statistics Update
-    // Update data statistics using reduce
-    private func updateStatistics() async {
-        let stats = allLines.reduce(into: (total: 0, railway: 0, bus: 0, operators: Set<String>())) { result, line in
-            result.total += 1
-            if line.kind == .railway {
-                result.railway += 1
-            } else {
-                result.bus += 1
-            }
-            if let operatorCode = line.operatorCode {
-                result.operators.insert(operatorCode)
-            }
-        }
-        
-        self.statistics = DataStatistics(
-            totalLines: stats.total,
-            railwayLines: stats.railway,
-            busLines: stats.bus,
-            operators: stats.operators.count
-        )
-    }
-    
     // MARK: - Update Check
     // Check if railway update is needed (24-hour rule)
     private func shouldPerformRailwayUpdate() -> Bool {
@@ -514,20 +468,4 @@ final class SharedDataManager: ObservableObject {
         UserDefaults.standard.set(Date(), forKey: lastUpdateKey)
     }
     
-    // MARK: - Data Refresh
-    // Force refresh of all data
-    func refreshData() async {
-        isInitialized = false
-        initializationTask = nil
-        await initializeData()
-    }
-    
-    // MARK: - Memory Management
-    // Clear data when memory is low
-    func clearData() {
-        allLines = []
-        isInitialized = false
-        initializationTask = nil
-    }
 }
-

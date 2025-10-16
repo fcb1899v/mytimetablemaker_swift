@@ -119,6 +119,7 @@
 
 
 //TimetableContentView
+" > " = " > ";
 "Add" = "Add";
 "Update" = "Update";
 "Delete" = "Delete";
@@ -360,4 +361,16 @@
 "Route 2 Display" = "Route 2 Display";
 "Display" = "Display";
 "Hide" = "Hide";
+
+// ODPT Calendar Types
+"Weekday" = "Weekday";
+"Holiday" = "Holiday";
+"Saturday/Holiday" = "Saturday/Holiday";
+"Sunday" = "Sunday";
+"Monday" = "Monday";
+"Tuesday" = "Tuesday";
+"Wednesday" = "Wednesday";
+"Thursday" = "Thursday";
+"Friday" = "Friday";
+"Saturday" = "Saturday";
 

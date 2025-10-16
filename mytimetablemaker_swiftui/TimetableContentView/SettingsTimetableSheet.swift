@@ -17,7 +17,7 @@ struct SettingsTimetableSheet: View {
     @State private var isShowingCopySheet = false
     @State private var selectedTrainType: String?
     @State private var isTrainTypeDropdownOpen = false
-    @State private var trainTimes: [TrainTime] = []
+    @State private var transportationTimes: [any TransportationTime] = []
     @State private var hour: Int
     @State private var isWeekday: Bool
     
@@ -37,7 +37,7 @@ struct SettingsTimetableSheet: View {
         self._hour = State(initialValue: hour)
         self._isWeekday = State(initialValue: weekflag)
         self._selectedTrainType = State(initialValue: nil)
-        self._trainTimes = State(initialValue: goorback.loadTrainTimes(weekflag, num, hour))
+        self._transportationTimes = State(initialValue: goorback.loadTransportationTimes(weekflag, num, hour))
         
         // Load saved ride time as default value (using route-level key without hour)
         let rideTimeKey = goorback.rideTimeKey(num)
@@ -106,7 +106,7 @@ struct SettingsTimetableSheet: View {
                 }
             }
         }
-        .presentationDetents([.fraction(0.7)])
+        .presentationDetents([.medium])
         .sheet(isPresented: $isShowingCopySheet) {
             CopyTimeSheet(
                 goorback: goorback,
@@ -115,7 +115,7 @@ struct SettingsTimetableSheet: View {
                 hour: hour,
                 onTimeCopied: {
                     // Update trainTimes when time is copied
-                    trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
                     
                     // Notify TimetableGridView to update
                     NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -142,7 +142,7 @@ struct SettingsTimetableSheet: View {
                 offColor: .secondary,
             )
             .onChange(of: isWeekday) { _ in
-                trainTimes = goorback.loadTrainTimes(isWeekday, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
                 // Notify TimetableContentView about weekday change
                 NotificationCenter.default.post(
                     name: NSNotification.Name("WeekdayChanged"), 
@@ -162,7 +162,7 @@ struct SettingsTimetableSheet: View {
             Button(action: {
                 if hour > 4 {
                     hour -= 1
-                    trainTimes = goorback.loadTrainTimes(isWeekday, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
                 }
             }) {
                 Image(systemName: "chevron.left")
@@ -181,7 +181,7 @@ struct SettingsTimetableSheet: View {
             Button(action: {
                 if hour < 24 {
                     hour += 1
-                    trainTimes = goorback.loadTrainTimes(isWeekday, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
                 }
             }) {
                 Image(systemName: "chevron.right")
@@ -196,15 +196,16 @@ struct SettingsTimetableSheet: View {
     // MARK: - Current Timetable Display
     @ViewBuilder
     private var timetableDisplaySection: some View {
-        if trainTimes.count > 0 {
+        if transportationTimes.count > 0 {
             LazyVGrid(columns: Array(repeating: GridItem(.fixed(screen.timetableNumberWidth), spacing: 0), count: screen.timetableNumberWidth > 0 ? max(1, Int(screen.timetableDisplayWidth / screen.timetableNumberWidth) - 1): 1), spacing: 0) {
-                ForEach(trainTimes, id: \.self) { trainTime in
-                    Text(trainTime.departureTime.trimmingLeadingZero)
+                ForEach(transportationTimes.indices, id: \.self) { index in
+                    let transportationTime = transportationTimes[index]
+                    Text(transportationTime.departureTime.trimmingLeadingZero)
                         .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
-                        .foregroundColor(trainTime.trainType != nil ? Color.colorForTrainType(trainTime.trainType) : .white)
-                    Text("(\(String(trainTime.rideTime)))")
+                        .foregroundColor((transportationTime as? TrainTime)?.trainType != nil ? Color.colorForTrainType((transportationTime as? TrainTime)?.trainType) : .white)
+                    Text("(\(String(transportationTime.rideTime)))")
                         .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
-                        .foregroundColor(Color.colorForTrainType(trainTime.trainType))
+                        .foregroundColor(Color.colorForTrainType((transportationTime as? TrainTime)?.trainType))
                 }
             }
             .frame(width: screen.timetableDisplayWidth, height: screen.timetableDisplayHeight)
@@ -461,7 +462,7 @@ struct SettingsTimetableSheet: View {
         addTimeAndTrainTypePair(departureTime: departureTime, trainType: selectedTrainType, rideTime: rideTime)
         
         // Update trainTimes array with fresh data from UserDefaults
-        trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+        transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
         
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -477,7 +478,7 @@ struct SettingsTimetableSheet: View {
         deleteTimeAndTrainTypePair(departureTime: departureTime)
         
         // Update trainTimes array with fresh data from UserDefaults
-        trainTimes = goorback.loadTrainTimes(weekflag, num, hour)
+        transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
         
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)

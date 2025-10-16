@@ -205,16 +205,16 @@ struct SettingsTransferSheet: View {
     @ViewBuilder
     private func transportationMethodSelector(selectedTransportation: Binding<String>) -> some View {
         HStack(spacing: screen.settingsSheetIconSpacing) {
-            Image(systemName: getTransportationType(label: selectedTransportation.wrappedValue).iconName)
+            Image(systemName: transferType(from: selectedTransportation.wrappedValue).iconName)
                 .frame(height: screen.settingsSheetIconSize)
                 .foregroundColor(.black)
 
-            Text(getTransportationType(label: selectedTransportation.wrappedValue).transportationDisplayName)
+            Text(transferType(from: selectedTransportation.wrappedValue).transportationDisplayName)
                 .font(.system(size: screen.settingsSheetInputFontSize))
                 .foregroundColor(.black)
             
             Menu {
-                ForEach(TransportationType.allCases.filter { $0 != .none }, id: \.self) { type in
+                ForEach(TransferType.allCases.filter { $0 != .none }, id: \.self) { type in
                     Button(action: {
                         selectedTransportation.wrappedValue = type.rawValue
                     }) {

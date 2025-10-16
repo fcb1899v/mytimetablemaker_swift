@@ -57,6 +57,21 @@ extension Int {
     // Determine if time represents weekday or weekend
     var isWeekday: Bool { !(self == 0 || self == 6) }
     
+    // MARK: - ODPT Calendar Type Detection
+    // Get ODPT calendar type for this weekday (0=Sunday, 1=Monday, ..., 6=Saturday)
+    var odpTCalendarType: ODPTCalendarType {
+        switch self {
+        case 0: return .sunday
+        case 1: return .monday
+        case 2: return .tuesday
+        case 3: return .wednesday
+        case 4: return .thursday
+        case 5: return .friday
+        case 6: return .saturday
+        default: return .weekday
+        }
+    }
+    
     // MARK: - Choice Copy Time List Function
     // Generates copy time choice list for timetable editing
     func choiceCopyTimeList(_ isWeekday: Bool) -> [String] {
@@ -349,7 +364,7 @@ extension String {
     
     // MARK: - Alert Message Generation
     // Dynamic alert title and message generation
-    func timetableLineTitle(_ num: Int) -> String { "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)"}
+    func timetableLineTitle(_ num: Int) -> String { "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)" }
     var routeTitle: String {
         (self == "back1") ? "Setting Return Route 1".localized:
         (self == "back2") ? "Setting Return Route 2".localized:

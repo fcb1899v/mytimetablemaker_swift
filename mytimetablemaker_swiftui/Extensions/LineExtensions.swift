@@ -15,8 +15,10 @@ enum ODPTDataType: CaseIterable {
     case railway
     case trainTimetable
     case stationTimetable
+    case trainStation
     case busRoutePattern
     case busTimetable
+    case busstopPole
     
     // MARK: - API Endpoint
     var apiEndpoint: String {
@@ -24,8 +26,10 @@ enum ODPTDataType: CaseIterable {
         case .railway: return "odpt:Railway"
         case .trainTimetable: return "odpt:TrainTimetable"
         case .stationTimetable: return "odpt:StationTimetable"
+        case .trainStation: return "odpt:Station"
         case .busRoutePattern: return "odpt:BusroutePattern"
         case .busTimetable: return "odpt:BusTimetable"
+        case .busstopPole: return "odpt:BusstopPole"
         }
     }
 }
@@ -80,7 +84,67 @@ extension String {
     /// Extract the last component from ODPT identifiers
     /// Example: odpt:Operator:JR-East → JR-East
     var odptTail: String { self.components(separatedBy: ":").last ?? self }
+    
+    // MARK: - Bus English Name Extraction
+    // Extract English names from ODPT bus identifiers (only for English locale)
+    
+    /// Extract English name from bus route identifier
+    /// Example: "odpt.Busroute:Toei.Mon33" → "Mon33"
+    var busRouteEnglishName: String? {
+        // Only extract English name for English locale
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        guard currentLanguage != "ja" else { return nil }
+        
+        // Extract the third part after splitting by dots
+        let components = self.components(separatedBy: ".")
+        guard components.count >= 3 else { return nil }
+        return components[2] // Index 2 should be the English route code
+    }
+    
+    /// Extract English name from bus stop pole identifier
+    /// Example: "odpt.BusstopPole:Toei.KameidoStation.369.7" → "KameidoStation"
+    var busStopEnglishName: String? {
+        // Only extract English name for English locale
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        guard currentLanguage != "ja" else { return nil }
+        
+        // Extract the third part after splitting by dots
+        let components = self.components(separatedBy: ".")
+        guard components.count >= 3 else { return nil }
+        return components[2] // Index 2 should be the station name
+    }
+    
+    // MARK: - Bus Stop Multi-language Title Generation
+    /// Generate LocalizedTitle for bus stops from note and busstopPole
+    /// - Parameters:
+    ///   - note: Japanese name from odpt:note field
+    ///   - busstopPole: English name from odpt:busstopPole field (3rd component)
+    /// - Returns: LocalizedTitle with Japanese and English names
+    static func generateBusStopTitle(note: String, busstopPole: String) -> LocalizedTitle? {
+        let japaneseName: String? = note.isEmpty ? nil : note.trimmingCharacters(in: .whitespacesAndNewlines)
+        let englishName: String?
+        
+        if !busstopPole.isEmpty {
+            let components = busstopPole.components(separatedBy: ".")
+            if components.count > 2 {
+                englishName = components[2].trimmingCharacters(in: .whitespacesAndNewlines)
+            } else {
+                englishName = nil
+            }
+        } else {
+            englishName = nil
+        }
+        
+        return (japaneseName != nil || englishName != nil) ? LocalizedTitle(ja: japaneseName, en: englishName) : nil
+    }
+    
+    // MARK: - Localization Helper
+    // Helper function for localized name selection
+    func selectLocalizedName(ja: String?, en: String?) -> String {
+        return self == "ja" ? (ja ?? en ?? "") : (en ?? ja ?? "")
+    }
 }
+
 
 // MARK: - Route Data Extension
 // Extension for managing route-specific data and UserDefaults operations
@@ -150,7 +214,7 @@ extension String{
     }
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(Color.accentString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
-    func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransportationType.walking.rawValue)! }
+    func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransferType.walking.rawValue)! }
     func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
     func timetableTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
     func timetableRideTime(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> String { return timetableKey(isWeekday, num, hour).userDefaultsValue("")! }
@@ -237,9 +301,9 @@ extension Int {
 // Extensions for loading TrainTime objects from UserDefaults
 extension String {
     
-    // MARK: - TrainTime Loading Methods
-    // Load TrainTime objects for a specific hour
-    func loadTrainTimes(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [TrainTime] {
+    // MARK: - TransportationTime Loading Methods
+    // Load TransportationTime objects from UserDefaults
+    func loadTransportationTimes(_ isWeekday: Bool, _ num: Int, _ hour: Int) -> [any TransportationTime] {
         let timetableKey = self.timetableKey(isWeekday, num, hour)
         let timetableRideTimeKey = self.timetableRideTimeKey(isWeekday, num, hour)
         let timetableTrainTypeKey = self.timetableTrainTypeKey(isWeekday, num, hour)
@@ -252,21 +316,34 @@ extension String {
         let rideTimes = UserDefaults.standard.string(forKey: timetableRideTimeKey)?.components(separatedBy: " ").compactMap { Int($0) } ?? []
         let trainTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
         
-        var trainTimes: [TrainTime] = []
+        var transportationTimes: [any TransportationTime] = []
         for (index, departureTimeString) in departureTimes.enumerated() {
             let rideTime = index < rideTimes.count ? rideTimes[index] : 0
             let trainType = index < trainTypes.count && !trainTypes[index].isEmpty ? trainTypes[index] : nil
             
-            let trainTime = TrainTime(
-                departureTime: departureTimeString, // Keep as minutes string for consistency
-                arrivalTime: "", // Arrival time not stored separately
-                trainNumber: nil, // Train number not stored separately
-                trainType: trainType,
-                rideTime: rideTime
-            )
-            trainTimes.append(trainTime)
+            if trainType == nil {
+                // Bus data (no trainType)
+                let busTime = BusTime(
+                    departureTime: departureTimeString,
+                    arrivalTime: "", // Arrival time not stored separately
+                    busNumber: nil, // Bus number not stored separately
+                    routePattern: nil, // Route pattern not stored separately
+                    rideTime: rideTime
+                )
+                transportationTimes.append(busTime)
+            } else {
+                // Train data (has trainType)
+                let trainTime = TrainTime(
+                    departureTime: departureTimeString, // Keep as minutes string for consistency
+                    arrivalTime: "", // Arrival time not stored separately
+                    trainNumber: nil, // Train number not stored separately
+                    trainType: trainType,
+                    rideTime: rideTime
+                )
+                transportationTimes.append(trainTime)
+            }
         }
-        return trainTimes
+        return transportationTimes
     }
     
     // MARK: - Time Format Conversion
@@ -279,16 +356,16 @@ extension String {
         return 0
     }
     
-    // MARK: - TrainTime Saving Methods
-    // Save TrainTime objects for a specific hour
-    func saveTrainTimes(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int, _ hour: Int) {
+    // MARK: - TransportationTime Saving Methods
+    // Save TransportationTime objects for a specific hour
+    func saveTransportationTimes(_ transportationTimes: [any TransportationTime], _ isWeekday: Bool, _ num: Int, _ hour: Int) {
 
         let timetableKey = self.timetableKey(isWeekday, num, hour)
         let timetableRideTimeKey = self.timetableRideTimeKey(isWeekday, num, hour)
         let timetableTrainTypeKey = self.timetableTrainTypeKey(isWeekday, num, hour)
         
         if hour < 9 {
-            print("💾 saveTrainTimes: Saving \(trainTimes.count) TrainTime objects for hour \(hour) (\(isWeekday ? "weekday" : "weekend"))")
+            print("💾 saveTransportationTimes: Saving \(transportationTimes.count) TransportationTime objects for hour \(hour) (\(isWeekday ? "weekday" : "weekend"))")
         }
         
         // Clear existing data (always remove to ensure clean state)
@@ -299,8 +376,8 @@ extension String {
         // Ensure UserDefaults changes are synchronized to disk
         UserDefaults.standard.synchronize()
         
-        if trainTimes.isEmpty { 
-            print("⚠️ No TrainTime objects to save for hour \(hour)")
+        if transportationTimes.isEmpty { 
+            print("⚠️ No TransportationTime objects to save for hour \(hour)")
             return 
         }
         
@@ -309,12 +386,14 @@ extension String {
         var rideTimes: [String] = []
         var trainTypes: [String] = []
         
-        for trainTime in trainTimes {
+        for transportationTime in transportationTimes {
             // Convert HH:MM format to minutes format for consistency with manual editing
-            let departureTimeInMinutes = convertHHMMToMinutes(trainTime.departureTime)
+            let departureTimeInMinutes = convertHHMMToMinutes(transportationTime.departureTime)
             departureTimes.append(String(departureTimeInMinutes))
-            rideTimes.append(String(trainTime.rideTime))
-            trainTypes.append(trainTime.trainType ?? "")
+            rideTimes.append(String(transportationTime.rideTime))
+            
+            // Use trainType if available (only for TrainTime), otherwise empty string
+            trainTypes.append((transportationTime as? TrainTime)?.trainType ?? "")
         }
         
         // Save to UserDefaults
@@ -331,26 +410,31 @@ extension String {
             
             // Print detailed ride time information for verification
             print("🚉 Ride Time Details for hour \(hour):")
-            for (index, trainTime) in trainTimes.enumerated() {
-                print("   \(index + 1). \(trainTime.departureTime) → \(trainTime.arrivalTime) (\(trainTime.rideTime)分)")
+            for (index, transportationTime) in transportationTimes.enumerated() {
+                print("   \(index + 1). \(transportationTime.departureTime) → \(transportationTime.arrivalTime) (\(transportationTime.rideTime)分)")
             }
         }
     }
     
     // MARK: - Save Train Type List
     // Save unique train types list for the entire timetable
-    func saveTrainTypeList(_ trainTimes: [TrainTime], _ isWeekday: Bool, _ num: Int) {
+    func saveTrainTypeList(_ transportationTimes: [any TransportationTime], _ isWeekday: Bool, _ num: Int) {
         let trainTypeListKey = self.trainTypeListKey(isWeekday, num)
         
         print("💾 saveTrainTypeList: Saving train type list for (\(isWeekday ? "weekday" : "weekend"))")
         
-        // Extract all train types from all train times
-        let allTrainTypes = trainTimes.compactMap { $0.trainType }
-            .compactMap { (trainType: String) -> String? in
-                guard !trainType.isEmpty else { return nil }
-                let components = trainType.components(separatedBy: ".")
-                return components.last ?? trainType
+        // Extract all train types from all transportation times
+        let allTrainTypes = transportationTimes.compactMap { transportationTime -> String? in
+            if let trainTime = transportationTime as? TrainTime {
+                return trainTime.trainType
+            } else {
+                return nil // Bus doesn't have trainType
             }
+        }.compactMap { (trainType: String) -> String? in
+            guard !trainType.isEmpty else { return nil }
+            let components = trainType.components(separatedBy: ".")
+            return components.last ?? trainType
+        }
         
         // Remove duplicates and sort
         let uniqueTrainTypes = Set<String>(allTrainTypes)
@@ -473,5 +557,37 @@ extension Array where Element == (trainNumber: String, departureTime: String, de
             return actualTrainType == trainType
         }
     }
+}
+
+// MARK: - Bus Stop Name Extraction Extension
+// Extension for extracting station names from bus stop pole codes
+extension String {
     
+    // MARK: - Bus Stop Name Extraction
+    /// Extract station name from bus stop pole code
+    /// Example: "odpt.BusstopPole:Toei.TOKYOSKYTREEStation.2028.3" -> "TOKYOSKYTREEStation"
+    func extractStationNameFromCode() -> String {
+        let components = self.components(separatedBy: ".")
+        guard components.count >= 3 else { return self }
+        
+        // Extract the station name part (usually the 3rd component)
+        let stationName = components[2]
+        
+        // Convert camelCase to readable format
+        let readableName = stationName.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
+        
+        return readableName.isEmpty ? stationName : readableName
+    }
+    
+}
+
+// MARK: - Character Extensions
+extension Character {
+    /// Check if the character is a Japanese character (Hiragana, Katakana, or Kanji)
+    var isJapanese: Bool {
+        let unicodeScalar = self.unicodeScalars.first!
+        return (0x3040...0x309F).contains(unicodeScalar.value) || // Hiragana
+               (0x30A0...0x30FF).contains(unicodeScalar.value) || // Katakana
+               (0x4E00...0x9FAF).contains(unicodeScalar.value)    // Kanji
+    }
 }

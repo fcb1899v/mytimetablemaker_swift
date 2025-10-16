@@ -24,7 +24,6 @@ struct SettingsLineSheet: View {
     @State private var showColorSelect = false
     @State private var shouldClearText = false
     @State private var showTimetableSettings = false
-    @State private var departureStationPosition: CGFloat = 0
     @Environment(\.dismiss) private var dismiss
     
     // MARK: - Configuration
@@ -67,11 +66,11 @@ struct SettingsLineSheet: View {
                     VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
                         routeHeaderMenu
                         lineHeaderMenu
-                        lineNameSection
+                        lineInputSection
                         lineColorSection
                         stationHeaderText
-                        departureStationInputSection
-                        arrivalStationInputSection
+                        departureStopInputSection
+                        arrivalStopInputSection
                         timeHeaderText
                         rideTimeSection
                         if vm.selectedLineNumber < 3 {
@@ -84,9 +83,6 @@ struct SettingsLineSheet: View {
                         timetableSettingsButtonSection
                     }
                     .coordinateSpace(name: "scrollView")
-                    .onPreferenceChange(DepartureStationPositionKey.self) { value in
-                        departureStationPosition = value
-                    }
                     .padding(.horizontal, screen.settingsSheetHorizontalPadding)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .animation(.default, value: vm.showStationSelection)
@@ -99,23 +95,23 @@ struct SettingsLineSheet: View {
                 }
 
                 // MARK: - Line Suggestions
-                if vm.showLineSuggestions && !vm.lineSuggestions.isEmpty && !vm.isLineNumberChanging {
+                if vm.showLineSuggestions && !vm.lineSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.lineSelected {
                     lineSuggestionsView
                 }
                 
                 // MARK: - Color Selection Section
-                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && (selected?.lineColor == nil)) {
+                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected) {
                     colorSelectionSection
                 }
 
                 // MARK: - Departure Station Suggestions
                 if vm.showDepartureSuggestions && !vm.departureSuggestions.isEmpty && vm.lineSelected {
-                    departureStationSuggestionsView
+                    departureStopSuggestionsView
                 }
                 
                 // MARK: - Arrival Station Suggestions
                 if vm.showArrivalSuggestions && !vm.arrivalSuggestions.isEmpty && vm.lineSelected {
-                    arrivalStationSuggestionsView
+                    arrivalStopSuggestionsView
                 }
             }
         }
@@ -223,7 +219,7 @@ struct SettingsLineSheet: View {
     
     // MARK: - Line Name Section
     /// Section for inputting line name information
-    private var lineNameSection: some View {
+    private var lineInputSection: some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
             Text("Line Name".localized)
                 .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
@@ -242,18 +238,9 @@ struct SettingsLineSheet: View {
             .overlay(CustomBorder())
             .onChange(of: vm.lineInput) { newValue in
                 vm.processLineInput(newValue)
-                // Ensure focus is maintained when typing
+                // Ensure focus is maintained when typing and show station selection UI
                 if !newValue.isEmpty {
                     focused = true
-                }
-            }
-            .onChange(of: vm.selectedLine) { _ in
-                // Update line stations when line selection changes
-                vm.lineStations = vm.getStationsForSelectedLine()
-            }
-            .onChange(of: vm.lineInput) { newValue in
-                // Show station selection UI for custom line input
-                if !newValue.isEmpty {
                     vm.showStationSelection = true
                 }
             }
@@ -275,7 +262,6 @@ struct SettingsLineSheet: View {
                     }
                     Button {
                         vm.selectLine(line)
-                        vm.lineStations = vm.getStationsForSelectedLine()
                         // Auto show color selection if line has no color
                         if line.lineColor == nil {
                             vm.showColorSelection = true
@@ -455,10 +441,11 @@ struct SettingsLineSheet: View {
         let headerText = vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized
         
         let stationInfo: String
-        if vm.hasSelectedLine && vm.hasStations {
-            let firstStation = vm.lineStations.first?.getLocalizedName() ?? ""
-            let lastStation = vm.lineStations.last?.getLocalizedName() ?? ""
-            stationInfo = ": ".localized + firstStation + " to ".localized + lastStation
+        if vm.hasSelectedLine && vm.hasStops {
+            let firstStop = vm.lineStops.first?.displayName ?? ""
+            let lastStop = vm.lineStops.last?.displayName ?? ""
+            
+            stationInfo = ": ".localized + firstStop + " to ".localized + lastStop
         } else {
             stationInfo = ""
         }
@@ -473,13 +460,13 @@ struct SettingsLineSheet: View {
     
     // MARK: - Departure Station Input Section
     /// Section for inputting departure station information
-    private var departureStationInputSection: some View {
+    private var departureStopInputSection: some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
             Text(vm.selectedTransportationKind == .bus ? "Departure Stop".localized : "Departure Station".localized)
                 .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primary)
 
-            TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStationInput)
+            TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStopInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: screen.settingsSheetInputFontSize))
@@ -487,70 +474,37 @@ struct SettingsLineSheet: View {
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                 .background(CustomBackground())
                 .overlay(CustomBorder())
-                .onChange(of: vm.departureStationInput) { newValue in
-                    vm.processDepartureStationInput(newValue)
+                .onChange(of: vm.departureStopInput) { newValue in
+                    vm.processdepartureStopInput(newValue)
                 }
-                .onChange(of: vm.selectedDepartureStation) { _ in
+                .onChange(of: vm.selectedDepartureStop) { _ in
                     // Re-filter arrival station suggestions after departure station selection
-                    if !vm.arrivalStationInput.isEmpty {
-                        vm.filterArrivalStations(vm.arrivalStationInput)
+                    if !vm.arrivalStopInput.isEmpty {
+                        vm.filterArrivalStops(vm.arrivalStopInput)
                     }
                 }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.departureStationInput.isEmpty ? .gray : .accent)
+                .foregroundColor(vm.departureStopInput.isEmpty ? .gray : .accent)
         }
     }
 
-    // MARK: - Departure Station Suggestions
-    private var departureStationSuggestionsView: some View {
+    // MARK: - Departure Stop Suggestions
+    private var departureStopSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                ForEach(vm.departureSuggestions, id: \.id) { station in
-                    if station == vm.departureSuggestions.first {
+                ForEach(vm.departureSuggestions, id: \.id) { stop in
+                    if stop == vm.departureSuggestions.first {
                         Color.clear.frame(height: 0)
                     }
-                    Button {
-                        // Set line number changing flag to prevent unwanted suggestions
-                        vm.isLineNumberChanging = true
-                        
-                        // Clear input if same station as arrival station is selected
-                        let isSameAsArrival = vm.selectedArrivalStation?.getLocalizedName() == station.getLocalizedName()
-                        vm.departureStationInput = isSameAsArrival ? "" : station.getLocalizedName()
-                        vm.selectedDepartureStation = isSameAsArrival ? nil : station
-                        // Completely disable departure suggestions after selection
-                        vm.showDepartureSuggestions = false
-                        vm.isDepartureFieldFocused = false
-                        vm.departureSuggestions = []
-                        // Set a flag to prevent re-display
-                        vm.departureStationSelected = true
-                        // No need to re-filter arrival station suggestions after departure station selection
-                        
-                        // Reset flag after a short delay to allow UI updates
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            vm.isLineNumberChanging = false
-                        }
-                    } label: {
-                        HStack {
-                            Text(station.getLocalizedName())
-                                .font(.system(size: screen.settingsSheetInputFontSize))
-                                .lineLimit(1)
-                                .foregroundColor(.primary)
-                                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
-                                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    if station != vm.departureSuggestions.last { Divider() }
+                    StopRowView(stop: stop, isDeparture: true, vm: vm)
                 }
             }
         }
         .frame(maxHeight: min(CGFloat(vm.departureSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
         .background(CustomBackground())
         .overlay(CustomBorder())
-        .animation(.default, value: vm.departureSuggestions)
+        .animation(.default, value: vm.departureSuggestions.count)
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
@@ -560,13 +514,13 @@ struct SettingsLineSheet: View {
     
     // MARK: - Arrival Station Input Section
     /// Section for inputting arrival station information
-    private var arrivalStationInputSection: some View {
+    private var arrivalStopInputSection: some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
             Text(vm.selectedTransportationKind == .bus ? "Arrival Stop".localized : "Arrival Station".localized)
                 .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
                 .foregroundColor(.primary)
 
-            TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStationInput)
+            TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStopInput)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: screen.settingsSheetInputFontSize))
@@ -580,75 +534,101 @@ struct SettingsLineSheet: View {
                     RoundedRectangle(cornerRadius: screen.settingsSheetCornerRadius)
                         .stroke(Color(.separator), lineWidth: screen.settingsSheetStrokeLineWidth)
                 )
-                .onChange(of: vm.arrivalStationInput) { newValue in
-                    vm.processArrivalStationInput(newValue)
+                .onChange(of: vm.arrivalStopInput) { newValue in
+                    vm.processarrivalStopInput(newValue)
                 }
-                .onChange(of: vm.selectedArrivalStation) { _ in
+                .onChange(of: vm.selectedArrivalStop) { _ in
                     // Re-filter departure station suggestions after arrival station selection
-                    if !vm.departureStationInput.isEmpty {
-                        vm.filterDepartureStations(vm.departureStationInput)
+                    if !vm.departureStopInput.isEmpty {
+                        vm.filterDepartureStops(vm.departureStopInput)
                     }
                 }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.arrivalStationInput.isEmpty ? .gray : .accent)
+                .foregroundColor(vm.arrivalStopInput.isEmpty ? .gray : .accent)
         }
     }
     
-    // MARK: - Arrival Station Suggestions
-    private var arrivalStationSuggestionsView: some View {
+    // MARK: - Arrival Stop Suggestions
+    private var arrivalStopSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                ForEach(vm.arrivalSuggestions, id: \.id) { station in
-                    if station == vm.arrivalSuggestions.first {
+                ForEach(vm.arrivalSuggestions, id: \.id) { stop in
+                    if stop == vm.arrivalSuggestions.first {
                         Color.clear.frame(height: 0)
                     }
-                    Button {
-                        // Set line number changing flag to prevent unwanted suggestions
-                        vm.isLineNumberChanging = true
-                        
-                        // Clear input if same station as departure station is selected
-                        let isSameAsDeparture = vm.selectedDepartureStation?.getLocalizedName() == station.getLocalizedName()
-                        vm.arrivalStationInput = isSameAsDeparture ? "" : station.getLocalizedName()
-                        vm.selectedArrivalStation = isSameAsDeparture ? nil : station
-                        // Completely disable arrival suggestions after selection
-                        vm.showArrivalSuggestions = false
-                        vm.isArrivalFieldFocused = false
-                        vm.arrivalSuggestions = []
-                        // Set a flag to prevent re-display
-                        vm.arrivalStationSelected = true
-                        // No need to re-filter departure station suggestions after arrival station selection
-                        
-                        // Reset flag after a short delay to allow UI updates
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            vm.isLineNumberChanging = false
-                        }
-                    } label: {
-                        HStack {
-                            Text(station.getLocalizedName())
-                                .font(.system(size: screen.settingsSheetInputFontSize))
-                                .lineLimit(1)
-                                .foregroundColor(.primary)
-                                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
-                                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    if station != vm.arrivalSuggestions.last { Divider() }
+                    StopRowView(stop: stop, isDeparture: false, vm: vm)
                 }
             }
         }
         .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
         .background(CustomBackground())
         .overlay(CustomBorder())
-        .animation(.default, value: vm.arrivalSuggestions)
+        .animation(.default, value: vm.arrivalSuggestions.count)
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
         .offset(y: screen.settingsLineSheetArrivalOffset)
         .zIndex(100)
+    }
+
+    // MARK: - StopRowView
+    private struct StopRowView: View {
+        let stop: TransportationStop
+        let isDeparture: Bool
+        @ObservedObject var vm: SettingsLineSheetViewModel
+        
+        var body: some View {
+            Button {
+                // Set line number changing flag to prevent unwanted suggestions
+                vm.isLineNumberChanging = true
+                
+                let stopDisplayName = stop.displayName
+                
+                if isDeparture {
+                    // Departure stop selection
+                    let arrivalDisplayName = vm.selectedArrivalStop?.displayName ?? ""
+                    let isSameAsArrival = arrivalDisplayName == stopDisplayName
+                    vm.departureStopInput = isSameAsArrival ? "" : stopDisplayName
+                    vm.selectedDepartureStop = isSameAsArrival ? nil : stop
+                    // Completely disable departure suggestions after selection
+                    vm.showDepartureSuggestions = false
+                    vm.isDepartureFieldFocused = false
+                    vm.departureSuggestions = []
+                    // Set a flag to prevent re-display
+                    vm.departureStopSelected = true
+                } else {
+                    // Arrival stop selection
+                    let departureDisplayName = vm.selectedDepartureStop?.displayName ?? ""
+                    let isSameAsDeparture = departureDisplayName == stopDisplayName
+                    vm.arrivalStopInput = isSameAsDeparture ? "" : stopDisplayName
+                    vm.selectedArrivalStop = isSameAsDeparture ? nil : stop
+                    // Completely disable arrival suggestions after selection
+                    vm.showArrivalSuggestions = false
+                    vm.isArrivalFieldFocused = false
+                    vm.arrivalSuggestions = []
+                    // Set a flag to prevent re-display
+                    vm.arrivalStopSelected = true
+                }
+                
+                // Reset flag after a short delay to allow UI updates
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    vm.isLineNumberChanging = false
+                }
+            } label: {
+                HStack {
+                    Text(stop.displayName)
+                        .font(.system(size: screen.settingsSheetInputFontSize))
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
+                        .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
     }
     
     // MARK: - Time Header Text
@@ -712,16 +692,16 @@ struct SettingsLineSheet: View {
             
             HStack {
                 // Display icon for selected transportation method
-                Image(systemName: getTransportationType(label: vm.selectedTransportation).iconName)
+                Image(systemName: transferType(from: vm.selectedTransportation).iconName)
                     .frame(height: screen.settingsSheetIconSize)
                     .foregroundColor(.black)
 
-                Text(getTransportationType(label: vm.selectedTransportation).transportationDisplayName)
+                Text(transferType(from: vm.selectedTransportation).transportationDisplayName)
                     .font(.system(size: screen.settingsSheetInputFontSize))
                     .foregroundColor(.black)
                 
                 Menu {
-                    ForEach(TransportationType.allCases.reversed(), id: \.self) { type in
+                    ForEach(TransferType.allCases.reversed(), id: \.self) { type in
                         Button(action: {
                             vm.selectedTransportation = type.rawValue
                         }) {
@@ -826,10 +806,12 @@ struct SettingsLineSheet: View {
                 // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
                 if !vm.isTimetableManual && vm.isAllSelected {
                     Task {
-                        let result = vm.hasTrainTimetableSupport() 
-                            ? await vm.getTrainTimeTableData()
-                            : await vm.getStationTimetableData()
-                        await vm.finalizeTimetableData(weekdayTrainTimes: result.weekday, weekendTrainTimes: result.weekend)
+                        let result = vm.hasTrainTimetableSupport() || vm.selectedTransportationKind == .bus ?
+                            await vm.getTimeTableData():
+                            await vm.getStationTimetableData()
+                        
+                        // Pass TransportationTime directly to finalizeTimetableData
+                        await vm.finalizeTimetableData(weekdayTimes: result.weekday, weekendTimes: result.weekend)
                         showTimetableSettings = true
                     } 
                 } else if vm.isAllNotEmpty {
@@ -853,3 +835,4 @@ struct SettingsLineSheet_Previews: PreviewProvider {
 // MARK: - File Summary
 // Comprehensive line configuration sheet interface for MyTimeTableMaker app
 // Features: ODPT API integration, station search, line customization, data management
+

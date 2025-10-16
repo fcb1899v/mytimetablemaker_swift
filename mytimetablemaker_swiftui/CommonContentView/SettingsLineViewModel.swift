@@ -26,40 +26,47 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var lastUpdatedDisplay: String? = nil     // Last update timestamp for display
     @Published var showColorSelection: Bool = false      // Color picker visibility state
     @Published var showStationSelection: Bool = false    // Station selection UI visibility state
-    @Published var statistics: DataStatistics = DataStatistics()  // Data statistics for monitoring
+    
+    // MARK: - Data Properties
+    // Station data files for railway lines
+    private let stationDataFiles: [String] = LocalDataSource.allCases
+        .filter { $0.transportationType == .railway }
+        .map { $0.fileName }
     
     // Line and station selection state management
     @Published var selectedLine: TransportationLine?          // Currently selected railway line
-    @Published var lineStations: [Station] = []               // Stations available on the selected line
-    @Published var selectedDepartureStation: Station?         // User-selected departure station
-    @Published var selectedArrivalStation: Station?           // User-selected arrival station
+    @Published var lineStations: [Station] = []               // Stations available on the selected line (for railway)
+    @Published var lineBusStops: [BusStop] = []               // Bus stops available on the selected line (for bus)
+    @Published var lineStops: [TransportationStop] = []       // Stops available on the selected line (unified)
+    @Published var selectedDepartureStop: TransportationStop? // User-selected departure stop
+    @Published var selectedArrivalStop: TransportationStop?   // User-selected arrival stop
     
     // User input fields for data entry
-    @Published var departureStationInput: String = ""         // Departure station search input text
-    @Published var arrivalStationInput: String = ""           // Arrival station search input text
+    @Published var departureStopInput: String = ""         // Departure station search input text
+    @Published var arrivalStopInput: String = ""           // Arrival station search input text
     @Published var selectedRideTime: Int = 0                  // Selected ride time in minutes (initial value: 0)
     var isAllNotEmpty: Bool { 
-        !departureStationInput.isEmpty && 
-        !arrivalStationInput.isEmpty && 
+        !departureStopInput.isEmpty && 
+        !arrivalStopInput.isEmpty && 
         !lineInput.isEmpty && 
         selectedRideTime > 0 && 
         (selectedTransportation == "none" || selectedTransferTime > 0)
     }
     
     // Suggestion and focus state management
-    @Published var showDepartureSuggestions: Bool = false     // Departure station suggestions visibility
-    @Published var departureSuggestions: [Station] = []       // Departure station search results
+    @Published var showDepartureSuggestions: Bool = false     // Departure stop suggestions visibility
+    @Published var departureSuggestions: [TransportationStop] = [] // Departure stop search results
     @Published var isDepartureFieldFocused: Bool = false      // Departure field focus state
-    @Published var showArrivalSuggestions: Bool = false       // Arrival station suggestions visibility
-    @Published var arrivalSuggestions: [Station] = []         // Arrival station search results
+    @Published var showArrivalSuggestions: Bool = false       // Arrival stop suggestions visibility
+    @Published var arrivalSuggestions: [TransportationStop] = []   // Arrival stop search results
     @Published var isArrivalFieldFocused: Bool = false        // Arrival field focus state
     @Published var showLineSuggestions: Bool = false          // Line suggestions visibility
     
     // Selection flags to prevent re-display of suggestions after selection
-    @Published var departureStationSelected: Bool = false     // Flag to prevent departure suggestions re-display
-    @Published var arrivalStationSelected: Bool = false       // Flag to prevent arrival suggestions re-display
+    @Published var departureStopSelected: Bool = false     // Flag to prevent departure suggestions re-display
+    @Published var arrivalStopSelected: Bool = false       // Flag to prevent arrival suggestions re-display
     @Published var lineSelected: Bool = false                 // Flag to prevent line suggestions re-display
-    var isAllSelected: Bool { lineSelected && departureStationSelected && arrivalStationSelected }
+    var isAllSelected: Bool { lineSelected && departureStopSelected && arrivalStopSelected }
     
     // Line configuration and customization
     @Published var selectedLineColor: String? = nil           // Selected line color hex value for display
@@ -77,7 +84,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // Computed properties for UI state checking
     var hasSelectedLine: Bool { selectedLine != nil }
-    var hasStations: Bool { !lineStations.isEmpty }
+    var hasStops: Bool { 
+        return !lineStops.isEmpty
+    }
     
     // Get localized display names for direction options
     var goorbackDisplayNames: [String: String] {
@@ -185,11 +194,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func resetSelections() {
         lineInput = ""
         selectedLine = nil
-        lineStations = []
-        selectedDepartureStation = nil
-        selectedArrivalStation = nil
-        departureStationInput = ""
-        arrivalStationInput = ""
+        lineStops = []
+        selectedDepartureStop = nil
+        selectedArrivalStop = nil
+        departureStopInput = ""
+        arrivalStopInput = ""
         selectedRideTime = 0
         selectedLineColor = "#03DAC5"
         selectedTransportationKind = .railway
@@ -200,8 +209,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalSuggestions = []
         isDepartureFieldFocused = false
         isArrivalFieldFocused = false
-        departureStationSelected = false
-        arrivalStationSelected = false
+        departureStopSelected = false
+        arrivalStopSelected = false
         lineSelected = false
     }
     
@@ -220,7 +229,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         await filter(lineInput)
-        await updateStatistics()
         
         // Check if saved line exists in loaded data and restore it
         await checkSavedLineInData()
@@ -243,19 +251,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    // Update application statistics including data counts and cache status
-    func updateStatistics() async {
-        var stats = DataStatistics()
-        stats.totalLines = all.count
-        stats.railwayLines = all.filter { $0.kind == .railway }.count
-        stats.busLines = all.filter { $0.kind == .bus }.count
-        stats.operators = Set(all.compactMap { $0.operatorCode }).count
-        stats.cacheStatus = sharedDataManager.statistics.cacheStatus
-        
-        await MainActor.run {
-            self.statistics = stats
-        }
-    }
     
     // MARK: - Search and Filtering
     // Filter railway lines based on search lineInput with performance optimizations
@@ -280,16 +275,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 return p.name.normalizedForSearch
             }
             if let railwayTitle = p.railwayTitle {
-                let localizedName = railwayTitle.getLocalizedName()
-                if !localizedName.isEmpty {
-                    return localizedName.normalizedForSearch
-                }
+                return railwayTitle.getLocalizedName(fallbackTo: p.name).normalizedForSearch
             }
             return p.name.normalizedForSearch
         }
         
         // Simplified search for bus data to improve performance
         if selectedTransportationKind == .bus {
+            // Only search if query has 2 or more characters for bus routes
+            guard t.count >= 2 else {
+                lineSuggestions = []
+                showLineSuggestions = false
+                nameCounts = [:]
+                return
+            }
+            
             let starts = searchData.filter { lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) }
             let contains = searchData.filter { !lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) && lineDisplayName(for: $0).normalizedForSearch.contains(t) }
             let allResults = starts + contains
@@ -341,13 +341,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         
         if line.kind == .bus {
-            return currentLanguage == "ja" ? line.name :
+            return currentLanguage == "ja" ? line.title! :
             (line.busRouteEnglishName ?? line.railwayTitle?.en ?? line.name)
         }
         
         guard let railwayTitle = line.railwayTitle else { return line.name }
-        let localizedName = railwayTitle.getLocalizedName()
-        return localizedName.isEmpty ? line.name : localizedName
+        return railwayTitle.getLocalizedName(fallbackTo: line.name)
     }
     
     // Get localized display name based on operator code
@@ -357,263 +356,202 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Station Search and Filtering
-    // Filter candidate departure stations based on search lineInput
-    func filterDepartureStations(_ lineInput: String) {
-        let filtered = filterStations(lineInput, excludeStation: selectedArrivalStation)
+    // Filter candidate departure stops based on search lineInput
+    func filterDepartureStops(_ lineInput: String) {
+        let filtered = filterStops(lineInput, excludeStop: selectedArrivalStop)
         departureSuggestions = filtered
-        showDepartureSuggestions = isDepartureFieldFocused && !filtered.isEmpty && !departureStationSelected
+        showDepartureSuggestions = isDepartureFieldFocused && !filtered.isEmpty && !departureStopSelected
     }
     
-    // Filter candidate arrival stations based on search lineInput
-    func filterArrivalStations(_ lineInput: String) {
-        let filtered = filterStations(lineInput, excludeStation: selectedDepartureStation)
+    // Filter candidate arrival stops based on search lineInput
+    func filterArrivalStops(_ lineInput: String) {
+        let filtered = filterStops(lineInput, excludeStop: selectedDepartureStop)
         arrivalSuggestions = filtered
-        showArrivalSuggestions = isArrivalFieldFocused && !filtered.isEmpty && !arrivalStationSelected
+        showArrivalSuggestions = isArrivalFieldFocused && !filtered.isEmpty && !arrivalStopSelected
     }
     
-    // Common station filtering logic used by both departure and arrival station searches
-    private func filterStations(_ lineInput: String, excludeStation: Station?) -> [Station] {
+    // Unified filtering logic for both railway stations and bus stops
+    private func filterStops(_ lineInput: String, excludeStop: TransportationStop?) -> [TransportationStop] {
         guard !lineInput.isEmpty else { return [] }
         
-        let filtered: [Station] = {
-            // Bus route filtering - only search within selected line's bus stops
-            if let selectedLine = selectedLine, selectedLine.kind == .bus {
-                if !lineStations.isEmpty {
-                    return lineStations.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-                } else {
-                    if let busstopPoleOrder = selectedLine.busstopPoleOrder {
-                        let busStops: [Station] = busstopPoleOrder.compactMap { busStop -> Station? in
-                            let stopName = busStop.busstopPoleTitle?.getLocalizedName() ??
-                            busStop.busStopEnglishName ??
-                            busStop.note ?? ""
-                            guard !stopName.isEmpty else { return nil }
-                            return Station(
-                                name: stopName,
-                                code: busStop.busstopPole,
-                                index: nil,
-                                lineCode: selectedLine.code,
-                                title: StationTitle(
-                                    ja: busStop.busstopPoleTitle?.ja ?? busStop.note,
-                                    en: busStop.busstopPoleTitle?.en ?? busStop.busStopEnglishName ?? busStop.note
-                                )
-                            )
-                        }
-                        return busStops.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-                    }
-                    return []
-                }
+        return lineStops.filter { stop in
+            // Exclude the stop if it's the same as the excludeStop
+            if let excludeStop = excludeStop, stop.id == excludeStop.id {
+                return false
             }
             
-            // Railway line filtering - use existing logic
-            if selectedLine != nil, !lineStations.isEmpty {
-                return lineStations.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-            } else if !self.lineInput.isEmpty {
-                let lineStations = getStationsForSelectedLine()
-                if !lineStations.isEmpty {
-                    return lineStations.filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-                } else {
-                    return getAllAvailableStations().filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-                }
-            } else {
-                return getAllAvailableStations().filter { $0.getLocalizedName().localizedCaseInsensitiveContains(lineInput) }
-            }
-        }()
-        
-        return excludeStation != nil ?
-        filtered.filter { $0.getLocalizedName() != excludeStation!.getLocalizedName() } :
-        filtered
+            // Filter by name
+            return stop.displayName.localizedCaseInsensitiveContains(lineInput)
+        }
     }
     
-    // MARK: - Station Data Processing
-    // Parse station information for a given line name
-    private func parseStationsByLineName(_ data: Data, lineName: String) -> [Station]? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
+    // Extract bus stops from bus route data
+    func extractStopsFromBusRoute(_ busRoute: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
+        guard let busStopData = busRoute["odpt:busstopPoleOrder"] as? [[String: Any]] else { return nil }
+        
+        let busStops: [TransportationStop] = busStopData.compactMap { busStopInfo -> TransportationStop? in
+            let note = busStopInfo["odpt:note"] as? String ?? ""
+            let busstopPole = busStopInfo["odpt:busstopPole"] as? String ?? ""
             
-            if let array = json as? [[String: Any]] {
-                // Search for exact matches first
-                for railway in array {
-                    if let railwayName = railway["dc:title"] as? String,
-                       railwayName == lineName {
-                        return extractStationsFromRailway(railway, searchMethod: "dc:title", searchValue: lineName)
-                    }
-                    
-                    if let railwayTitle = railway["odpt:railwayTitle"] as? [String: Any] {
-                        if let stations = searchByRailwayTitle(railway, railwayTitle: railwayTitle, lineName: lineName) {
-                            return stations
-                        }
-                    }
-                }
+            guard !note.isEmpty || !busstopPole.isEmpty else { return nil }
+            
+            // Check if note contains Japanese characters
+            let hasJapaneseInNote = note.contains(where: { $0.isJapanese })
+            
+            // If note doesn't contain Japanese or is empty, and we have busstopPole, fetch from API
+            if (!hasJapaneseInNote || note.isEmpty) && !busstopPole.isEmpty {
+                // Japanese name will be fetched later in selectLine
+                // For now, use busstopPole as fallback
+                let finalNote = note.isEmpty ? busstopPole : note
+                let title = String.generateBusStopTitle(note: finalNote, busstopPole: busstopPole)
+                let stopName = title?.getLocalizedName(fallbackTo: finalNote) ?? finalNote
                 
-                // Search for partial matches if no exact match found
-                for railway in array {
-                    if let railwayName = railway["dc:title"] as? String,
-                       railwayName.contains(lineName) || lineName.contains(railwayName) {
-                        if let stations = extractStationsFromRailway(railway, searchMethod: "dc:title partial match", searchValue: railwayName) {
-                            return stations
-                        }
-                    }
-                    
-                    if let railwayTitle = railway["odpt:railwayTitle"] as? [String: Any] {
-                        if let stations = searchByRailwayTitlePartialMatch(railway, railwayTitle: railwayTitle, lineName: lineName) {
-                            return stations
-                        }
-                    }
-                }
-                
-                return nil
+                return TransportationStop(
+                    kind: .bus,
+                    name: stopName,
+                    code: busstopPole.isEmpty ? nil : busstopPole,
+                    index: busStopInfo["odpt:index"] as? Int,
+                    lineCode: lineCode,
+                    title: title,
+                    note: finalNote,
+                    busstopPole: busstopPole.isEmpty ? nil : busstopPole
+                )
             }
-        } catch {
-            return nil
+            
+            // Use shared bus stop title generation logic for stops with Japanese
+            let title = String.generateBusStopTitle(note: note, busstopPole: busstopPole)
+            let stopName = title?.getLocalizedName(fallbackTo: note) ?? (note.isEmpty ? busstopPole : note)
+            
+            return TransportationStop(
+                kind: .bus,
+                name: stopName,
+                code: busstopPole.isEmpty ? nil : busstopPole,
+                index: busStopInfo["odpt:index"] as? Int,
+                lineCode: lineCode,
+                title: title,
+                note: note,
+                busstopPole: busstopPole.isEmpty ? nil : busstopPole
+            )
         }
-        return nil
+        
+        return busStops.isEmpty ? nil : busStops
     }
     
-    // Search for stations by railwayTitle (Japanese or English name)
-    private func searchByRailwayTitle(_ railway: [String: Any], railwayTitle: [String: Any], lineName: String) -> [Station]? {
-        if let jaName = railwayTitle["ja"] as? String, jaName == lineName {
-            return extractStationsFromRailway(railway, searchMethod: "odpt:railwayTitle.ja", searchValue: lineName)
-        }
-        
-        if let enName = railwayTitle["en"] as? String, enName == lineName {
-            return extractStationsFromRailway(railway, searchMethod: "odpt:railwayTitle.en", searchValue: lineName)
-        }
-        
-        return nil
-    }
     
-    // Search for stations by railwayTitle partial match
-    private func searchByRailwayTitlePartialMatch(_ railway: [String: Any], railwayTitle: [String: Any], lineName: String) -> [Station]? {
-        if let jaName = railwayTitle["ja"] as? String,
-           jaName.contains(lineName) || lineName.contains(jaName) {
-            return extractStationsFromRailway(railway, searchMethod: "odpt:railwayTitle.ja partial match", searchValue: jaName)
-        }
-        
-        if let enName = railwayTitle["en"] as? String,
-           enName.contains(lineName) || lineName.contains(enName) {
-            return extractStationsFromRailway(railway, searchMethod: "odpt:railwayTitle.en partial match", searchValue: enName)
-        }
-        
-        return nil
-    }
-    
-    // Extract station information from railway object
-    func extractStationsFromRailway(_ railway: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [Station]? {
-        // Handle bus routes - extract bus stops from odpt:busstopPoleOrder
-        if let type = railway["@type"] as? String, type == "odpt:BusroutePattern" {
-            let busStops: [Station]? = (railway["odpt:busstopPoleOrder"] as? [[String: Any]])?.compactMap { busStopInfo -> Station? in
-                if let busstopPoleTitle = busStopInfo["odpt:busstopPoleTitle"] as? [String: Any] {
-                    let jaName = busstopPoleTitle["ja"] as? String
-                    let enName = busstopPoleTitle["en"] as? String
-                    let stopName = enName ?? jaName ?? busStopInfo["odpt:note"] as? String ?? ""
-                    guard !stopName.isEmpty else { return nil }
-                    return Station(
-                        name: stopName,
-                        code: busStopInfo["odpt:busstopPole"] as? String,
-                        index: nil,
-                        lineCode: lineCode,
-                        title: StationTitle(ja: jaName, en: enName)
-                    )
-                } else if let busstopPole = busStopInfo["odpt:busstopPole"] as? String {
-                    let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
-                    let englishName: String?
-                    if currentLanguage != "ja" {
-                        let components = busstopPole.components(separatedBy: ".")
-                        englishName = components.count >= 3 ? components[2] : nil
-                    } else {
-                        englishName = nil
-                    }
-                    let note = busStopInfo["odpt:note"] as? String ?? ""
-                    let stopName = englishName ?? note
-                    guard !stopName.isEmpty else { return nil }
-                    return Station(
-                        name: stopName,
-                        code: busstopPole,
-                        index: nil,
-                        lineCode: lineCode,
-                        title: StationTitle(ja: note, en: englishName)
-                    )
-                } else if let note = busStopInfo["odpt:note"] as? String {
-                    return Station(
-                        name: note,
-                        code: busStopInfo["odpt:busstopPole"] as? String,
-                        index: nil,
-                        lineCode: lineCode,
-                        title: StationTitle(ja: note, en: note)
-                    )
-                }
-                return nil
-            }
-            return busStops?.isEmpty == false ? busStops : nil
-        }
-        
-        // Handle railway stations - extract from odpt:stationOrder
-        let stations: [Station]? = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
+    // Extract stations from railway data
+    func extractStationsFromRailway(_ railway: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
+        let stations: [TransportationStop]? = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
             (stationInfo["odpt:stationTitle"] as? [String: Any]).map { stationTitle in
                 let jaName = stationTitle["ja"] as? String
                 let enName = stationTitle["en"] as? String
                 let stationCode = stationInfo["odpt:station"] as? String
                 let stationIndex = stationInfo["odpt:index"] as? Int
                 
-                return Station(
+                return TransportationStop(
+                    kind: .railway,
                     name: jaName ?? enName ?? "Unknown station",
                     code: stationCode,
                     index: stationIndex,
                     lineCode: lineCode,
-                    title: StationTitle(ja: jaName, en: enName)
+                    title: LocalizedTitle(ja: jaName, en: enName),
+                    note: nil,
+                    busstopPole: nil
                 )
             }
         }
         return !(stations?.isEmpty ?? true) ? stations : nil
     }
     
-    // Get station information for the selected line
-    func getStationsForSelectedLine() -> [Station] {
-        guard let selectedLine = selectedLine else { return [] }
-        
-        // Handle bus routes - extract bus stops from TransportationLine.busstopPoleOrder
-        if selectedLine.kind == .bus {
-            if let busstopPoleOrder = selectedLine.busstopPoleOrder {
-                let busStops: [Station] = busstopPoleOrder.compactMap { busStop -> Station? in
-                    let stopName = busStop.busstopPoleTitle?.getLocalizedName() ??
-                    busStop.busStopEnglishName ??
-                    busStop.note ?? ""
-                    guard !stopName.isEmpty else { return nil }
-                    return Station(
-                        name: stopName,
-                        code: busStop.busstopPole,
-                        index: nil,
-                        lineCode: selectedLine.code,
-                        title: StationTitle(
-                            ja: busStop.busstopPoleTitle?.ja ?? busStop.note,
-                            en: busStop.busstopPoleTitle?.en ?? busStop.busStopEnglishName ?? busStop.note
-                        )
-                    )
-                }
-                return busStops
-            }
-            return []
+    // Get stops information for the selected line (unified for both railway and bus)
+    func getStopsForSelectedLine() -> [TransportationStop] {
+        guard let selectedLine = selectedLine else { 
+            print("🚫 getStopsForSelectedLine: No selected line")
+            return [] 
         }
         
-        // For railway lines, search by line code
-        return stationDataFiles.lazy.compactMap { [self] filename in
-            self.loadLocalData(for: filename).flatMap { [self] data in
-                self.parseStationsByLineCode(data, lineCode: selectedLine.code)
+        print("🚌 getStopsForSelectedLine: Line kind = \(selectedLine.kind), code = \(selectedLine.code)")
+        
+        if selectedLine.kind == .bus {
+            // Handle bus routes - use lineBusStops if available, otherwise fallback to busstopPoleOrder
+            if !lineBusStops.isEmpty {
+                let stops = lineBusStops.map { busStop -> TransportationStop in
+                    // Check if we need to fetch Japanese name from API
+                    let hasJapaneseInNote = (busStop.note?.contains(where: { $0.isJapanese }) ?? false)
+                    
+                    if (!hasJapaneseInNote || busStop.note?.isEmpty ?? true) && !(busStop.busstopPole?.isEmpty ?? true) {
+                        // Japanese name will be fetched later in selectLine
+                        
+                        // Create TransportationStop with Japanese name from title if available
+                        let transportationStop = TransportationStop(
+                            kind: .bus,
+                            name: busStop.title?.ja ?? busStop.name,
+                            code: busStop.code,
+                            index: busStop.index,
+                            lineCode: busStop.lineCode,
+                            title: busStop.title,
+                            note: busStop.note,
+                            busstopPole: busStop.busstopPole
+                        )
+                        return transportationStop
+                    } else {
+                        // Use existing TransportationStop conversion
+                        return TransportationStop(from: busStop)
+                    }
+                }
+                print("🚌 getStopsForSelectedLine: Found \(stops.count) bus stops from lineBusStops")
+                return stops
+            } else if let busstopPoleOrder = selectedLine.busstopPoleOrder {
+                let stops = busstopPoleOrder.map { busStop -> TransportationStop in
+                    let transportationStop = TransportationStop(from: busStop)
+                    
+                    // Check if note is empty or doesn't contain Japanese characters
+                    let hasJapaneseInNote = (busStop.note?.contains(where: { $0.isJapanese }) ?? false)
+                    if (!hasJapaneseInNote || busStop.note?.isEmpty ?? true) && !(busStop.busstopPole?.isEmpty ?? true) {
+                        // Japanese name will be fetched later in selectLine
+                    }
+                    
+                    return transportationStop
+                }
+                print("🚌 getStopsForSelectedLine: Found \(stops.count) bus stops from busstopPoleOrder")
+                return stops
+            } else {
+                print("🚫 getStopsForSelectedLine: No busstopPoleOrder found")
+                
+                // Fallback: Try to fetch bus stops from BusstopPole API if busstopPoleOrder is not available
+                Task {
+                    await fetchBusStopsFromAPI(for: selectedLine)
+                }
             }
-        }.first ?? []
+        } else {
+            // Handle railway lines - get stations from data files
+            let stations = stationDataFiles.lazy.compactMap { [self] filename in
+                self.loadLocalData(for: filename).flatMap { [self] data in
+                    self.parseStationsByLineCode(data, lineCode: selectedLine.code, isBus: false)
+                }
+            }.first ?? []
+            
+            print("🚂 getStopsForSelectedLine: Found \(stations.count) railway stations")
+            return stations
+        }
+        
+        print("🚫 getStopsForSelectedLine: Returning empty array")
+        return []
     }
     
     // Parse stations by line code
-    private func parseStationsByLineCode(_ data: Data, lineCode: String) -> [Station]? {
+    // Generic parser for both bus stops and railway stations by line code
+    private func parseStationsByLineCode(_ data: Data, lineCode: String, isBus: Bool) -> [TransportationStop]? {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
+            guard let array = json as? [[String: Any]] else { return nil }
             
-            if let array = json as? [[String: Any]] {
-                for railway in array {
-                    if let railwayCode = railway["owl:sameAs"] as? String,
-                       railwayCode == lineCode {
-                        return extractStationsFromRailway(railway, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode)
-                    }
+            for item in array {
+                if isBus != ((item["@type"] as? String) == "odpt:BusroutePattern") { continue }
+                
+                if let itemCode = item["owl:sameAs"] as? String, itemCode == lineCode {
+                    return isBus ? 
+                        extractStopsFromBusRoute(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode) :
+                        extractStationsFromRailway(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode)
                 }
             }
         } catch {
@@ -652,8 +590,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         selectedLine = nil
         showStationSelection = false
         lineStations = []
-        selectedDepartureStation = nil
-        selectedArrivalStation = nil
+        selectedDepartureStop = nil
+        selectedArrivalStop = nil
         selectedRideTime = 0
         showDepartureSuggestions = false
         departureSuggestions = []
@@ -673,18 +611,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
             selectedLineColor = lineColor
         }
         
-        if let departureStation = selectedDepartureStation {
-            departureStationInput = departureStation.getLocalizedName()
+        if let departureStop = selectedDepartureStop {
+            departureStopInput = departureStop.title?.getLocalizedName(fallbackTo: departureStop.name) ?? departureStop.name
         }
         
-        if let arrivalStation = selectedArrivalStation {
-            arrivalStationInput = arrivalStation.getLocalizedName()
+        if let arrivalStop = selectedArrivalStop {
+            arrivalStopInput = arrivalStop.title?.getLocalizedName(fallbackTo: arrivalStop.name) ?? arrivalStop.name
         }
     }
     
     // Check if custom line station input is complete
     func isCustomLineStationInputComplete() -> Bool {
-        return !lineInput.isEmpty && !departureStationInput.isEmpty && !arrivalStationInput.isEmpty && departureStationInput != arrivalStationInput
+        return !lineInput.isEmpty && !departureStopInput.isEmpty && !arrivalStopInput.isEmpty && departureStopInput != arrivalStopInput
     }
     
     // Set line color without saving to UserDefaults
@@ -733,29 +671,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     if foundLine.kind == .bus {
                         if let busstopPoleOrder = foundLine.busstopPoleOrder {
                             let busStops: [Station] = busstopPoleOrder.compactMap { busStop -> Station? in
-                                let stopName = busStop.busstopPoleTitle?.getLocalizedName() ??
-                                busStop.busStopEnglishName ??
-                                busStop.note ?? ""
-                                guard !stopName.isEmpty else { return nil }
+                                guard !busStop.name.isEmpty else { return nil }
                                 return Station(
-                                    name: stopName,
-                                    code: busStop.busstopPole,
-                                    index: nil,
+                                    name: busStop.name,
+                                    code: busStop.code,
+                                    index: busStop.index,
                                     lineCode: selectedLine?.code,
-                                    title: StationTitle(
-                                        ja: busStop.busstopPoleTitle?.ja ?? busStop.note,
-                                        en: busStop.busstopPoleTitle?.en ?? busStop.busStopEnglishName ?? busStop.note
-                                    )
+                                    title: busStop.title
                                 )
                             }
                             lineStations = busStops
                         }
                     }
                     
-                    // Show color selection if no color set
-                    if foundLine.lineColor == nil {
-                        showColorSelection = true
-                    }
+                    // Don't show color selection for saved lines - user can manually change color if needed
+                    showColorSelection = false
                     
                     // Update transportation kind to match found line
                     selectedTransportationKind = foundLine.kind
@@ -859,62 +789,54 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 busRoute: updatedLine.busRoute,
                 pattern: updatedLine.pattern,
                 busDirection: updatedLine.busDirection,
-                busstopPoleOrder: updatedLine.busstopPoleOrder
+                busstopPoleOrder: updatedLine.busstopPoleOrder,
+                title: updatedLine.title
             )
             selectedLine = updatedLine
         }
         
-        // Save station information with lineCode validation
-        if !departureStationInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            // Validate lineCode before saving departure station
-            if let departureStation = selectedDepartureStation,
-               let stationLineCode = departureStation.lineCode,
-               let selectedLineCode = selectedLine?.code,
-               stationLineCode == selectedLineCode {
-                
-                let departureKey = selectedGoorback.departStationKey(lineIndex)
-                UserDefaults.standard.set(departureStationInput, forKey: departureKey)
-                
-                // Save departure station ODPT code
-                if let stationCode = departureStation.code {
-                    let departureCodeKey = selectedGoorback.departStationCodeKey(lineIndex)
-                    UserDefaults.standard.set(stationCode, forKey: departureCodeKey)
-                }
-                
-                // Save departure station lineCode
+        // Save departure stop information
+        if !departureStopInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let departureKey = selectedGoorback.departStationKey(lineIndex)
+            UserDefaults.standard.set(departureStopInput, forKey: departureKey)
+            
+            // Save departure stop ODPT code
+            if let departureStop = selectedDepartureStop,
+               let stationCode = departureStop.code {
+                let departureCodeKey = selectedGoorback.departStationCodeKey(lineIndex)
+                UserDefaults.standard.set(stationCode, forKey: departureCodeKey)
+            }
+            
+            // Save departure stop lineCode if available
+            if let departureStop = selectedDepartureStop,
+               let stationLineCode = departureStop.lineCode {
                 let departureLineCodeKey = "\(selectedGoorback.departStationCodeKey(lineIndex))_lineCode"
                 UserDefaults.standard.set(stationLineCode, forKey: departureLineCodeKey)
-                
-                print("✅ Saved departure station with matching lineCode: \(stationLineCode)")
-            } else {
-                print("⚠️ Departure station lineCode mismatch - not saving")
             }
+            
+            print("✅ Saved departure stop: \(departureStopInput)")
         }
         
-        if !arrivalStationInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            // Validate lineCode before saving arrival station
-            if let arrivalStation = selectedArrivalStation,
-               let stationLineCode = arrivalStation.lineCode,
-               let selectedLineCode = selectedLine?.code,
-               stationLineCode == selectedLineCode {
-                
-                let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
-                UserDefaults.standard.set(arrivalStationInput, forKey: arrivalKey)
-                
-                // Save arrival station ODPT code
-                if let stationCode = arrivalStation.code {
-                    let arrivalCodeKey = selectedGoorback.arriveStationCodeKey(lineIndex)
-                    UserDefaults.standard.set(stationCode, forKey: arrivalCodeKey)
-                }
-                
-                // Save arrival station lineCode
+        // Save arrival stop information
+        if !arrivalStopInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
+            UserDefaults.standard.set(arrivalStopInput, forKey: arrivalKey)
+            
+            // Save arrival stop ODPT code
+            if let arrivalStop = selectedArrivalStop,
+               let stationCode = arrivalStop.code {
+                let arrivalCodeKey = selectedGoorback.arriveStationCodeKey(lineIndex)
+                UserDefaults.standard.set(stationCode, forKey: arrivalCodeKey)
+            }
+            
+            // Save arrival stop lineCode if available
+            if let arrivalStop = selectedArrivalStop,
+               let stationLineCode = arrivalStop.lineCode {
                 let arrivalLineCodeKey = "\(selectedGoorback.arriveStationCodeKey(lineIndex))_lineCode"
                 UserDefaults.standard.set(stationLineCode, forKey: arrivalLineCodeKey)
-                
-                print("✅ Saved arrival station with matching lineCode: \(stationLineCode)")
-            } else {
-                print("⚠️ Arrival station lineCode mismatch - not saving")
             }
+            
+            print("✅ Saved arrival stop: \(arrivalStopInput)")
         }
         
         // Save ride time
@@ -947,56 +869,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    
-    
-    
-    // MARK: - Station Data Retrieval
-    // Get all stations regardless of line selection
-    func getAllAvailableStations() -> [Station] {
-        let allStations = stationDataFiles.flatMap { filename in
-            loadLocalData(for: filename).flatMap { parseAllStationsFromFile($0) } ?? []
-        }
-        
-        return Array(Set(allStations)).sorted { $0.getLocalizedName() < $1.getLocalizedName() }
-    }
-    
-    // Extract all stations from file
-    func parseAllStationsFromFile(_ data: Data) -> [Station]? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            
-            if let array = json as? [[String: Any]] {
-                var stations: [Station] = []
-                
-                for railway in array {
-                    if let stationOrder = railway["odpt:stationOrder"] as? [[String: Any]] {
-                        for stationInfo in stationOrder {
-                            if let stationTitle = stationInfo["odpt:stationTitle"] as? [String: Any] {
-                                let jaName = stationTitle["ja"] as? String
-                                let enName = stationTitle["en"] as? String
-                                let stationCode = stationInfo["odpt:station"] as? String
-                                let stationIndex = stationInfo["odpt:index"] as? Int
-                                let stationName = jaName ?? enName ?? "Unknown station"
-                                let station = Station(
-                                    name: stationName,
-                                    code: stationCode, // Parse odpt:station code
-                                    index: stationIndex, // Parse odpt:index
-                                    lineCode: railway["owl:sameAs"] as? String, // Parse line code
-                                    title: StationTitle(ja: jaName, en: enName)
-                                )
-                                stations.append(station)
-                            }
-                        }
-                    }
-                }
-                return stations
-            }
-        } catch {
-            return nil
-        }
-        return nil
-    }
-    
     // Load station settings from UserDefaults
     private func loadStationSettings() {
         let currentLineIndex = selectedLineNumber - 1
@@ -1005,26 +877,25 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         print("   Departure key: \(departureKey)")
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            self.departureStationInput = savedDeparture
+            self.departureStopInput = savedDeparture
             print("✅ Restored departure station: \(savedDeparture)")
         } else {
-            self.departureStationInput = ""
+            self.departureStopInput = ""
             print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         print("   Arrival key: \(arrivalKey)")
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            self.arrivalStationInput = savedArrival
+            self.arrivalStopInput = savedArrival
             print("✅ Restored arrival station: \(savedArrival)")
         } else {
-            self.arrivalStationInput = ""
+            self.arrivalStopInput = ""
             print("   No saved arrival found")
         }
     }
     
     // MARK: - Line Selection Management
-    
     // Update available line numbers with option to preserve current line number
     private func updateAvailableLineNumbers(shouldPreserveLineNumber: Bool) {
         let changeLineValue = UserDefaults.standard.integer(forKey: selectedGoorback.changeLineKey)
@@ -1090,19 +961,19 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            self.departureStationInput = savedDeparture
+            self.departureStopInput = savedDeparture
             print("✅ Restored departure station: \(savedDeparture)")
         } else {
-            self.departureStationInput = ""
+            self.departureStopInput = ""
             print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            self.arrivalStationInput = savedArrival
+            self.arrivalStopInput = savedArrival
             print("✅ Restored arrival station: \(savedArrival)")
         } else {
-            self.arrivalStationInput = ""
+            self.arrivalStopInput = ""
             print("   No saved arrival found")
         }
         
@@ -1110,6 +981,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let savedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
         // Use saved value or default to 0 if not set
         self.selectedRideTime = savedRideTime > 0 ? savedRideTime : 0
+        
+        // Load lineSelected flag from UserDefaults
+        let lineSelectedKey = selectedGoorback.lineSelectedKey(currentLineIndex)
+        self.lineSelected = UserDefaults.standard.bool(forKey: lineSelectedKey)
         
         if selectedLineNumber < 3 {
             let transportationKey = selectedGoorback.transportationKey(currentLineIndex + 2)
@@ -1132,51 +1007,184 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Train Timetable Data Processing
-    // Get train timetable data and extract departure/arrival times for selected stations
-    func getTrainTimeTableData() async -> (weekday: [TrainTime], weekend: [TrainTime]) {
+    // MARK: - Unified Timetable Data Processing
+    // Get timetable data and extract departure/arrival times for selected stops/stations
+    func getTimeTableData() async -> (weekday: [any TransportationTime], weekend: [any TransportationTime]) {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
-            print("⚠️ Skipping train timetable generation: not all required fields are filled")
+            print("⚠️ Skipping timetable generation: not all required fields are filled")
             return (weekday: [], weekend: [])
         }
         
-        print("🚂 Starting train timetable data generation")
-        print("🚂 Departure Station: \(selectedDepartureStation?.name ?? "Unknown") (Code: \(selectedDepartureStation?.code ?? "nil"))")
-        print("🚂 Arrival Station: \(selectedArrivalStation?.name ?? "Unknown") (Code: \(selectedArrivalStation?.code ?? "nil"))")
+        guard let selectedLine = selectedLine else {
+            print("⚠️ No line selected")
+            return (weekday: [], weekend: [])
+        }
+        
+        print("🚌🚂 Starting \(selectedLine.kind.rawValue) timetable data generation")
+        print("🚌🚂 Departure: \(selectedDepartureStop?.name ?? "Unknown") (Code: \(selectedDepartureStop?.code ?? "nil"))")
+        print("🚌🚂 Arrival: \(selectedArrivalStop?.name ?? "Unknown") (Code: \(selectedArrivalStop?.code ?? "nil"))")
         
         // Process both weekday and weekend data
-        var weekdayTrainTimes: [TrainTime] = []
-        var weekendTrainTimes: [TrainTime] = []
+        var weekdayTimes: [any TransportationTime] = []
+        var weekendTimes: [any TransportationTime] = []
         
         for isWeekday in [true, false] {
-            let trainTimes = await processTrainTimetableData(isWeekday: isWeekday)
+            
+            print("🚌🚂 Processing \(isWeekday ? "weekday" : "weekend") \(selectedLine.kind.rawValue) timetable data")
+            
+            let times: [any TransportationTime] = (selectedLine.kind == .bus) ? 
+                await processBusTimetableData(isWeekday: isWeekday): 
+                await processTrainTimetableData(isWeekday: isWeekday)
             
             // Save to appropriate array based on weekday/weekend
             if isWeekday {
-                weekdayTrainTimes.append(contentsOf: trainTimes)
+                weekdayTimes.append(contentsOf: times)
             } else {
-                weekendTrainTimes.append(contentsOf: trainTimes)
+                weekendTimes.append(contentsOf: times)
             }
             
-            print("✅ \(isWeekday ? "Weekday" : "Weekend") trains: \(trainTimes.count)")
+            print("✅ \(isWeekday ? "Weekday" : "Weekend") \(selectedLine.kind.rawValue)s: \(times.count)")
         }
         
-        print("✅ Train timetable generation completed")
+        print("✅ \(selectedLine.kind.rawValue.capitalized) timetable generation completed")
         
-        return (weekday: weekdayTrainTimes, weekend: weekendTrainTimes)        
+        return (weekday: weekdayTimes, weekend: weekendTimes)        
     }
     
+    // Process bus timetable data for specific day type
+    private func processBusTimetableData(isWeekday: Bool) async -> [any TransportationTime] {
+        print("🚌 Processing \(isWeekday ? "weekday" : "weekend") bus timetable data")
+        print("🚌 Departure stop busstopPole: \(selectedDepartureStop?.busstopPole ?? "nil")")
+        print("🚌 Arrival stop busstopPole: \(selectedArrivalStop?.busstopPole ?? "nil")")
+        
+        // Fetch bus timetable data from API
+        let busTimetableData = await fetchBusTimetableData(isWeekday: isWeekday)
+        
+        // Extract bus information and timetable objects in a single loop
+        var transportationTimes: [any TransportationTime] = []
+        
+        for timetable in busTimetableData {
+            
+            guard let busTimetableObjects = timetable["odpt:busTimetableObject"] as? [[String: Any]] else {
+                print("   ❌ Failed to extract bus timetable objects")
+                continue
+            }
+
+            var departureTime: String?
+            var arrivalTime: String?
+            
+            for timetableObject in busTimetableObjects {
+                
+                let currentBusstopPole = timetableObject["odpt:busstopPole"] as? String ?? ""
+                let currentDepartureTime = timetableObject["odpt:departureTime"] as? String ?? ""
+                let currentArrivalTime = timetableObject["odpt:arrivalTime"] as? String ?? ""
+
+                // Check departure stop match using busstopPole
+                if let selectedDepartureStop = selectedDepartureStop,
+                   let departureStop = selectedDepartureStop.busstopPole,
+                   currentBusstopPole == departureStop {
+                    if !currentDepartureTime.isEmpty {
+                        departureTime = currentDepartureTime
+                        // print("✅ Found departure time: \(currentDepartureTime) at \(currentBusstopPole)")
+                    } else if !currentArrivalTime.isEmpty {
+                        departureTime = currentArrivalTime
+                        // print("✅ Found arrival time: \(currentArrivalTime) at \(currentBusstopPole)")
+                    }
+                }
+                
+                // Check arrival stop match using busstopPole
+                if let selectedArrivalStop = selectedArrivalStop,
+                   let arrivalStop = selectedArrivalStop.busstopPole,
+                   currentBusstopPole == arrivalStop {
+                    if !currentArrivalTime.isEmpty {
+                        arrivalTime = currentArrivalTime
+                        // print("✅ Found arrival time: \(currentArrivalTime) at \(currentBusstopPole)")
+                    } else if !currentDepartureTime.isEmpty {
+                        arrivalTime = currentDepartureTime
+                        // print("✅ Found arrival time (as departure): \(currentDepartureTime) at \(currentBusstopPole)")
+                    }
+                }
+            }
+        
+            // Only append if arrival time is later than departure time
+            if let depTime = departureTime, let arrTime = arrivalTime {
+                // Convert time strings to minutes for comparison
+                let depMinutes = depTime.timeToMinutes
+                let arrMinutes = arrTime.timeToMinutes
+                print("🕐 Time comparison: \(depTime) (\(depMinutes)min) → \(arrTime) (\(arrMinutes)min)")
+                if arrMinutes > depMinutes {
+                    // Calculate ride time in minutes
+                    let rideTime = depTime.calculateRideTime(arrivalTime: arrTime)
+                    let busNumber = timetable["dc:title"] as? String
+                    let routePattern = timetable["odpt:busroutePattern"] as? String
+                    let busTime = BusTime(
+                        departureTime: depTime,
+                        arrivalTime: arrTime,
+                        busNumber: busNumber,
+                        routePattern: routePattern,
+                        rideTime: rideTime
+                    )
+                    transportationTimes.append(busTime)
+                    print("✅ Added bus time: \(depTime) → \(arrTime) (\(rideTime)min)")
+                } else {
+                    print("❌ Skipped bus time: \(depTime) → \(arrTime) (arrival not later than departure)")
+                }
+            } else {
+                print("❌ Missing times: departure=\(departureTime ?? "nil"), arrival=\(arrivalTime ?? "nil")")
+            }
+        }
+        
+        print("🚌 Bus Times: \(transportationTimes.count) buses")
+        
+        return transportationTimes
+    }
+    
+    // Fetch bus timetable data from API
+    private func fetchBusTimetableData(isWeekday: Bool) async -> [[String: Any]] {
+        guard let operatorCode = selectedLine?.operatorCode,
+              let selectedLineTitle = selectedLine?.title,
+              let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
+        
+        // let calendarType = isWeekday ? "odpt.Calendar:Weekday" : "odpt.Calendar:SaturdayHoliday"
+        // print("🔍 Calendar type: \(calendarType)")
+        
+        // Use bus-specific timetable API (force bus API regardless of transportationType)
+        let apiLink = "\(selectedOperator.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)"
+        // &odpt:calendar=\(calendarType)"
+        print("🔍 Bus timetable API link: \(apiLink)")
+        
+        guard let url = URL(string: apiLink) else {
+            print("❌ Invalid bus timetable API URL")
+            return []
+        }
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+                print("❌ Failed to parse bus timetable JSON")
+                return []
+            }
+            
+            print("✅ Bus timetable data fetched: \(json.count) timetables")
+            return json
+        } catch {
+            print("❌ Error fetching bus timetable data: \(error)")
+            return []
+        }
+    }
+
+    
     // Process train timetable data for specific day type
-    private func processTrainTimetableData(isWeekday: Bool) async -> [TrainTime] {
+    private func processTrainTimetableData(isWeekday: Bool) async -> [any TransportationTime] {
         print("🚂 Processing \(isWeekday ? "weekday" : "weekend") train timetable data")
         
         // Fetch train timetable data from API
         let trainTimetableData = await fetchTrainTimetableData(isWeekday: isWeekday)
         
         // Extract train information and timetable objects in a single loop
-        var trainTimes: [TrainTime] = []
+        var transportationTimes: [any TransportationTime] = []
         
         for timetable in trainTimetableData {
             
@@ -1193,17 +1201,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
             for timetableObject in trainTimetableObjects {
                 
                 // Check departure station match
-                if let departureStation = timetableObject["odpt:departureStation"] as? String,
-                   departureStation == selectedDepartureStation?.code {
+                if let departureStop = timetableObject["odpt:departureStation"] as? String,
+                   departureStop == selectedDepartureStop?.code {
                     departureTime = timetableObject["odpt:departureTime"] as? String
                 }
                 
                 // Check arrival station match
-                if let arrivalStation = timetableObject["odpt:arrivalStation"] as? String,
-                   arrivalStation == selectedArrivalStation?.code {
+                if let arrivalStop = timetableObject["odpt:arrivalStation"] as? String,
+                   arrivalStop == selectedArrivalStop?.code {
                     arrivalTime = timetableObject["odpt:arrivalTime"] as? String
-                } else if let departureStation = timetableObject["odpt:departureStation"] as? String,
-                          departureStation == selectedArrivalStation?.code {
+                } else if let departureStop = timetableObject["odpt:departureStation"] as? String,
+                          departureStop == selectedArrivalStop?.code {
                     arrivalTime = timetableObject["odpt:departureTime"] as? String
                 }
             }
@@ -1223,14 +1231,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
                         trainType: trainType,
                         rideTime: rideTime
                     )
-                    trainTimes.append(trainTime)
+                    transportationTimes.append(trainTime)
                 }
             }
         }
         
-        print("🚂 Train Times: \(trainTimes.count) trains")
+        print("🚂 Train Times: \(transportationTimes.count) trains")
         
-        return trainTimes
+        return transportationTimes
     }
     
     // Fetch train timetable data from API
@@ -1269,7 +1277,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Train Route Validation
     // Get station timetable data for determined direction and find common train numbers
-    func getStationTimetableData() async -> (weekday: [TrainTime], weekend: [TrainTime]) {
+    func getStationTimetableData() async -> (weekday: [any TransportationTime], weekend: [any TransportationTime]) {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
@@ -1291,7 +1299,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("   Ascending: \(ascendingDirection)")
         print("   Descending: \(descendingDirection)")
         
-        var results: [[TrainTime]] = []
+        var results: [[any TransportationTime]] = []
         
         for isWeekday in [true, false] {
             print("🔄 Processing \(isWeekday ? "Weekday" : "Weekend") data for both directions")
@@ -1299,7 +1307,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             // Get data for both directions
             let directions = [ascendingDirection, descendingDirection]
             let directionNames = ["ascending", "descending"]
-            var directionResults: [[TrainTime]] = []
+            var directionResults: [[any TransportationTime]] = []
             
             for (index, direction) in directions.enumerated() {
                 print("📊 Get \(directionNames[index].capitalized) Direction Timetable Data:")
@@ -1318,7 +1326,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 print("\(directionNames[index]) \(isWeekday ? "Weekday" : "Weekend") Arrival count: \(arrivalData.count)")
                 
                 // Process this direction if we have both departure and arrival data
-                var result: [TrainTime] = []
+                var result: [any TransportationTime] = []
                 if departureData.count > 0 {
                     print("Get \(directionNames[index]) departure timetable not using train numbers (no trains with numbers found)")
                     result = await getEstimatedTrainTime(
@@ -1351,13 +1359,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Generate timetable information links for departure and arrival stations
         let operatorCode = selectedLine?.operatorCode ?? ""
         let dataSource = LocalDataSource.allCases.first { $0.operatorCode == operatorCode }
-        let stationTimetableApiLink = dataSource?.apiLink(for: .stationTimetable) ?? ""
+        let stationTimetableApiLink = dataSource?.apiLink(for: .stopTimetable) ?? ""
         
         // Extract station name from station code (remove "odpt.Station:" prefix)
         let lineCode = selectedLine?.code ?? ""
         let lineName = lineCode.replacingOccurrences(of: "odpt.Railway:", with: "&owl:sameAs=odpt.StationTimetable:")
         
-        let stationCode = (isDeparture ? selectedDepartureStation?.code: selectedArrivalStation?.code) ?? ""
+        let stationCode = (isDeparture ? selectedDepartureStop?.code: selectedArrivalStop?.code) ?? ""
         let stationName = stationCode.components(separatedBy: ".").last ?? ""
         
         // Use provided direction or fallback to lineDirection from selectedLine
@@ -1368,7 +1376,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         let apiLink = "\(stationTimetableApiLink)\(lineName).\(stationName).\(directionName)\(dateSuffix)"
         
-        print("🔍 stationInformationLink - isDeparture: \(isDeparture), isWeekday: \(isWeekday), direction: \(directionName), apiLink: \(apiLink)")
+        print("🔍 Station timetable link - isDeparture: \(isDeparture), isWeekday: \(isWeekday), direction: \(directionName), apiLink: \(apiLink)")
         return apiLink
     }
 
@@ -1445,7 +1453,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
         isWeekday: Bool,
         approxRideTime: Int
-    ) async -> [TrainTime] {
+    ) async -> [any TransportationTime] {
 
         print("🚀🚀🚀 getEstimatedTrainTime STARTED 🚀🚀🚀")
         print("🔍 getEstimatedTrainTime: Processing \(departureTimetableData.count) departure records and \(arrivalTimetableData.count) arrival records")
@@ -1454,7 +1462,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let trainTypeList = departureTimetableData.trainTypeList
         print("🔍 Processing train types: \(trainTypeList)")
         
-        var allTrainTimes: [TrainTime] = []
+        var allTransportationTimes: [any TransportationTime] = []
         
         // Process each train type separately
         for trainType in trainTypeList {
@@ -1470,7 +1478,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             guard !departureData.isEmpty else { continue }
             
             let terminalDepartureData = departureData.filter { data in
-                !data.destinationStation.isEmpty && data.destinationStation == selectedArrivalStation?.code
+                !data.destinationStation.isEmpty && data.destinationStation == selectedArrivalStop?.code
             }
             
             print("📊 terminalDepartureData: \(terminalDepartureData)")
@@ -1486,14 +1494,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 )
             }
             if !terminalTrainTimes.isEmpty {
-                allTrainTimes.append(contentsOf: terminalTrainTimes)
+                allTransportationTimes.append(contentsOf: terminalTrainTimes)
             }
 
             print("🚉 terminalTrainTimes count: \(terminalTrainTimes.count)")
             
             // Remove terminalDepartureData from departureData
             let filteredDepartureData = departureData.filter { data in
-                data.destinationStation.isEmpty || data.destinationStation != selectedArrivalStation?.code
+                data.destinationStation.isEmpty || data.destinationStation != selectedArrivalStop?.code
             }
             
             print("📊 Filtered departure data: \(departureData.count) → \(filteredDepartureData.count)")
@@ -1509,7 +1517,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 )
                 // Calculate average ride time for this train type
                 if !trainTimes.isEmpty {
-                    allTrainTimes.append(contentsOf: trainTimes)
+                    allTransportationTimes.append(contentsOf: trainTimes)
                 }
             } else {
                 print("❌ No data for train type: \(trainType)")
@@ -1517,7 +1525,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Sort all train times by departure time
-        let sortedTrainTimes = allTrainTimes.sorted { first, second in
+        let sortedTrainTimes = allTransportationTimes.sorted { first, second in
             let firstMinutes = first.departureTime.timeToMinutes
             let secondMinutes = second.departureTime.timeToMinutes
             return firstMinutes < secondMinutes
@@ -1535,13 +1543,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
         trainType: String,
         approxRideTime: Int
-    ) -> [TrainTime] {
+    ) -> [any TransportationTime] {
         
         // 0) Filter out trains that don't reach the arrival station (only for trains without train numbers)
         let filteredDepartureData = departureData.filter { data in
-            if data.trainNumber.isEmpty && !isTrainReachingArrivalStation(destinationStation: data.destinationStation) {
-                let departureIndex = selectedDepartureStation?.index ?? -1
-                let arrivalIndex = selectedArrivalStation?.index ?? -1
+            if data.trainNumber.isEmpty && !isTrainReachingArrivalStop(destinationStation: data.destinationStation) {
+                let departureIndex = selectedDepartureStop?.index ?? -1
+                let arrivalIndex = selectedArrivalStop?.index ?? -1
                 let destinationIndex = getStationIndexFromDestinationStation(data.destinationStation) ?? -1
                 print("🚫 Filtered out estimated train - Departure: \(departureIndex), Arrival: \(arrivalIndex), Destination: \(destinationIndex)")
                 return false
@@ -1573,7 +1581,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
 
         
         // 5) Collect pairs using no duplicates with minimum ride time within range
-        var trainTimes: [TrainTime] = []
+        var transportationTimes: [any TransportationTime] = []
         var usedArrivals = Set<Int>() // Track used arrival indices
         
         for departureTime in sortedDepartureTimes {
@@ -1604,18 +1612,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     trainType: trainType,
                     rideTime: departureTime.calculateRideTime(arrivalTime: sortedArrivalTimes[bestIndex])
                 )
-                trainTimes.append(trainTime)
+                transportationTimes.append(trainTime)
                 usedArrivals.insert(bestIndex)
             }
         }
-        return trainTimes
+        return transportationTimes
     }
     
     // Check if train reaches the arrival station (destination station index is not between departure and arrival)
-    private func isTrainReachingArrivalStation(destinationStation: String) -> Bool {
+    private func isTrainReachingArrivalStop(destinationStation: String) -> Bool {
         // Get station indices for departure, arrival, and destination stations
-        guard let departureIndex = selectedDepartureStation?.index,
-              let arrivalIndex = selectedArrivalStation?.index,
+        guard let departureIndex = selectedDepartureStop?.index,
+              let arrivalIndex = selectedArrivalStop?.index,
               let destinationIndex = getStationIndexFromDestinationStation(destinationStation) else {
             // If any index is missing, allow the train (fallback behavior)
             return true
@@ -1657,14 +1665,25 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Extract the station name from the code
         let stationName = destinationStationCode.components(separatedBy: ".").last ?? ""
         
-        // Use already loaded line stations instead of filtering all stations
-        let selectedLineStations = lineStations.isEmpty ? getStationsForSelectedLine() : lineStations
+        // Use already loaded line stops and filter for railway stations
+        let selectedLineStations = lineStops.compactMap { stop in
+            if stop.kind == .railway {
+                return Station(
+                    name: stop.name,
+                    code: stop.code,
+                    index: stop.index,
+                    lineCode: stop.lineCode,
+                    title: stop.title
+                )
+            }
+            return nil
+        }
         
         // Find station by code or name match
         if let station = selectedLineStations.first(where: { 
             $0.code == destinationStationCode || 
             $0.name == stationName || 
-            $0.getLocalizedName() == stationName
+            $0.title?.getLocalizedName(fallbackTo: $0.name) ?? $0.name == stationName
         }) {
             let matchType = station.code == destinationStationCode ? "code" : "name"
             if station.index == -1 {
@@ -1677,64 +1696,62 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         return nil
     }
-    
-    
-    
-    
-    
-
-    
+        
     // MARK: - Timetable Data Saving
     // Save timetable data to UserDefaults for display in TimetableContentView
     // Saves both departure times and ride times grouped by hour
-    private func saveTimetableToUserDefaults(trainTime: [TrainTime], isWeekday: Bool) {
+    private func saveTimetableToUserDefaults(transportationTimes: [any TransportationTime], isWeekday: Bool) {
         // Clear existing timetable data for this line and day type
         clearTimetableData(isWeekday: isWeekday)
         
         print("💾 Saving timetable data for \(isWeekday ? "weekdays" : "weekends")")
-        print("📊 Total TrainTime objects: \(trainTime.count)")
+        print("📊 Total TransportationTime objects: \(transportationTimes.count)")
         
-        // Group TrainTime objects by hour
-        var hourlyTrainTimes: [Int: [TrainTime]] = [:]
+        // Group TransportationTime objects by hour
+        var hourlyTransportationTimes: [Int: [any TransportationTime]] = [:]
         
-        for (index, trainTimeItem) in trainTime.enumerated() {
-            let timeComponents = trainTimeItem.departureTime.components(separatedBy: ":")
+        for (index, transportationTimeItem) in transportationTimes.enumerated() {
+            let timeComponents = transportationTimeItem.departureTime.components(separatedBy: ":")
             if timeComponents.count == 2, let hour = Int(timeComponents[0]) {
-                hourlyTrainTimes[hour, default: []].append(trainTimeItem)
+                hourlyTransportationTimes[hour, default: []].append(transportationTimeItem)
                 if index < 5 {
-                    print("🚉\(trainTimeItem.trainNumber ?? "N/A") (\(trainTimeItem.trainType?.split(separator: ".").last ?? "N/A")): \(trainTimeItem.departureTime) → \(trainTimeItem.arrivalTime) (\(trainTimeItem.rideTime)min)")
+                    if let busTime = transportationTimeItem as? BusTime {
+                        print("🚌\(busTime.busNumber ?? "N/A"): \(busTime.departureTime) → \(busTime.arrivalTime) (\(busTime.rideTime)min)")
+                    } else if let trainTime = transportationTimeItem as? TrainTime {
+                        print("🚉\(trainTime.trainNumber ?? "N/A") (\(trainTime.trainType?.split(separator: ".").last ?? "N/A")): \(trainTime.departureTime) → \(trainTime.arrivalTime) (\(trainTime.rideTime)min)")
+                    }
                 }
             }
         }
         
-        // Sort and save to UserDefaults using new method
-        for (hour, trainTimes) in hourlyTrainTimes {
-            let sortedTrainTimes = trainTimes.sorted { 
+        // Sort and save to UserDefaults using unified TransportationTime format
+        for (hour, transportationTimesForHour) in hourlyTransportationTimes {
+            let sortedTransportationTimes = transportationTimesForHour.sorted { 
                 $0.departureTime < $1.departureTime 
             }
-            selectedGoorback.saveTrainTimes(sortedTrainTimes, isWeekday, selectedLineNumber - 1, hour)
+            selectedGoorback.saveTransportationTimes(sortedTransportationTimes, isWeekday, selectedLineNumber - 1, hour)
         }
         
         // Save train type list for the entire timetable
-        let allTrainTimes = hourlyTrainTimes.values.flatMap { $0 }
-        selectedGoorback.saveTrainTypeList(allTrainTimes, isWeekday, selectedLineNumber - 1)
+        let allTransportationTimes = hourlyTransportationTimes.values.flatMap { $0 }
+        selectedGoorback.saveTrainTypeList(allTransportationTimes, isWeekday, selectedLineNumber - 1)
         
         // Ensure all UserDefaults changes are synchronized to disk
         UserDefaults.standard.synchronize()
         
         // Summary log
-        print("📈 Summary - Saved \(hourlyTrainTimes.count) hours of timetable data")
+        print("📈 Summary - Saved \(hourlyTransportationTimes.count) hours of timetable data")
         
         // Print ride time list for verification
-        print("AllTrainTimes: \(allTrainTimes.count)")
+        print("AllTransportationTimes: \(allTransportationTimes.count)")
     }
     
     // MARK: - Common Timetable Data Finalization with Arrays
     // Common post-processing for timetable data with weekday/weekend arrays
-    func finalizeTimetableData(weekdayTrainTimes: [TrainTime], weekendTrainTimes: [TrainTime]) async {
-        // Save all timetable data to UserDefaults
-        saveTimetableToUserDefaults(trainTime: weekdayTrainTimes, isWeekday: true)
-        saveTimetableToUserDefaults(trainTime: weekendTrainTimes, isWeekday: false)
+    func finalizeTimetableData(weekdayTimes: [any TransportationTime], weekendTimes: [any TransportationTime]) async {
+        // Save timetable data using unified TransportationTime format
+        saveTimetableToUserDefaults(transportationTimes: weekdayTimes, isWeekday: true)
+        saveTimetableToUserDefaults(transportationTimes: weekendTimes, isWeekday: false)
         
         // Save all data after timetable data has been processed and saved
         await saveAllDataToUserDefaults()
@@ -1776,10 +1793,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Clear line name and station selections when switching transportation types
         lineInput = ""
         selectedLine = nil
-        selectedDepartureStation = nil
-        selectedArrivalStation = nil
-        departureStationInput = ""
-        arrivalStationInput = ""
+        selectedDepartureStop = nil
+        selectedArrivalStop = nil
+        departureStopInput = ""
+        arrivalStopInput = ""
         lineStations = []
         selectedLineColor = Color.accentString
         
@@ -1793,8 +1810,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalSuggestions = []
         isDepartureFieldFocused = false
         isArrivalFieldFocused = false
-        departureStationSelected = false
-        arrivalStationSelected = false
+        departureStopSelected = false
+        arrivalStopSelected = false
         lineSelected = false
         showStationSelection = false
         
@@ -1810,7 +1827,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Input Processing
     /// Processes departure station input changes
-    func processDepartureStationInput(_ newValue: String) {
+    func processdepartureStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if isLineNumberChanging {
             return
@@ -1818,21 +1835,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Set focus state and reset selection flag when input changes
         isDepartureFieldFocused = true
-        departureStationSelected = false
+        departureStopSelected = false
         
         // Clear input if same station as arrival station is entered
-        let isSameAsArrival = selectedArrivalStation?.getLocalizedName() == newValue
+        let isSameAsArrival = selectedArrivalStop?.title?.getLocalizedName(fallbackTo: selectedArrivalStop?.name ?? "") ?? selectedArrivalStop?.name ?? "" == newValue
         if isSameAsArrival {
-            departureStationInput = ""
-            selectedDepartureStation = nil
+            departureStopInput = ""
+            selectedDepartureStop = nil
         } else {
             // Filter suggestions
-            filterDepartureStations(newValue)
+            filterDepartureStops(newValue)
         }
     }
     
     /// Processes arrival station input changes
-    func processArrivalStationInput(_ newValue: String) {
+    func processarrivalStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if isLineNumberChanging {
             return
@@ -1840,16 +1857,16 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Set focus state and reset selection flag when input changes
         isArrivalFieldFocused = true
-        arrivalStationSelected = false
+        arrivalStopSelected = false
         
         // Clear input message on input
-        let isSameAsDeparture = selectedDepartureStation?.getLocalizedName() == newValue
+        let isSameAsDeparture = selectedDepartureStop?.title?.getLocalizedName(fallbackTo: selectedDepartureStop?.name ?? "") ?? selectedDepartureStop?.name ?? "" == newValue
         if isSameAsDeparture {
-            arrivalStationInput = ""
-            selectedArrivalStation = nil
+            arrivalStopInput = ""
+            selectedArrivalStop = nil
         } else {
             // Filter suggestions
-            filterArrivalStations(newValue)
+            filterArrivalStops(newValue)
         }
     }
     
@@ -1871,9 +1888,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         if shouldResetSelection {
             // Clear line selection but preserve station data and ride time
             selectedLine = nil
-            // DO NOT clear departureStationInput, arrivalStationInput, or selectedRideTime
-            selectedDepartureStation = nil
-            selectedArrivalStation = nil
+            // DO NOT clear departureStopInput, arrivalStopInput, or selectedRideTime
+            selectedDepartureStop = nil
+            selectedArrivalStop = nil
             showDepartureSuggestions = false
             departureSuggestions = []
             showArrivalSuggestions = false
@@ -1881,8 +1898,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             isDepartureFieldFocused = false
             isArrivalFieldFocused = false
             // Reset station selection flags to allow suggestions to show
-            departureStationSelected = false
-            arrivalStationSelected = false
+            departureStopSelected = false
+            arrivalStopSelected = false
             lineSelected = false
         }
         
@@ -1903,6 +1920,35 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Update display name with operator information on selection
         lineInput = lineDisplayName(for: line)
+        
+        // Initialize lineBusStops for bus routes
+        if line.kind == .bus {
+            if let busstopPoleOrder = line.busstopPoleOrder {
+                lineBusStops = busstopPoleOrder
+                print("🚌 selectLine: Initialized lineBusStops with \(busstopPoleOrder.count) bus stops")
+                
+                // Check if any bus stops need Japanese names and fetch them once
+                let needsJapaneseNames = busstopPoleOrder.contains { busStop in
+                    let hasJapaneseInNote = (busStop.note?.contains(where: { $0.isJapanese }) ?? false)
+                    return (!hasJapaneseInNote || busStop.note?.isEmpty ?? true) && !(busStop.busstopPole?.isEmpty ?? true)
+                }
+                
+                if needsJapaneseNames {
+                    print("🚌 selectLine: Some bus stops need Japanese names, fetching...")
+                    Task {
+                        await fetchJapaneseNamesForAllBusStops()
+                    }
+                }
+            } else {
+                lineBusStops = []
+                print("🚫 selectLine: No busstopPoleOrder found, cleared lineBusStops")
+            }
+        } else {
+            lineBusStops = []
+        }
+        
+        // Update line stops immediately based on line type
+        lineStops = getStopsForSelectedLine()
         
         // Preserve existing station and ride time settings instead of clearing them
         // Only clear suggestion displays
@@ -1927,8 +1973,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         resetStationSelection()
         
         // Clear departure and arrival station input fields
-        departureStationInput = ""
-        arrivalStationInput = ""
+        departureStopInput = ""
+        arrivalStopInput = ""
         
         // Reset ride time to 0 minutes
         selectedRideTime = 0
@@ -1955,7 +2001,196 @@ final class SettingsLineSheetViewModel: ObservableObject {
     func hasTrainTimetableSupport() -> Bool {
         return getLocalDataSource()?.hasTrainTimeTable ?? false
     }
+    
+    // MARK: - BusstopPole API Integration
+    /// Flag to prevent multiple simultaneous API calls
+    private var isFetchingJapaneseNames = false
+    
+    /// Fetches Japanese names for all bus stops in the selected route
+    private func fetchJapaneseNamesForAllBusStops() async {
+        // Prevent multiple simultaneous calls
+        guard !isFetchingJapaneseNames else {
+            print("🚌 fetchJapaneseNamesForAllBusStops: Already fetching, skipping duplicate call")
+            return
+        }
+        
+        isFetchingJapaneseNames = true
+        defer { isFetchingJapaneseNames = false }
+        guard let selectedLine = selectedLine,
+              let operatorCode = selectedLine.operatorCode else {
+            print("❌ fetchJapaneseNamesForAllBusStops: Missing selected line or operator code")
+            return
+        }
+        
+        do {
+            // Find the corresponding LocalDataSource for the operator
+            guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
+                print("❌ fetchJapaneseNamesForAllBusStops: No matching LocalDataSource found for operator: \(operatorCode)")
+                return
+            }
+            
+            // Generate API link for BusstopPole with busroutePattern filter
+            let urlString = dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(selectedLine.code)"
+            
+            guard let url = URL(string: urlString) else {
+                print("❌ fetchJapaneseNamesForAllBusStops: Invalid URL: \(urlString)")
+                return
+            }
+            
+            print("🚌 fetchJapaneseNamesForAllBusStops: Fetching Japanese names for route pattern: \(selectedLine.code)")
+            print("🔗 API URL: \(urlString)")
+            
+            var request = URLRequest(url: url)
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            request.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("❌ fetchJapaneseNamesForAllBusStops: Invalid HTTP response")
+                return
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                print("❌ fetchJapaneseNamesForAllBusStops: HTTP error \(httpResponse.statusCode)")
+                return
+            }
+            
+            // Decode BusstopPoleDTO array
+            let allBusstopPoles = try JSONDecoder().decode([BusstopPoleDTO].self, from: data)
+            
+            // Filter out bus stops that have odpt:busstopPoleTimetable (exclude timetable data)
+            // But keep bus stops that have both odpt:busstopPoleTimetable AND owl:sameAs
+            let busstopPoles = allBusstopPoles.filter { pole in
+                // Keep bus stops that have owl:sameAs (these are actual bus stops)
+                // Exclude only those that have odpt:busstopPoleTimetable but no owl:sameAs
+                if let sameAs = pole.sameAs, !sameAs.isEmpty {
+                    return true // Keep bus stops with owl:sameAs
+                }
+                // Exclude bus stops without owl:sameAs (these are likely timetable-only entries)
+                return false
+            }
+            
+            print("✅ fetchJapaneseNamesForAllBusStops: Successfully fetched \(allBusstopPoles.count) total bus stop poles, filtered to \(busstopPoles.count) with owl:sameAs")
+            
+            await MainActor.run {
+                // Debug: Log API response
+                print("🔍 API Response contains \(busstopPoles.count) bus stop poles (after filtering):")
+                for (i, pole) in busstopPoles.enumerated() {
+                    print("  [\(i)] \(pole.title)")
+                }
+                
+                // Update all bus stops with Japanese names using owl:sameAs matching
+                for (index, busStop) in self.lineBusStops.enumerated() {
+                    print("🔍 Checking bus stop [\(index)]: \(busStop.name) (busstopPole: \(busStop.busstopPole ?? "nil"))")
+                    
+                    // Match by owl:sameAs identifier
+                    if let busstopPole = busStop.busstopPole,
+                       let matchingBusStopPole = busstopPoles.first(where: { $0.sameAs == busstopPole }) {
+                        // Extract English name from busstopPole for bilingual support
+                        let englishName: String?
+                        if let busstopPole = busStop.busstopPole, !busstopPole.isEmpty {
+                            let components = busstopPole.components(separatedBy: ".")
+                            englishName = components.count > 2 ? components[2].trimmingCharacters(in: .whitespacesAndNewlines) : nil
+                        } else {
+                            englishName = nil
+                        }
+                        
+                        let updatedBusStop = BusStop(
+                            name: matchingBusStopPole.title,
+                            code: busStop.code,
+                            index: busStop.index,
+                            lineCode: busStop.lineCode,
+                            title: LocalizedTitle(ja: matchingBusStopPole.title, en: englishName),
+                            note: matchingBusStopPole.title,
+                            busstopPole: busStop.busstopPole
+                        )
+                        self.lineBusStops[index] = updatedBusStop
+                        print("✅ fetchJapaneseNamesForAllBusStops: Updated bus stop '\(busStop.name)' with Japanese name: \(matchingBusStopPole.title)")
+                    } else {
+                        print("❌ fetchJapaneseNamesForAllBusStops: No matching Japanese name found for bus stop [\(index)]: \(busStop.name)")
+                    }
+                }
+                
+                // Update lineStops to reflect the changes
+                self.lineStops = self.getStopsForSelectedLine()
+            }
+            
+        } catch {
+            print("❌ fetchJapaneseNamesForAllBusStops: Failed to fetch Japanese names: \(error)")
+        }
+    }
+    
+    /// Fetches bus stops from BusstopPole API when busstopPoleOrder is not available
+    /// - Parameter line: The selected transportation line
+    private func fetchBusStopsFromAPI(for line: TransportationLine) async {
+        guard let operatorCode = line.operatorCode,
+              let pattern = line.pattern else {
+            print("❌ fetchBusStopsFromAPI: Missing operator code or bus route pattern")
+            return
+        }
+        
+        do {
+            // Find the corresponding LocalDataSource for the operator
+            guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
+                print("❌ fetchBusStopsFromAPI: No matching LocalDataSource found for operator: \(operatorCode)")
+                return
+            }
+            
+            // Generate API link using apiLink
+            let urlString = dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(pattern)"
+            
+            guard let url = URL(string: urlString) else {
+                print("❌ fetchBusStopsFromAPI: Invalid URL: \(urlString)")
+                return
+            }
+            
+            print("🚌 fetchBusStopsFromAPI: Fetching bus stops for pattern: \(pattern)")
+            print("🔗 API URL: \(urlString)")
+            
+            var request = URLRequest(url: url)
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            request.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("❌ fetchBusStopsFromAPI: Invalid HTTP response")
+                return
+            }
+            
+            guard httpResponse.statusCode == 200 else {
+                print("❌ fetchBusStopsFromAPI: HTTP error \(httpResponse.statusCode)")
+                return
+            }
+            
+            // Decode BusstopPoleDTO array
+            let busstopPoles = try JSONDecoder().decode([BusstopPoleDTO].self, from: data)
+            print("✅ fetchBusStopsFromAPI: Successfully fetched \(busstopPoles.count) bus stop poles")
+            
+            // Convert to TransportationStop objects using only dc:title
+            let transportationStops = busstopPoles.enumerated().map { index, pole in
+                TransportationStop(
+                    name: pole.title,
+                    code: nil,
+                    index: index,
+                    lineCode: line.code,
+                    title: pole.title,
+                    busstopPole: nil,
+                    latitude: nil,
+                    longitude: nil,
+                    kana: nil
+                )
+            }
+            
+            await MainActor.run {
+                // Update lineBusStops with fetched data (convert TransportationStop to BusStop)
+                self.lineBusStops = transportationStops.map { BusStop(from: $0) }
+                print("✅ fetchBusStopsFromAPI: Updated lineBusStops with \(transportationStops.count) stops")
+            }
+            
+        } catch {
+            print("❌ fetchBusStopsFromAPI: Failed to fetch bus stops: \(error)")
+        }
+    }
 }
-
-
-

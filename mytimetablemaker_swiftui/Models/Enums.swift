@@ -340,11 +340,12 @@ enum LocalDataSource: CaseIterable {
     
     // MARK: - Unified API Link Generation
     // Generate API links using clean enum-based approach
-    func apiLink(for dataType: APIDataType) -> String {
+    func apiLink(for dataType: APIDataType, transportationKind: TransportationLine.Kind = .railway) -> String {
         guard let operatorCode = operatorCode else {
             return ""
         }
-        let odptDataType = transportationType == .railway ?
+        
+        let odptDataType = transportationKind == .railway ?
             dataType.railwayOdpTDataType :
             dataType.busOdpTDataType
         return operatorCode.odptURL(dataType: odptDataType, apiType: apiType)
@@ -354,23 +355,26 @@ enum LocalDataSource: CaseIterable {
 // MARK: - API Data Type Enum
 // Defines the type of data to request from the API
 enum APIDataType {
-    case lineInfo           // Railway line or bus route information
+    case line               // Railway line or bus route information
     case timetable          // Train timetable data
-    case stationTimetable   // Station timetable data
+    case stopTimetable       // Station timetable data
+    case stop               // Bus stop pole data
     
     var railwayOdpTDataType: ODPTDataType {
         switch self {
-        case .lineInfo: return .railway
+        case .line: return .railway
         case .timetable: return .trainTimetable
-        case .stationTimetable: return .stationTimetable
+        case .stopTimetable: return .stationTimetable
+        case .stop: return .trainStation  // Fallback for railway
         }
     }
     
     var busOdpTDataType: ODPTDataType {
         switch self {
-        case .lineInfo: return .busRoutePattern
+        case .line: return .busRoutePattern
         case .timetable: return .busTimetable
-        case .stationTimetable: return .busTimetable
+        case .stopTimetable: return .busTimetable
+        case .stop: return .busstopPole
         }
     }
 }
@@ -419,16 +423,85 @@ enum DisplayTrainType: String, CaseIterable {
     case unknown = "Unknown"
 }
 
-
-// MARK: - Station Data Files
-// Get railway data files dynamically from LocalDataSource
-// Using the fileName property for consistent naming convention
-let stationDataFiles: [String] = LocalDataSource.allCases
-    .filter { $0.transportationType == .railway }
-    .map { $0.fileName }
-
-// MARK: - Parser Error Definitions
-// Custom error types for data parsing failures.
-enum ODPTParserError: Error {
-    case invalidDataStructure
+// MARK: - ODPT Error Types
+// Custom error types for ODPT operations
+enum ODPTError: Error, LocalizedError {
+    case dateExtractionFailed
+    case networkError(String)
+    case invalidData
+    
+    var errorDescription: String? {
+        switch self {
+        case .dateExtractionFailed:
+            return "Failed to extract date from API response"
+        case .networkError(let message):
+            return "Network error: \(message)"
+        case .invalidData:
+            return "Invalid data structure"
+        }
+    }
 }
+
+// MARK: - ODPT Calendar Type Enumeration
+// Defines calendar types used in ODPT API for timetable scheduling
+enum ODPTCalendarType: String, CaseIterable {
+    case weekday = "odpt.Calendar:Weekday"                    // 平日 (月曜日から金曜日まで、ただし休日を除く)
+    case holiday = "odpt.Calendar:Holiday"                    // 休日 (日曜日、祝日、休日、振替休日)
+    case saturdayHoliday = "odpt.Calendar:SaturdayHoliday"    // 土休日 (土曜日または休日)
+    case sunday = "odpt.Calendar:Sunday"                      // 日曜日
+    case monday = "odpt.Calendar:Monday"                      // 月曜日
+    case tuesday = "odpt.Calendar:Tuesday"                    // 火曜日
+    case wednesday = "odpt.Calendar:Wednesday"                // 水曜日
+    case thursday = "odpt.Calendar:Thursday"                  // 木曜日
+    case friday = "odpt.Calendar:Friday"                      // 金曜日
+    case saturday = "odpt.Calendar:Saturday"                  // 土曜日
+    
+    // MARK: - Display Name
+    // Localized display name for each calendar type
+    var displayName: String {
+        switch self {
+        case .weekday: return "Weekday".localized
+        case .holiday: return "Holiday".localized
+        case .saturdayHoliday: return "Saturday/Holiday".localized
+        case .sunday: return "Sunday".localized
+        case .monday: return "Monday".localized
+        case .tuesday: return "Tuesday".localized
+        case .wednesday: return "Wednesday".localized
+        case .thursday: return "Thursday".localized
+        case .friday: return "Friday".localized
+        case .saturday: return "Saturday".localized
+        }
+    }
+}
+
+// MARK: - Transfer Type Enumeration
+// Enumeration of available transportation methods for transfer.
+enum TransferType: String, CaseIterable {
+    case car = "car"            // Car transportation
+    case bicycle = "bicycle"    // Bicycle transportation
+    case walking = "walking"    // Walking between stations
+    case none = "none"          // No transfer required
+    
+    // MARK: - Transportation Method Display Name
+    // Localized display name for each transportation method
+    var transportationDisplayName: String {
+        switch self {
+            case .none: return "None".localized
+            case .walking: return "Walking".localized
+            case .bicycle: return "Bicycle".localized
+            case .car: return "Car".localized
+        }
+    }
+    
+    // MARK: - Icon Properties
+    // SF Symbol icon name for each transportation method
+    var iconName: String {
+        switch self {
+            case .none: return "xmark.circle"
+            case .walking: return "figure.walk"
+            case .bicycle: return "bicycle"
+            case .car: return "car"
+        }
+    }
+}
+
