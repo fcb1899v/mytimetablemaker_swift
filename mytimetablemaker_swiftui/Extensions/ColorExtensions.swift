@@ -115,17 +115,6 @@ extension Int {
     }
 }
 
-// MARK: - Boolean Color Extensions
-// Extensions for weekday-based color logic
-extension Bool {
-    
-    // MARK: - Weekday Color Logic
-    // self is isWeekday
-    var weekLabelColor: Color { return self ? .white: .red }
-    var weekButtonColor: Color { return self ? .red: .white }
-    var weekButtonLabelColor: Color { return self ? .white: .primary }
-}
-
 // MARK: - Train Type Color Management
 // Extensions for train type color mapping and management
 extension Color {

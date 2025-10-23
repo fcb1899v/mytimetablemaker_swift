@@ -16,18 +16,18 @@ struct TimetableGridView: View {
     @State private var transportationTimes: [any TransportationTime] = []
 
     private let goorback: String
-    @Binding private var weekflag: Bool
+    @Binding private var selectedCalendarType: ODPTCalendarType
     private let num: Int
     private let hour: Int
 
     init(
         _ goorback: String,
-        _ weekflag: Binding<Bool>,
+        _ selectedCalendarType: Binding<ODPTCalendarType>,
         _ num: Int,
         _ hour: Int
     ) {
         self.goorback = goorback
-        self._weekflag = weekflag
+        self._selectedCalendarType = selectedCalendarType
         self.num = num
         self.hour = hour
         self.label = ""
@@ -64,20 +64,20 @@ struct TimetableGridView: View {
             .frame(width: screen.timetableMinuteFrameWidth)
             .onAppear {
                 // Load initial data
-                label = goorback.timetableTime(weekflag, num, hour)
-                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+                label = goorback.timetableTime(selectedCalendarType, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
             }
-            .onChange(of: goorback.timetableTime(weekflag, num, hour)) { newValue in
+            .onChange(of: goorback.timetableTime(selectedCalendarType, num, hour)) { newValue in
                 label = newValue
-                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
             }
-            .onChange(of: weekflag) { _ in
-                label = goorback.timetableTime(weekflag, num, hour)
-                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+            .onChange(of: selectedCalendarType) { _ in
+                label = goorback.timetableTime(selectedCalendarType, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
             }
             // Listen for timetable data updates from API
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TimetableDataUpdated"))) { _ in
-                transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
             }
             
             Color.white
@@ -87,7 +87,7 @@ struct TimetableGridView: View {
         .sheet(isPresented: $isShowingTimetableSheet) {
             SettingsTimetableSheet(
                 goorback: goorback,
-                weekflag: weekflag,
+                selectedCalendarType: selectedCalendarType,
                 num: num,
                 hour: hour
             )
@@ -119,7 +119,7 @@ struct TimetableGridView: View {
                 .frame(width: screen.timetableMinuteSpacing)
             ForEach(startIndex..<min(startIndex + maxItems, transportationTimes.count), id: \.self) { index in
                 HStack(spacing: 0) {
-                    Text(transportationTimes[index].departureTime.trimmingLeadingZero)
+                    Text(transportationTimes[index].departureTime.minutesOnly)
                         .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
                         .foregroundColor(Color.colorForTrainType((transportationTimes[index] as? TrainTime)?.trainType))
                         .lineLimit(1)
@@ -142,7 +142,7 @@ struct TimetableGridView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct TimetableGridView_Previews: PreviewProvider {
     static var previews: some View {
-        TimetableGridView("back1", .constant(!Date().isWeekday), 0, 4)
+        TimetableGridView("back1", .constant(Date().odpTCalendarType), 0, 4)
             .background(Color.primary)
     }
 }

@@ -192,7 +192,6 @@ class MyTransfer: ObservableObject {
     
     // MARK: - Computed Properties
     // Current date and time information
-    var isWeekday: Bool { return dateLabel.dateFromDate.isWeekday }
     var currentTime: Int { return timeLabel.currentTime }
     
     // Route visibility based on current direction
@@ -200,12 +199,12 @@ class MyTransfer: ObservableObject {
     var routeWidth: CGFloat { return isShowRoute2.routeWidth }
     
     // Timetable data for both routes
-    var timetableArray1: [[Int]] { return goOrBack1.timetableArray(isWeekday) }
-    var timetableArray2: [[Int]] { return goOrBack2.timetableArray(isWeekday) }
+    var timetableArray1: [[Int]] { return goOrBack1.timetableArray(Date().odpTCalendarType) }
+    var timetableArray2: [[Int]] { return goOrBack2.timetableArray(Date().odpTCalendarType) }
     
     // Current time-based schedule information
-    var timeArray1: [Int] { return goOrBack1.timeArray(isWeekday, currentTime) }
-    var timeArray2: [Int] { return goOrBack2.timeArray(isWeekday, currentTime) }
+    var timeArray1: [Int] { return goOrBack1.timeArray(Date().odpTCalendarType, currentTime) }
+    var timeArray2: [Int] { return goOrBack2.timeArray(Date().odpTCalendarType, currentTime) }
     var timeArrayString1: [String] { return timeArray1.map { $0.stringTime } }
     var timeArrayString2: [String] { return timeArray2.map { $0.stringTime } }
     

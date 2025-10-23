@@ -15,7 +15,7 @@ struct StationLineView: View {
     @State private var isShowingLineSelection = false
 
     private let goorback: String
-    private let weekflag: Bool
+    private let selectedCalendarType: ODPTCalendarType
     private let num: Int
     private let departureTime: String
     private let arrivalTime: String
@@ -26,16 +26,16 @@ struct StationLineView: View {
     private var stationArray: [String]
     
     // MARK: - Initialization
-    // Initialize with route identifier, weekday flag, and line number
+    // Initialize with route identifier, calendar type, and line number
     init(
         _ goorback: String,
-        _ weekflag: Bool,
+        _ selectedCalendarType: ODPTCalendarType,
         _ num: Int,
         _ departureTime: String,
         _ arrivalTime: String
     ){
         self.goorback = goorback
-        self.weekflag = weekflag
+        self.selectedCalendarType = selectedCalendarType
         self.num = num
         self.departureTime = departureTime
         self.arrivalTime = arrivalTime
@@ -108,6 +108,6 @@ struct StationLineView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct StationAndLine_Previews: PreviewProvider {
     static var previews: some View {
-        StationLineView("back1", true, 0, "0800", "0830")
+        StationLineView("back1", Date().odpTCalendarType, 0, "0800", "0830")
     }
 }

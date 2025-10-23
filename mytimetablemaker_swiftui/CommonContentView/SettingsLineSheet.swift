@@ -81,6 +81,7 @@ struct SettingsLineSheet: View {
                         }
                         saveButtonSection
                         timetableSettingsButtonSection
+                        timetableAutoSettingsButtonSection
                     }
                     .coordinateSpace(name: "scrollView")
                     .padding(.horizontal, screen.settingsSheetHorizontalPadding)
@@ -790,39 +791,57 @@ struct SettingsLineSheet: View {
                 vm.handleLineSave(dismiss: dismiss)
             }
         )
-        .disabled(!vm.isCustomLineStationInputComplete() || !vm.isAllNotEmpty)
+        .disabled(!vm.isAllNotEmpty)
         .padding(.top, screen.settingsSheetSaveButtonSpacing)
     }
     
     // MARK: - Timetable Settings Button Section
-    /// Button to open timetable configuration screen with auto/manual toggle
     private var timetableSettingsButtonSection: some View {
         CustomButton(
-            title: (vm.isTimetableManual || !vm.isAllSelected) ? "Timetable Settings".localized: "Auto Generate Timetable".localized,
-            icon: vm.isTimetableManual ? "clock.badge.exclamationmark.fill" : (vm.isAllSelected ? "clock.badge.checkmark.fill" : "clock.fill"),
-            backgroundColor: !vm.isAllNotEmpty ? Color.gray : (!vm.isTimetableManual && vm.isAllSelected) ? Color.primary : Color.accent,
+            title: "Timetable Settings".localized,
+            icon: vm.isAllNotEmpty ? "clock.badge.checkmark.fill": "clock.fill",
+            backgroundColor: vm.isAllNotEmpty ? Color.accent: Color.gray,
             isEnabled: vm.isAllNotEmpty,
             action: {
-                // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
-                if !vm.isTimetableManual && vm.isAllSelected {
-                    Task {
-                        let result = vm.hasTrainTimetableSupport() || vm.selectedTransportationKind == .bus ?
-                            await vm.getTimeTableData():
-                            await vm.getStationTimetableData()
-                        
-                        // Pass TransportationTime directly to finalizeTimetableData
-                        await vm.finalizeTimetableData(weekdayTimes: result.weekday, weekendTimes: result.weekend)
-                        showTimetableSettings = true
-                    } 
-                } else if vm.isAllNotEmpty {
+                if vm.isAllNotEmpty {
                     showTimetableSettings = true
                 }
             }
         )
-        .disabled(!vm.isCustomLineStationInputComplete() || !vm.isAllNotEmpty)
+        .disabled(!vm.isAllNotEmpty)
+        .padding(.top, screen.settingsSheetVerticalSpacing)
+    }
+
+    // MARK: - Timetable Auto Settings Button Section
+    private var timetableAutoSettingsButtonSection: some View {
+        CustomButton(
+            title: "Auto Generate Timetable".localized,
+            icon: (vm.isAllNotEmpty && vm.isAllSelected) ? "clock.badge.checkmark.fill" : "clock.fill",
+            backgroundColor: (vm.isAllNotEmpty && vm.isAllSelected) ? Color.primary : Color.gray,
+            isEnabled: vm.isAllNotEmpty && vm.isAllSelected,
+            action: {
+                // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
+                if vm.isAllNotEmpty && vm.isAllSelected {
+                    Task {
+                        if vm.hasTrainTimetableSupport() || vm.selectedTransportationKind == .bus {
+                            let result: [ODPTCalendarType: [any TransportationTime]] = await vm.getTimeTableData()
+                            // Use new finalizeTimetableData method with individual calendar types
+                            await vm.finalizeTimetableData(calendarTimes: result)
+                        } else {
+                            let result = await vm.getStationTimetableData()
+                            await vm.finalizeTimetableData(calendarTimes: result)
+                        }
+                        showTimetableSettings = true
+                    } 
+                }
+            }
+        )
+        .disabled(!vm.isAllNotEmpty)
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
 }
+
+
 
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode

@@ -19,25 +19,23 @@ struct SettingsTimetableSheet: View {
     @State private var isTrainTypeDropdownOpen = false
     @State private var transportationTimes: [any TransportationTime] = []
     @State private var hour: Int
-    @State private var isWeekday: Bool
+    @State private var selectedCalendarType: ODPTCalendarType
     
     private let goorback: String
-    private let weekflag: Bool
     private let num: Int
     
     init(
         goorback: String,
-        weekflag: Bool,
+        selectedCalendarType: ODPTCalendarType,
         num: Int,
         hour: Int
     ) {
         self.goorback = goorback
-        self.weekflag = weekflag
         self.num = num
         self._hour = State(initialValue: hour)
-        self._isWeekday = State(initialValue: weekflag)
+        self._selectedCalendarType = State(initialValue: selectedCalendarType)
         self._selectedTrainType = State(initialValue: nil)
-        self._transportationTimes = State(initialValue: goorback.loadTransportationTimes(weekflag, num, hour))
+        self._transportationTimes = State(initialValue: goorback.loadTransportationTimes(selectedCalendarType, num, hour))
         
         // Load saved ride time as default value (using route-level key without hour)
         let rideTimeKey = goorback.rideTimeKey(num)
@@ -54,13 +52,13 @@ struct SettingsTimetableSheet: View {
                     weekdayToggleSection
                     hourControlSection
                     timetableDisplaySection
-                    if goorback.lineKind(num) == .railway {
-                        trainTypeSelectSection
-                    }
                     HStack {
                         departureTimeSelectSection
                         Spacer()
                         rideTimeSelectSection
+                    }
+                    if goorback.lineKind(num) == .railway {
+                        trainTypeSelectSection
                     }
                     addDeleteButtonSection
 
@@ -90,7 +88,7 @@ struct SettingsTimetableSheet: View {
             )
             .edgesIgnoringSafeArea(.bottom)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.white, for: .navigationBar)
+            .toolbarBackground(Color.white.opacity(0.8), for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .navigationBarBackButtonHidden(true)
             .toolbar {
@@ -102,7 +100,10 @@ struct SettingsTimetableSheet: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    CustomBackButton(foregroundColor: .black, action: { dismiss() })
+                    CustomBackButton(
+                        foregroundColor: .black,
+                        action: { dismiss() }
+                    )
                 }
             }
         }
@@ -110,12 +111,12 @@ struct SettingsTimetableSheet: View {
         .sheet(isPresented: $isShowingCopySheet) {
             CopyTimeSheet(
                 goorback: goorback,
-                weekflag: weekflag,
+                selectedCalendarType: selectedCalendarType,
                 num: num,
                 hour: hour,
                 onTimeCopied: {
                     // Update trainTimes when time is copied
-                    transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
                     
                     // Notify TimetableGridView to update
                     NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -133,7 +134,10 @@ struct SettingsTimetableSheet: View {
         HStack {
             Spacer()
             CustomToggle(
-                isLeftSelected: $isWeekday,
+                isLeftSelected: Binding(
+                    get: { selectedCalendarType.calendarTag == "weekday" },
+                    set: { _ in }
+                ),
                 leftText: "Weekday".localized,
                 leftColor: .primary,
                 rightText: "Sat/Sun/PH".localized,
@@ -141,13 +145,13 @@ struct SettingsTimetableSheet: View {
                 circleColor: .white,
                 offColor: .secondary,
             )
-            .onChange(of: isWeekday) { _ in
-                transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
-                // Notify TimetableContentView about weekday change
+            .onChange(of: selectedCalendarType) { _ in
+                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
+                // Notify TimetableContentView about calendar type change
                 NotificationCenter.default.post(
-                    name: NSNotification.Name("WeekdayChanged"), 
+                    name: NSNotification.Name("CalendarTypeChanged"), 
                     object: nil, 
-                    userInfo: ["isWeekday": isWeekday]
+                    userInfo: ["calendarType": selectedCalendarType.rawValue]
                 )
                 isTrainTypeDropdownOpen = false
             }
@@ -162,7 +166,7 @@ struct SettingsTimetableSheet: View {
             Button(action: {
                 if hour > 4 {
                     hour -= 1
-                    transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
                 }
             }) {
                 Image(systemName: "chevron.left")
@@ -181,7 +185,7 @@ struct SettingsTimetableSheet: View {
             Button(action: {
                 if hour < 24 {
                     hour += 1
-                    transportationTimes = goorback.loadTransportationTimes(isWeekday, num, hour)
+                    transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
                 }
             }) {
                 Image(systemName: "chevron.right")
@@ -200,7 +204,7 @@ struct SettingsTimetableSheet: View {
             LazyVGrid(columns: Array(repeating: GridItem(.fixed(screen.timetableNumberWidth), spacing: 0), count: screen.timetableNumberWidth > 0 ? max(1, Int(screen.timetableDisplayWidth / screen.timetableNumberWidth) - 1): 1), spacing: 0) {
                 ForEach(transportationTimes.indices, id: \.self) { index in
                     let transportationTime = transportationTimes[index]
-                    Text(transportationTime.departureTime.trimmingLeadingZero)
+                    Text(transportationTime.departureTime.minutesOnly)
                         .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
                         .foregroundColor((transportationTime as? TrainTime)?.trainType != nil ? Color.colorForTrainType((transportationTime as? TrainTime)?.trainType) : .white)
                     Text("(\(String(transportationTime.rideTime)))")
@@ -462,7 +466,7 @@ struct SettingsTimetableSheet: View {
         addTimeAndTrainTypePair(departureTime: departureTime, trainType: selectedTrainType, rideTime: rideTime)
         
         // Update trainTimes array with fresh data from UserDefaults
-        transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+        transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
         
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -478,7 +482,7 @@ struct SettingsTimetableSheet: View {
         deleteTimeAndTrainTypePair(departureTime: departureTime)
         
         // Update trainTimes array with fresh data from UserDefaults
-        transportationTimes = goorback.loadTransportationTimes(weekflag, num, hour)
+        transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
         
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -488,7 +492,7 @@ struct SettingsTimetableSheet: View {
     }
     
     private func saveRideTime() {
-        let rideTimeKey = goorback.timetableRideTimeKey(weekflag, num, hour)
+        let rideTimeKey = goorback.timetableRideTimeKey(selectedCalendarType, num, hour)
         UserDefaults.standard.set(rideTime, forKey: rideTimeKey)
     }
     
@@ -497,8 +501,8 @@ struct SettingsTimetableSheet: View {
     private func isTimeAlreadyExists() -> Bool {
         guard let departureTime = departureTime else { return false }
         
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(weekflag, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
         
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
         let existingTrainTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
@@ -531,7 +535,7 @@ struct SettingsTimetableSheet: View {
     private func isTimeExistsForDeletion() -> Bool {
         guard let departureTime = departureTime else { return false }
         
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
         
         let existingTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
@@ -559,7 +563,7 @@ struct SettingsTimetableSheet: View {
         ]
         
         // First, try to get existing train types from the current line
-        let existingTrainTypes = goorback.loadTrainTypeList(weekflag, num)
+        let existingTrainTypes = goorback.loadTrainTypeList(selectedCalendarType, num)
         
         // If no existing train types are found, return default list
         if existingTrainTypes.isEmpty {
@@ -578,8 +582,8 @@ struct SettingsTimetableSheet: View {
     
     private func saveTrainType(_ trainType: String) {
         // Save train type for the current time
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(weekflag, num, hour)
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         
         // Get current timetable and train types
         let timetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
@@ -608,8 +612,8 @@ struct SettingsTimetableSheet: View {
     
     private func deleteTrainType() {
         // Delete train type for the current time
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(weekflag, num, hour)
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         
         // Get current timetable and train types
         let timetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
@@ -628,7 +632,7 @@ struct SettingsTimetableSheet: View {
     }
     
     private func updateTrainTypeList(_ trainType: String) {
-        let trainTypeListKey = goorback.trainTypeListKey(weekflag, num)
+        let trainTypeListKey = goorback.trainTypeListKey(selectedCalendarType, num)
         let existingList = UserDefaults.standard.string(forKey: trainTypeListKey)?.components(separatedBy: " ") ?? []
         
         // Add new train type if not already in the list
@@ -643,9 +647,9 @@ struct SettingsTimetableSheet: View {
     /// Adds a new time and train type pair, then sorts both arrays together
     /// If the same time exists with a different train type, it will be overwritten
     private func addTimeAndTrainTypePair(departureTime: Int, trainType: String?, rideTime: Int) {
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(weekflag, num, hour)
-        let timetableRideTimeKey = goorback.timetableRideTimeKey(weekflag, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
+        let timetableRideTimeKey = goorback.timetableRideTimeKey(selectedCalendarType, num, hour)
         let routeRideTimeKey = goorback.rideTimeKey(num)
         
         // Get current data
@@ -716,9 +720,9 @@ struct SettingsTimetableSheet: View {
     
     /// Deletes a time and its corresponding train type, then sorts remaining pairs
     private func deleteTimeAndTrainTypePair(departureTime: Int) {
-        let timetableKey = goorback.timetableKey(weekflag, num, hour)
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(weekflag, num, hour)
-        let timetableRideTimeKey = goorback.timetableRideTimeKey(weekflag, num, hour)
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
+        let timetableRideTimeKey = goorback.timetableRideTimeKey(selectedCalendarType, num, hour)
         let routeRideTimeKey = goorback.rideTimeKey(num)
         
         // Get current data
@@ -789,20 +793,20 @@ struct CopyTimeSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     private let goorback: String
-    private let weekflag: Bool
+    private let selectedCalendarType: ODPTCalendarType
     private let num: Int
     private let hour: Int
     private let onTimeCopied: () -> Void
     
     init(
         goorback: String,
-        weekflag: Bool,
+        selectedCalendarType: ODPTCalendarType,
         num: Int,
         hour: Int,
         onTimeCopied: @escaping () -> Void
     ) {
         self.goorback = goorback
-        self.weekflag = weekflag
+        self.selectedCalendarType = selectedCalendarType
         self.num = num
         self.hour = hour
         self.onTimeCopied = onTimeCopied
@@ -811,12 +815,12 @@ struct CopyTimeSheet: View {
     var body: some View {
         NavigationView {
             List {
-                ForEach(((hour == 4) ? 1: 0)..<hour.choiceCopyTimeList(weekflag).count, id: \.self) { i in
+                ForEach(((hour == 4) ? 1: 0)..<hour.choiceCopyTimeList.count, id: \.self) { i in
                     if !(hour == 25 && i == 1) {
                         Button(action: {
                             copyTime(from: i)
                         }) {
-                            Text(hour.choiceCopyTimeList(weekflag)[i])
+                            Text(hour.choiceCopyTimeList[i])
                                 .foregroundColor(.primary)
                         }
                     }
@@ -836,8 +840,8 @@ struct CopyTimeSheet: View {
     
     private func copyTime(from index: Int) {
         UserDefaults.standard.set(
-            goorback.choiceCopyTime(weekflag, num, hour, index),
-            forKey: goorback.timetableKey(weekflag, num, hour)
+            goorback.choiceCopyTime(selectedCalendarType, num, hour, index),
+            forKey: goorback.timetableKey(selectedCalendarType, num, hour)
         )
         onTimeCopied()
         dismiss()
@@ -849,7 +853,7 @@ struct SettingsTimetableSheet_Previews: PreviewProvider {
     static var previews: some View {
         SettingsTimetableSheet(
             goorback: "back1",
-            weekflag: true,
+            selectedCalendarType: .weekday,
             num: 0,
             hour: 4
         )

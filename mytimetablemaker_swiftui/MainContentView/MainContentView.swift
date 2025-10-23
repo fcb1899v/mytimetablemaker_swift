@@ -164,7 +164,7 @@ struct MainContentView: View {
                         HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
                         ForEach(0...myTransfer.changeLine1, id: \.self) { num in
                             TransferView(myTransfer.goOrBack1, num + 1)
-                            StationLineView(myTransfer.goOrBack1, myTransfer.isWeekday, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
+                            StationLineView(myTransfer.goOrBack1, Date().odpTCalendarType, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
                         }
                         TransferView(myTransfer.goOrBack1, 0)
                         HomeOfficeView(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
@@ -188,7 +188,7 @@ struct MainContentView: View {
                             HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
                             ForEach(0...myTransfer.changeLine2, id: \.self) { num in
                                 TransferView(myTransfer.goOrBack2, num + 1)
-                                StationLineView(myTransfer.goOrBack2, myTransfer.isWeekday, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
+                                StationLineView(myTransfer.goOrBack2, Date().odpTCalendarType, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
                             }
                             TransferView(myTransfer.goOrBack2, 0)
                             HomeOfficeView(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])

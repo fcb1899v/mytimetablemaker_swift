@@ -53,32 +53,29 @@ extension Int {
     var countdown: String{ (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }           // Convert MMSS format to countdown display
     func countdownTime(_ departtime: Int) -> String { (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown }
 
-    // MARK: - Weekday Detection
-    // Determine if time represents weekday or weekend
-    var isWeekday: Bool { !(self == 0 || self == 6) }
-    
     // MARK: - ODPT Calendar Type Detection
-    // Get ODPT calendar type for this weekday (0=Sunday, 1=Monday, ..., 6=Saturday)
-    var odpTCalendarType: ODPTCalendarType {
-        switch self {
-        case 0: return .sunday
-        case 1: return .monday
-        case 2: return .tuesday
-        case 3: return .wednesday
-        case 4: return .thursday
-        case 5: return .friday
-        case 6: return .saturday
-        default: return .weekday
-        }
+    // Get ODPT calendar type for this day with fallback to available types
+    func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
+        // Priority order: holiday > sunday > saturday > saturdayHoliday > specific weekdays > weekday > allday
+        return Date().isJapaneseHoliday && availableTypes.contains(.holiday) ? .holiday:
+               self == 0 && availableTypes.contains(.sunday) ? .sunday:
+               self == 6 && availableTypes.contains(.saturday) ? .saturday:
+               (Date().isJapaneseHoliday || self == 0 || self == 6) && availableTypes.contains(.saturdayHoliday) ? .saturdayHoliday:
+               self == 1 && availableTypes.contains(.monday) ? .monday:
+               self == 2 && availableTypes.contains(.tuesday) ? .tuesday:
+               self == 3 && availableTypes.contains(.wednesday) ? .wednesday:
+               self == 4 && availableTypes.contains(.thursday) ? .thursday:
+               self == 5 && availableTypes.contains(.friday) ? .friday:
+               availableTypes.contains(.weekday) ? .weekday:
+               .allday
     }
     
     // MARK: - Choice Copy Time List Function
     // Generates copy time choice list for timetable editing
-    func choiceCopyTimeList(_ isWeekday: Bool) -> [String] {
+    var choiceCopyTimeList: [String] {
         [
             "\(self - 1)\("Hour".localized)",
             "\(self + 1)\("Hour".localized)",
-            isWeekday.weekendLabel,
             "Other route of line 1".localized,
             "Other route of line 2".localized,
             "Other route of line 3".localized
@@ -103,18 +100,53 @@ extension Date {
         return formatter.string(from: self)
     }
     
-    var isWeekday: Bool {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "E"
-        switch (formatter.string(from: self)) {
-            case "Sat", "Sun", "土", "日": return false
-            default: return !isJapaneseHoliday
-        }
+    // MARK: - ODPT Calendar Type Detection for Date
+    // Get ODPT calendar type for this date with priority
+//    var odpTCalendarType: ODPTCalendarType {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "E"
+//        let dayOfWeek = formatter.string(from: self)
+//        
+//        // Priority order:
+//        // 1. .holiday (highest priority)
+//        // 2. .saturdayHoliday (second priority)
+//        // 3. .sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday (third priority)
+//        // 4. .weekday (lowest priority)
+//        
+//        // Check if it's a Japanese holiday first
+//    }
+    var odpTCalendarType: ODPTCalendarType {
+        return .weekday
     }
+    
+    // MARK: - ODPT Calendar Type with Fallback
+    // Get ODPT calendar type for this date with fallback to available types
+    func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
+
+        // Priority order: holiday > sunday > saturday > saturdayHoliday > specific weekdays > weekday > allday
+        return isJapaneseHoliday && availableTypes.contains(.holiday) ? .holiday:
+               isWeekMatch(enWeek: "Sun", jaWeek: "日") && availableTypes.contains(.sunday) ? .sunday:
+               isWeekMatch(enWeek: "Sat", jaWeek: "土") && availableTypes.contains(.saturday) ? .saturday:
+               isSaturdayHoloday && availableTypes.contains(.saturdayHoliday) ? .saturdayHoliday:
+               isWeekMatch(enWeek: "Mon", jaWeek: "月") && availableTypes.contains(.monday) ? .monday:
+               isWeekMatch(enWeek: "Tue", jaWeek: "火") && availableTypes.contains(.tuesday) ? .tuesday:
+               isWeekMatch(enWeek: "Wed", jaWeek: "水") && availableTypes.contains(.wednesday) ? .wednesday:
+               isWeekMatch(enWeek: "Thu", jaWeek: "木") && availableTypes.contains(.thursday) ? .thursday:
+               isWeekMatch(enWeek: "Fri", jaWeek: "金") && availableTypes.contains(.friday) ? .friday:
+               availableTypes.contains(.weekday) ? .weekday:
+               .allday
+    }   
     
     // MARK: - Japanese Holiday Detection
     // Check for regular or substitute or Japanese national holidays
     var isJapaneseHoliday: Bool { isRegularHoliday || isSubstituteHoliday || isNationalHoliday }
+    func isWeekMatch(enWeek: String, jaWeek: String) -> Bool {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        let dayOfWeek = formatter.string(from: self)
+        return dayOfWeek == enWeek || dayOfWeek == jaWeek
+    }
+    var isSaturdayHoloday: Bool { isJapaneseHoliday || isWeekMatch(enWeek: "Sun", jaWeek: "日") || isWeekMatch(enWeek: "Sat", jaWeek: "土")}
     
     // MARK: - Regular Holiday Detection
     // Check if the date is a regular Japanese public holiday
@@ -128,7 +160,7 @@ extension Date {
     }
     
     // MARK: - Substitute Holiday Detection
-    // Check if the date is a substitute holiday (振替休日)
+    // Check if the date is a substitute holiday
     private var isSubstituteHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let substituteHolidays = getSubstituteHolidaysForYear(year)
@@ -139,7 +171,7 @@ extension Date {
     }
     
     // MARK: - National Holiday Detection
-    // Check if the date is a national holiday (国民の休日)
+    // Check if the date is a national holiday
     private var isNationalHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let nationalHolidays = getNationalHolidaysForYear(year)
@@ -156,16 +188,16 @@ extension Date {
         var holidays: [Date] = []
         // Fixed holidays (updated for current era)
         let fixedHolidays = [
-            (1, 1),   // 元日
-            (2, 11),  // 建国記念の日
-            (2, 23),  // 天皇誕生日 (新)
-            (4, 29),  // 昭和の日
-            (5, 3),   // 憲法記念日
-            (5, 4),   // みどりの日
-            (5, 5),   // こどもの日
-            (8, 11),  // 山の日
-            (11, 3),  // 文化の日
-            (11, 23)  // 勤労感謝の日
+            (1, 1),   // New Year's Day
+            (2, 11),  // National Foundation Day
+            (2, 23),  // Emperor's Birthday (new)
+            (4, 29),  // Showa Day
+            (5, 3),   // Constitution Memorial Day
+            (5, 4),   // Greenery Day
+            (5, 5),   // Children's Day
+            (8, 11),  // Mountain Day
+            (11, 3),  // Culture Day
+            (11, 23)  // Labor Thanksgiving Day
         ]
         
         // Add fixed holidays
@@ -185,15 +217,15 @@ extension Date {
     private func getVariableHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         var holidays: [Date] = []
-        // 春分の日 (around March 20-21)
+        // Vernal Equinox Day (around March 20-21)
         if let date = calendar.date(from: DateComponents(year: year, month: 3, day: 20)) {
             holidays.append(date)
         }
-        // 秋分の日 (around September 22-23)
+        // Autumnal Equinox Day (around September 22-23)
         if let date = calendar.date(from: DateComponents(year: year, month: 9, day: 22)) {
             holidays.append(date)
         }
-        // 海の日 (3rd Monday of July)
+        // Marine Day (3rd Monday of July)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 7, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
@@ -201,7 +233,7 @@ extension Date {
                 holidays.append(thirdMonday)
             }
         }
-        // 敬老の日 (3rd Monday of September)
+        // Respect for the Aged Day (3rd Monday of September)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 9, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 14 : (9 - weekday) % 7
@@ -209,7 +241,7 @@ extension Date {
                 holidays.append(thirdMonday)
             }
         }
-        // スポーツの日 (2nd Monday of October)
+        // Sports Day (2nd Monday of October)
         if let firstMonday = calendar.date(from: DateComponents(year: year, month: 10, day: 1)) {
             let weekday = calendar.component(.weekday, from: firstMonday)
             let daysToAdd = weekday == 2 ? 7 : (9 - weekday) % 7
@@ -293,6 +325,16 @@ extension String {
     // Process time strings for timetable operations
     var timeString: String { (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
     
+    // MARK: - Minutes Only Display
+    // Extract minutes only from time strings (e.g., "07:24" -> "24")
+    var minutesOnly: String {
+        let components = self.components(separatedBy: ":")
+        if components.count == 2, let minutes = components.last {
+            return minutes
+        }
+        return self
+    }
+    
     // MARK: - Leading Zero Removal
     // Remove leading zero from time strings (e.g., "03" -> "3")
     var trimmingLeadingZero: String { (self.count > 1 && self.hasPrefix("0")) ? String(self.dropFirst()): self }
@@ -375,8 +417,8 @@ extension String {
 
     // MARK: - Timetable Management
     // Timetable data processing and manipulation
-    func timetable(_ isWeekday: Bool, _ num: Int) -> [Int] {
-        (4...25).flatMap { hour in timetableTime(isWeekday, num, hour).timeString
+    func timetable(_ calendarType: ODPTCalendarType, _ num: Int) -> [Int] {
+        (4...25).flatMap { hour in timetableTime(calendarType, num, hour).timeString
             .components(separatedBy: CharacterSet(charactersIn: " "))
             .compactMap { Int($0) }
             .map { $0 + hour * 100 }
@@ -384,13 +426,13 @@ extension String {
             .sorted()
         }
     }
-    func timetableArray(_ isWeekday: Bool) -> [[Int]] { (0...2).map { num in timetable(isWeekday, num) } }
-
+    func timetableArray(_ calendarType: ODPTCalendarType) -> [[Int]] { (0...2).map { num in timetable(calendarType, num) } }
+    
     // MARK: - Time Array Generation
     // Generate departure and arrival times for current route
-    func timeArray(_ isWeekday: Bool, _ currenttime: Int) -> [Int] {
+    func timeArray(_ calendarType: ODPTCalendarType, _ currenttime: Int) -> [Int] {
         // Depart time of line 1
-        var timeArray = [timetableArray(isWeekday)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
+        var timeArray = [timetableArray(calendarType)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
         // Arrive time of line 1
         timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
         // Depart time from depart point
@@ -398,7 +440,7 @@ extension String {
         if (changeLineInt > 0) {
             for i in 1...changeLineInt {
                 // Depart time of line i
-                timeArray.append(timetableArray(isWeekday)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
+                timeArray.append(timetableArray(calendarType)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
                 // Arrive time of line 1
                 timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
             }
@@ -407,21 +449,22 @@ extension String {
         timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transferTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
         return timeArray
     }
-
+    
     // MARK: - Timetable Modification
     // Add time to timetable
-    func addTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
-        timetableTime(isWeekday, num, hour)
+    func addTimeFromTimetable(_ inputText: String, _ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String {
+        timetableTime(calendarType, num, hour)
             .addInputTime(inputText)
             .timeSorting(charactersin: " ")
             .joined(separator: " ")
     }
     // Delete time from timetable
-    func deleteTimeFromTimetable(_ inputText: String, _ isWeekday: Bool, _ num: Int, _ hour: Int) -> String {
-        timetableTime(isWeekday, num, hour)
+    func deleteTimeFromTimetable(_ inputText: String, _ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String {
+        timetableTime(calendarType, num, hour)
             .trimmingCharacters(in: .whitespaces)
             .timeSorting(charactersin: " ")
             .filter{$0 != inputText}
             .joined(separator: " ")
     }
 }
+

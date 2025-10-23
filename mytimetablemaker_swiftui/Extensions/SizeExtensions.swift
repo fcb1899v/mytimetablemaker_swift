@@ -127,6 +127,7 @@ extension UIScreen {
     var timetableGridHeight:      CGFloat { screenHeight * 0.024 }
     var timetableDisplayHeight:   CGFloat { screenHeight * 0.06 }
     var timetableEditTitleHeight: CGFloat { screenHeight * 0.06 }
+    var timetableMaxHeight:       CGFloat { screenHeight * 0.64 }
 
     var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
     var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
@@ -142,22 +143,7 @@ extension UIScreen {
         return trainTimesCount > maxItemsPerRow ?
             CGFloat((trainTimesCount + maxItemsPerRow - 1) / maxItemsPerRow) * timetableNumberHeight:
             timetableGridHeight 
-    }
-    
-    // Calculate optimal height for ScrollView based on content
-    func calculateScrollViewHeight(trainTimesCounts: [Int]) -> CGFloat {
-        guard !trainTimesCounts.isEmpty else { return 0.0 }
-        
-        // Calculate total content height
-        var totalHeight: CGFloat = 0
-        for count in trainTimesCounts {
-            let contentHeight = calculateContentHeight(count)
-            totalHeight += contentHeight + 1 // +1 for separator line
-        }
-        
-        // Set minimum and maximum heights
-        return min(totalHeight, timetableScrollViewMaxHeight)
-    }
+    }    
 }
 
 // MARK: - Ad Banner Extensions

@@ -445,16 +445,17 @@ enum ODPTError: Error, LocalizedError {
 // MARK: - ODPT Calendar Type Enumeration
 // Defines calendar types used in ODPT API for timetable scheduling
 enum ODPTCalendarType: String, CaseIterable {
-    case weekday = "odpt.Calendar:Weekday"                    // 平日 (月曜日から金曜日まで、ただし休日を除く)
-    case holiday = "odpt.Calendar:Holiday"                    // 休日 (日曜日、祝日、休日、振替休日)
-    case saturdayHoliday = "odpt.Calendar:SaturdayHoliday"    // 土休日 (土曜日または休日)
-    case sunday = "odpt.Calendar:Sunday"                      // 日曜日
-    case monday = "odpt.Calendar:Monday"                      // 月曜日
-    case tuesday = "odpt.Calendar:Tuesday"                    // 火曜日
-    case wednesday = "odpt.Calendar:Wednesday"                // 水曜日
-    case thursday = "odpt.Calendar:Thursday"                  // 木曜日
-    case friday = "odpt.Calendar:Friday"                      // 金曜日
-    case saturday = "odpt.Calendar:Saturday"                  // 土曜日
+    case weekday = "odpt.Calendar:Weekday"                    // Weekdays (Monday to Friday, excluding holidays)
+    case holiday = "odpt.Calendar:Holiday"                    // Holidays (Sunday, national holidays, holidays, substitute holidays)
+    case saturdayHoliday = "odpt.Calendar:SaturdayHoliday"    // Saturday holidays (Saturday or holidays)
+    case sunday = "odpt.Calendar:Sunday"                      // Sunday
+    case monday = "odpt.Calendar:Monday"                      // Monday
+    case tuesday = "odpt.Calendar:Tuesday"                    // Tuesday
+    case wednesday = "odpt.Calendar:Wednesday"                // Wednesday
+    case thursday = "odpt.Calendar:Thursday"                  // Thursday
+    case friday = "odpt.Calendar:Friday"                      // Friday
+    case saturday = "odpt.Calendar:Saturday"                  // Saturday
+    case allday = ""                                          // All day (fallback when no specific calendar type exists)
     
     // MARK: - Display Name
     // Localized display name for each calendar type
@@ -470,8 +471,59 @@ enum ODPTCalendarType: String, CaseIterable {
         case .thursday: return "Thursday".localized
         case .friday: return "Friday".localized
         case .saturday: return "Saturday".localized
+        case .allday: return "Timetable".localized
         }
     }
+    
+    // MARK: - Debug Display Name
+    // English display name for debugging purposes
+    var debugDisplayName: String {
+        switch self {
+        case .weekday: return "Weekday"
+        case .holiday: return "Holiday"
+        case .saturdayHoliday: return "Saturday/Holiday"
+        case .sunday: return "Sunday"
+        case .monday: return "Monday"
+        case .tuesday: return "Tuesday"
+        case .wednesday: return "Wednesday"
+        case .thursday: return "Thursday"
+        case .friday: return "Friday"
+        case .saturday: return "Saturday"
+        case .allday: return "All Day"
+        }
+    }
+    
+    // MARK: - Calendar Tag
+    // Get calendar tag for UserDefaults keys
+    var calendarTag: String {
+        switch self {
+        case .holiday:   return "holiday"
+        case .sunday:    return "sunday"
+        case .saturday:  return "saturday"
+        case .saturdayHoliday:  return "weekend"
+        case .monday:    return "monday"
+        case .tuesday:   return "tuesday"
+        case .wednesday: return "wednesday"
+        case .thursday:  return "thursday"
+        case .friday:    return "friday"
+        case .weekday:   return "weekday"
+        case .allday:    return "allday"
+        }
+    }
+    
+    var calendarColor: Color {
+        switch self {
+        case .holiday, .sunday, .saturday, .saturdayHoliday:
+            return Color.red
+        case .monday, .tuesday, .wednesday, .thursday, .friday, .weekday, .allday:
+            return Color.white
+        }
+    }
+    
+    // MARK: - Static Constants
+    // All available calendar types for fallback operations
+    static let allCalendarTypes: [ODPTCalendarType] = Array(ODPTCalendarType.allCases)
+
 }
 
 // MARK: - Transfer Type Enumeration

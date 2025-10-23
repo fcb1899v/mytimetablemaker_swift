@@ -78,7 +78,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var isLineNumberChanging: Bool = false         // Flag to indicate line number is being changed
     @Published var isGoorBackChanging: Bool = false           // Flag to indicate direction is being changed
     @Published var selectedGoorback: String = "back1"         // Currently selected route direction
-    @Published var isTimetableManual: Bool = false            // Manual mode flag (true: manual, false: auto)
     
     let goorbackOptions: [String] = ["back1", "back2", "go1", "go2"]  // Available route options
     
@@ -1007,60 +1006,237 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Data Clearing
+    // Clear all timetable data for all calendar types and lines
+    private func clearAllTimetableData() async {
+        print("🗑️ Clearing all existing timetable data...")
+        
+        // Clear data for all calendar types
+        for calendarType in ODPTCalendarType.allCalendarTypes {
+            clearTimetableData(calendarType: calendarType)
+        }
+        
+        // Clear cached calendar types to force refresh
+        if let selectedLine = selectedLine {
+            let cacheKey = "\(selectedLine.code)_\(selectedLine.kind.rawValue)_calendarTypes"
+            UserDefaults.standard.removeObject(forKey: cacheKey)
+            
+            // Clear route-specific cache
+            for goorback in goorbackOptions {
+                let routeCacheKey = "\(goorback)_calendarTypes"
+                UserDefaults.standard.removeObject(forKey: routeCacheKey)
+            }
+        }
+        
+        print("✅ All timetable data and cache cleared")
+    }
+    
     // MARK: - Unified Timetable Data Processing
     // Get timetable data and extract departure/arrival times for selected stops/stations
-    func getTimeTableData() async -> (weekday: [any TransportationTime], weekend: [any TransportationTime]) {
+    func getTimeTableData() async -> [ODPTCalendarType: [any TransportationTime]] {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
             print("⚠️ Skipping timetable generation: not all required fields are filled")
-            return (weekday: [], weekend: [])
+            return [:]
         }
         
         guard let selectedLine = selectedLine else {
             print("⚠️ No line selected")
-            return (weekday: [], weekend: [])
+            return [:]
         }
         
         print("🚌🚂 Starting \(selectedLine.kind.rawValue) timetable data generation")
         print("🚌🚂 Departure: \(selectedDepartureStop?.name ?? "Unknown") (Code: \(selectedDepartureStop?.code ?? "nil"))")
         print("🚌🚂 Arrival: \(selectedArrivalStop?.name ?? "Unknown") (Code: \(selectedArrivalStop?.code ?? "nil"))")
         
-        // Process both weekday and weekend data
-        var weekdayTimes: [any TransportationTime] = []
-        var weekendTimes: [any TransportationTime] = []
+        // Clear existing timetable data for all calendar types before generating new data
+        await clearAllTimetableData()
         
-        for isWeekday in [true, false] {
+        // Get available calendar types for this line
+        let availableCalendarTypes = await getAvailableCalendarTypes()
+        print("📅 Available calendar types for \(selectedLine.name): \(availableCalendarTypes.map { $0.debugDisplayName })")
+        
+        // Process data for each available calendar type
+        var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
+        
+        for calendarType in availableCalendarTypes {
             
-            print("🚌🚂 Processing \(isWeekday ? "weekday" : "weekend") \(selectedLine.kind.rawValue) timetable data")
+            print("🚌🚂 Processing \(calendarType.debugDisplayName) \(selectedLine.kind.rawValue) timetable data")
             
             let times: [any TransportationTime] = (selectedLine.kind == .bus) ? 
-                await processBusTimetableData(isWeekday: isWeekday): 
-                await processTrainTimetableData(isWeekday: isWeekday)
+                await processBusTimetableData(calendarType: calendarType): 
+                await processTrainTimetableData(calendarType: calendarType)
             
-            // Save to appropriate array based on weekday/weekend
-            if isWeekday {
-                weekdayTimes.append(contentsOf: times)
-            } else {
-                weekendTimes.append(contentsOf: times)
-            }
+            // Save times for this specific calendar type
+            allTimes[calendarType] = times
             
-            print("✅ \(isWeekday ? "Weekday" : "Weekend") \(selectedLine.kind.rawValue)s: \(times.count)")
+            print("✅ \(calendarType.debugDisplayName) \(selectedLine.kind.rawValue)s: \(times.count)")
         }
         
         print("✅ \(selectedLine.kind.rawValue.capitalized) timetable generation completed")
         
-        return (weekday: weekdayTimes, weekend: weekendTimes)        
+        return allTimes        
+    }
+    
+    // MARK: - Available Calendar Types Detection
+    // Get available calendar types for the selected line by fetching from timetable API
+    private func getAvailableCalendarTypes() async -> [ODPTCalendarType] {
+        guard let selectedLine = selectedLine,
+              let operatorCode = selectedLine.operatorCode,
+              let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
+            print("⚠️ Cannot determine available calendar types - using default")
+            return [.weekday, .holiday] // Fallback to default
+        }
+        
+        // Check cache first
+        let cacheKey = "\(selectedLine.code)_\(selectedLine.kind.rawValue)_calendarTypes"
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: cacheKey),
+           !cachedTypes.isEmpty {
+            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+            if !cachedCalendarTypes.isEmpty {
+                print("📅 Using cached calendar types: \(cachedCalendarTypes.map { $0.debugDisplayName })")
+                return cachedCalendarTypes
+            }
+        }
+        
+        // Fetch available calendar types from timetable API
+        let availableTypes = await fetchAvailableCalendarTypes(dataSource: selectedOperator)
+        
+        // Cache the results
+        let typeStrings = availableTypes.map { $0.rawValue }
+        UserDefaults.standard.set(typeStrings, forKey: cacheKey)
+        
+        // Also cache for each route direction for TimetableContentView
+        for goorback in goorbackOptions {
+            let routeCacheKey = "\(goorback)_calendarTypes"
+            UserDefaults.standard.set(typeStrings, forKey: routeCacheKey)
+        }
+        
+        // Ensure we have at least weekday and holiday as fallback
+        if availableTypes.isEmpty {
+            print("⚠️ No calendar types found - using default fallback")
+            return [.weekday, .holiday]
+        }
+        
+        print("📅 Available calendar types: \(availableTypes.map { $0.debugDisplayName })")
+        return availableTypes
+    }
+    
+    // Fetch available calendar types from timetable API
+    private func fetchAvailableCalendarTypes(dataSource: LocalDataSource) async -> [ODPTCalendarType] {
+        do {
+            let apiLink: String
+            if selectedLine?.kind == .bus {
+                guard let selectedLineTitle = selectedLine?.title else { return [] }
+                // Fetch without calendar filter to get all available calendar types
+                apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)"
+            } else {
+                guard let selectedLineCode = selectedLine?.code else { return [] }
+                // Fetch without calendar filter to get all available calendar types
+                apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .railway))&odpt:railway=\(selectedLineCode)"
+            }
+            
+            print("🔍 Fetching available calendar types from: \(apiLink)")
+            
+            guard let url = URL(string: apiLink) else { return [] }
+            
+            let (data, response) = try await URLSession.shared.data(from: url)
+            
+            // Check HTTP status code
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode != 200 {
+                    print("❌ Failed to fetch calendar types - status: \(httpResponse.statusCode)")
+                    return []
+                }
+            }
+            
+            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
+            
+            // Extract unique calendar types from the response
+            var foundCalendarTypes: Set<String> = []
+            
+            for timetable in json {
+                if let calendar = timetable["odpt:calendar"] as? String {
+                    foundCalendarTypes.insert(calendar)
+                }
+            }
+            
+            // Convert to ODPTCalendarType array
+            let availableTypes = foundCalendarTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+                .sorted { $0.rawValue < $1.rawValue }
+            
+            print("📅 Found calendar types: \(availableTypes.map { $0.displayName })")
+            return availableTypes
+            
+        } catch {
+            print("❌ Error fetching available calendar types: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    // Test if a specific calendar type has data available
+    private func testCalendarTypeAvailability(calendarType: ODPTCalendarType, dataSource: LocalDataSource) async -> Bool {
+        do {
+            let apiLink: String
+            if selectedLine?.kind == .bus {
+                guard let selectedLineTitle = selectedLine?.title else { return false }
+                apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)&odpt:calendar=\(calendarType.rawValue)"
+            } else {
+                guard let selectedLineCode = selectedLine?.code else { return false }
+                apiLink = "\(dataSource.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType.rawValue)"
+            }
+            
+            guard let url = URL(string: apiLink) else { return false }
+            
+            let (data, response) = try await URLSession.shared.data(from: url)
+            
+            // Check HTTP status code
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 404 {
+                    print("❌ Calendar type \(calendarType.displayName) not found (404)")
+                    return false
+                }
+                if httpResponse.statusCode != 200 {
+                    print("❌ Calendar type \(calendarType.displayName) returned status \(httpResponse.statusCode)")
+                    return false
+                }
+            }
+            
+            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
+            
+            // Consider it available if we get a valid response (even empty array means the calendar type exists)
+            // But we can also check if there's actual timetable data
+            let hasTimetableData = json.contains { timetable in
+                if selectedLine?.kind == .bus {
+                    return timetable["odpt:busTimetableObject"] != nil
+                } else {
+                    return timetable["odpt:trainTimetableObject"] != nil
+                }
+            }
+            
+            if hasTimetableData {
+                print("✅ Calendar type \(calendarType.displayName) has timetable data")
+            } else {
+                print("⚠️ Calendar type \(calendarType.displayName) exists but has no timetable data")
+            }
+            
+            return true // Return true if the calendar type exists, even without data
+            
+        } catch {
+            print("❌ Error testing calendar type \(calendarType.displayName): \(error.localizedDescription)")
+            return false
+        }
     }
     
     // Process bus timetable data for specific day type
-    private func processBusTimetableData(isWeekday: Bool) async -> [any TransportationTime] {
-        print("🚌 Processing \(isWeekday ? "weekday" : "weekend") bus timetable data")
+    private func processBusTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
+        print("🚌 Processing \(calendarType.displayName) bus timetable data")
         print("🚌 Departure stop busstopPole: \(selectedDepartureStop?.busstopPole ?? "nil")")
         print("🚌 Arrival stop busstopPole: \(selectedArrivalStop?.busstopPole ?? "nil")")
         
         // Fetch bus timetable data from API
-        let busTimetableData = await fetchBusTimetableData(isWeekday: isWeekday)
+        let busTimetableData = await fetchBusTimetableData(calendarType: calendarType)
         
         // Extract bus information and timetable objects in a single loop
         var transportationTimes: [any TransportationTime] = []
@@ -1142,17 +1318,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Fetch bus timetable data from API
-    private func fetchBusTimetableData(isWeekday: Bool) async -> [[String: Any]] {
+    private func fetchBusTimetableData(calendarType: ODPTCalendarType) async -> [[String: Any]] {
         guard let operatorCode = selectedLine?.operatorCode,
               let selectedLineTitle = selectedLine?.title,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
-        // let calendarType = isWeekday ? "odpt.Calendar:Weekday" : "odpt.Calendar:SaturdayHoliday"
-        // print("🔍 Calendar type: \(calendarType)")
+        print("🔍 Calendar type: \(calendarType.rawValue)")
         
         // Use bus-specific timetable API (force bus API regardless of transportationType)
-        let apiLink = "\(selectedOperator.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)"
-        // &odpt:calendar=\(calendarType)"
+        let apiLink = "\(selectedOperator.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)&odpt:calendar=\(calendarType.rawValue)"
         print("🔍 Bus timetable API link: \(apiLink)")
         
         guard let url = URL(string: apiLink) else {
@@ -1177,11 +1351,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
 
     
     // Process train timetable data for specific day type
-    private func processTrainTimetableData(isWeekday: Bool) async -> [any TransportationTime] {
-        print("🚂 Processing \(isWeekday ? "weekday" : "weekend") train timetable data")
+    private func processTrainTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
+        print("🚂 Processing \(calendarType.displayName) train timetable data")
         
         // Fetch train timetable data from API
-        let trainTimetableData = await fetchTrainTimetableData(isWeekday: isWeekday)
+        let trainTimetableData = await fetchTrainTimetableData(calendarType: calendarType)
         
         // Extract train information and timetable objects in a single loop
         var transportationTimes: [any TransportationTime] = []
@@ -1242,15 +1416,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Fetch train timetable data from API
-    private func fetchTrainTimetableData(isWeekday: Bool) async -> [[String: Any]] {
+    private func fetchTrainTimetableData(calendarType: ODPTCalendarType) async -> [[String: Any]] {
         guard let operatorCode = selectedLine?.operatorCode,
               let selectedLineCode = selectedLine?.code,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
-        let calendarType = isWeekday ? "odpt.Calendar:Weekday" : "odpt.Calendar:SaturdayHoliday"
-        print("🔍 Calendar type: \(calendarType)")
+        print("🔍 Calendar type: \(calendarType.rawValue)")
         
-        let apiLink = "\(selectedOperator.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType)"
+        let apiLink = "\(selectedOperator.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType.rawValue)"
         
         do {
             guard let url = URL(string: apiLink) else {
@@ -1266,7 +1439,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 return []
             }
             
-            print("✅ Fetched \(json.count) train timetable records for \(isWeekday ? "weekday" : "weekend")")
+            print("✅ Fetched \(json.count) train timetable records for \(calendarType.rawValue)")
             return json
             
         } catch {
@@ -1277,12 +1450,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Train Route Validation
     // Get station timetable data for determined direction and find common train numbers
-    func getStationTimetableData() async -> (weekday: [any TransportationTime], weekend: [any TransportationTime]) {
+    func getStationTimetableData() async -> [ODPTCalendarType: [any TransportationTime]] {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
             print("⚠️ Skipping timetable generation: not all required fields are filled")
-            return (weekday: [], weekend: [])
+            return [:]
         }
         
         print("🔗 Get Timetable Links for both directions:")
@@ -1299,10 +1472,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("   Ascending: \(ascendingDirection)")
         print("   Descending: \(descendingDirection)")
         
-        var results: [[any TransportationTime]] = []
+        var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
         
-        for isWeekday in [true, false] {
-            print("🔄 Processing \(isWeekday ? "Weekday" : "Weekend") data for both directions")
+        // Get available calendar types dynamically
+        let availableCalendarTypes = await getAvailableCalendarTypesForStation()
+        print("📅 Available calendar types for station: \(availableCalendarTypes.map { $0.debugDisplayName })")
+        
+        for calendarType in availableCalendarTypes {
+            print("🔄 Processing \(calendarType.debugDisplayName) data for both directions")
             
             // Get data for both directions
             let directions = [ascendingDirection, descendingDirection]
@@ -1313,8 +1490,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 print("📊 Get \(directionNames[index].capitalized) Direction Timetable Data:")
                 
                 // Get departure and arrival data for this direction
-                let departureLink = stationTimetableApiLink(isDeparture: true, isWeekday: isWeekday, direction: direction)
-                let arrivalLink = stationTimetableApiLink(isDeparture: false, isWeekday: isWeekday, direction: direction)
+                let departureLink = stationTimetableApiLink(isDeparture: true, calendarType: calendarType, direction: direction)
+                let arrivalLink = stationTimetableApiLink(isDeparture: false, calendarType: calendarType, direction: direction)
                 
                 print("🔗 Departure link: \(departureLink)")
                 print("🔗 Arrival link: \(arrivalLink)")
@@ -1322,8 +1499,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 let departureData = await fetchStationTimetableData(from: departureLink)
                 let arrivalData = await fetchStationTimetableData(from: arrivalLink)
                 
-                print("\(directionNames[index]) \(isWeekday ? "Weekday" : "Weekend") Departure count: \(departureData.count)")
-                print("\(directionNames[index]) \(isWeekday ? "Weekday" : "Weekend") Arrival count: \(arrivalData.count)")
+                print("\(directionNames[index]) \(calendarType.debugDisplayName) Departure count: \(departureData.count)")
+                print("\(directionNames[index]) \(calendarType.debugDisplayName) Arrival count: \(arrivalData.count)")
                 
                 // Process this direction if we have both departure and arrival data
                 var result: [any TransportationTime] = []
@@ -1332,7 +1509,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     result = await getEstimatedTrainTime(
                         departureTimetableData: departureData,
                         arrivalTimetableData: arrivalData,
-                        isWeekday: isWeekday,
+                        calendarType: calendarType,
                         approxRideTime: selectedRideTime
                     )
                 }
@@ -1346,15 +1523,66 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 return avg1 < avg2
             } ?? []
             
-            // Save to appropriate array
-            results.append(selectedResult)
+            // Save to dictionary with calendar type as key
+            allTimes[calendarType] = selectedResult
         }
-        return (weekday: results[0], weekend: results[1])
+        return allTimes
+    }
+    
+    // MARK: - Available Calendar Types Detection
+    // Get available calendar types for station timetable
+    private func getAvailableCalendarTypesForStation() async -> [ODPTCalendarType] {
+        let operatorCode = selectedLine?.operatorCode ?? ""
+        let dataSource = LocalDataSource.allCases.first { $0.operatorCode == operatorCode }
+        let stationTimetableApiLink = dataSource?.apiLink(for: .stopTimetable) ?? ""
+        
+        // Test each calendar type by making API calls
+        var availableTypes: [ODPTCalendarType] = []
+        
+        for calendarType in ODPTCalendarType.allCalendarTypes {
+            let testLink = "\(stationTimetableApiLink)&acl:consumerKey=\(odptAccessKey)&owl:sameAs=odpt.StationTimetable:\(operatorCode).\(calendarType.rawValue)"
+            
+            do {
+                let data = try await fetchData(from: testLink)
+                if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]], !json.isEmpty {
+                    availableTypes.append(calendarType)
+                    print("✅ Calendar type \(calendarType.debugDisplayName) is available")
+                }
+            } catch {
+                print("❌ Calendar type \(calendarType.debugDisplayName) is not available: \(error)")
+            }
+        }
+        
+        // Fallback to basic types if none found
+        if availableTypes.isEmpty {
+            availableTypes = [.weekday, .saturdayHoliday]
+            print("⚠️ No calendar types found, using fallback: weekday, saturdayHoliday")
+        }
+        
+        return availableTypes
+    }
+    
+    // MARK: - Data Fetching
+    // Simple data fetching method for API calls
+    private func fetchData(from urlString: String) async throws -> Data {
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                throw URLError(.badServerResponse)
+            }
+        }
+        
+        return data
     }
     
     // MARK: - Station Timetable Data Processing
     // Generate station timetable link with flexible parameters
-    func stationTimetableApiLink(isDeparture: Bool, isWeekday: Bool, direction: String? = nil) -> String {
+    func stationTimetableApiLink(isDeparture: Bool, calendarType: ODPTCalendarType, direction: String? = nil) -> String {
         
     // Generate timetable information links for departure and arrival stations
         let operatorCode = selectedLine?.operatorCode ?? ""
@@ -1372,11 +1600,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let directionCode = direction ?? String(selectedLine?.lineDirection ?? "")
         let directionName = directionCode.replacingOccurrences(of: "odpt.RailDirection:", with: "")
         
-        let dateSuffix = isWeekday ? ".Weekday" : ".SaturdayHoliday"
+        let dateSuffix = calendarType.rawValue.replacingOccurrences(of: "odpt.Calendar:", with: "")
         
-        let apiLink = "\(stationTimetableApiLink)\(lineName).\(stationName).\(directionName)\(dateSuffix)"
+        let apiLink = "\(stationTimetableApiLink)\(lineName).\(stationName).\(directionName).\(dateSuffix)"
         
-        print("🔍 Station timetable link - isDeparture: \(isDeparture), isWeekday: \(isWeekday), direction: \(directionName), apiLink: \(apiLink)")
+        print("🔍 Station timetable link - isDeparture: \(isDeparture), calendarType: \(calendarType.debugDisplayName), direction: \(directionName), apiLink: \(apiLink)")
         return apiLink
     }
 
@@ -1451,7 +1679,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func getEstimatedTrainTime(
         departureTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
         arrivalTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
-        isWeekday: Bool,
+        calendarType: ODPTCalendarType,
         approxRideTime: Int
     ) async -> [any TransportationTime] {
 
@@ -1700,11 +1928,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Timetable Data Saving
     // Save timetable data to UserDefaults for display in TimetableContentView
     // Saves both departure times and ride times grouped by hour
-    private func saveTimetableToUserDefaults(transportationTimes: [any TransportationTime], isWeekday: Bool) {
-        // Clear existing timetable data for this line and day type
-        clearTimetableData(isWeekday: isWeekday)
+    private func saveTimetableToUserDefaults(transportationTimes: [any TransportationTime], calendarType: ODPTCalendarType) {
+        // Clear existing timetable data for this line and calendar type
+        clearTimetableData(calendarType: calendarType)
         
-        print("💾 Saving timetable data for \(isWeekday ? "weekdays" : "weekends")")
+        print("💾 Saving timetable data for \(calendarType.debugDisplayName)")
         print("📊 Total TransportationTime objects: \(transportationTimes.count)")
         
         // Group TransportationTime objects by hour
@@ -1729,12 +1957,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let sortedTransportationTimes = transportationTimesForHour.sorted { 
                 $0.departureTime < $1.departureTime 
             }
-            selectedGoorback.saveTransportationTimes(sortedTransportationTimes, isWeekday, selectedLineNumber - 1, hour)
+            selectedGoorback.saveTransportationTimes(sortedTransportationTimes, calendarType, selectedLineNumber - 1, hour)
         }
         
         // Save train type list for the entire timetable
         let allTransportationTimes = hourlyTransportationTimes.values.flatMap { $0 }
-        selectedGoorback.saveTrainTypeList(allTransportationTimes, isWeekday, selectedLineNumber - 1)
+        selectedGoorback.saveTrainTypeList(allTransportationTimes, calendarType, selectedLineNumber - 1)
         
         // Ensure all UserDefaults changes are synchronized to disk
         UserDefaults.standard.synchronize()
@@ -1750,8 +1978,23 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Common post-processing for timetable data with weekday/weekend arrays
     func finalizeTimetableData(weekdayTimes: [any TransportationTime], weekendTimes: [any TransportationTime]) async {
         // Save timetable data using unified TransportationTime format
-        saveTimetableToUserDefaults(transportationTimes: weekdayTimes, isWeekday: true)
-        saveTimetableToUserDefaults(transportationTimes: weekendTimes, isWeekday: false)
+        saveTimetableToUserDefaults(transportationTimes: weekdayTimes, calendarType: .weekday)
+        saveTimetableToUserDefaults(transportationTimes: weekendTimes, calendarType: .holiday)
+        
+        // Save all data after timetable data has been processed and saved
+        await saveAllDataToUserDefaults()
+        
+        // Notify that timetable data has been updated
+        NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
+    }
+    
+    // MARK: - Common Timetable Data Finalization with Calendar Types
+    // Common post-processing for timetable data with individual calendar types
+    func finalizeTimetableData(calendarTimes: [ODPTCalendarType: [any TransportationTime]]) async {
+        // Save timetable data for each calendar type individually
+        for (calendarType, times) in calendarTimes {
+            saveTimetableToUserDefaults(transportationTimes: times, calendarType: calendarType)
+        }
         
         // Save all data after timetable data has been processed and saved
         await saveAllDataToUserDefaults()
@@ -1763,21 +2006,21 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Timetable Data Clearing
     // Clear existing timetable data for specified day type
-    private func clearTimetableData(isWeekday: Bool) {
-        print("🧹 Clearing timetable data for \(isWeekday ? "weekdays" : "weekends")")
+    private func clearTimetableData(calendarType: ODPTCalendarType) {
+        print("🧹 Clearing timetable data for \(calendarType.debugDisplayName)")
         
-        // Clear all hours (4-24) for the specified day type and line
+        // Clear all hours (4-24) for the specified calendar type and line
         for hour in 4...25 {
-            let timetableKey = selectedGoorback.timetableKey(isWeekday, selectedLineNumber - 1, hour)
-            let timetableRideTimeKey = selectedGoorback.timetableRideTimeKey(isWeekday, selectedLineNumber - 1, hour)
-            let timetableTrainTypeKey = selectedGoorback.timetableTrainTypeKey(isWeekday, selectedLineNumber - 1, hour)
+            let timetableKey = selectedGoorback.timetableKey(calendarType, selectedLineNumber - 1, hour)
+            let timetableRideTimeKey = selectedGoorback.timetableRideTimeKey(calendarType, selectedLineNumber - 1, hour)
+            let timetableTrainTypeKey = selectedGoorback.timetableTrainTypeKey(calendarType, selectedLineNumber - 1, hour)
             UserDefaults.standard.removeObject(forKey: timetableKey)
             UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
             UserDefaults.standard.removeObject(forKey: timetableTrainTypeKey)
         }
         
         // Clear train type list
-        let trainTypeListKey = selectedGoorback.trainTypeListKey(isWeekday, selectedLineNumber - 1)
+        let trainTypeListKey = selectedGoorback.trainTypeListKey(calendarType, selectedLineNumber - 1)
         UserDefaults.standard.removeObject(forKey: trainTypeListKey)
         
         UserDefaults.standard.synchronize()
@@ -1785,22 +2028,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Transportation Kind Switching
-    // Handle transportation kind switching with proper state management
+    // Handle transportation kind switching without clearing data
     func switchTransportationKind(_ isRailway: Bool) {
         // Update transportation kind immediately for responsive UI
         selectedTransportationKind = isRailway ? .railway : .bus
         
-        // Clear line name and station selections when switching transportation types
-        lineInput = ""
-        selectedLine = nil
-        selectedDepartureStop = nil
-        selectedArrivalStop = nil
-        departureStopInput = ""
-        arrivalStopInput = ""
-        lineStations = []
-        selectedLineColor = Color.accentString
-        
-        // Clear current suggestions immediately for instant UI update
+        // Clear only suggestions to prevent UI conflicts
         lineSuggestions = []
         showLineSuggestions = false
         nameCounts = [:]
@@ -1810,12 +2043,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         arrivalSuggestions = []
         isDepartureFieldFocused = false
         isArrivalFieldFocused = false
-        departureStopSelected = false
-        arrivalStopSelected = false
-        lineSelected = false
         showStationSelection = false
         
-        // Only filter if there's an active lineInput and it's not empty
+        // Re-filter existing data if line input exists
         if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
             // Use longer delay for bus to allow UI to fully update
             let delay = isRailway ? 0.1 : 0.2
@@ -2194,3 +2424,4 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
 }
+
