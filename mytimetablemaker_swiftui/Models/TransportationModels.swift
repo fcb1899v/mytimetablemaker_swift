@@ -29,14 +29,28 @@ struct TransportationStop: Identifiable, Hashable {
     
     // Computed property for display name
     var displayName: String {
-        // For bus stops, prioritize Japanese name if available
-        if kind == .bus {
-            if let title = title, let japaneseName = title.ja, !japaneseName.isEmpty {
-                return japaneseName
+        // Use localized name based on current language setting
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        if let title = title {
+            let localizedName = title.getLocalizedName()
+            if !localizedName.isEmpty {
+                return localizedName
             }
-            return title?.getLocalizedName(fallbackTo: name) ?? name
         }
-        return title?.getLocalizedName(fallbackTo: name) ?? name
+        
+        // For bus stops, try to extract English from busstopPole for English locale
+        if kind == .bus && currentLanguage != "ja" {
+            if let busstopPole = busstopPole {
+                let components = busstopPole.components(separatedBy: ".")
+                if components.count > 2 {
+                    let englishName = components[2].trimmingCharacters(in: .whitespacesAndNewlines)
+                    return englishName
+                }
+            }
+        }
+        
+        return name
     }
     
     // Computed property for cleaned name (for bus stops)
@@ -63,7 +77,8 @@ struct TransportationStop: Identifiable, Hashable {
     // Initialize from BusStop
     init(from busStop: BusStop) {
         self.kind = .bus
-        self.name = busStop.cleanedName
+        // Use original name (Japanese note field) as base name
+        self.name = busStop.name
         self.code = busStop.code
         self.index = busStop.index
         self.lineCode = busStop.lineCode
@@ -247,11 +262,29 @@ struct BusStop: Identifiable, Hashable, Codable {
     
     // Computed properties
     var displayName: String {
-        // Prioritize Japanese name if available
-        if let title = title, let japaneseName = title.ja, !japaneseName.isEmpty {
-            return japaneseName
+        // Use localized name based on current language setting
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        if let title = title {
+            let localizedName = title.getLocalizedName()
+            if !localizedName.isEmpty {
+                return localizedName
+            }
         }
-        return title?.getLocalizedName(fallbackTo: cleanedName) ?? cleanedName
+        
+        // Fallback: use note (Japanese) for Japanese locale, or try to extract English from busstopPole
+        if currentLanguage == "ja" {
+            return cleanedName
+        } else {
+            // For English, try to get English name from busstopPole
+            if let busstopPole = busstopPole {
+                let components = busstopPole.components(separatedBy: ".")
+                if components.count > 2 {
+                    return components[2].trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+            }
+            return cleanedName
+        }
     }
     
     enum CodingKeys: String, CodingKey {
@@ -308,9 +341,8 @@ struct BusStop: Identifiable, Hashable, Codable {
         // Generate multi-language title from note and busstopPole using shared logic
         self.title = String.generateBusStopTitle(note: self.note ?? "", busstopPole: self.busstopPole ?? "")
         
-        // Set name from title or fallback to note/busstopPole
-        let fallbackName = self.note ?? self.busstopPole ?? ""
-        self.name = self.title?.getLocalizedName(fallbackTo: fallbackName) ?? fallbackName
+        // Keep original Japanese name as base name (don't localize here)
+        self.name = self.note ?? self.busstopPole ?? ""
     }
     
     

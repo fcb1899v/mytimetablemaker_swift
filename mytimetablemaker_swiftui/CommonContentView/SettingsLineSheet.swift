@@ -788,7 +788,10 @@ struct SettingsLineSheet: View {
             backgroundColor: Color.accent,
             isEnabled: vm.isAllNotEmpty,
             action: {
-                vm.handleLineSave(dismiss: dismiss)
+                Task {
+                    await vm.handleLineSave()
+                    dismiss()
+                }
             }
         )
         .disabled(!vm.isAllNotEmpty)
@@ -804,7 +807,11 @@ struct SettingsLineSheet: View {
             isEnabled: vm.isAllNotEmpty,
             action: {
                 if vm.isAllNotEmpty {
-                    showTimetableSettings = true
+                    // Save input data before opening timetable settings
+                    Task {
+                        await vm.handleLineSave()
+                        showTimetableSettings = true
+                    }
                 }
             }
         )
@@ -822,7 +829,9 @@ struct SettingsLineSheet: View {
             action: {
                 // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
                 if vm.isAllNotEmpty && vm.isAllSelected {
+                    // Save input data before auto generating timetable
                     Task {
+                        await vm.handleLineSave()
                         if vm.hasTrainTimetableSupport() || vm.selectedTransportationKind == .bus {
                             let result: [ODPTCalendarType: [any TransportationTime]] = await vm.getTimeTableData()
                             // Use new finalizeTimetableData method with individual calendar types

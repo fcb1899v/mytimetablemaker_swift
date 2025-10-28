@@ -63,6 +63,7 @@ final class SharedDataManager: ObservableObject {
     // Internal state management
     private var isInitialized = false
     private var initializationTask: Task<Void, Never>?
+    private var initializedKinds: Set<TransportationLine.Kind> = []
     private let cache = CacheStore()
     private let net = ODPTNetworkClient()
     private let consumerKey: String
@@ -80,6 +81,110 @@ final class SharedDataManager: ObservableObject {
             await initializeData()
         }
         return allLines
+    }
+    
+    // Get lines for a specific transportation kind
+    // Load only data for the requested kind to improve performance
+    func getLines(for kind: TransportationLine.Kind, allowFetch: Bool = true) async -> [TransportationLine] {
+        // Initialize only if needed for this kind
+        if !initializedKinds.contains(kind) {
+            if allowFetch {
+                await ensureCacheForKind(kind)
+            }
+            initializedKinds.insert(kind)
+        }
+        
+        // Load only the requested kind from cache
+        var cacheLines: [TransportationLine] = []
+        
+        let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
+        
+        for transportOperator in operators {
+            let cacheKey = transportOperator.fileName
+            guard let cachedData = cache.loadData(for: cacheKey) else { 
+                continue 
+            }
+            
+            let lines: [TransportationLine] = kind == .railway 
+                ? (try? ODPTParser.parseRailwayRoutes(cachedData)) ?? []
+                : (try? ODPTParser.parseBusRoutes(cachedData)) ?? []
+            
+            cacheLines.append(contentsOf: lines)
+        }
+        
+        return cacheLines
+    }
+    
+    // Ensure cache exists for a specific kind
+    private func ensureCacheForKind(_ kind: TransportationLine.Kind) async {
+        let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
+        
+        // Check if all operators for this kind have cache
+        let allHaveCache = operators.allSatisfy { transportOperator in
+            cache.loadData(for: transportOperator.fileName) != nil
+        }
+        
+        if !allHaveCache {
+            // Some caches are missing, fetch them
+            await performInitialFetch(for: kind)
+        }
+    }
+    
+    // Perform initial fetch for a specific kind only (without saving to cache)
+    private func performInitialFetch(for kind: TransportationLine.Kind) async {
+        let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
+        
+        for transportOperator in operators {
+            // Check if cache exists
+            let cacheKey = transportOperator.fileName
+            if cache.loadData(for: cacheKey) != nil {
+                continue
+            }
+            
+            // Fetch data
+            do {
+                let data = try await net.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
+                
+                // Write to file
+                try await net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                
+                // Don't save to cache here - only load from cache
+                // Cache will be saved when user presses save button
+                
+                print("✅ Fetched: \(transportOperator.operatorDisplayName)")
+            } catch {
+                print("❌ Failed to initialize \(transportOperator.operatorDisplayName): \(error)")
+            }
+        }
+    }
+    
+    // Save cache for a specific kind
+    func saveCacheForKind(_ kind: TransportationLine.Kind) async {
+        let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
+        
+        for transportOperator in operators {
+            let cacheKey = transportOperator.fileName
+            
+            // Load from file if exists
+            if let fileData = await loadFromFile(for: transportOperator) {
+                cache.saveData(fileData, for: cacheKey)
+                print("💾 Saved cache for: \(transportOperator.operatorDisplayName)")
+            }
+        }
+    }
+    
+    // Load data from file
+    private func loadFromFile(for transportOperator: LocalDataSource) async -> Data? {
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        let lineDataDirectory = documentsDirectory.appendingPathComponent("LineData", isDirectory: true)
+        let fileName = transportOperator.fileName
+        let fileURL = lineDataDirectory.appendingPathComponent(fileName)
+        
+        return try? Data(contentsOf: fileURL)
     }
     
     // MARK: - Data Initialization
@@ -174,7 +279,7 @@ final class SharedDataManager: ObservableObject {
             }
             
             let lines: [TransportationLine] = transportOperator.transportationType == .railway 
-                ? (try? ODPTParser.parseLocalRailways(cachedData)) ?? []
+                ? (try? ODPTParser.parseRailwayRoutes(cachedData)) ?? []
                 : (try? ODPTParser.parseBusRoutes(cachedData)) ?? []
             
             print("📁 Loading from cache: \(cacheKey) (\(cachedData.count) bytes): Parsed \(lines.count) lines for \(transportOperator.operatorDisplayName)")
@@ -215,7 +320,7 @@ final class SharedDataManager: ObservableObject {
                         let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
                         
                         let lines: [TransportationLine] = transportOperator.transportationType == .railway 
-                            ? (try? ODPTParser.parseLocalRailways(data)) ?? []
+                            ? (try? ODPTParser.parseRailwayRoutes(data)) ?? []
                             : (try? ODPTParser.parseBusRoutes(data)) ?? []
                         
                         return (transportOperator, lines)
@@ -308,7 +413,7 @@ final class SharedDataManager: ObservableObject {
         let updatedData = await processUpdate(
             for: railwayOperators,
             updateType: "railway",
-            parser: { try ODPTParser.parseLocalRailways($0) }
+            parser: { try ODPTParser.parseRailwayRoutes($0) }
         ) { transportOperator in
             await self.net.updateIndividualOperator(transportOperator, consumerKey: self.consumerKey)
         }
@@ -331,32 +436,35 @@ final class SharedDataManager: ObservableObject {
         
         let busOperators = LocalDataSource.allCases.filter { $0.transportationType == .bus }
         
+        // Clear old bus cache files first to force fresh fetch
+        for transportOperator in busOperators {
+            let cacheKey = transportOperator.fileName
+            if cache.loadData(for: cacheKey) != nil {
+                print("🗑️ Clearing old bus cache for: \(cacheKey)")
+                cache.saveData(Data(), for: cacheKey)
+            }
+        }
+        
         let updatedData = await processUpdate(
             for: busOperators,
             updateType: "bus",
             parser: { try ODPTParser.parseBusRoutes($0) }
         ) { transportOperator in
             do {
-                // Use checkIndividualOperatorForUpdates for 304 conditional GET support
-                let needsUpdate = try await self.net.checkIndividualOperatorForUpdates(transportOperator, consumerKey: self.consumerKey)
+                // Force update by bypassing conditional GET
+                print("📥 \(transportOperator.operatorDisplayName): Forcing fresh bus data fetch...")
+                let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
                 
-                if needsUpdate {
-                    let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
-                    
-                    // Write updated data to JSON file
-                    try await self.net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
-                    
-                    // Update cache with new data
-                    let cacheKey = transportOperator.fileName
-                    self.cache.saveData(data, for: cacheKey)
+                // Write updated data to JSON file
+                try await self.net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                
+                // Update cache with new data
+                let cacheKey = transportOperator.fileName
+                self.cache.saveData(data, for: cacheKey)
 
-                    return .success(())
-                } else {
-                    print("✅ \(transportOperator.operatorDisplayName): No update needed (304 or content unchanged)")
-                    return .success(())
-                }
+                return .success(())
             } catch {
-                print("❌ Failed to check \(transportOperator.operatorDisplayName): \(error)")
+                print("❌ Failed to fetch \(transportOperator.operatorDisplayName): \(error)")
                 return .failure(error)
             }
         }

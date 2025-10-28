@@ -216,8 +216,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Data Management
     // Load data from shared manager for better performance
+    // Only load data for the currently selected transportation kind
     func loadFromSharedService() async {
-        let sharedLines = await sharedDataManager.getAllLines()
+        // Load only the selected kind's data to improve performance
+        let sharedLines = await sharedDataManager.getLines(for: selectedTransportationKind)
         
         await MainActor.run {
             self.all = sharedLines
@@ -238,7 +240,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         await sharedDataManager.performRailwayUpdate()
         await sharedDataManager.performBusUpdate()
         
-        let updatedLines = await sharedDataManager.getAllLines()
+        // Reload only the selected kind's data after update
+        let updatedLines = await sharedDataManager.getLines(for: selectedTransportationKind)
         
         await MainActor.run {
             self.all = updatedLines
@@ -266,7 +269,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         if isLineNumberChanging || isGoorBackChanging || lineSelected { return }
         
         // Use cached data for better performance based on transportation kind
-        let searchData = selectedTransportationKind == .railway ? railwayLines : busLines
+        let searchData = selectedTransportationKind == .railway ? railwayLines: busLines
         
         // Search key generation helper for different transportation types
         let key: (TransportationLine) -> String = { p in
@@ -316,12 +319,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let contains = searchData.filter { !key($0).hasPrefix(t) && key($0).contains(t) }
         let hiraganaMatches = searchData.filter { !key($0).hasPrefix(t) && !key($0).contains(t) && matchesQuery($0) }
         
-        if selectedTransportationKind == .bus {
-            lineSuggestions = Array(searchData.filter { $0.name.normalizedForSearch.contains(t) }.prefix(20))
-        } else {
-            let allResults = starts + contains + hiraganaMatches
-            lineSuggestions = Array(allResults.prefix(100))
-        }
+        let allResults = starts + contains + hiraganaMatches
+        lineSuggestions = Array(allResults.prefix(100))
         
         // Show suggestions based on results count
         if lineSuggestions.count == 1 {
@@ -631,13 +630,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Common save processing for all line types
-    func handleLineSave(dismiss: DismissAction) {
-        Task {
-            await saveAllDataToUserDefaults()
-            updateDisplay()
-            NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
-            dismiss()
-        }
+    func handleLineSave() async {
+        await saveAllDataToUserDefaults()
+        
+        // Save cache for the selected transportation kind when user saves
+        await sharedDataManager.saveCacheForKind(selectedTransportationKind)
+        
+        updateDisplay()
+        NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
     }
     
     // MARK: - Data Validation
@@ -1012,7 +1012,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("🗑️ Clearing all existing timetable data...")
         
         // Clear data for all calendar types
-        for calendarType in ODPTCalendarType.allCalendarTypes {
+        for calendarType in ODPTCalendarType.allCases {
             clearTimetableData(calendarType: calendarType)
         }
         
@@ -1539,7 +1539,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Test each calendar type by making API calls
         var availableTypes: [ODPTCalendarType] = []
         
-        for calendarType in ODPTCalendarType.allCalendarTypes {
+        for calendarType in ODPTCalendarType.allCases {
             let testLink = "\(stationTimetableApiLink)&acl:consumerKey=\(odptAccessKey)&owl:sameAs=odpt.StationTimetable:\(operatorCode).\(calendarType.rawValue)"
             
             do {
@@ -2045,12 +2045,20 @@ final class SettingsLineSheetViewModel: ObservableObject {
         isArrivalFieldFocused = false
         showStationSelection = false
         
-        // Re-filter existing data if line input exists
-        if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
-            // Use longer delay for bus to allow UI to fully update
-            let delay = isRailway ? 0.1 : 0.2
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                Task { await self.filter(self.lineInput) }
+        // Load data for the new kind from cache only (no fetch, no save)
+        Task {
+            let newLines = await sharedDataManager.getLines(for: selectedTransportationKind, allowFetch: false)
+            
+            await MainActor.run {
+                self.all = newLines
+                self.allData = self.all
+                self.railwayLines = newLines.filter { $0.kind == .railway }
+                self.busLines = newLines.filter { $0.kind == .bus }
+            }
+            
+            // Re-filter existing data if line input exists
+            if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                await filter(lineInput)
             }
         }
     }

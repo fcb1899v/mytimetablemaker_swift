@@ -56,7 +56,7 @@ class MyFirestore: ObservableObject {
         var availableTypes: [ODPTCalendarType] = []
         
         // Check which calendar types have data in UserDefaults
-        for calendarType in ODPTCalendarType.allCalendarTypes {
+        for calendarType in ODPTCalendarType.allCases {
             var hasData = false
             for hour in 4...25 {
                 let timetableKey = goorback.timetableKey(calendarType, num, hour)
@@ -92,9 +92,36 @@ class MyFirestore: ObservableObject {
             print("🔍 Full path: \(nextref.path)")
             
             let batch = Firestore.firestore().batch()
-            let hourData = Dictionary(uniqueKeysWithValues: (4...25).map { hour in
-                ("hour\(String(format: "%02d", hour))", goorback.timetableTime(calendarType, num, hour))
-            })
+            
+            // Create comprehensive hour data with backward compatibility
+            var hourData: [String: Any] = [:]
+            
+            for hour in 4...25 {
+                let hourKey = "hour\(String(format: "%02d", hour))"
+                let timetableKey = goorback.timetableKey(calendarType, num, hour)
+                let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, num, hour)
+                let timetableTrainTypeKey = goorback.timetableTrainTypeKey(calendarType, num, hour)
+                
+                // Get data from UserDefaults
+                let timetableData = UserDefaults.standard.string(forKey: timetableKey) ?? ""
+                let rideTimeData = UserDefaults.standard.string(forKey: timetableRideTimeKey) ?? ""
+                let trainTypeData = UserDefaults.standard.string(forKey: timetableTrainTypeKey) ?? ""
+                
+                // Save in both formats for backward compatibility
+                // Legacy format (string) - for existing clients
+                hourData[hourKey] = timetableData
+                
+                // New format (dictionary) - for enhanced data
+                hourData["\(hourKey)_enhanced"] = [
+                    "timetable": timetableData,
+                    "rideTime": rideTimeData,
+                    "trainType": trainTypeData
+                ]
+                
+                if hour < 9 && !timetableData.isEmpty {
+                    print("📊 Hour \(hour): timetable='\(timetableData)', rideTime='\(rideTimeData)', trainType='\(trainTypeData)'")
+                }
+            }
             
             print("🔍 Hour data count: \(hourData.count)")
             batch.setData(hourData, forDocument: nextref)
@@ -108,9 +135,7 @@ class MyFirestore: ObservableObject {
     // Removes Firestore documents for calendar types that are no longer available
     func cleanupUnusedCalendarTypes(_ goorback: String, _ num: Int, availableTypes: [ODPTCalendarType]) {
         let collection = getRef(goorback).collection("timetable")
-        let allTypes = ODPTCalendarType.allCalendarTypes
-        
-        for calendarType in allTypes {
+        for calendarType in ODPTCalendarType.allCases {
             if !availableTypes.contains(calendarType) {
                 let docRef = collection.document("timetable\(num + 1)\(calendarType.calendarTag)")
                 docRef.delete { error in
@@ -196,8 +221,10 @@ class MyFirestore: ObservableObject {
         message = "Data could not be got".localized
         goorbackarray.forEach { goorback in
             (0..<3).forEach { linenumber in
-                (0..<2).forEach { day in
-                    getTimetableFirestore(goorback, linenumber, day)
+                // Get available calendar types for this route and line
+                let availableCalendarTypes = getAvailableCalendarTypesForRoute(goorback: goorback, num: linenumber)
+                availableCalendarTypes.forEach { calendarType in
+                    getTimetableFirestore(goorback, linenumber, calendarType)
                 }
             }
             getLineInfoFirestore(goorback)
@@ -245,52 +272,67 @@ class MyFirestore: ObservableObject {
     }
     
     // MARK: - Timetable Download
-    // Downloads timetable data for specific route, line, and day from Firestore
-    private func getTimetableFirestore(_ goorback: String, _ num: Int, _ day: Int) {
-        // Try to get data for all calendar types, but only process existing ones
-        for calendarType in ODPTCalendarType.allCalendarTypes {
-            let documentName = "timetable\(num + 1)\(calendarType.calendarTag)"
-            let nextref = getRef(goorback).collection("timetable").document(documentName)
+    // Downloads timetable data for specific route, line, and calendar type from Firestore
+    private func getTimetableFirestore(_ goorback: String, _ num: Int, _ calendarType: ODPTCalendarType) {
+        let documentName = "timetable\(num + 1)\(calendarType.calendarTag)"
+        let nextref = getRef(goorback).collection("timetable").document(documentName)
+        
+        print("🔍 getTimetableFirestore - goorback: \(goorback), num: \(num), calendarType: \(calendarType.debugDisplayName)")
+        print("🔍 Calendar type: \(calendarType.debugDisplayName), tag: \(calendarType.calendarTag)")
+        print("🔍 Document name: \(documentName)")
+        print("🔍 Full path: \(nextref.path)")
+        
+        nextref.getDocument { (document, error) in
+            if let error = error {
+                print("❌ Error getting document for \(calendarType.debugDisplayName): \(error.localizedDescription)")
+                return
+            }
             
-            print("🔍 getTimetableFirestore - goorback: \(goorback), num: \(num), day: \(day)")
-            print("🔍 Calendar type: \(calendarType.debugDisplayName), tag: \(calendarType.calendarTag)")
-            print("🔍 Document name: \(documentName)")
-            print("🔍 Full path: \(nextref.path)")
-            
-            nextref.getDocument { (document, error) in
-                if let error = error {
-                    print("❌ Error getting document for \(calendarType.debugDisplayName): \(error.localizedDescription)")
-                    return
-                }
-                
-                if let document = document, document.exists {
-                    print("✅ Document exists for \(calendarType.debugDisplayName) with \(document.data()?.count ?? 0) fields")
-                    if let data = document.data() {
-                        // Set data from Firestore for all hours
-                        for hour in 4...25 {
-                            let hourKey = "hour\(String(format: "%02d", hour))"
-                            if let hourData = data[hourKey] {
-                                UserDefaults.standard.setValue(hourData,
-                                    forKey: goorback.timetableKey(calendarType, num, hour)
-                                )
+            if let document = document, document.exists {
+                print("✅ Document exists for \(calendarType.debugDisplayName) with \(document.data()?.count ?? 0) fields")
+                if let data = document.data() {
+                    // Set data from Firestore for all hours with backward compatibility
+                    for hour in 4...25 {
+                        let hourKey = "hour\(String(format: "%02d", hour))"
+                        let enhancedHourKey = "\(hourKey)_enhanced"
+                        let timetableKey = goorback.timetableKey(calendarType, num, hour)
+                        let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, num, hour)
+                        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(calendarType, num, hour)
+                        
+                        // Try to load enhanced format first (new format)
+                        if let enhancedData = data[enhancedHourKey] as? [String: String] {
+                            // New format with structured data
+                            UserDefaults.standard.set(enhancedData["timetable"] ?? "", forKey: timetableKey)
+                            UserDefaults.standard.set(enhancedData["rideTime"] ?? "", forKey: timetableRideTimeKey)
+                            UserDefaults.standard.set(enhancedData["trainType"] ?? "", forKey: timetableTrainTypeKey)
+                            
+                            if hour < 9 && !(enhancedData["timetable"] ?? "").isEmpty {
+                                print("📊 Downloaded Hour \(hour) (enhanced): timetable='\(enhancedData["timetable"] ?? "")', rideTime='\(enhancedData["rideTime"] ?? "")', trainType='\(enhancedData["trainType"] ?? "")'")
+                            }
+                        } else if let hourDataString = data[hourKey] as? String {
+                            // Legacy format - only timetable data available
+                            UserDefaults.standard.set(hourDataString, forKey: timetableKey)
+                            // Clear ride time and train type for legacy data
+                            UserDefaults.standard.set("", forKey: timetableRideTimeKey)
+                            UserDefaults.standard.set("", forKey: timetableTrainTypeKey)
+                            
+                            if hour < 9 && !hourDataString.isEmpty {
+                                print("📊 Downloaded Hour \(hour) (legacy): timetable='\(hourDataString)'")
                             }
                         }
-                        print("✅ Downloaded timetable data from Firestore for \(calendarType.debugDisplayName)")
                     }
-                } else {
-                    print("❌ Document does not exist for \(calendarType.debugDisplayName): \(documentName)")
+                    print("✅ Downloaded timetable data from Firestore for \(calendarType.debugDisplayName)")
                 }
+            } else {
+                print("❌ Document does not exist for \(calendarType.debugDisplayName): \(documentName)")
             }
         }
-        
-        // Clear existing local data for all calendar types and line after attempting to download
-        clearLocalTimetableData(goorback: goorback, num: num)
     }
     
     // MARK: - Local Data Clearing
     // Clear local UserDefaults data for all calendar types and line
     private func clearLocalTimetableData(goorback: String, num: Int) {
-        for calendarType in ODPTCalendarType.allCalendarTypes {
+        for calendarType in ODPTCalendarType.allCases {
             for hour in 4...25 {
                 let timetableKey = goorback.timetableKey(calendarType, num, hour)
                 let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, num, hour)
@@ -303,4 +345,5 @@ class MyFirestore: ObservableObject {
         }
         print("🗑️ Cleared local timetable data for all calendar types")
     }
+    
 }

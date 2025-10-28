@@ -17,7 +17,7 @@ struct TimetableContentView: View {
     @State private var image = UIImage()
     @State private var isShowImagePicker = false
     @State private var scrollViewHeight: CGFloat = 0
-    @State private var showWeekdaySheet = false
+    @State private var isCalendarTypeDropdownOpen = false
     @Environment(\.dismiss) private var dismiss
 
     private let goorback: String
@@ -68,9 +68,8 @@ struct TimetableContentView: View {
                         HStack {
                             Color.white.frame(width: 1)
                             Spacer()
-                            // Weekday/Weekend Dropdown Button for Header
                             Button(action: {
-                                showWeekdaySheet = true
+                                isCalendarTypeDropdownOpen.toggle()
                             }) {
                                 HStack {
                                     Text(selectedCalendarType.displayName)
@@ -79,19 +78,23 @@ struct TimetableContentView: View {
                                     Image(systemName: "chevron.down")
                                         .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
                                         .foregroundColor(selectedCalendarType.calendarColor)
+                                        .rotationEffect(.degrees(isCalendarTypeDropdownOpen ? 180 : 0))
                                 }
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.clear)
+                                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(screen.settingsSheetCornerRadius)
                             }
+                            .buttonStyle(.plain)
+
                             Spacer()
                             Color.white.frame(width: 1)
                         }
+                        .frame(width: screen.customWidth, height: screen.timetableGridHeight)
+                        .background(Color.black.opacity(0.5))
                         .onAppear {
                             print("🔍 TimetableContentView: selectedCalendarType=\(selectedCalendarType.displayName), calendarTag=\(selectedCalendarType.calendarTag)")
                         }
-                        .background(Color.black.opacity(0.5))
-                        .frame(width: screen.customWidth, height: screen.timetableGridHeight)
     
                         Color.white.frame(width: screen.customWidth, height: 1)
                         
@@ -105,6 +108,11 @@ struct TimetableContentView: View {
                         }
                         .frame(minHeight: 0.0, maxHeight: screen.timetableMaxHeight)
                     }
+                }
+                
+                // Dropdown options overlay
+                if isCalendarTypeDropdownOpen {
+                    calendarTypeDropdownView
                 }
             }
             .navigationBarColor(
@@ -186,16 +194,6 @@ struct TimetableContentView: View {
                    let calendarType = ODPTCalendarType(rawValue: calendarTypeRawValue) {
                     selectedCalendarType = calendarType
                     print("🔄 Calendar type changed from SettingsTimetableSheet: \(selectedCalendarType.displayName)")
-                }
-            }
-            .sheet(isPresented: $showWeekdaySheet) {
-                WeekdaySelectionSheet(
-                    selectedCalendarType: $selectedCalendarType,
-                    availableCalendarTypes: availableCalendarTypes
-                )
-                .onAppear {
-                    print("📱 WeekdaySelectionSheet opened with availableCalendarTypes: \(availableCalendarTypes.map { $0.debugDisplayName })")
-                    print("📱 WeekdaySelectionSheet availableCalendarTypes raw values: \(availableCalendarTypes.map { $0.rawValue })")
                 }
             }
         }
@@ -285,6 +283,50 @@ struct TimetableContentView: View {
         }
         print("📱 No timetable data found for \(calendarType.debugDisplayName) with num=\(num)")
         return false
+    }
+    
+    // MARK: - Calendar Type Dropdown View
+    private var calendarTypeDropdownView: some View {
+        VStack(spacing: 0) {
+            ForEach(availableCalendarTypes, id: \.self) { calendarType in
+                Button(action: {
+                    selectedCalendarType = calendarType
+                    isCalendarTypeDropdownOpen = false
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CalendarTypeChanged"),
+                        object: nil,
+                        userInfo: ["calendarType": calendarType.rawValue]
+                    )
+                }) {
+                    HStack {
+                        Text(calendarType.displayName)
+                            .font(.system(size: screen.settingsSheetInputFontSize))
+                            .fontWeight(.semibold)
+                            .foregroundColor(calendarType.calendarSubColor)
+                            .lineLimit(1)
+                        Spacer()
+                    }
+                    .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                    .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                    .background(Color.clear)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                
+                if calendarType != availableCalendarTypes.last {
+                    Divider()
+                        .frame(height: 1)
+                        .background(.gray)
+                }
+            }
+        }
+        .frame(width: screen.timetableTypeMenuWidth)
+        .background(CustomBackground(backgroundColor: Color.white))
+        .overlay(CustomBorder(borderColor: .gray))
+        .offset(
+            x: screen.timetableTypeMenuOffsetX,
+            y: screen.timetableContentViewMenuOffsetY,
+        )
     }
     
     // MARK: - Valid Hour Range Calculation

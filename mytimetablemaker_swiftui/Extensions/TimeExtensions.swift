@@ -326,12 +326,26 @@ extension String {
     var timeString: String { (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
     
     // MARK: - Minutes Only Display
-    // Extract minutes only from time strings (e.g., "07:24" -> "24")
+    // Extract minutes only from time strings and format with leading zero
+    // Handles both "HH:MM" format and minutes-only string format
     var minutesOnly: String {
-        let components = self.components(separatedBy: ":")
-        if components.count == 2, let minutes = components.last {
-            return minutes
+        // Check if string contains ":" (HH:MM format)
+        if self.contains(":") {
+            let components = self.components(separatedBy: ":")
+            if components.count == 2, let minutes = components.last {
+                // Add leading zero if minutes < 10
+                if let minutesInt = Int(minutes), minutesInt < 10 {
+                    return String(format: "%02d", minutesInt)
+                }
+                return minutes
+            }
         }
+        
+        // Handle minutes-only format (e.g., "5", "05", "24")
+        if let minutesInt = Int(self) {
+            return String(format: "%02d", minutesInt)
+        }
+        
         return self
     }
     

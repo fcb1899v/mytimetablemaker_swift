@@ -14,12 +14,14 @@ struct SettingsTimetableSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var departureTime: Int? = nil
     @State private var rideTime: Int = 0
-    @State private var isShowingCopySheet = false
     @State private var selectedTrainType: String?
     @State private var isTrainTypeDropdownOpen = false
+    @State private var isCalendarTypeDropdownOpen = false
+    @State private var isCopyTimeDropdownOpen = false
     @State private var transportationTimes: [any TransportationTime] = []
     @State private var hour: Int
     @State private var selectedCalendarType: ODPTCalendarType
+    @State private var availableOdptCalendar: [ODPTCalendarType] = [.weekday, .saturdayHoliday]
     
     private let goorback: String
     private let num: Int
@@ -49,37 +51,33 @@ struct SettingsTimetableSheet: View {
             ZStack {
                 Color.white
                 VStack(spacing: screen.settingsSheetVerticalSpacing) {
-                    weekdayToggleSection
+                    calendarDropDownSection
                     hourControlSection
                     timetableDisplaySection
                     HStack {
                         departureTimeSelectSection
                         Spacer()
                         rideTimeSelectSection
-                    }
+                    }.padding(.top, screen.settingsSheetVerticalSpacing)
+                    
                     if goorback.lineKind(num) == .railway {
                         trainTypeSelectSection
                     }
                     addDeleteButtonSection
-
-                    CustomButton(
-                        title: "Copying your timetable".localized,
-                        icon: "doc.on.doc.fill",
-                        backgroundColor: Color.accent,
-                        action: {
-                            isTrainTypeDropdownOpen = false
-                            isShowingCopySheet = true
-                        }
-                    )
-                    .padding(.top, screen.settingsSheetVerticalSpacing)
-
+                    copyTimeButtonSection
                     Spacer()
                 }
                 .frame(width: screen.timetableDisplayWidth)
                 
                 // Dropdown options overlay
+                if isCalendarTypeDropdownOpen {
+                    calendarTypeDropdownView
+                }
                 if isTrainTypeDropdownOpen {
                     trainTypeDropdownView
+                }
+                if isCopyTimeDropdownOpen {
+                    copyTimeDropdownView
                 }
             }
             .navigationBarColor(
@@ -107,55 +105,87 @@ struct SettingsTimetableSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
-        .sheet(isPresented: $isShowingCopySheet) {
-            CopyTimeSheet(
-                goorback: goorback,
-                selectedCalendarType: selectedCalendarType,
-                num: num,
-                hour: hour,
-                onTimeCopied: {
-                    // Update trainTimes when time is copied
-                    transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
-                    
-                    // Notify TimetableGridView to update
-                    NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
-                }
-            )
-        }
+        .presentationDetents([.height(screen.settingsTimetableSheetHeight)])
+        .presentationDragIndicator(.hidden)
     }
 
     
     
     // MARK: - View Components
-    /// Weekday/Holiday toggle section
+    /// Calendar type dropdown section
     @ViewBuilder
-    private var weekdayToggleSection: some View {
+    private var calendarDropDownSection: some View {
         HStack {
+            Spacer()            
+            Button(action: {
+                isCalendarTypeDropdownOpen.toggle()
+            }) {
+                HStack {
+                    Text(selectedCalendarType.displayName)
+                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
+                        .foregroundColor(selectedCalendarType.calendarSubColor)
+                    
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
+                        .foregroundColor(selectedCalendarType.calendarSubColor)
+                        .rotationEffect(.degrees(isCalendarTypeDropdownOpen ? 180 : 0))
+                }
+                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(screen.settingsSheetCornerRadius)
+            }
+            .buttonStyle(.plain)
+            
             Spacer()
-            CustomToggle(
-                isLeftSelected: Binding(
-                    get: { selectedCalendarType.calendarTag == "weekday" },
-                    set: { _ in }
-                ),
-                leftText: "Weekday".localized,
-                leftColor: .primary,
-                rightText: "Sat/Sun/PH".localized,
-                rightColor: .red,
-                circleColor: .white,
-                offColor: .secondary,
-            )
-            .onChange(of: selectedCalendarType) { _ in
-                transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
-                // Notify TimetableContentView about calendar type change
-                NotificationCenter.default.post(
-                    name: NSNotification.Name("CalendarTypeChanged"), 
-                    object: nil, 
-                    userInfo: ["calendarType": selectedCalendarType.rawValue]
-                )
-                isTrainTypeDropdownOpen = false
+        }
+        .onAppear {
+            loadAvailableCalendarTypes()
+        }
+    }
+    
+    private var calendarTypeDropdownView: some View {
+        VStack(spacing: 0) {
+            ForEach(availableOdptCalendar, id: \.self) { calendarType in
+                Button(action: {
+                    selectedCalendarType = calendarType
+                    transportationTimes = goorback.loadTransportationTimes(calendarType, num, hour)
+                    NotificationCenter.default.post(
+                        name: NSNotification.Name("CalendarTypeChanged"),
+                        object: nil,
+                        userInfo: ["calendarType": calendarType.rawValue]
+                    )
+                    isCalendarTypeDropdownOpen = false
+                }) {
+                    HStack {
+                        Text(calendarType.displayName)
+                            .font(.system(size: screen.settingsSheetInputFontSize))
+                            .fontWeight(.semibold)
+                            .foregroundColor(calendarType.calendarSubColor)
+                            .lineLimit(1)
+                        Spacer()
+                    }
+                    .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                    .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                    .background(Color.clear)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                
+                if calendarType != availableOdptCalendar.last {
+                    Divider()
+                        .frame(height: 1)
+                        .background(.gray)
+                }
             }
         }
+        .frame(width: screen.timetableTypeMenuWidth)
+        .background(CustomBackground(backgroundColor: Color.white))
+        .overlay(CustomBorder(borderColor: .gray))
+        .offset(
+            x: screen.timetableTypeMenuOffsetX,
+            y: screen.timetableCalendarMenuOffsetY,
+        )
     }
     
     /// Hour control section with decrease/increase buttons
@@ -196,20 +226,29 @@ struct SettingsTimetableSheet: View {
         }
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
-    
+        
     // MARK: - Current Timetable Display
     @ViewBuilder
     private var timetableDisplaySection: some View {
         if transportationTimes.count > 0 {
-            LazyVGrid(columns: Array(repeating: GridItem(.fixed(screen.timetableNumberWidth), spacing: 0), count: screen.timetableNumberWidth > 0 ? max(1, Int(screen.timetableDisplayWidth / screen.timetableNumberWidth) - 1): 1), spacing: 0) {
+            let availableWidth = screen.timetableDisplayWidth - (screen.timetableMinuteSpacing * 2)
+            let itemsPerRow = 10
+            let itemWidth = availableWidth / CGFloat(itemsPerRow)
+            let columns = Array(repeating: GridItem(.fixed(itemWidth), spacing: 0), count: itemsPerRow)
+            
+            LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(transportationTimes.indices, id: \.self) { index in
-                    let transportationTime = transportationTimes[index]
-                    Text(transportationTime.departureTime.minutesOnly)
-                        .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
-                        .foregroundColor((transportationTime as? TrainTime)?.trainType != nil ? Color.colorForTrainType((transportationTime as? TrainTime)?.trainType) : .white)
-                    Text("(\(String(transportationTime.rideTime)))")
-                        .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
-                        .foregroundColor(Color.colorForTrainType((transportationTime as? TrainTime)?.trainType))
+                    HStack(spacing: 0) {
+                        Text(transportationTimes[index].departureTime.minutesOnly)
+                            .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
+                            .foregroundColor(Color.colorForTrainType((transportationTimes[index] as? TrainTime)?.trainType))
+                        
+                        Text("(\(String(transportationTimes[index].rideTime)))")
+                            .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
+                            .foregroundColor(Color.white)
+                    }
+                    .frame(width: itemWidth, height: screen.timetableNumberHeight)
+                    .minimumScaleFactor(0.8)
                 }
             }
             .frame(width: screen.timetableDisplayWidth, height: screen.timetableDisplayHeight)
@@ -432,11 +471,11 @@ struct SettingsTimetableSheet: View {
                     selectedTrainType != nil && isTimeExistsForDeletion() ? Color.primary: 
                     Color.gray
                 ),
-                isEnabled: !(
-                    rideTime == 0 || 
-                    departureTime == nil || 
-                    (goorback.lineKind(num) == .railway && selectedTrainType == nil)
-                ),
+                isEnabled: 
+                    rideTime != 0 &&
+                    departureTime != nil &&
+                    (goorback.lineKind(num) == .railway && selectedTrainType != nil || goorback.lineKind(num) == .bus) &&
+                    !isTimeExistsForDeletion(),
                 action: {
                     addTime()
                 }
@@ -457,6 +496,83 @@ struct SettingsTimetableSheet: View {
             .frame(width: screen.timetableEditButtonWidth)
         }
         .padding(.top, screen.settingsSheetVerticalSpacing)
+    }
+    
+    /// Copy time button section
+    @ViewBuilder
+    private var copyTimeButtonSection: some View {
+        Button(action: {
+            isTrainTypeDropdownOpen = false
+            isCalendarTypeDropdownOpen = false
+            isCopyTimeDropdownOpen.toggle()
+        }) {
+            HStack(spacing: screen.settingsSheetIconSpacing) {
+                Image(systemName: "doc.on.doc.fill")
+                    .font(.system(size: screen.settingsSheetButtonFontSize, weight: .medium))
+                    .foregroundColor(.white)
+                Text("Copying your timetable".localized)
+                    .font(.system(size: screen.settingsSheetButtonFontSize, weight: .bold))
+                    .foregroundColor(.white)
+                Image(systemName: "chevron.down")
+                    .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
+                    .foregroundColor(.white)
+                    .rotationEffect(.degrees(isCopyTimeDropdownOpen ? 180 : 0))
+            }
+            .foregroundColor(.white)
+            .frame(height: screen.settingsSheetButtonHeight)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: screen.settingsSheetButtonCornerRadius)
+                    .fill(Color.accent)
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.top, screen.settingsSheetVerticalSpacing)
+    }
+
+    // MARK: - Copy Time Sheet
+    // Sheet for copying timetable times from other hours
+    private var copyTimeDropdownView: some View {
+        let startIndex = (hour == 4) ? 1 : 0
+        let items = hour.choiceCopyTimeList
+        
+        return VStack(spacing: 0) {
+            ForEach(Array(startIndex..<items.count), id: \.self) { index in
+                if !(hour == 25 && index == 1) {
+                    Button(action: {
+                        copyTime(from: index)
+                        isCopyTimeDropdownOpen = false
+                    }) {
+                        HStack {
+                            Text(items[index])
+                                .font(.system(size: screen.settingsSheetInputFontSize))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                            Spacer()
+                        }
+                        .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                        .background(Color.clear)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    
+                    if index != items.count - 1 {
+                        Divider()
+                            .frame(height: 1)
+                            .background(.white)
+                    }
+                }
+            }
+        }
+        .frame(width: screen.timetableTypeMenuWidth)
+        .background(CustomBackground(backgroundColor: Color.accent))
+        .overlay(CustomBorder(borderColor: .white))
+        .offset(
+            x: screen.timetableTypeMenuOffsetX,
+            y: screen.timetableCopyMenuOffsetY,
+        )
     }
     
     private func addTime() {
@@ -784,58 +900,25 @@ struct SettingsTimetableSheet: View {
         UserDefaults.standard.set(sortedTypes.joined(separator: " "), forKey: timetableTrainTypeKey)
         UserDefaults.standard.set(sortedRideTimes.joined(separator: " "), forKey: timetableRideTimeKey)
     }
-}
-
-// MARK: - Copy Time Sheet
-// Sheet for copying timetable times from other hours
-struct CopyTimeSheet: View {
     
-    @Environment(\.dismiss) private var dismiss
-    
-    private let goorback: String
-    private let selectedCalendarType: ODPTCalendarType
-    private let num: Int
-    private let hour: Int
-    private let onTimeCopied: () -> Void
-    
-    init(
-        goorback: String,
-        selectedCalendarType: ODPTCalendarType,
-        num: Int,
-        hour: Int,
-        onTimeCopied: @escaping () -> Void
-    ) {
-        self.goorback = goorback
-        self.selectedCalendarType = selectedCalendarType
-        self.num = num
-        self.hour = hour
-        self.onTimeCopied = onTimeCopied
-    }
-    
-    var body: some View {
-        NavigationView {
-            List {
-                ForEach(((hour == 4) ? 1: 0)..<hour.choiceCopyTimeList.count, id: \.self) { i in
-                    if !(hour == 25 && i == 1) {
-                        Button(action: {
-                            copyTime(from: i)
-                        }) {
-                            Text(hour.choiceCopyTimeList[i])
-                                .foregroundColor(.primary)
-                        }
-                    }
-                }
+    // MARK: - Helper Methods
+    /// Load available calendar types from cache or use default
+    private func loadAvailableCalendarTypes() {
+        // Try to get cached calendar types for the current route
+        let routeCacheKey = "\(goorback)_calendarTypes"
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
+           !cachedTypes.isEmpty {
+            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+            if !cachedCalendarTypes.isEmpty {
+                print("📅 Using cached calendar types for \(goorback): \(cachedCalendarTypes.map { $0.debugDisplayName })")
+                availableOdptCalendar = cachedCalendarTypes
+                return
             }
-            .navigationTitle("Copy Timetable".localized)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    CustomBackButton(foregroundColor: .black, action: { dismiss() })
-                }
-            }
-            .toolbarBackground(.white, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
         }
+        
+        // Fallback to default calendar types if no cache found
+        availableOdptCalendar = [.weekday, .saturdayHoliday]
+        print("📅 Using default calendar types: \(availableOdptCalendar.map { $0.debugDisplayName })")
     }
     
     private func copyTime(from index: Int) {
@@ -843,7 +926,11 @@ struct CopyTimeSheet: View {
             goorback.choiceCopyTime(selectedCalendarType, num, hour, index),
             forKey: goorback.timetableKey(selectedCalendarType, num, hour)
         )
-        onTimeCopied()
+        // Update trainTimes when time is copied
+        transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
+        
+        // Notify TimetableGridView to update
+        NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         dismiss()
     }
 }

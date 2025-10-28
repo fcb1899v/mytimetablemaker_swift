@@ -78,8 +78,31 @@ struct ODPTParser {
     // Parse bus route pattern data from JSON and convert to TransportationLine objects.
     static func parseBusRoutes(_ data: Data) throws -> [TransportationLine] {
         
+        // Parse JSON and filter bus route patterns
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        guard let array = json as? [[String: Any]] else {
+            throw ODPTError.invalidData
+        }
+        
+        // Filter out railway data - only process odpt:BusroutePattern
+        let busOnlyData = array.filter { item in
+            if let itemType = item["@type"] as? String {
+                return itemType == "odpt:BusroutePattern"
+            }
+            return false
+        }
+        
+        // If no bus data found, skip it
+        if busOnlyData.isEmpty {
+            return []
+        }
+        
+        // Convert filtered data back to Data for decoding
+        let filteredJson = busOnlyData
+        let filteredJsonData = try JSONSerialization.data(withJSONObject: filteredJson)
+        
         let dec = JSONDecoder()
-        let dtos = try dec.decode([BusRoutePatternDTO].self, from: data)
+        let dtos = try dec.decode([BusRoutePatternDTO].self, from: filteredJsonData)
         
         // MARK: - DTO to Model Mapping using closures
         let transportationLines = dtos.map { dto in
@@ -145,7 +168,7 @@ struct ODPTParser {
     
     // MARK: - Local File Railway Parsing
     // Parse railway data from local JSON files with odpt:color field support
-    static func parseLocalRailways(_ data: Data) throws -> [TransportationLine] {
+    static func parseRailwayRoutes(_ data: Data) throws -> [TransportationLine] {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
             
@@ -301,7 +324,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     // MARK: - Individual Operator Data Fetching
     // Fetch data for individual transportation operators using their specific API endpoints
     func fetchIndividualOperatorData(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Data {
-        let urlString = transportOperator.apiLink(for: .line)
+        let urlString = transportOperator.apiLink(for: .line, transportationKind: transportOperator.transportationType)
         guard let url = URL(string: urlString) else {
             throw ODPTError.invalidData
         }
@@ -362,7 +385,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         // MARK: - Conditional GET Request Check
         // Use conditional GET request with ETag and Last-Modified headers
         do {
-            let urlString = transportOperator.apiLink(for: .line)
+            let urlString = transportOperator.apiLink(for: .line, transportationKind: transportOperator.transportationType)
             guard let url = URL(string: urlString) else {
                 throw ODPTError.invalidData
             }

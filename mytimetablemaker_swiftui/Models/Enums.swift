@@ -316,8 +316,7 @@ enum LocalDataSource: CaseIterable {
             "odpt.TrainType:TamaMonorail.Local"
         ]
         // Bus operators don't have train types
-        case .toeiBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus,
-            .kanachuBus, .kokusaiKogyo, .odakyuBus, .keioBus, .nishitokyoBus:
+        default:
             return []
         }
     }
@@ -520,9 +519,15 @@ enum ODPTCalendarType: String, CaseIterable {
         }
     }
     
-    // MARK: - Static Constants
-    // All available calendar types for fallback operations
-    static let allCalendarTypes: [ODPTCalendarType] = Array(ODPTCalendarType.allCases)
+    var calendarSubColor: Color {
+        switch self {
+        case .holiday, .sunday, .saturday, .saturdayHoliday:
+            return Color.red
+        case .monday, .tuesday, .wednesday, .thursday, .friday, .weekday, .allday:
+            return Color.black
+        }
+    }
+
 
 }
 

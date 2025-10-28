@@ -132,12 +132,16 @@ extension UIScreen {
     var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
     var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
     var timetablePickerSpacing:   CGFloat { screenHeight * 0.02 }
-    var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.04 }
-    var timetablePickerTopPadding    : CGFloat { screenHeight * -0.036 }
-    var timetablePickerBottomPadding : CGFloat { screenHeight * -0.012 }
-    var timetableScrollViewMaxHeight : CGFloat { screenHeight * 0.6 }
-
-        // Calculate content height for timetable grid based on train times count
+    var timetableTypeMenuOffsetY: CGFloat { screenHeight * 0.12 }
+    var timetableCopyMenuOffsetY: CGFloat { screenHeight * 0.005 }
+    var timetableCalendarMenuOffsetY: CGFloat { screenHeight * -0.200 }
+    var timetableContentViewMenuOffsetY: CGFloat { screenHeight * 0.13 }
+    var timetablePickerTopPadding:    CGFloat { screenHeight * -0.036 }
+    var timetablePickerBottomPadding: CGFloat { screenHeight * -0.012 }
+    var timetableScrollViewMaxHeight: CGFloat { screenHeight * 0.6 }
+    var settingsTimetableSheetHeight: CGFloat { screenHeight * 0.6 }
+    
+    // Calculate content height for timetable grid based on train times count
     func calculateContentHeight(_ trainTimesCount: Int) -> CGFloat {
         let maxItemsPerRow = 10
         return trainTimesCount > maxItemsPerRow ?
@@ -214,9 +218,10 @@ extension UIScreen {
 
 // MARK: - Settings Transfer Sheet Extensions
 extension UIScreen {
-    var settingsTransferSheetPickerSpacing: CGFloat { screenHeight * 0.009 }
-    var settingsTransferSheetRoute2Spacing: CGFloat { screenHeight * -0.02 }
+    var settingsTransferSheetVerticalSpacing: CGFloat { screenHeight * 0.02 }
     var settingsTransferSheetCheckmarkSpacing: CGFloat { screenHeight * 0.009 }
+    var settingsTransferSheetPickerWidth: CGFloat { screenWidth * 0.28 }
+    var settingsTransferSheetPaddingLeft: CGFloat { screenWidth * 0.03 }
 }
 
 // MARK: - Settings Extensions

@@ -99,42 +99,28 @@ struct TimetableGridView: View {
     // Train times display grid with proper wrapping
     @ViewBuilder
     private func timetableGridContent() -> some View {
-        let maxItemsPerRow = 10 // Maximum 3 time entries per row
-        let totalRows = (transportationTimes.count + maxItemsPerRow - 1) / maxItemsPerRow
+        let availableWidth = screen.timetableMinuteFrameWidth - (screen.timetableMinuteSpacing * 2)
+        let itemsPerRow = 10
+        let itemWidth = availableWidth / CGFloat(itemsPerRow)
+        let columns = Array(repeating: GridItem(.fixed(itemWidth), spacing: 0), count: itemsPerRow)
         
-        VStack(alignment: .leading, spacing: 0) {
-            ForEach(0..<totalRows, id: \.self) { rowIndex in
-                timetableRowContent(startIndex: rowIndex * maxItemsPerRow, maxItems: maxItemsPerRow)
-            }
-        }
-        .frame(width: screen.timetableMinuteFrameWidth, alignment: .leading)
-    }
-    
-    // MARK: - Row Content
-    // Individual row content with proper spacing
-    @ViewBuilder
-    private func timetableRowContent(startIndex: Int, maxItems: Int) -> some View {
-        HStack(spacing: 0) {
-            Spacer()
-                .frame(width: screen.timetableMinuteSpacing)
-            ForEach(startIndex..<min(startIndex + maxItems, transportationTimes.count), id: \.self) { index in
+        LazyVGrid(columns: columns, spacing: 0) {
+            ForEach(transportationTimes.indices, id: \.self) { index in
                 HStack(spacing: 0) {
                     Text(transportationTimes[index].departureTime.minutesOnly)
                         .font(.system(size: screen.timetableMinuteFontSize, weight: .semibold))
                         .foregroundColor(Color.colorForTrainType((transportationTimes[index] as? TrainTime)?.trainType))
-                        .lineLimit(1)
                     
                     Text("(\(String(transportationTimes[index].rideTime)))")
                         .font(.system(size: screen.timetableRideTimeFontSize, weight: .semibold))
                         .foregroundColor(Color.white)
-                        .lineLimit(1)
-                    Spacer()
-                        .frame(width: screen.timetableMinuteSpacing)
                 }
+                .frame(width: itemWidth, height: screen.timetableNumberHeight)
+                .minimumScaleFactor(0.8)
             }
-            Spacer(minLength: 0)
         }
-        .frame(width: screen.timetableMinuteFrameWidth, height: screen.timetableNumberHeight)
+        .frame(width: screen.timetableMinuteFrameWidth, alignment: .leading)
+        .padding(.horizontal, screen.timetableMinuteSpacing)
     }
 }
 

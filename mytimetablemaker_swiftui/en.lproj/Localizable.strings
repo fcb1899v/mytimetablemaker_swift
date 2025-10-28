@@ -26,6 +26,8 @@
 "Dep. St. " = "Dep. St.";
 "Arr. St. " = "Arr. St.";
 "Departure place" = "Departure place";
+"From" = "From";
+"To" = "To";
 "Destination" = "Destination";
 "Line " = "Line ";
 "line " = "line ";
@@ -83,11 +85,13 @@
 "Home & Destination" = "Home & Destination";
 "Destination" = "Destination";
 "Your home" = "Your home";
+"Enter departure point" = "Enter departure point";
 "Enter destination" = "Enter destination";
 "Enter your home" = "Enter your home";
 "Transportation" = "Transportation";
 "Travel Time" = "Travel Time";
 "Setting your home" = "Setting your home";
+"Setting departure point" = "Setting departure point";
 "Setting destination" = "Setting destination";
 "Route 1" = "Route 1";
 "Route 2" = "Route 2";

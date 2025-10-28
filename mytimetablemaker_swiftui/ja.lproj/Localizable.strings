@@ -26,7 +26,8 @@
 "Dep. St. " = "乗車駅";
 "Arr. St. " = "降車駅";
 "Departure place" = "出発地";
-"Destination" = "目的地";
+"From" = "出発地";
+"To" = "目的地";
 "Line " = "路線";
 "line " = "路線";
 "of departure station " = "乗車駅";
@@ -80,14 +81,16 @@
 //SettingsTransferSheet
 "Home & Destination Settings" = "自宅・行き先設定";
 "Home & Destination" = "自宅・行き先設定";
-"Destination" = "行き先";
-"Your home" = "自宅";
-"Enter destination" = "行き先を入力";
-"Enter your home" = "自宅を入力";
+"Destination" = "目的地";
+"Your home" = "出発地";
+"Enter departure point" = "出発地を入力";
+"Enter destination" = "目的地を入力";
+"Enter your home" = "出発地を入力";
 "Transportation" = "移動方法";
 "Travel Time" = "移動時間";
-"Setting your home" = "自宅の設定";
-"Setting destination" = "行き先の設定";
+"Setting your home" = "出発地の設定";
+"Setting departure point" = "出発地の設定";
+"Setting destination" = "目的地の設定";
 "Route 1" = "ルート1";
 "Route 2" = "ルート2";
 

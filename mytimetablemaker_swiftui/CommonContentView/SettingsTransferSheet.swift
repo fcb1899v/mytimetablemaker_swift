@@ -30,72 +30,68 @@ struct SettingsTransferSheet: View {
     // Main view layout with header and scrollable content sections.
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
+            VStack(alignment: .leading, spacing: screen.settingsTransferSheetVerticalSpacing) {
                     
-                    route2ToggleSection
+                route2ToggleSection
                     
-                    // Header section
-                    headerSection(title: "Setting your home".localized)
-                                        
-                    // Home place input
-                    placeInputSection(
-                        title: "Your home".localized,
-                        placeholder: "Enter your home".localized,
-                        text: $vm.homeInput
-                    )
-                    
-                    // Home transportation settings
-                    // Route 1 row (or Route when Route 2 is hidden)
+                // Header section
+                headerSection(title: "Setting departure point".localized)
+                                    
+                // Departure place input
+                placeInputSection(
+                    title: "From".localized,
+                    placeholder: "Enter departure point".localized,
+                    text: $vm.homeInput
+                )
+                
+                // Departure transportation settings
+                // Route 1 row (or Route when Route 2 is hidden)
+                routeRow(
+                    routeTitle: vm.showRoute2 ? "Route 1".localized : "Route".localized,
+                    transportation: $vm.selectedHomeTransportation1,
+                    transferTime: $vm.selectedHomeTransferTime1
+                )
+                
+                // Route 2 row (only shown when showRoute2 is true)
+                if vm.showRoute2 {
                     routeRow(
-                        routeTitle: vm.showRoute2 ? "Route 1".localized : "Route".localized,
-                        transportation: $vm.selectedHomeTransportation1,
-                        transferTime: $vm.selectedHomeTransferTime1
+                        routeTitle: "Route 2".localized,
+                        transportation: $vm.selectedHomeTransportation2,
+                        transferTime: $vm.selectedHomeTransferTime2
                     )
-                    
-                    // Route 2 row (only shown when showRoute2 is true)
-                    if vm.showRoute2 {
-                        routeRow(
-                            routeTitle: "Route 2".localized,
-                            transportation: $vm.selectedHomeTransportation2,
-                            transferTime: $vm.selectedHomeTransferTime2
-                        )
-                        .padding(.top, screen.settingsTransferSheetRoute2Spacing)
-                    }
-                    
-                    // Destination section header
-                    headerSection(title: "Setting destination".localized)
-                    
-                    // Destination place input
-                    placeInputSection(
-                        title: "Destination".localized,
-                        placeholder: "Enter destination".localized,
-                        text: $vm.officeInput
-                    )
-                    
-                    // Destination transportation settings
-                    // Route 1 row (or Route when Route 2 is hidden)
-                    routeRow(
-                        routeTitle: vm.showRoute2 ? "Route 1".localized : "Route".localized,
-                        transportation: $vm.selectedOfficeTransportation1,
-                        transferTime: $vm.selectedOfficeTransferTime1
-                    )
-                    
-                    // Route 2 row (only shown when showRoute2 is true)
-                    if vm.showRoute2 {
-                        routeRow(
-                            routeTitle: "Route 2".localized,
-                            transportation: $vm.selectedOfficeTransportation2,
-                            transferTime: $vm.selectedOfficeTransferTime2
-                        )
-                        .padding(.top, screen.settingsTransferSheetRoute2Spacing)
-                    }
-                    
-                    // Save button
-                    saveButtonSection()
-                    
-                    Spacer()
                 }
+                
+                // Destination section header
+                headerSection(title: "Setting destination".localized)
+                
+                // Destination place input
+                placeInputSection(
+                    title: "To".localized,
+                    placeholder: "Enter destination".localized,
+                    text: $vm.officeInput
+                )
+                
+                // Destination transportation settings
+                // Route 1 row (or Route when Route 2 is hidden)
+                routeRow(
+                    routeTitle: vm.showRoute2 ? "Route 1".localized : "Route".localized,
+                    transportation: $vm.selectedOfficeTransportation1,
+                    transferTime: $vm.selectedOfficeTransferTime1
+                )
+                
+                // Route 2 row (only shown when showRoute2 is true)
+                if vm.showRoute2 {
+                    routeRow(
+                        routeTitle: "Route 2".localized,
+                        transportation: $vm.selectedOfficeTransportation2,
+                        transferTime: $vm.selectedOfficeTransferTime2
+                    )
+                }
+                
+                // Save button
+                saveButtonSection()
+                
+                Spacer()
             }
             .padding(.horizontal, screen.settingsSheetHorizontalPadding)
         }
@@ -182,21 +178,16 @@ struct SettingsTransferSheet: View {
     ) -> some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
             
-            VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
-                
-                Text(routeTitle)
-                    .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
-                    .foregroundColor(.primary)
+            Text(routeTitle)
+                .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
+                .foregroundColor(.primary)
 
-                transportationMethodSelector(selectedTransportation: transportation)
-                
-                Spacer()
-            }
+            transportationMethodSelector(selectedTransportation: transportation)
             
             timeSelector(selectedTime: transferTime)
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor((transportation.wrappedValue.isEmpty || transferTime.wrappedValue == 0) ? .gray : .accent)
+                .foregroundColor(transferTime.wrappedValue > 0 ? .accent : .gray)
                 .padding(.top, screen.settingsTransferSheetCheckmarkSpacing)
         }
     }
@@ -229,15 +220,15 @@ struct SettingsTransferSheet: View {
                     }
                 }
             } label: {
-                HStack {
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: screen.settingsSheetInputFontSize))
-                        .foregroundColor(.black)
-                }
+                Image(systemName: "chevron.down")
+                    .font(.system(size: screen.settingsSheetInputFontSize))
+                    .foregroundColor(.black)
             }
         }
-        .frame(height: screen.settingsSheetPickerDisplayHeight)
+        .frame(
+            width: screen.settingsTransferSheetPickerWidth,
+            height: screen.settingsSheetPickerDisplayHeight
+        )
         .padding(.vertical, screen.settingsSheetInputPaddingVertical)
         .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
         .background(CustomBackground())
@@ -257,7 +248,7 @@ struct SettingsTransferSheet: View {
             }
             .frame(height: screen.settingsSheetPickerDisplayHeight)
             .padding(.vertical, screen.settingsSheetInputPaddingVertical)
-            .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+            .padding(.leading, screen.settingsTransferSheetPaddingLeft)
             .background(CustomBackground())
             .overlay(CustomBorder())
             
@@ -268,7 +259,6 @@ struct SettingsTransferSheet: View {
                     .frame(height: screen.settingsSheetPickerDisplayHeight)
             }
         }
-        .padding(.top, screen.settingsTransferSheetPickerSpacing)
     }
     
     /// Save button section
@@ -299,14 +289,14 @@ class SettingsTransferSheetViewModel: ObservableObject {
     // MARK: - Published Properties
     // Observable properties that trigger UI updates when changed
     
-    @Published var homeInput: String                      // home input text
+    @Published var homeInput: String                      // departure point input text
     @Published var officeInput: String                    // office input text
-    @Published var selectedHomeTransportation1: String    // Selected transportation 1 from home
-    @Published var selectedHomeTransportation2: String    // Selected transportation 2 from home
+    @Published var selectedHomeTransportation1: String    // Selected transportation 1 from departure
+    @Published var selectedHomeTransportation2: String    // Selected transportation 2 from departure
     @Published var selectedOfficeTransportation1: String  // Selected transportation 1 from office
     @Published var selectedOfficeTransportation2: String  // Selected transportation 2 from office
-    @Published var selectedHomeTransferTime1: Int         // Selected transfer time 1 from home
-    @Published var selectedHomeTransferTime2: Int         // Selected transfer time 2 from home
+    @Published var selectedHomeTransferTime1: Int         // Selected transfer time 1 from departure
+    @Published var selectedHomeTransferTime2: Int         // Selected transfer time 2 from departure
     @Published var selectedOfficeTransferTime1: Int       // Selected transfer time 1 from office
     @Published var selectedOfficeTransferTime2: Int       // Selected transfer time 2 from office
     @Published var showRoute2: Bool                        // Flag to show/hide Route 2
@@ -376,18 +366,25 @@ class SettingsTransferSheetViewModel: ObservableObject {
             UserDefaults.standard.bool(forKey: "go2".isShowRoute2Key) : false
         
         // Use the same value for both routes (as per requirement)
-        showRoute2 = back2Route2Value && go2Route2Value
+        showRoute2 = back2Route2Value || go2Route2Value
     }
     
     // MARK: - Validation
     // Check if all required fields are filled for saving
     var isFormValid: Bool {
-        return !homeInput.isEmpty &&
-               !officeInput.isEmpty &&
-               !selectedHomeTransportation1.isEmpty &&
-               !selectedHomeTransportation2.isEmpty &&
-               !selectedOfficeTransportation1.isEmpty &&
-               !selectedOfficeTransportation2.isEmpty
+        // Validate departure point, destination, and transfer times
+        let basicValidation = !homeInput.isEmpty &&
+                             !officeInput.isEmpty &&
+                             selectedHomeTransferTime1 > 0 &&
+                             selectedOfficeTransferTime1 > 0
+        
+        // If Route 2 is shown, also validate Route 2 fields
+        if showRoute2 {
+            return basicValidation &&
+                   selectedHomeTransferTime2 > 0 &&
+                   selectedOfficeTransferTime2 > 0
+        }
+        return basicValidation
     }
     
     // MARK: - Data Saving
