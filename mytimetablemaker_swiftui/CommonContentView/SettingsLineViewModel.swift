@@ -79,22 +79,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var isGoorBackChanging: Bool = false           // Flag to indicate direction is being changed
     @Published var selectedGoorback: String = "back1"         // Currently selected route direction
     
-    let goorbackOptions: [String] = ["back1", "back2", "go1", "go2"]  // Available route options
-    
     // Computed properties for UI state checking
     var hasSelectedLine: Bool { selectedLine != nil }
-    var hasStops: Bool { 
-        return !lineStops.isEmpty
-    }
+    var hasStops: Bool { !lineStops.isEmpty }
     
     // Get localized display names for direction options
     var goorbackDisplayNames: [String: String] {
-        [
-            "back1": "Return Route 1".localized,
-            "back2": "Return Route 2".localized,
-            "go1": "Outbound Route 1".localized,
-            "go2": "Outbound Route 2".localized
-        ]
+        goorbackDisplayNamesRaw.mapValues { $0.localized }
     }
     
     // Private properties for internal data storage and state management
@@ -153,9 +144,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         print("   Current selectedLineNumber: \(selectedLineNumber)")
         
         // Early return if same value to avoid unnecessary processing
-        if selectedGoorback == newGoorback {
-            return
-        }
+        if selectedGoorback == newGoorback { return }
         
         // Set flag to indicate route is changing
         isGoorBackChanging = true
@@ -190,6 +179,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Reset all selections when direction changes
+    // Clear all user selections to start fresh
     private func resetSelections() {
         lineInput = ""
         selectedLine = nil
@@ -216,7 +206,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Data Management
     // Load data from shared manager for better performance
-    // Only load data for the currently selected transportation kind
+    // Only load data for the currently selected transportation kind to improve efficiency
     func loadFromSharedService() async {
         // Load only the selected kind's data to improve performance
         let sharedLines = await sharedDataManager.getLines(for: selectedTransportationKind)
@@ -236,6 +226,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Perform manual data update for both railway and bus operators
+    // Refreshes all transportation data from ODPT API
     func performDataUpdate() async {
         await sharedDataManager.performRailwayUpdate()
         await sharedDataManager.performBusUpdate()
@@ -334,25 +325,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             .mapValues { $0.count }
     }
     
-    // Get localized display name for transportation line
-    func lineDisplayName(for line: TransportationLine) -> String {
-        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
-        
-        if line.kind == .bus {
-            return currentLanguage == "ja" ? line.title! :
-            (line.busRouteEnglishName ?? line.railwayTitle?.en ?? line.name)
-        }
-        
-        guard let railwayTitle = line.railwayTitle else { return line.name }
-        return railwayTitle.getLocalizedName(fallbackTo: line.name)
-    }
-    
-    // Get localized display name based on operator code
-    func getOperatorDisplayName(for operatorCode: String, lineKind: TransportationLine.Kind? = nil) -> String {
-        let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
-        return NSLocalizedString(operatorName, comment: "Railway operator name")
-    }
-    
     // MARK: - Station Search and Filtering
     // Filter candidate departure stops based on search lineInput
     func filterDepartureStops(_ lineInput: String) {
@@ -381,83 +353,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             // Filter by name
             return stop.displayName.localizedCaseInsensitiveContains(lineInput)
         }
-    }
-    
-    // Extract bus stops from bus route data
-    func extractStopsFromBusRoute(_ busRoute: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
-        guard let busStopData = busRoute["odpt:busstopPoleOrder"] as? [[String: Any]] else { return nil }
-        
-        let busStops: [TransportationStop] = busStopData.compactMap { busStopInfo -> TransportationStop? in
-            let note = busStopInfo["odpt:note"] as? String ?? ""
-            let busstopPole = busStopInfo["odpt:busstopPole"] as? String ?? ""
-            
-            guard !note.isEmpty || !busstopPole.isEmpty else { return nil }
-            
-            // Check if note contains Japanese characters
-            let hasJapaneseInNote = note.contains(where: { $0.isJapanese })
-            
-            // If note doesn't contain Japanese or is empty, and we have busstopPole, fetch from API
-            if (!hasJapaneseInNote || note.isEmpty) && !busstopPole.isEmpty {
-                // Japanese name will be fetched later in selectLine
-                // For now, use busstopPole as fallback
-                let finalNote = note.isEmpty ? busstopPole : note
-                let title = String.generateBusStopTitle(note: finalNote, busstopPole: busstopPole)
-                let stopName = title?.getLocalizedName(fallbackTo: finalNote) ?? finalNote
-                
-                return TransportationStop(
-                    kind: .bus,
-                    name: stopName,
-                    code: busstopPole.isEmpty ? nil : busstopPole,
-                    index: busStopInfo["odpt:index"] as? Int,
-                    lineCode: lineCode,
-                    title: title,
-                    note: finalNote,
-                    busstopPole: busstopPole.isEmpty ? nil : busstopPole
-                )
-            }
-            
-            // Use shared bus stop title generation logic for stops with Japanese
-            let title = String.generateBusStopTitle(note: note, busstopPole: busstopPole)
-            let stopName = title?.getLocalizedName(fallbackTo: note) ?? (note.isEmpty ? busstopPole : note)
-            
-            return TransportationStop(
-                kind: .bus,
-                name: stopName,
-                code: busstopPole.isEmpty ? nil : busstopPole,
-                index: busStopInfo["odpt:index"] as? Int,
-                lineCode: lineCode,
-                title: title,
-                note: note,
-                busstopPole: busstopPole.isEmpty ? nil : busstopPole
-            )
-        }
-        
-        return busStops.isEmpty ? nil : busStops
-    }
-    
-    
-    // Extract stations from railway data
-    func extractStationsFromRailway(_ railway: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
-        let stations: [TransportationStop]? = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
-            (stationInfo["odpt:stationTitle"] as? [String: Any]).map { stationTitle in
-                let jaName = stationTitle["ja"] as? String
-                let enName = stationTitle["en"] as? String
-                let stationCode = stationInfo["odpt:station"] as? String
-                let stationIndex = stationInfo["odpt:index"] as? Int
-                
-                return TransportationStop(
-                    kind: .railway,
-                    name: jaName ?? enName ?? "Unknown station",
-                    code: stationCode,
-                    index: stationIndex,
-                    lineCode: lineCode,
-                    title: LocalizedTitle(ja: jaName, en: enName),
-                    note: nil,
-                    busstopPole: nil
-                )
-            }
-        }
-        return !(stations?.isEmpty ?? true) ? stations : nil
     }
     
     // Get stops information for the selected line (unified for both railway and bus)
@@ -536,51 +431,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         return []
     }
     
-    // Parse stations by line code
-    // Generic parser for both bus stops and railway stations by line code
-    private func parseStationsByLineCode(_ data: Data, lineCode: String, isBus: Bool) -> [TransportationStop]? {
-        do {
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            guard let array = json as? [[String: Any]] else { return nil }
-            
-            for item in array {
-                if isBus != ((item["@type"] as? String) == "odpt:BusroutePattern") { continue }
-                
-                if let itemCode = item["owl:sameAs"] as? String, itemCode == lineCode {
-                    return isBus ? 
-                        extractStopsFromBusRoute(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode) :
-                        extractStationsFromRailway(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode)
-                }
-            }
-        } catch {
-            print("❌ Failed to parse stations by line code: \(error)")
-        }
-        return nil
-    }
-    
-    // Load local data from cache or bundle
-    func loadLocalData(for filename: String) -> Data? {
-        // Try ODPT cache first
-        let cache = CacheStore()
-        if let data = cache.loadData(for: filename) {
-            return data
-        }
-        
-        // Try LineData folder
-        if let lineDataURL = Bundle.main.url(forResource: "LineData", withExtension: nil) {
-            let jsonURL = lineDataURL.appendingPathComponent(filename)
-            if let data = try? Data(contentsOf: jsonURL) {
-                return data
-            }
-        }
-        
-        // Fallback to bundle
-        guard let url = Bundle.main.url(forResource: filename.replacingOccurrences(of: ".json", with: ""), withExtension: "json") else {
-            print("❌ File not found: \(filename)")
-            return nil
-        }
-        return try? Data(contentsOf: url)
-    }
     
     // MARK: - State Management
     // Reset station selection and clear all related state
@@ -600,6 +450,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Update all line information at once
+    // Synchronize UI display with current model state
     func updateDisplay() {
         if let line = selectedLine {
             lineInput = lineDisplayName(for: line)
@@ -619,17 +470,20 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Check if custom line station input is complete
+    // Validates that all required fields for a custom line are filled
     func isCustomLineStationInputComplete() -> Bool {
         return !lineInput.isEmpty && !departureStopInput.isEmpty && !arrivalStopInput.isEmpty && departureStopInput != arrivalStopInput
     }
     
     // Set line color without saving to UserDefaults
+    // Update selected color for display only (saved when user explicitly saves)
     func setLineColor(_ color: String) {
         selectedLineColor = color
         showColorSelection = false
     }
     
     // Common save processing for all line types
+    // Saves all current settings to persistent storage
     func handleLineSave() async {
         await saveAllDataToUserDefaults()
         
@@ -1007,13 +861,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Data Clearing
-    // Clear all timetable data for all calendar types and lines
+    // Clear timetable data for current route and line number for all calendar types
     private func clearAllTimetableData() async {
-        print("🗑️ Clearing all existing timetable data...")
+        print("🗑️ Clearing timetable data for current route (\(selectedGoorback)) and line (\(selectedLineNumber))...")
         
-        // Clear data for all calendar types
+        // Clear data for all calendar types for current route and line number
         for calendarType in ODPTCalendarType.allCases {
-            clearTimetableData(calendarType: calendarType)
+            clearTimetableDataForRoute(calendarType: calendarType, goorback: selectedGoorback, lineNumber: selectedLineNumber)
         }
         
         // Clear cached calendar types to force refresh
@@ -1021,14 +875,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let cacheKey = "\(selectedLine.code)_\(selectedLine.kind.rawValue)_calendarTypes"
             UserDefaults.standard.removeObject(forKey: cacheKey)
             
-            // Clear route-specific cache
-            for goorback in goorbackOptions {
-                let routeCacheKey = "\(goorback)_calendarTypes"
-                UserDefaults.standard.removeObject(forKey: routeCacheKey)
-            }
+            // Clear route-specific cache for current route only
+            let routeCacheKey = "\(selectedGoorback)_calendarTypes"
+            UserDefaults.standard.removeObject(forKey: routeCacheKey)
         }
         
-        print("✅ All timetable data and cache cleared")
+        print("✅ Timetable data and cache cleared for current route and line")
     }
     
     // MARK: - Unified Timetable Data Processing
@@ -1458,6 +1310,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
             return [:]
         }
         
+        // Clear existing timetable data for all calendar types before generating new data
+        await clearAllTimetableData()
+        
         print("🔗 Get Timetable Links for both directions:")
         
         // Get the actual direction from selectedLine
@@ -1529,6 +1384,24 @@ final class SettingsLineSheetViewModel: ObservableObject {
         return allTimes
     }
     
+    // MARK: - URL Data Fetching
+    // Fetch data from URL string for API requests
+    private func fetchData(from urlString: String) async throws -> Data {
+        guard let url = URL(string: urlString) else {
+            throw URLError(.badURL)
+        }
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard httpResponse.statusCode == 200 else {
+                throw URLError(.badServerResponse)
+            }
+        }
+        
+        return data
+    }
+    
     // MARK: - Available Calendar Types Detection
     // Get available calendar types for station timetable
     private func getAvailableCalendarTypesForStation() async -> [ODPTCalendarType] {
@@ -1540,10 +1413,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
         var availableTypes: [ODPTCalendarType] = []
         
         for calendarType in ODPTCalendarType.allCases {
-            let testLink = "\(stationTimetableApiLink)&acl:consumerKey=\(odptAccessKey)&owl:sameAs=odpt.StationTimetable:\(operatorCode).\(calendarType.rawValue)"
+            // Remove odpt.Calendar: prefix from calendar type for URL
+            let calendarSuffix = calendarType.rawValue.replacingOccurrences(of: "odpt.Calendar:", with: "")
+            // Remove odpt.Operator: prefix from operator code
+            let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
+            let testLink = "\(stationTimetableApiLink)&acl:consumerKey=\(odptAccessKey)&owl:sameAs=odpt.StationTimetable:\(operatorName).\(calendarSuffix)"
             
             do {
-                let data = try await fetchData(from: testLink)
+                let data = try await self.fetchData(from: testLink)
                 if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]], !json.isEmpty {
                     availableTypes.append(calendarType)
                     print("✅ Calendar type \(calendarType.debugDisplayName) is available")
@@ -1563,23 +1440,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Data Fetching
-    // Simple data fetching method for API calls
-    private func fetchData(from urlString: String) async throws -> Data {
-        guard let url = URL(string: urlString) else {
-            throw URLError(.badURL)
-        }
-        
-        let (data, response) = try await URLSession.shared.data(from: url)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            guard httpResponse.statusCode == 200 else {
-                throw URLError(.badServerResponse)
-            }
-        }
-        
-        return data
-    }
-    
+    // Simple data fetching method for API calls    
     // MARK: - Station Timetable Data Processing
     // Generate station timetable link with flexible parameters
     func stationTimetableApiLink(isDeparture: Bool, calendarType: ODPTCalendarType, direction: String? = nil) -> String {
@@ -2005,26 +1866,28 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     
     // MARK: - Timetable Data Clearing
-    // Clear existing timetable data for specified day type
+    // Clear existing timetable data for specified day type using current route and line number
     private func clearTimetableData(calendarType: ODPTCalendarType) {
-        print("🧹 Clearing timetable data for \(calendarType.debugDisplayName)")
-        
-        // Clear all hours (4-24) for the specified calendar type and line
+        clearTimetableDataForRoute(calendarType: calendarType, goorback: selectedGoorback, lineNumber: selectedLineNumber)
+    }
+    
+    // Clear existing timetable data for specified route, line number, and calendar type
+    private func clearTimetableDataForRoute(calendarType: ODPTCalendarType, goorback: String, lineNumber: Int) {
+        // Clear all hours (4-24) for the specified calendar type, route, and line
         for hour in 4...25 {
-            let timetableKey = selectedGoorback.timetableKey(calendarType, selectedLineNumber - 1, hour)
-            let timetableRideTimeKey = selectedGoorback.timetableRideTimeKey(calendarType, selectedLineNumber - 1, hour)
-            let timetableTrainTypeKey = selectedGoorback.timetableTrainTypeKey(calendarType, selectedLineNumber - 1, hour)
+            let timetableKey = goorback.timetableKey(calendarType, lineNumber - 1, hour)
+            let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, lineNumber - 1, hour)
+            let timetableTrainTypeKey = goorback.timetableTrainTypeKey(calendarType, lineNumber - 1, hour)
             UserDefaults.standard.removeObject(forKey: timetableKey)
             UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
             UserDefaults.standard.removeObject(forKey: timetableTrainTypeKey)
         }
         
         // Clear train type list
-        let trainTypeListKey = selectedGoorback.trainTypeListKey(calendarType, selectedLineNumber - 1)
+        let trainTypeListKey = goorback.trainTypeListKey(calendarType, lineNumber - 1)
         UserDefaults.standard.removeObject(forKey: trainTypeListKey)
         
         UserDefaults.standard.synchronize()
-        print("✅ Timetable data clearing completed")
     }
     
     // MARK: - Transportation Kind Switching
@@ -2064,7 +1927,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Input Processing
-    /// Processes departure station input changes
+    /// Process departure station input changes and filter suggestions
     func processdepartureStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if isLineNumberChanging {
@@ -2086,7 +1949,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    /// Processes arrival station input changes
+    /// Process arrival station input changes and filter suggestions
     func processarrivalStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
         if isLineNumberChanging {
@@ -2108,7 +1971,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    /// Processes line input changes
+    /// Process line input changes and trigger search/filter
     func processLineInput(_ newValue: String) {
         // Don't reset station selection if line number is being changed
         if isLineNumberChanging {
@@ -2432,4 +2295,3 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
 }
-

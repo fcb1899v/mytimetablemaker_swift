@@ -7,56 +7,50 @@
 
 import SwiftUI
 
-// MARK: - Time Conversion Extensions
-// Extensions for time format conversions and calculations
+// MARK: - Int Time Extensions
+// Time format conversions and calculations
 extension Int {
     
     // MARK: - Time Format Conversions
-    // Convert between different time formats (HHMM, MM, HHMMSS, etc.)
-    var HHMMtoMM: Int { self / 100 * 60 + self % 100 }   // Convert HHMM format to minutes
-    var MMtoHHMM: Int { self / 60 * 100 + self % 60 }    // Convert minutes to HHMM format
-    var MMSStoSS: Int { self / 100 * 60 + self % 100 }   // Convert MMSS format to seconds
-    var SStoMMSS: Int { self / 60 * 100 + self % 60 }    // Convert seconds to MMSS format
-    var HHMMSStoSS: Int { self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }         // Convert HHMMSS format to seconds
-    var SStoHHMMSS: Int { self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }           // Convert seconds to HHMMSS format
-    var HHMMSStoMMSS: Int { (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }      // Convert HHMMSS format to MMSS format
+    // Convert time formats between HHMM, MMSS, HHMMSS and minutes/seconds
+    var HHMMtoMM: Int { self / 100 * 60 + self % 100 }
+    var MMtoHHMM: Int { self / 60 * 100 + self % 60 }
+    var MMSStoSS: Int { self / 100 * 60 + self % 100 }
+    var SStoMMSS: Int { self / 60 * 100 + self % 60 }
+    var HHMMSStoSS: Int { self / 10000 * 3600 + (self % 10000) / 100 * 60 + self % 100 }
+    var SStoHHMMSS: Int { self / 3600 * 10000 + (self % 3600) / 60 * 100 + self % 60 }
+    var HHMMSStoMMSS: Int { (self / 10000 * 60 + (self % 10000) / 100) * 100 + self % 100 }
     
-    // MARK: - Time Arithmetic Operations
-    // Addition operations for different time formats
-    func plusHHMM(_ time: Int) -> Int { (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }            // Add HHMM format times
-    func plusHHMMSS(_ time: Int) -> Int { (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }    // Add HHMMSS format times
-    func plusMMSS(_ time: Int) -> Int { (MMSStoSS + time.MMSStoSS).SStoMMSS }            // Add MMSS format times
-    
-    // MARK: - Time Subtraction Operations
-    // Subtraction operations for different time formats
-    func minusHHMM(_ time: Int) -> Int { (HHMMtoMM < time.HHMMtoMM) ?                    // Subtract HHMM format times
+    // MARK: - Time Arithmetic
+    // Addition and subtraction operations for time format calculations
+    func plusHHMM(_ time: Int) -> Int { (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }
+    func plusHHMMSS(_ time: Int) -> Int { (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }
+    func plusMMSS(_ time: Int) -> Int { (MMSStoSS + time.MMSStoSS).SStoMMSS }
+    func minusHHMM(_ time: Int) -> Int { (HHMMtoMM < time.HHMMtoMM) ?
         ((self + 2400).HHMMtoMM - time.HHMMtoMM).MMtoHHMM:
         (HHMMtoMM - time.HHMMtoMM).MMtoHHMM }
-    func minusHHMMSS(_ time: Int) -> Int { (self.HHMMSStoSS < time.HHMMSStoSS) ?         // Subtract HHMMSS format times
+    func minusHHMMSS(_ time: Int) -> Int { (self.HHMMSStoSS < time.HHMMSStoSS) ?
         ((self + 240000).HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS:
         (HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS }
-    func minusMMSS(_ time: Int) -> Int { (self.MMSStoSS - time.MMSStoSS).SStoMMSS }      // Subtract MMSS format times
+    func minusMMSS(_ time: Int) -> Int { (self.MMSStoSS - time.MMSStoSS).SStoMMSS }
     
     // MARK: - Time Display Formatting
-    // Format time for display purposes
-    var addZeroTime: String { (0...9 ~= self) ? "0\(self)": "\(self)" }                              // Add leading zero for single digits
+    // Format time values for display with leading zeros and time conversion
+    var addZeroTime: String { (0...9 ~= self) ? "0\(self)": "\(self)" }
     func overTime(_ beforeTime: Int) -> Int { (beforeTime == 2700) ? 2700: (self > 2700) ? 2700: self }
-
     var timeHH: String { (self / 100 + (self % 100) / 60).addZeroTime }
     var timeMM: String { (self % 100 % 60).addZeroTime }
-    var stringTime: String { ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }   // Convert HHMM format to display time
-    
+    var stringTime: String { ("\(timeHH):\(timeMM)" != "27:00") ? "\(timeHH):\(timeMM)": "--:--" }
     var timetableHour: Int { (self > 3) ? self: self + 24 }
     
-    // MARK: - Countdown Functions
-    // Countdown timer formatting and calculations
-    var countdown: String{ (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }           // Convert MMSS format to countdown display
+    // MARK: - Countdown
+    // Format countdown timer display from MMSS format
+    var countdown: String{ (0...9999 ~= self) ? "\((self / 100).addZeroTime):\((self % 100).addZeroTime)": "--:--" }
     func countdownTime(_ departtime: Int) -> String { (departtime * 100).minusHHMMSS(self).HHMMSStoMMSS.countdown }
 
-    // MARK: - ODPT Calendar Type Detection
-    // Get ODPT calendar type for this day with fallback to available types
+    // MARK: - ODPT Calendar Type
+    // Determine calendar type based on weekday number with fallback to available types
     func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
-        // Priority order: holiday > sunday > saturday > saturdayHoliday > specific weekdays > weekday > allday
         return Date().isJapaneseHoliday && availableTypes.contains(.holiday) ? .holiday:
                self == 0 && availableTypes.contains(.sunday) ? .sunday:
                self == 6 && availableTypes.contains(.saturday) ? .saturday:
@@ -70,8 +64,8 @@ extension Int {
                .allday
     }
     
-    // MARK: - Choice Copy Time List Function
-    // Generates copy time choice list for timetable editing
+    // MARK: - Choice Copy Time List
+    // Generate list of time copy options for timetable editing
     var choiceCopyTimeList: [String] {
         [
             "\(self - 1)\("Hour".localized)",
@@ -85,45 +79,34 @@ extension Int {
 
 
 // MARK: - Date Extensions
-// Extensions for Date formatting and weekday detection
 extension Date {
 
+    // MARK: - Date Formatting
+    // Format date and time for display
     var setDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "E, MMM d, yyyy".localized
         return formatter.string(from: self)
     }
-
     var setTime: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss"
         return formatter.string(from: self)
     }
     
-    // MARK: - ODPT Calendar Type Detection for Date
-    // Get ODPT calendar type for this date with priority
-//    var odpTCalendarType: ODPTCalendarType {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "E"
-//        let dayOfWeek = formatter.string(from: self)
-//        
-//        // Priority order:
-//        // 1. .holiday (highest priority)
-//        // 2. .saturdayHoliday (second priority)
-//        // 3. .sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday (third priority)
-//        // 4. .weekday (lowest priority)
-//        
-//        // Check if it's a Japanese holiday first
-//    }
-    var odpTCalendarType: ODPTCalendarType {
-        return .weekday
+    // MARK: - Current Time
+    // Convert current date to HHMMSS format integer
+    var currentTime: Int {
+        let calendar = Calendar.current
+        let hour = calendar.component(.hour, from: self)
+        let minute = calendar.component(.minute, from: self)
+        let second = calendar.component(.second, from: self)
+        return hour * 10000 + minute * 100 + second
     }
     
-    // MARK: - ODPT Calendar Type with Fallback
-    // Get ODPT calendar type for this date with fallback to available types
+    // MARK: - ODPT Calendar Type
+    // Determine calendar type based on date with fallback to available types
     func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
-
-        // Priority order: holiday > sunday > saturday > saturdayHoliday > specific weekdays > weekday > allday
         return isJapaneseHoliday && availableTypes.contains(.holiday) ? .holiday:
                isWeekMatch(enWeek: "Sun", jaWeek: "日") && availableTypes.contains(.sunday) ? .sunday:
                isWeekMatch(enWeek: "Sat", jaWeek: "土") && availableTypes.contains(.saturday) ? .saturday:
@@ -138,7 +121,7 @@ extension Date {
     }   
     
     // MARK: - Japanese Holiday Detection
-    // Check for regular or substitute or Japanese national holidays
+    // Check for Japanese holidays and weekday matching
     var isJapaneseHoliday: Bool { isRegularHoliday || isSubstituteHoliday || isNationalHoliday }
     func isWeekMatch(enWeek: String, jaWeek: String) -> Bool {
         let formatter = DateFormatter()
@@ -148,8 +131,8 @@ extension Date {
     }
     var isSaturdayHoloday: Bool { isJapaneseHoliday || isWeekMatch(enWeek: "Sun", jaWeek: "日") || isWeekMatch(enWeek: "Sat", jaWeek: "土")}
     
-    // MARK: - Regular Holiday Detection
-    // Check if the date is a regular Japanese public holiday
+    // MARK: - Holiday Calculation
+    // Calculate Japanese public holidays including fixed, variable, substitute and national holidays
     private var isRegularHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let holidays = getAllHolidaysForYear(year)
@@ -159,8 +142,6 @@ extension Date {
         }
     }
     
-    // MARK: - Substitute Holiday Detection
-    // Check if the date is a substitute holiday
     private var isSubstituteHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let substituteHolidays = getSubstituteHolidaysForYear(year)
@@ -170,8 +151,6 @@ extension Date {
         }
     }
     
-    // MARK: - National Holiday Detection
-    // Check if the date is a national holiday
     private var isNationalHoliday: Bool {
         let year = Calendar.current.component(.year, from: self)
         let nationalHolidays = getNationalHolidaysForYear(year)
@@ -181,8 +160,7 @@ extension Date {
         }
     }
     
-    // MARK: - Helper Methods
-    // Get all holidays for a specific year
+    // Get all holidays for a specific year including fixed and variable holidays
     private func getAllHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         var holidays: [Date] = []
@@ -212,8 +190,7 @@ extension Date {
         return holidays.sorted()
     }
     
-    // MARK: - Variable Holiday Calculation
-    // Calculate variable holidays for a specific year
+    // Calculate variable holidays (equinox days and Monday-based holidays)
     private func getVariableHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         var holidays: [Date] = []
@@ -252,8 +229,7 @@ extension Date {
         return holidays
     }
     
-    // MARK: - Substitute Holiday Calculation
-    // Calculate substitute holidays for a specific year
+    // Calculate substitute holidays when holidays fall on Sunday
     private func getSubstituteHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         let holidays = getAllHolidaysForYear(year)
@@ -271,8 +247,7 @@ extension Date {
         return substituteHolidays
     }
     
-    // MARK: - National Holiday Calculation
-    // Calculate national holidays for a specific year
+    // Calculate national holidays (days between consecutive holidays)
     private func getNationalHolidaysForYear(_ year: Int) -> [Date] {
         let calendar = Calendar.current
         let holidays = getAllHolidaysForYear(year)
@@ -297,14 +272,17 @@ extension Date {
 }
 
 // MARK: - String Time Extensions
-// Extensions for string-based time operations and parsing
 extension String {
     
+    // MARK: - Number Parsing
+    // Parse integer from string within specified range
     func intText(min: Int, max: Int) -> Int {
         let intText: Int = Int(self) ?? min - 1
         return (intText > min - 1 && intText < max + 1) ? intText: min - 1
     }
     
+    // MARK: - Date Parsing
+    // Parse date from localized string format
     var dateFromDate: Date {
         let formatter: DateFormatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
@@ -312,8 +290,8 @@ extension String {
         return formatter.date(from: self)!
     }
 
-    // MARK: - Current Time Parsing
-    // Parse current time from string format
+    // MARK: - Time Parsing
+    // Parse time string (HH:MM:SS) to integer format (HHMMSS)
     var currentTime: Int {
         let timeHH = Int(self.components(separatedBy: ":")[0]) ?? 0
         let timemm = Int(self.components(separatedBy: ":")[1]) ?? 0
@@ -321,13 +299,23 @@ extension String {
         return timeHH * 10000 + timemm * 100 + timess
     }
     
-    // MARK: - Time String Processing
-    // Process time strings for timetable operations
-    var timeString: String { (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
+    // MARK: - Calendar Type
+    // Get calendar type for route based on date with cached available types
+    func calendarType(for date: Date) -> ODPTCalendarType {
+        let routeCacheKey = "\(self)_calendarTypes"
+        var availableTypes: [ODPTCalendarType] = []
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
+           !cachedTypes.isEmpty {
+            availableTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+        }
+        if availableTypes.isEmpty {
+            availableTypes = [.weekday, .holiday, .saturdayHoliday]
+        }
+        return date.odpTCalendarType(fallbackTo: availableTypes)
+    }
     
-    // MARK: - Minutes Only Display
-    // Extract minutes only from time strings and format with leading zero
-    // Handles both "HH:MM" format and minutes-only string format
+    // Remove leading space and format minutes with leading zero
+    var timeString: String { (self.prefix(1) == " ") ? String(self.suffix(self.count - 1)): self }
     var minutesOnly: String {
         // Check if string contains ":" (HH:MM format)
         if self.contains(":") {
@@ -348,14 +336,11 @@ extension String {
         
         return self
     }
-    
-    // MARK: - Leading Zero Removal
-    // Remove leading zero from time strings (e.g., "03" -> "3")
+    // Remove leading zero and combine time strings for timetable
     var trimmingLeadingZero: String { (self.count > 1 && self.hasPrefix("0")) ? String(self.dropFirst()): self }
-    
     func addInputTime(_ inputText: String) -> String { return (self != "") ? "\(self) \(inputText)": inputText}
     
-    // MARK: - Ride Time Calculation
+    // MARK: - Time Calculation
     // Calculate ride time in minutes between departure and arrival times
     func calculateRideTime(arrivalTime: String) -> Int {
         let departureComponents = self.components(separatedBy: ":")
@@ -380,8 +365,6 @@ extension String {
         
         return rideTimeMinutes
     }
-    
-    // MARK: - Time Conversion Helper
     // Convert HH:MM format to total minutes for sorting
     var timeToMinutes: Int {
         let components = self.components(separatedBy: ":")
@@ -392,9 +375,7 @@ extension String {
         }
         return 0
     }
-    
-    // MARK: - Time Adjustment Helper
-    // Adjust departure time for timetable display (0-3 AM times are previous day)
+    // Adjust hour for timetable display (0-3 AM becomes 24-27)
     var adjustedForTimetable: String {
         let components = self.components(separatedBy: ":")
         guard components.count == 2,
@@ -407,7 +388,7 @@ extension String {
         let adjustedHour = hour.timetableHour
         return String(format: "%02d:%02d", adjustedHour, minute)
     }
-    
+    // Sort time values from string separated by specified characters
     func timeSorting(charactersin: String) -> [String] {
         Array(Set(self.components(separatedBy: CharacterSet(charactersIn: charactersin))
             .map{Int($0) ?? 60}
@@ -418,8 +399,8 @@ extension String {
         .map{String($0)}
     }
     
-    // MARK: - Alert Message Generation
-    // Dynamic alert title and message generation
+    // MARK: - Route Titles
+    // Generate localized route and timetable titles
     func timetableLineTitle(_ num: Int) -> String { "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)" }
     var routeTitle: String {
         (self == "back1") ? "Setting Return Route 1".localized:
@@ -427,10 +408,11 @@ extension String {
         (self == "go1") ? "Setting Outbound Route 1".localized:
         "Setting Outbound Route 2".localized
     }
+    // Get opposite route identifier (go1 <-> go2, back1 <-> back2)
     var otherroute: String { self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
-    // MARK: - Timetable Management
-    // Timetable data processing and manipulation
+    // MARK: - Timetable Data Processing
+    // Process and convert timetable data for specific calendar type and line number
     func timetable(_ calendarType: ODPTCalendarType, _ num: Int) -> [Int] {
         (4...25).flatMap { hour in timetableTime(calendarType, num, hour).timeString
             .components(separatedBy: CharacterSet(charactersIn: " "))
@@ -440,10 +422,9 @@ extension String {
             .sorted()
         }
     }
+    // Generate timetable arrays for all lines (0-2)
     func timetableArray(_ calendarType: ODPTCalendarType) -> [[Int]] { (0...2).map { num in timetable(calendarType, num) } }
-    
-    // MARK: - Time Array Generation
-    // Generate departure and arrival times for current route
+    // Calculate departure and arrival times for current route based on current time
     func timeArray(_ calendarType: ODPTCalendarType, _ currenttime: Int) -> [Int] {
         // Depart time of line 1
         var timeArray = [timetableArray(calendarType)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
@@ -465,20 +446,139 @@ extension String {
     }
     
     // MARK: - Timetable Modification
-    // Add time to timetable
+    // Add or delete time entries from timetable for specific hour and calendar type
     func addTimeFromTimetable(_ inputText: String, _ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String {
         timetableTime(calendarType, num, hour)
             .addInputTime(inputText)
             .timeSorting(charactersin: " ")
             .joined(separator: " ")
     }
-    // Delete time from timetable
+    // Remove time entry from timetable
     func deleteTimeFromTimetable(_ inputText: String, _ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String {
         timetableTime(calendarType, num, hour)
             .trimmingCharacters(in: .whitespaces)
             .timeSorting(charactersin: " ")
             .filter{$0 != inputText}
             .joined(separator: " ")
+    }
+    
+    // MARK: - Valid Hour Range Calculation
+    // Calculate the range of hours with timetable data for specific calendar type and line
+    func validHourRange(calendarType: ODPTCalendarType, num: Int) -> [Int] {
+        let allHours = Array(4...25)
+        
+        // Find hours with train times
+        let hoursWithData = allHours.filter { hour in
+            !self.loadTransportationTimes(calendarType, num, hour).isEmpty
+        }
+        
+        // Return range from first to last hour with data
+        guard let firstHour = hoursWithData.min(),
+              let lastHour = hoursWithData.max() else {
+            return [] // No data found
+        }
+        
+        return Array(firstHour...lastHour)
+    }
+    
+    // MARK: - Train Times Counts
+    // Get train times count for each hour in the valid range
+    func getTrainTimesCounts(calendarType: ODPTCalendarType, num: Int) -> [Int] {
+        let hours = validHourRange(calendarType: calendarType, num: num)
+        var counts: [Int] = []
+        for hour in hours {
+            let transportationTimes = self.loadTransportationTimes(calendarType, num, hour)
+            counts.append(transportationTimes.count)
+        }
+        return counts
+    }
+    
+    // MARK: - Timetable Data Existence Check
+    // Check if timetable data exists for the specified calendar type and line
+    func hasTimetableDataForType(_ calendarType: ODPTCalendarType, num: Int) -> Bool {
+        // Check all hours (4-25) to see if data exists
+        for hour in 4...25 {
+            let key = self.timetableKey(calendarType, num, hour)
+            if UserDefaults.standard.string(forKey: key) != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
+    // MARK: - Calendar Type Detection from Data
+    // Detect available calendar types by checking actual timetable data
+    func detectAvailableCalendarTypesFromData(num: Int) -> [ODPTCalendarType] {
+        var detectedTypes: Set<ODPTCalendarType> = []
+        
+        // Check all possible calendar types
+        for calendarType in ODPTCalendarType.allCases {
+            if hasTimetableDataForType(calendarType, num: num) {
+                detectedTypes.insert(calendarType)
+            }
+        }
+        
+        return Array(detectedTypes).sorted { $0.rawValue < $1.rawValue }
+    }
+    
+    // MARK: - Available Calendar Types Loading
+    // Load available calendar types from cache or detect from data
+    func loadAvailableCalendarTypes(num: Int) -> [ODPTCalendarType] {
+        // Always try to detect from actual data first to ensure we have the most up-to-date information
+        let detectedTypes = detectAvailableCalendarTypesFromData(num: num)
+        if !detectedTypes.isEmpty {
+            return detectedTypes
+        }
+        
+        // Try to get cached calendar types for the current route
+        let routeCacheKey = "\(self)_calendarTypes"
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
+           !cachedTypes.isEmpty {
+            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+            if !cachedCalendarTypes.isEmpty {
+                return cachedCalendarTypes
+            }
+        }
+        
+        // Try to find any cached calendar types by searching all keys
+        let allKeys = UserDefaults.standard.dictionaryRepresentation().keys
+        for key in allKeys {
+            if key.contains("calendarTypes") {
+                if let cachedTypes = UserDefaults.standard.stringArray(forKey: key),
+                   !cachedTypes.isEmpty {
+                    let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+                    if !cachedCalendarTypes.isEmpty {
+                        return cachedCalendarTypes
+                    }
+                }
+            }
+        }
+        
+        // Final fallback to default calendar types
+        return [.weekday, .saturdayHoliday]
+    }
+    
+    // MARK: - Time String Comparison
+    // Compare two time strings (in minutes format) as integers for sorting
+    func isTimeLessThan(_ other: String) -> Bool {
+        let time1 = Int(self) ?? 0
+        let time2 = Int(other) ?? 0
+        return time1 < time2
+    }
+    
+    // MARK: - Timetable String Parsing
+    // Parse space-separated timetable string into array of non-empty strings
+    var timetableComponents: [String] {
+        self.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+    }
+    
+    // MARK: - Time Format Validation
+    // Check if timetable string contains time in both single and double digit formats
+    func containsTimeInAnyFormat(_ departureTime: Int) -> Bool {
+        let existingTimes = self.timetableComponents
+        let singleDigitTime = String(departureTime)
+        let doubleDigitTime = departureTime.addZeroTime
+        return existingTimes.contains(singleDigitTime) || existingTimes.contains(doubleDigitTime)
     }
 }
 

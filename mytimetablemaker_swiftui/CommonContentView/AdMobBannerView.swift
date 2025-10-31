@@ -19,14 +19,24 @@ protocol BannerViewControllerWidthDelegate: AnyObject {
 // Manages banner view lifecycle and width updates for adaptive banner ads
 class BannerViewController: UIViewController {
     
+  // Delegate for width updates (weak to avoid retain cycles)
   weak var delegate: BannerViewControllerWidthDelegate?
+  
+  // Last time when ad was loaded to prevent too frequent loads
   private var lastLoadTime: Date = Date.distantPast
+  
+  // Minimum interval between ad loads in seconds to prevent excessive requests
   private let minimumLoadInterval: TimeInterval = 60.0
+  
+  // Flag to enable/disable AdMob functionality
   var isAdMobEnabled: Bool = false
 
+  // MARK: - Lifecycle Methods
+  // Called when the view controller's view appears on screen
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    // Tell the delegate the initial ad width.
+    
+    // Notify delegate of the initial ad width for adaptive banner sizing
     let width = view.frame.inset(by: view.safeAreaInsets).size.width
     delegate?.bannerViewController(self, didUpdate: width)
     
@@ -47,14 +57,16 @@ class BannerViewController: UIViewController {
     }
   }
 
+  // Called when the device orientation changes
+  // Updates banner width to match new orientation
   override func viewWillTransition(
     to size: CGSize,
     with coordinator: UIViewControllerTransitionCoordinator
   ) {
     coordinator.animate { _ in
-      // do nothing
+      // No animation needed during transition
     } completion: { _ in
-      // Notify the delegate of ad width changes.
+      // Notify delegate of ad width changes after transition completes
       let width = self.view.frame.inset(by: self.view.safeAreaInsets).size.width
       self.delegate?.bannerViewController(self, didUpdate: width)
     }
@@ -65,11 +77,20 @@ class BannerViewController: UIViewController {
 // SwiftUI wrapper for Google Mobile Ads banner view
 struct AdMobBannerView: UIViewControllerRepresentable {
 
+    // Current width of the banner view for adaptive sizing
     @State private var viewWidth: CGFloat = .zero
+    
+    // Last time when ad was loaded to prevent too frequent loads
     @State private var lastLoadTime: Date = Date.distantPast
+    
+    // Google Ads banner view instance
     private let bannerView = GADBannerView()
-    private let minimumLoadInterval: TimeInterval = 60.0 // Minimum 60 seconds between loads
-    private let isAdMobEnabled: Bool = true // Enable AdMob for ads
+    
+    // Minimum interval between ad loads in seconds to prevent excessive requests
+    private let minimumLoadInterval: TimeInterval = 60.0
+    
+    // Flag to enable/disable AdMob for ads
+    private let isAdMobEnabled: Bool = true
     
     // MARK: - Ad Unit ID Configuration
     // Reads AdMob unit ID from xcconfig file environment variable
@@ -93,6 +114,8 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         return "ca-app-pub-3940256099942544/6300978111"
     }
     
+    // MARK: - UIViewControllerRepresentable Methods
+    // Create and configure the UIKit view controller for AdMob banner
     func makeUIViewController(context: Context) -> some UIViewController {
         let bannerViewController = BannerViewController()
         bannerViewController.isAdMobEnabled = isAdMobEnabled
@@ -135,6 +158,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         return bannerViewController
     }
     
+    // Update the UIKit view controller when SwiftUI state changes
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
         guard viewWidth != .zero && isAdMobEnabled else {
             return 
@@ -161,12 +185,17 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
+        // Create coordinator instance to handle delegate callbacks
         return Coordinator(self)
     }
     
+    // MARK: - Coordinator
+    // Coordinator class to handle AdMob delegate callbacks
     class Coordinator: NSObject, GADBannerViewDelegate, BannerViewControllerWidthDelegate {
+        // Reference to parent AdMobBannerView for state updates
         var parent: AdMobBannerView
         
+        // Initialize coordinator with reference to parent view
         init(_ parent: AdMobBannerView) {
             self.parent = parent
         }
@@ -175,18 +204,21 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             // Only log critical errors, suppress common test environment errors
             if let nsError = error as NSError? {
                 switch nsError.code {
-                case 1: // Invalid request
+                case 1: // Invalid request error code
                     // Suppress this common error in test environment
                     return
-                case 2: // No fill
+                case 2: // No fill error code (no ads available)
                     // Suppress this common error in test environment
                     return
                 default:
+                    // Log other errors for debugging
                     print("🔍 AdMob Debug: Ad failed to load with error: \(error.localizedDescription)")
                 }
             }
         }
         
+        // Called when banner view width changes (e.g., orientation change)
+        // Updates parent view width state for adaptive ad sizing
         func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat) {
             parent.viewWidth = width
         }

@@ -12,23 +12,27 @@ import FirebaseAuth
 // Main login screen with authentication form and navigation
 struct LoginContentView: View {
 
-    @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransfer: MyTransfer
-    @ObservedObject private var myLogin: MyLogin
-    @ObservedObject private var myFirestore: MyFirestore
+    // MARK: - Observed Objects
+    // Core data models for app state management
+    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myLogin: LoginViewModel
+    @ObservedObject private var myFirestore: FirestoreViewModel
 
+    // MARK: - State Variables
+    // UI state flags for navigation and modal presentation
     @State private var isShowSignUp = false
     @State private var isShowReset = false
-    @State private var isShowSplash = true
     @State private var isPasswordVisible = false
     @State private var isNavigateToMain = false
     @State private var isNavigateToSettings = false
     @State private var isShowLoginResultAlert = false
 
+    // MARK: - Initialization
+    // Initialize with required data models
     init(
-        _ myTransfer: MyTransfer,
-        _ myLogin: MyLogin,
-        _ myFirestore: MyFirestore
+        _ myTransfer: TransferViewModel,
+        _ myLogin: LoginViewModel,
+        _ myFirestore: FirestoreViewModel
     ) {
         self.myTransfer = myTransfer
         self.myLogin = myLogin
@@ -60,7 +64,8 @@ struct LoginContentView: View {
             
             // MARK: - Login Form
             VStack(spacing: screen.loginMargin) {
-                // Title
+                // MARK: - Title Section
+                // Login screen title
                 Text("Login".localized)
                     .font(.system(size: screen.loginTitleFontSize))
                     .fontWeight(.bold)
@@ -68,7 +73,8 @@ struct LoginContentView: View {
                     .padding(.top, screen.loginTitleTopMargin)
                     .padding(.bottom, screen.loginTitleBottomMargin)
 
-                // Email text field
+                // MARK: - Email Input Field
+                // Text field for email address entry
                 TextField("Email".localized, text: $myLogin.email)
                     .font(.system(size: screen.loginTextFieldFontSize))
                     .lineLimit(1)
@@ -79,7 +85,8 @@ struct LoginContentView: View {
                     .onChange(of: myLogin.email) { _ in myLogin.loginCheck() }
                     .frame(width: screen.loginButtonWidth)
                 
-                // Password text field
+                // MARK: - Password Input Field
+                // Secure text field with visibility toggle for password entry
                 HStack {
                     if isPasswordVisible {
                         TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
@@ -140,13 +147,14 @@ struct LoginContentView: View {
                 }
                 
                 // MARK: - Password Reset Button
+                // Button to trigger password reset flow
                 Button(action: { isShowReset = true }) {
                     Text("Forgot Password?".localized)
                         .underline(color: .white)
                         .font(.headline)
                         .foregroundColor(.white)
                 }
-                // Password Reset alert
+                // Password reset confirmation alert with email input
                 .alert("Password Reset".localized, isPresented: $isShowReset) {
                     TextField("Email".localized, text: $myLogin.resetEmail)
                         .multilineTextAlignment(.center)
@@ -164,7 +172,8 @@ struct LoginContentView: View {
                 }
                 .tint(.primary)
                 
-                // Message alert
+                // MARK: - Message Alert
+                // Alert for displaying login result messages
                 .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
                     Button("OK".localized, role: .none){
                         myLogin.isShowMessage = false
@@ -177,6 +186,7 @@ struct LoginContentView: View {
             }
             
             // MARK: - Loading Indicator
+            // Display loading overlay during authentication process
             if myLogin.isLoading {
                 ZStack {
                     Color.gray.opacity(0.3)
@@ -200,16 +210,18 @@ struct LoginContentView: View {
                     )
                 }
             }
+            // MARK: - Lifecycle
+            // Clear fields and validate on appear
             .onAppear {
-                // Clear text fields when login screen appears
                 myLogin.email = ""
                 myLogin.password = ""
                 myLogin.loginCheck()
             }
+            // Handle login result message changes
             .onChange(of: myLogin.isShowMessage) { newValue in
                 if newValue {
                     isShowLoginResultAlert = true
-                    myLogin.isShowMessage = false  // Reset to prevent duplicate alerts
+                    myLogin.isShowMessage = false
                 }
             }
             .navigationDestination(isPresented: $isNavigateToSettings) {
@@ -227,9 +239,9 @@ struct LoginContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct LoginContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myLogin = MyLogin()
-        let myTransfer = MyTransfer()
-        let myFirestore = MyFirestore()
+        let myLogin = LoginViewModel()
+        let myTransfer = TransferViewModel()
+        let myFirestore = FirestoreViewModel()
         LoginContentView(myTransfer, myLogin, myFirestore)
     }
 }

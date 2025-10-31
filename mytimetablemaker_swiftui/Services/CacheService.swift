@@ -75,14 +75,6 @@ final class SharedDataManager: ObservableObject {
     }
     
     // MARK: - Data Access
-    // Get all transportation lines, initializing if necessary
-    func getAllLines() async -> [TransportationLine] {
-        if !isInitialized {
-            await initializeData()
-        }
-        return allLines
-    }
-    
     // Get lines for a specific transportation kind
     // Load only data for the requested kind to improve performance
     func getLines(for kind: TransportationLine.Kind, allowFetch: Bool = true) async -> [TransportationLine] {
@@ -99,6 +91,8 @@ final class SharedDataManager: ObservableObject {
         
         let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
         
+        // Process each operator's cached data and parse into transportation lines
+        // Filter by kind to ensure only relevant data is loaded
         for transportOperator in operators {
             let cacheKey = transportOperator.fileName
             guard let cachedData = cache.loadData(for: cacheKey) else { 
@@ -213,11 +207,7 @@ final class SharedDataManager: ObservableObject {
         // MARK: - Cache Availability Check using closure
         let hasAnyCache = LocalDataSource.allCases.contains { transportOperator in
             let cacheKey = transportOperator.fileName
-            let hasData = cache.loadData(for: cacheKey) != nil
-            if !hasData {
-                print("🔍 Cache not found for: \(cacheKey)")
-            }
-            return hasData
+            return cache.loadData(for: cacheKey) != nil
         }
         
         if !hasAnyCache {
@@ -267,14 +257,11 @@ final class SharedDataManager: ObservableObject {
     // Load data from cache
     private func loadFromCache() async {
         var cacheLines: [TransportationLine] = []
-        var cachedOperators = 0
-        var operatorDetails: [String] = []
         
         // MARK: - Cache Loading using map and reduce
         let cacheResults = LocalDataSource.allCases.compactMap { transportOperator -> (LocalDataSource, [TransportationLine])? in
             let cacheKey = transportOperator.fileName
             guard let cachedData = cache.loadData(for: cacheKey) else { 
-                print("❌ Cache not found for: \(cacheKey)")
                 return nil 
             }
             
@@ -282,31 +269,14 @@ final class SharedDataManager: ObservableObject {
                 ? (try? ODPTParser.parseRailwayRoutes(cachedData)) ?? []
                 : (try? ODPTParser.parseBusRoutes(cachedData)) ?? []
             
-            print("📁 Loading from cache: \(cacheKey) (\(cachedData.count) bytes): Parsed \(lines.count) lines for \(transportOperator.operatorDisplayName)")
-            
             return (transportOperator, lines)
         }
         
         // Process results
         cacheLines = cacheResults.flatMap { $0.1 }
-        cachedOperators = cacheResults.count
-        operatorDetails = cacheResults.map { "\($0.0.operatorDisplayName): \($0.1.count) lines" }
         
         self.allLines = cacheLines
-        print("📊 Shared data loaded: \(self.allLines.count) lines from \(cachedOperators) operators")
-        print("📋 Operator details: \(operatorDetails.joined(separator: ", "))")
-        
-        // MARK: - Duplicate Check using closure
-        let duplicateCheck = Dictionary(grouping: cacheLines) { line in
-            "\(line.operatorCode ?? "unknown")_\(line.kind.rawValue)_\(line.code)"
-        }
-        let duplicates = duplicateCheck.filter { $0.value.count > 1 }
-        if !duplicates.isEmpty {
-            print("⚠️ Found \(duplicates.count) duplicate entries:")
-            for (key, lines) in duplicates.prefix(5) {
-                print("   \(key): \(lines.count) duplicates")
-            }
-        }
+        print("📊 Shared data loaded: \(self.allLines.count) lines from \(cacheResults.count) operators")
     }
     
     // MARK: - Initial Fetch
@@ -357,6 +327,7 @@ final class SharedDataManager: ObservableObject {
         print("🔄 Performing \(updateType) update...")
         
         // MARK: - Parallel Update Processing
+        // Process all operators in parallel for improved performance
         let results = await withTaskGroup(of: (LocalDataSource, [TransportationLine]).self) { group in
             for transportOperator in operators {
                 group.addTask {
@@ -382,7 +353,6 @@ final class SharedDataManager: ObservableObject {
                                     print("🔄 \(transportOperator.operatorDisplayName): \(updateType) data updated (\(newLines.count) lines)")
                                     return (transportOperator, newLines)
                                 } else {
-                                    print("ℹ️ \(transportOperator.operatorDisplayName): \(updateType) data unchanged (\(newLines.count) lines)")
                                     return (transportOperator, []) // Return empty array for unchanged data
                                 }
                             }
@@ -430,8 +400,6 @@ final class SharedDataManager: ObservableObject {
     // MARK: - Bus Update
     // Perform bus data update (used for both auto and manual updates)
     func performBusUpdate() async {
-        print("🔄 Performing bus update via shared manager...")
-        
         isLoading = true
         
         let busOperators = LocalDataSource.allCases.filter { $0.transportationType == .bus }
@@ -440,7 +408,6 @@ final class SharedDataManager: ObservableObject {
         for transportOperator in busOperators {
             let cacheKey = transportOperator.fileName
             if cache.loadData(for: cacheKey) != nil {
-                print("🗑️ Clearing old bus cache for: \(cacheKey)")
                 cache.saveData(Data(), for: cacheKey)
             }
         }
@@ -452,7 +419,6 @@ final class SharedDataManager: ObservableObject {
         ) { transportOperator in
             do {
                 // Force update by bypassing conditional GET
-                print("📥 \(transportOperator.operatorDisplayName): Forcing fresh bus data fetch...")
                 let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
                 
                 // Write updated data to JSON file
@@ -504,18 +470,6 @@ final class SharedDataManager: ObservableObject {
         self.lastUpdated = Date()
         print("✅ \(updateType) update completed: \(updatedData.count) lines")
         print("📊 Total data after update: \(self.allLines.count) lines")
-        
-        // MARK: - Duplicate Check using closure
-        let duplicateCheck = Dictionary(grouping: self.allLines) { line in
-            "\(line.operatorCode ?? "unknown")_\(line.kind.rawValue)_\(line.code)"
-        }
-        let duplicates = duplicateCheck.filter { $0.value.count > 1 }
-        if !duplicates.isEmpty {
-            print("⚠️ Found \(duplicates.count) duplicate entries after \(updateType.lowercased()) update:")
-            for (key, lines) in duplicates.prefix(5) {
-                print("   \(key): \(lines.count) duplicates")
-            }
-        }
     }
     
     // MARK: - Update Check
@@ -526,11 +480,6 @@ final class SharedDataManager: ObservableObject {
         let lastUpdate = UserDefaults.standard.object(forKey: lastUpdateKey) as? Date
         let currentTime = Date()
         
-        // Format dates for display
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy/MM/dd HH:mm"
-        let currentTimeString = dateFormatter.string(from: currentTime)
-        
         // If no lastUpdate date, check if we have cached data
         if lastUpdate == nil {
             // Check if we have any cached data
@@ -538,35 +487,13 @@ final class SharedDataManager: ObservableObject {
                 let cacheKey = transportOperator.fileName
                 return cache.loadData(for: cacheKey) != nil
             }
-            if hasAnyCache {
-                print("ℹ️ Railway auto update skipped - cache exists, no previous update record")
-                print("📅 Current time: \(currentTimeString)")
-            } else {
-                print("🔄 Railway auto update needed - no cache exists")
-                print("📅 Current time: \(currentTimeString)")
-            }
             return !hasAnyCache // Only update if no cache exists
         }
         
         // Check if 24 hours have passed since last update
         let timeSinceLastUpdate = currentTime.timeIntervalSince(lastUpdate!)
         let twentyFourHours: TimeInterval = 24 * 60 * 60
-        let shouldUpdate = timeSinceLastUpdate >= twentyFourHours
-        
-        let lastUpdateString = dateFormatter.string(from: lastUpdate!)
-        
-        if shouldUpdate {
-            print("🔄 Railway auto update needed - \(Int(timeSinceLastUpdate / 3600)) hours since last update")
-            print("📅 Last update: \(lastUpdateString)")
-            print("📅 Current time: \(currentTimeString)")
-        } else {
-            let remainingHours = Int((twentyFourHours - timeSinceLastUpdate) / 3600)
-            print("ℹ️ Railway auto update skipped - \(Int(timeSinceLastUpdate / 3600)) hours since last update (\(remainingHours) hours remaining)")
-            print("📅 Last update: \(lastUpdateString)")
-            print("📅 Current time: \(currentTimeString)")
-        }
-        
-        return shouldUpdate
+        return timeSinceLastUpdate >= twentyFourHours
     }
     
     // MARK: - Update Last Update Time

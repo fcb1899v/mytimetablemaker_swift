@@ -12,8 +12,11 @@ import FirebaseFirestore
 
 // MARK: - Firestore Data Manager
 // Handles data synchronization between UserDefaults and Firestore database
-class MyFirestore: ObservableObject {
+@MainActor
+final class FirestoreViewModel: ObservableObject {
   
+    // MARK: - Published Properties
+    // Alert messages, visibility states, and loading indicators for UI updates
     @Published var title = ""
     @Published var message = ""
     @Published var isShowAlert = false
@@ -25,7 +28,7 @@ class MyFirestore: ObservableObject {
     // Creates Firestore document reference for current user and route
     private func getRef(_ goorback: String) -> DocumentReference {
         let db = Firestore.firestore()
-        let userid = Auth.auth().currentUser!.uid
+        let userid = Auth.auth().currentUserID ?? ""
         let userdb = db.collection("users").document(userid)
         return userdb.collection("goorback").document(goorback)
     }
@@ -33,12 +36,15 @@ class MyFirestore: ObservableObject {
     // MARK: - Data Upload
     // Uploads all UserDefaults data to Firestore server
     func setFirestore() {
+        
         isLoading = true
         isShowAlert = false
         isShowMessage = false
         isFirestoreSuccess = false
         title = "Save data error".localized
         message = "Data could not be saved".localized
+        
+        // Process each route (go/back) and upload timetable and line information
         goorbackarray.forEach { goorback in
             (0..<3).forEach { linenumber in
                 // Get available calendar types for this route and line
@@ -46,7 +52,6 @@ class MyFirestore: ObservableObject {
                 setTimetableFirestore(goorback, linenumber, availableCalendarTypes)
             }
             setLineInfoFirestore(goorback)
-            print(goorback)
         }
     }
     
@@ -86,11 +91,7 @@ class MyFirestore: ObservableObject {
             let documentName = "timetable\(num + 1)\(calendarType.calendarTag)"
             let nextref = getRef(goorback).collection("timetable").document(documentName)
             
-            print("🔍 setTimetableFirestore - goorback: \(goorback), num: \(num), calendarType: \(calendarType.debugDisplayName)")
-            print("🔍 Calendar type: \(calendarType.debugDisplayName), tag: \(calendarType.calendarTag)")
-            print("🔍 Document name: \(documentName)")
-            print("🔍 Full path: \(nextref.path)")
-            
+            // Create batch operation for atomic writes to Firestore
             let batch = Firestore.firestore().batch()
             
             // Create comprehensive hour data with backward compatibility
@@ -117,35 +118,11 @@ class MyFirestore: ObservableObject {
                     "rideTime": rideTimeData,
                     "trainType": trainTypeData
                 ]
-                
-                if hour < 9 && !timetableData.isEmpty {
-                    print("📊 Hour \(hour): timetable='\(timetableData)', rideTime='\(rideTimeData)', trainType='\(trainTypeData)'")
-                }
             }
             
-            print("🔍 Hour data count: \(hourData.count)")
             batch.setData(hourData, forDocument: nextref)
             batch.commit()
-            
             print("✅ Uploaded timetable data to Firestore for \(calendarType.debugDisplayName)")
-        }
-    }
-    
-    // MARK: - Cleanup Unused Calendar Types
-    // Removes Firestore documents for calendar types that are no longer available
-    func cleanupUnusedCalendarTypes(_ goorback: String, _ num: Int, availableTypes: [ODPTCalendarType]) {
-        let collection = getRef(goorback).collection("timetable")
-        for calendarType in ODPTCalendarType.allCases {
-            if !availableTypes.contains(calendarType) {
-                let docRef = collection.document("timetable\(num + 1)\(calendarType.calendarTag)")
-                docRef.delete { error in
-                    if let error = error {
-                        print("❌ Failed to delete unused calendar type \(calendarType.debugDisplayName): \(error)")
-                    } else {
-                        print("🗑️ Deleted unused calendar type: \(calendarType.debugDisplayName)")
-                    }
-                }
-            }
         }
     }
 
@@ -191,19 +168,22 @@ class MyFirestore: ObservableObject {
             ],
             forDocument: getRef(goorback)
         )
+        // Commit batch operation and handle completion/error callbacks
         batch.commit() { [self] error in
-            if error != nil {
-                if (goorback == "go2") {
-                    isLoading = false
-                    isShowMessage = true
-                }
-            } else {
-                if (goorback == "go2") {
-                    title = "Data saved successfully".localized
-                    message = ""
-                    isFirestoreSuccess = true
-                    isLoading = false
-                    isShowMessage = true
+            Task { @MainActor in
+                if error != nil {
+                    if (goorback == "go2") {
+                        isLoading = false
+                        isShowMessage = true
+                    }
+                } else {
+                    if (goorback == "go2") {
+                        title = "Data saved successfully".localized
+                        message = ""
+                        isFirestoreSuccess = true
+                        isLoading = false
+                        isShowMessage = true
+                    }
                 }
             }
         }
@@ -219,6 +199,7 @@ class MyFirestore: ObservableObject {
         isFirestoreSuccess = false
         title = "Get data error".localized
         message = "Data could not be got".localized
+        // Process each route (go/back) and download timetable and line information
         goorbackarray.forEach { goorback in
             (0..<3).forEach { linenumber in
                 // Get available calendar types for this route and line
@@ -228,7 +209,6 @@ class MyFirestore: ObservableObject {
                 }
             }
             getLineInfoFirestore(goorback)
-            print(goorback)
         }
     }
     
@@ -236,37 +216,39 @@ class MyFirestore: ObservableObject {
     // Downloads line information from Firestore and saves to UserDefaults
     private func getLineInfoFirestore(_ goorback: String) {
         getRef(goorback).getDocument { [self] (document, error) in
-            if let document = document, document.exists, let data = document.data() {
-                UserDefaults.standard.set(data["switch"], forKey: goorback.isShowRoute2Key)
-                UserDefaults.standard.set(data["changeline"], forKey: goorback.changeLineKey)
-                UserDefaults.standard.set(data["departpoint"], forKey: goorback.departurePointKey)
-                UserDefaults.standard.set(data["arrivalpoint"], forKey: goorback.destinationKey)
-                for num in 0..<3 {
-                    UserDefaults.standard.set(data["departstation\(num + 1)"], forKey: goorback.departStationKey(num))
-                    UserDefaults.standard.set(data["arrivalstation\(num + 1)"], forKey: goorback.arriveStationKey(num))
-                    UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))
-                    UserDefaults.standard.set(data["linecolor\(num + 1)"], forKey: goorback.lineColorKey(num))
-                    UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
-                    UserDefaults.standard.set(data["linekind\(num + 1)"], forKey: goorback.lineKindKey(num))
-                    UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
-                    UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
-                    UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))
-                }
-                UserDefaults.standard.set(data["transportatione"], forKey: goorback.transportationKey(0))
-                UserDefaults.standard.set(data["transittimee"], forKey: goorback.transferTimeKey(0))
-                if (goorback == "go2") {
-                    title = "Data got successfully".localized
-                    message = ""
-                    isFirestoreSuccess = true
-                    isLoading = false
-                    isShowMessage = true
-                }
-            } else {
-                if (goorback == "go2") {
-                    isLoading = false
-                    isShowMessage = true
-                }
+            Task { @MainActor in
+                if let document = document, document.exists, let data = document.data() {
+                    UserDefaults.standard.set(data["switch"], forKey: goorback.isShowRoute2Key)
+                    UserDefaults.standard.set(data["changeline"], forKey: goorback.changeLineKey)
+                    UserDefaults.standard.set(data["departpoint"], forKey: goorback.departurePointKey)
+                    UserDefaults.standard.set(data["arrivalpoint"], forKey: goorback.destinationKey)
+                    for num in 0..<3 {
+                        UserDefaults.standard.set(data["departstation\(num + 1)"], forKey: goorback.departStationKey(num))
+                        UserDefaults.standard.set(data["arrivalstation\(num + 1)"], forKey: goorback.arriveStationKey(num))
+                        UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))
+                        UserDefaults.standard.set(data["linecolor\(num + 1)"], forKey: goorback.lineColorKey(num))
+                        UserDefaults.standard.set(data["linecode\(num + 1)"], forKey: goorback.lineCodeKey(num))
+                        UserDefaults.standard.set(data["linekind\(num + 1)"], forKey: goorback.lineKindKey(num))
+                        UserDefaults.standard.set(data["ridetime\(num + 1)"], forKey: goorback.rideTimeKey(num))
+                        UserDefaults.standard.set(data["transportation\(num + 1)"], forKey: goorback.transportationKey(num + 1))
+                        UserDefaults.standard.set(data["transittime\(num + 1)"], forKey: goorback.transferTimeKey(num + 1))
+                    }
+                    UserDefaults.standard.set(data["transportatione"], forKey: goorback.transportationKey(0))
+                    UserDefaults.standard.set(data["transittimee"], forKey: goorback.transferTimeKey(0))
+                    if (goorback == "go2") {
+                        title = "Data got successfully".localized
+                        message = ""
+                        isFirestoreSuccess = true
+                        isLoading = false
+                        isShowMessage = true
+                    }
+                } else {
+                    if (goorback == "go2") {
+                        isLoading = false
+                        isShowMessage = true
+                    }
 
+                }
             }
         }
     }
@@ -277,19 +259,14 @@ class MyFirestore: ObservableObject {
         let documentName = "timetable\(num + 1)\(calendarType.calendarTag)"
         let nextref = getRef(goorback).collection("timetable").document(documentName)
         
-        print("🔍 getTimetableFirestore - goorback: \(goorback), num: \(num), calendarType: \(calendarType.debugDisplayName)")
-        print("🔍 Calendar type: \(calendarType.debugDisplayName), tag: \(calendarType.calendarTag)")
-        print("🔍 Document name: \(documentName)")
-        print("🔍 Full path: \(nextref.path)")
-        
         nextref.getDocument { (document, error) in
             if let error = error {
                 print("❌ Error getting document for \(calendarType.debugDisplayName): \(error.localizedDescription)")
                 return
             }
             
+            // Process document data and save to UserDefaults
             if let document = document, document.exists {
-                print("✅ Document exists for \(calendarType.debugDisplayName) with \(document.data()?.count ?? 0) fields")
                 if let data = document.data() {
                     // Set data from Firestore for all hours with backward compatibility
                     for hour in 4...25 {
@@ -305,45 +282,17 @@ class MyFirestore: ObservableObject {
                             UserDefaults.standard.set(enhancedData["timetable"] ?? "", forKey: timetableKey)
                             UserDefaults.standard.set(enhancedData["rideTime"] ?? "", forKey: timetableRideTimeKey)
                             UserDefaults.standard.set(enhancedData["trainType"] ?? "", forKey: timetableTrainTypeKey)
-                            
-                            if hour < 9 && !(enhancedData["timetable"] ?? "").isEmpty {
-                                print("📊 Downloaded Hour \(hour) (enhanced): timetable='\(enhancedData["timetable"] ?? "")', rideTime='\(enhancedData["rideTime"] ?? "")', trainType='\(enhancedData["trainType"] ?? "")'")
-                            }
                         } else if let hourDataString = data[hourKey] as? String {
-                            // Legacy format - only timetable data available
+                            // Legacy format - fallback to old string-only format for backward compatibility
                             UserDefaults.standard.set(hourDataString, forKey: timetableKey)
                             // Clear ride time and train type for legacy data
                             UserDefaults.standard.set("", forKey: timetableRideTimeKey)
                             UserDefaults.standard.set("", forKey: timetableTrainTypeKey)
-                            
-                            if hour < 9 && !hourDataString.isEmpty {
-                                print("📊 Downloaded Hour \(hour) (legacy): timetable='\(hourDataString)'")
-                            }
                         }
                     }
-                    print("✅ Downloaded timetable data from Firestore for \(calendarType.debugDisplayName)")
                 }
-            } else {
-                print("❌ Document does not exist for \(calendarType.debugDisplayName): \(documentName)")
             }
         }
-    }
-    
-    // MARK: - Local Data Clearing
-    // Clear local UserDefaults data for all calendar types and line
-    private func clearLocalTimetableData(goorback: String, num: Int) {
-        for calendarType in ODPTCalendarType.allCases {
-            for hour in 4...25 {
-                let timetableKey = goorback.timetableKey(calendarType, num, hour)
-                let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, num, hour)
-                let timetableTrainTypeKey = goorback.timetableTrainTypeKey(calendarType, num, hour)
-                
-                UserDefaults.standard.removeObject(forKey: timetableKey)
-                UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
-                UserDefaults.standard.removeObject(forKey: timetableTrainTypeKey)
-            }
-        }
-        print("🗑️ Cleared local timetable data for all calendar types")
     }
     
 }

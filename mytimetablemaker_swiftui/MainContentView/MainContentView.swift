@@ -12,17 +12,23 @@ import AppTrackingTransparency
 // Primary view displaying transfer information, timetables, and navigation controls
 struct MainContentView: View {
 
-    @ObservedObject private var myTransfer: MyTransfer
-    @ObservedObject private var myLogin: MyLogin
-    @ObservedObject private var myFirestore: MyFirestore
+    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myLogin: LoginViewModel
+    @ObservedObject private var myFirestore: FirestoreViewModel
 
     @State private var isShowSplash = true
     @State private var isMoveSettings = false
+    // Centralize sheet states to avoid per-row @State scatter.
+    // Selected route/row are captured via active* before presenting sheets.
+    @State private var activeTransferNum: Int? = nil
+    @State private var activeGoorback: String? = nil
+    @State private var isShowingLineSheet: Bool = false
+    @State private var isShowingTransferSheet: Bool = false
 
     init(
-        _ myTransfer: MyTransfer,
-        _ myLogin: MyLogin,
-        _ myFirestore: MyFirestore
+        _ myTransfer: TransferViewModel,
+        _ myLogin: LoginViewModel,
+        _ myFirestore: FirestoreViewModel
     ) {
         self.myTransfer = myTransfer
         self.myLogin = myLogin
@@ -102,6 +108,7 @@ struct MainContentView: View {
                     
                     // MARK: - Operation Buttons
                     HStack(alignment: .center, spacing: screen.operationButtonMargin) {
+                        
                         // Display return route button
                         CustomButton(
                             title: "Back".localized,
@@ -137,6 +144,7 @@ struct MainContentView: View {
                             action: myTransfer.stopButton
                         )
                         .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
+                        
                         // To Settings Button
                         Button(action: {
                             isMoveSettings = true
@@ -161,13 +169,13 @@ struct MainContentView: View {
                             .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
                             .foregroundColor(myTransfer.countdownColor1)
                             .padding(.vertical, screen.routeCountdownPadding)
-                        HomeOfficeView(myTransfer.goOrBack1, 1, myTransfer.timeArrayString1[1])
+                        HomeOfficeView(myTransfer.goOrBack1, 1)
                         ForEach(0...myTransfer.changeLine1, id: \.self) { num in
                             TransferView(myTransfer.goOrBack1, num + 1)
-                            StationLineView(myTransfer.goOrBack1, Date().odpTCalendarType, num, myTransfer.timeArrayString1[2 * num + 2], myTransfer.timeArrayString1[2 * num + 3])
+                            StationLineView(myTransfer.goOrBack1, num)
                         }
                         TransferView(myTransfer.goOrBack1, 0)
-                        HomeOfficeView(myTransfer.goOrBack1, 0, myTransfer.timeArrayString1[0])
+                        HomeOfficeView(myTransfer.goOrBack1, 0)
                         Spacer()
                     }
                     .frame(width: myTransfer.routeWidth, alignment: .top)
@@ -185,13 +193,13 @@ struct MainContentView: View {
                                 .font(.system(size: screen.routeCountdownFontSize))
                                 .foregroundColor(myTransfer.countdownColor2)
                                 .padding(.vertical, screen.routeCountdownPadding)
-                            HomeOfficeView(myTransfer.goOrBack2, 1, myTransfer.timeArrayString2[1])
+                            HomeOfficeView(myTransfer.goOrBack2, 1)
                             ForEach(0...myTransfer.changeLine2, id: \.self) { num in
                                 TransferView(myTransfer.goOrBack2, num + 1)
-                                StationLineView(myTransfer.goOrBack2, Date().odpTCalendarType, num, myTransfer.timeArrayString2[2 * num + 2], myTransfer.timeArrayString2[2 * num + 3])
+                                StationLineView(myTransfer.goOrBack2, num)
                             }
                             TransferView(myTransfer.goOrBack2, 0)
-                            HomeOfficeView(myTransfer.goOrBack2, 0, myTransfer.timeArrayString2[0])
+                            HomeOfficeView(myTransfer.goOrBack2, 0)
                             Spacer()
                         }
                         .frame(width: myTransfer.routeWidth)
@@ -218,34 +226,210 @@ struct MainContentView: View {
             SettingsContentView(myTransfer, myLogin, myFirestore)
         }
         .navigationBarBackButtonHidden(true)
-        // SettingsLineSheetの保存完了を監視してMyTransferのデータを更新
+        // Centralized sheets: content uses activeGoorback/activeTransferNum.
+        // Avoid closing due to row identity changes by owning sheets here.
+        .sheet(isPresented: $isShowingLineSheet) {
+            NavigationStack {
+                SettingsLineSheet(
+                    goorback: activeGoorback ?? myTransfer.goOrBack1,
+                    lineIndex: max((activeTransferNum ?? 2) - 2, 0)
+                )
+            }
+        }
+        .sheet(isPresented: $isShowingTransferSheet) {
+            NavigationStack {
+                SettingsTransferSheet()
+            }
+        }
+        // Listen global UserDefaults changes and reflect immediately.
+        // Reflect any UserDefaults changes into the view model safely on MainActor.
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            Task { @MainActor in
+                myTransfer.updateAllDataFromUserDefaults()
+            }
+        }
+        // Refresh when SettingsLineSheet finishes saving.
+        // When SettingsLineSheet saves, refresh all derived values.
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsLineUpdated"))) { _ in
-            myTransfer.updateAllDataFromUserDefaults()
+            Task { @MainActor in
+                myTransfer.updateAllDataFromUserDefaults()
+            }
         }
-        // SettingsTransferSheetの保存完了を監視してMyTransferのデータを更新
+        // Refresh when SettingsTransferSheet finishes saving.
+        // When SettingsTransferSheet saves, refresh all derived values.
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsTransferUpdated"))) { _ in
-            myTransfer.updateAllDataFromUserDefaults()
+            Task { @MainActor in
+                myTransfer.updateAllDataFromUserDefaults()
+            }
         }
-        // 帰宅/外出の切り替えを監視して全ての表示を更新
+        // Refresh all views when Go/Back flag toggles.
         .onChange(of: myTransfer.isBack) { _ in
             myTransfer.updateAllDataFromUserDefaults()
         }
+        // Ensure timer is running when MainContentView appears
         .onAppear {
-            // Ensure timer is running when MainContentView appears
             if myTransfer.isTimeStop {
                 myTransfer.startButton()
             }
         }
     }
+    
+    // MARK: - Station and Time View
+    // Displays station name and departure time with editing capability
+    @ViewBuilder
+    func HomeOfficeView(_ goorback: String, _ num: Int) -> some View {
+        let timeArray = goorback == myTransfer.goOrBack1 ? myTransfer.timeArrayString1 : myTransfer.timeArrayString2
+        let time = num == 0 ? timeArray[0] : timeArray[1]
+        
+        HStack {
+            // MARK: - Station Name Button
+            Text(num == 0 ? goorback.destination: goorback.departurePoint)
+                .font(.system(size: screen.stationFontSize))
+                .lineLimit(1)
+            Spacer()
+            // MARK: - Time Display
+            Text(time)
+                .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+        }
+        .foregroundColor(.primary)
+    }
+
+    // MARK: - Line Time Image (func)
+    // Build small icon view from goorback/num without holding state
+    @ViewBuilder
+    func LineTimeImage(_ goorback: String, _ num: Int, isTransfer: Bool) -> some View {
+        let transportationArray = goorback.transportationArray
+        let lineColorArray = goorback.lineColorArray
+        let lineCodeArray = goorback.lineCodeArray
+        let lineKindArray = goorback.lineKindArray
+
+        let lineColor: Color = isTransfer ? .gray : lineColorArray[num]
+        let lineCode: String = isTransfer ? "" : lineCodeArray[num]
+        let transportation: String = isTransfer ? transportationArray[num] : ""
+        let transportationKind: TransportationLine.Kind? = isTransfer ? nil : lineKindArray[num]
+
+        let iconName: String = {
+            if isTransfer {
+                return transportation != "" ? transferType(from: transportation).iconName: "figure.walk"
+            } else {
+                switch transportationKind {
+                case .railway: return "lightrail"
+                case .bus: return "bus"
+                case .none: return "lightrail"
+                }
+            }
+        }()
+
+        ZStack(alignment: .center) {
+            Rectangle()
+                .frame(width: screen.lineImageBackgroundSize, height: screen.lineImageBackgroundSize)
+                .foregroundColor(lineColor)
+
+            Image(systemName: iconName)
+                .resizable()
+                .scaledToFit()
+                .frame(
+                    width: screen.lineImageForegroundSize,
+                    height: screen.lineImageForegroundSize
+                )
+                .foregroundColor(.white)
+
+            Text(lineCode)
+                .font(.system(size: 14, weight: .bold, design: .default))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .foregroundColor(.white)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: 0)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: 0)
+                .shadow(color: .secondary, radius: 0, x: 0, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: 0, y: -0.5)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: 0.5, y: -0.5)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: 0.5)
+                .shadow(color: .secondary, radius: 0, x: -0.5, y: -0.5)
+        }
+    }
+
+    // MARK: - Transfer View (func)
+    @ViewBuilder
+    func TransferView(_ goorback: String, _ num: Int) -> some View {
+        HStack {
+            Button(action: {
+                activeTransferNum = num
+                activeGoorback = goorback
+                if num < 2 {
+                    isShowingTransferSheet = true
+                } else {
+                    isShowingLineSheet = true
+                }
+            }) {
+                LineTimeImage(goorback, num, isTransfer: true)
+            }
+            Spacer()
+        }
+        .frame(height: screen.transferHeight)
+    }
+
+    // MARK: - StationLine View (func)
+    @ViewBuilder
+    func StationLineView(_ goorback: String, _ num: Int) -> some View {
+        let currentDate = Date()
+        let currentTime = currentDate.currentTime
+        let selectedCalendarType = goorback.calendarType(for: currentDate)
+        let timeArray = goorback.timeArray(selectedCalendarType, currentTime).map { $0.stringTime }
+        let departureTime = timeArray[2 * num + 2]
+        let arrivalTime = timeArray[2 * num + 3]
+        let stationArray = goorback.stationArray
+        let lineNameArray = goorback.lineNameArray
+        let lineColorArray = goorback.lineColorArray
+
+        VStack(alignment: .leading) {
+            HStack {
+                Text(stationArray[2 * num])
+                    .font(.system(size: screen.stationFontSize))
+                    .lineLimit(1)
+                Spacer()
+                Text(departureTime)
+                    .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+            }
+            .foregroundColor(.primary)
+
+            Button(action: {
+                activeTransferNum = num + 2 // Convert line num to Settings' lineIndex.
+                activeGoorback = goorback
+                isShowingLineSheet = true
+            }) {
+                HStack {
+                    LineTimeImage(goorback, num, isTransfer: false)
+                    Text(lineNameArray[num])
+                        .font(.system(size: screen.lineFontSize))
+                        .foregroundColor(lineColorArray[num])
+                        .lineLimit(2)
+                }
+            }
+            .frame(height: screen.lineNameHeight)
+
+            HStack {
+                Text(stationArray[2 * num + 1])
+                    .font(.system(size: screen.stationFontSize))
+                    .lineLimit(1)
+                Spacer()
+                Text(arrivalTime)
+                    .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+            }
+            .foregroundColor(.primary)
+        }
+    }
+
 }
 
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode
 struct MainContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = MyTransfer()
-        let myLogin = MyLogin()
-        let myFirestore = MyFirestore()
+        let myTransfer = TransferViewModel()
+        let myLogin = LoginViewModel()
+        let myFirestore = FirestoreViewModel()
         MainContentView(myTransfer, myLogin, myFirestore)
     }
 }

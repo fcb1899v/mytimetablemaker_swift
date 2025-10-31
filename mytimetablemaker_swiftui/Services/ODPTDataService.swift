@@ -11,9 +11,6 @@
 
 import Foundation
 
-// MARK: - ODPT Data Transfer Objects
-// DTOs for handling external data formats from ODPT API.
-
 // MARK: - ODPT Railway DTO
 // DTO for railway data from ODPT API.
 // Maps external JSON structure to internal data model.
@@ -27,6 +24,8 @@ struct RailwayDTO: Decodable {
     let destinationStation: String?
     let railwayTitle: LocalizedTitle?
     let lineCode: String?
+    let ascendingRailDirection: String?
+    let descendingRailDirection: String?
     let date: String?
 
     enum CodingKeys: String, CodingKey {
@@ -39,8 +38,11 @@ struct RailwayDTO: Decodable {
         case destinationStation = "odpt:destinationStation" // Destination station (first element from array)
         case railwayTitle = "odpt:railwayTitle"   // Multi-language line name
         case lineCode = "odpt:lineCode"           // Line identifier code
+        case ascendingRailDirection = "odpt:ascendingRailDirection" // Ascending direction for timetable API
+        case descendingRailDirection = "odpt:descendingRailDirection" // Descending direction for timetable API
         case date = "dc:date"                     // Data update date
     }
+    
 }
 
 // MARK: - ODPT Bus Route Pattern DTO
@@ -85,6 +87,7 @@ struct ODPTParser {
         }
         
         // Filter out railway data - only process odpt:BusroutePattern
+        // Ensures only bus route patterns are parsed from mixed API responses
         let busOnlyData = array.filter { item in
             if let itemType = item["@type"] as? String {
                 return itemType == "odpt:BusroutePattern"
@@ -107,8 +110,8 @@ struct ODPTParser {
         // MARK: - DTO to Model Mapping using closures
         let transportationLines = dtos.map { dto in
             
-            // Extract English name from odpt:busroute value
-            let englishName = extractEnglishNameFromRouteName(dto.busRoute ?? "")
+            // Extract English name from odpt:busroute value using LineExtensions
+            let englishName = (dto.busRoute ?? "").busRouteEnglishName
             
             return TransportationLine(
                 kind: .bus,
@@ -135,109 +138,75 @@ struct ODPTParser {
         return transportationLines
     }
     
-    // MARK: - Helper Functions
-    // Extract English name from odpt:busroute value
-    private static func extractEnglishNameFromRouteName(_ routeName: String) -> String? {
-        // Extract English name from odpt:busroute format (e.g., "Mon33" from "odpt.Busroute:Toei.Mon33")
-        // Format: "odpt.Busroute:OperatorName.RouteCode"
-        // Similar to: result["odpt:busroute"].split(".")[2]
-                
-        // Split by "." to get parts
-        let parts = routeName.components(separatedBy: ".")
-        
-        // Check if we have enough parts and the format is correct
-        guard parts.count >= 3,
-              parts[0] == "odpt",
-              parts[1].hasPrefix("Busroute:") else { 
-            print("❌ ODPTParser: Invalid format for routeName: '\(routeName)'")
-            return nil 
-        }
-        
-        // Get the route code (third part, index 2)
-        let routeCode = parts[2]
-        
-        // Validate that the route code contains English characters or numbers
-        let englishPattern = "[A-Za-z0-9]"
-        guard routeCode.range(of: englishPattern, options: .regularExpression) != nil else { 
-            print("❌ ODPTParser: Route code '\(routeCode)' does not contain English characters")
-            return nil 
-        }
-        
-        return routeCode
-    }
-    
-    // MARK: - Local File Railway Parsing
-    // Parse railway data from local JSON files with odpt:color field support
+    // MARK: - Railway Data Parsing
+    // Parse railway data from JSON files with support for both API and local file formats
+    // Uses DTO pattern for type-safe decoding, consistent with bus route parsing
     static func parseRailwayRoutes(_ data: Data) throws -> [TransportationLine] {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
+            guard let array = json as? [[String: Any]] else {
+                throw ODPTError.invalidData
+            }
             
-            if let array = json as? [[String: Any]] {
-                // MARK: - Array Processing using closures
-                return array.compactMap { element -> TransportationLine? in
-                    // MARK: - Required Field Validation using closure
-                    guard let title = element["dc:title"] as? String,
-                          let sameAs = element["owl:sameAs"] as? String else { return nil }
-                    let operatorCode = element["odpt:operator"] as? String
-                    // Support both odpt:color (local) and odpt:lineColor (API) fields
-                    let lineColor = element["odpt:color"] as? String ?? element["odpt:lineColor"] as? String
-                    let lineCode = element["odpt:lineCode"] as? String
-                    
-                    // MARK: - Multi-Language Title Processing using closure
-                    let railwayTitle: LocalizedTitle? = {
-                        guard let railwayTitleDict = element["odpt:railwayTitle"] as? [String: String] else { return nil }
-                        return LocalizedTitle(
-                            ja: railwayTitleDict["ja"],
-                            en: railwayTitleDict["en"]
-                        )
-                    }()
-                    
-                    // MARK: - Station Boundary Information using closure
-                    let startStation = element["odpt:startStation"] as? String
-                    let endStation = element["odpt:endStation"] as? String
-                    
-                    // MARK: - Destination Station Information
-                    let destinationStation: String? = {
-                        if let destinationArray = element["odpt:destinationStation"] as? [String],
-                           let firstDestination = destinationArray.first {
-                            return firstDestination
-                        }
-                        return nil
-                    }()
-                    
-                    // MARK: - Rail Direction Information
-                    let ascendingRailDirection = element["odpt:ascendingRailDirection"] as? String
-                    let descendingRailDirection = element["odpt:descendingRailDirection"] as? String
-                    let lineDirection = ascendingRailDirection // Keep for backward compatibility
-                    
-                    // MARK: - Line Creation
-                    return TransportationLine(
-                        kind: .railway,
-                        name: title,
-                        code: sameAs,
-                        operatorCode: operatorCode,
-                        lineColor: lineColor,
-                        startStation: startStation,
-                        endStation: endStation,
-                        destinationStation: destinationStation,
-                        railwayTitle: railwayTitle,
-                        lineCode: lineCode,
-                        lineDirection: lineDirection,
-                        ascendingRailDirection: ascendingRailDirection,
-                        descendingRailDirection: descendingRailDirection,
-                        busRoute: nil,
-                        pattern: nil,
-                        busDirection: nil,
-                        busstopPoleOrder: nil,
-                        title: nil
-                    )
+            // MARK: - Dictionary to DTO Mapping
+            // Convert dictionary to DTO manually to support both odpt:color and odpt:lineColor
+            let dtos = array.compactMap { element -> RailwayDTO? in
+                guard let title = element["dc:title"] as? String,
+                      let sameAs = element["owl:sameAs"] as? String else {
+                    return nil
                 }
+                
+                // Use LineExtensions utilities for ODPT data extraction
+                let lineColor = element.odptLineColor()
+                let destinationStation = element.odptDestinationStation()
+                let railwayTitle = element.odptRailwayTitle()
+                
+                // Extract rail direction information for timetable API calls
+                let ascendingRailDirection = element["odpt:ascendingRailDirection"] as? String
+                let descendingRailDirection = element["odpt:descendingRailDirection"] as? String
+                
+                return RailwayDTO(
+                    title: title,
+                    sameAs: sameAs,
+                    operatorCode: element["odpt:operator"] as? String,
+                    lineColor: lineColor,
+                    startStation: element["odpt:startStation"] as? String,
+                    endStation: element["odpt:endStation"] as? String,
+                    destinationStation: destinationStation,
+                    railwayTitle: railwayTitle,
+                    lineCode: element["odpt:lineCode"] as? String,
+                    ascendingRailDirection: ascendingRailDirection,
+                    descendingRailDirection: descendingRailDirection,
+                    date: element["dc:date"] as? String
+                )
+            }
+            
+            // MARK: - DTO to Model Mapping
+            return dtos.map { dto in
+                return TransportationLine(
+                    kind: .railway,
+                    name: dto.title,
+                    code: dto.sameAs,
+                    operatorCode: dto.operatorCode,
+                    lineColor: dto.lineColor,
+                    startStation: dto.startStation,
+                    endStation: dto.endStation,
+                    destinationStation: dto.destinationStation,
+                    railwayTitle: dto.railwayTitle,
+                    lineCode: dto.lineCode,
+                    lineDirection: dto.ascendingRailDirection, // Keep for backward compatibility
+                    ascendingRailDirection: dto.ascendingRailDirection,
+                    descendingRailDirection: dto.descendingRailDirection,
+                    busRoute: nil,
+                    pattern: nil,
+                    busDirection: nil,
+                    busstopPoleOrder: nil,
+                    title: nil
+                )
             }
         } catch {
             throw ODPTError.invalidData
         }
-        
-        return []
     }
 }
 
@@ -307,6 +276,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
 
     // MARK: - Common Request Configuration
     // Common function to configure request headers
+    // Sets authentication and conditional request headers for efficient caching
     private func configureRequest(_ request: inout URLRequest, consumerKey: String, conditionalHeaders: (etag: String?, lastModified: String?)? = nil) {
         request.setValue(consumerKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
@@ -358,7 +328,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func saveETag(_ etag: String, for transportOperator: LocalDataSource) {
         let etagKey = "\(transportOperator.fileName)_etag"
         UserDefaults.standard.set(etag, forKey: etagKey)
-        print("💾 \(transportOperator.operatorDisplayName): Saved ETag: \(etag)")
     }
     
     /// Get Last-Modified for a specific operator from UserDefaults
@@ -371,7 +340,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func saveLastModified(_ lastModified: String, for transportOperator: LocalDataSource) {
         let lastModifiedKey = "\(transportOperator.fileName)_last_modified"
         UserDefaults.standard.set(lastModified, forKey: lastModifiedKey)
-        print("💾 \(transportOperator.operatorDisplayName): Saved Last-Modified: \(lastModified)")
     }
     
     // MARK: - Conditional GET Request Check (ODPT API Optimized)
@@ -402,7 +370,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                 
                 // Handle 304 Not Modified response
                 if httpResponse.statusCode == 304 {
-                    print("✅ \(transportOperator.operatorDisplayName): 304 Not Modified - No update needed")
                     return false // No update needed - server confirms data hasn't changed
                 }
                 
@@ -418,7 +385,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                     // MARK: - ETag Comparison (Fast Path)
                     // If ETags match, no update is needed (fastest check)
                     if let currentEtag = currentEtag, let newEtag = newEtag, currentEtag == newEtag {
-                        print("✅ \(transportOperator.operatorDisplayName): ETag matches - No update needed")
                         return false // No update needed - ETag confirms no change
                     }
                     
@@ -434,7 +400,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                     // MARK: - Data Content Comparison (Fallback)
                     // Compare actual data content to determine if update is needed
                     let dataMatches = cachedData != nil && data == cachedData!
-                    print(dataMatches ? "✅ \(transportOperator.operatorDisplayName): Data content is identical - No update needed" : "🔄 \(transportOperator.operatorDisplayName): Data content has changed - Update needed")
                     return !dataMatches
                 } else {
                     print("❌ \(transportOperator.operatorDisplayName): Unexpected response status: \(httpResponse.statusCode)")
@@ -455,7 +420,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     private func processOperatorUpdate(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> (data: Data, updated: Bool) {
         let needsUpdate = try await checkIndividualOperatorForUpdates(transportOperator, consumerKey: consumerKey)
             if needsUpdate {
-                print("📥 \(transportOperator.operatorDisplayName): Fetching updated data...")
                 let data = try await fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
                 
                 // Write updated data to JSON file
@@ -468,7 +432,6 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
                 print("✅ \(transportOperator.operatorDisplayName): Successfully updated data (\(data.count) bytes)")
                 return (data, true)
             } else {
-                print("✅ \(transportOperator.operatorDisplayName): No update needed")
                 return (Data(), false)
             }
     }

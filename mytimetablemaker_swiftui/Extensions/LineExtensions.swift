@@ -9,46 +9,24 @@ import SwiftUI
 import Foundation
 import Combine
 
-// MARK: - ODPT Data Type Enum
-// Enumeration for different ODPT data types with associated values
-enum ODPTDataType: CaseIterable {
-    case railway
-    case trainTimetable
-    case stationTimetable
-    case trainStation
-    case busRoutePattern
-    case busTimetable
-    case busstopPole
-    
-    // MARK: - API Endpoint
-    var apiEndpoint: String {
-        switch self {
-        case .railway: return "odpt:Railway"
-        case .trainTimetable: return "odpt:TrainTimetable"
-        case .stationTimetable: return "odpt:StationTimetable"
-        case .trainStation: return "odpt:Station"
-        case .busRoutePattern: return "odpt:BusroutePattern"
-        case .busTimetable: return "odpt:BusTimetable"
-        case .busstopPole: return "odpt:BusstopPole"
-        }
-    }
-}
-
-// MARK: - ODPT API Type Enum
-// Enumeration for different ODPT API endpoints
-enum ODPTAPIType: CaseIterable {
-    case standard    // Standard API with access key
-    case publicAPI   // Public API without access key
-    case challenge   // Challenge API with challenge key
-    case gtfs        // No API (Use GTFS Data)
-}
-
 // MARK: - App Constants
 // Core application constants and localized strings
 let appTitle = "My Transfer Makers".localized
+// Array of route direction identifiers
 let goorbackarray = ["back1", "go1", "back2", "go2"]
 
-// UserDefault Key
+// Route direction constants
+let goorbackOptions: [String] = ["back1", "back2", "go1", "go2"]
+
+// Route direction display names (non-localized)
+let goorbackDisplayNamesRaw: [String: String] = [
+    "back1": "Return Route 1",
+    "back2": "Return Route 2",
+    "go1": "Outbound Route 1",
+    "go2": "Outbound Route 2"
+]
+
+// UserDefault Keys for home and office locations
 let homeKey = "departurepoint"
 let officeKey = "destination"
 
@@ -58,7 +36,9 @@ let odptAccessKey = Bundle.main.object(forInfoDictionaryKey: "ODPT_ACCESS_TOKEN"
 let odptChallengeKey = Bundle.main.object(forInfoDictionaryKey: "ODPT_CHALLENGE_TOKEN") as? String ?? ""
 
 // App version and external links
+// Application version string from bundle
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
+// Terms of service URL
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized
 
 // MARK: - Localization Extension
@@ -90,15 +70,32 @@ extension String {
     
     /// Extract English name from bus route identifier
     /// Example: "odpt.Busroute:Toei.Mon33" → "Mon33"
+    /// Validates format and ensures route code contains English characters
     var busRouteEnglishName: String? {
         // Only extract English name for English locale
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         guard currentLanguage != "ja" else { return nil }
         
-        // Extract the third part after splitting by dots
-        let components = self.components(separatedBy: ".")
-        guard components.count >= 3 else { return nil }
-        return components[2] // Index 2 should be the English route code
+        // Split by "." to get parts
+        let parts = self.components(separatedBy: ".")
+        
+        // Check if we have enough parts and the format is correct
+        guard parts.count >= 3,
+              parts[0] == "odpt",
+              parts[1].hasPrefix("Busroute:") else {
+            return nil
+        }
+        
+        // Get the route code (third part, index 2)
+        let routeCode = parts[2]
+        
+        // Validate that the route code contains English characters or numbers
+        let englishPattern = "[A-Za-z0-9]"
+        guard routeCode.range(of: englishPattern, options: .regularExpression) != nil else {
+            return nil
+        }
+        
+        return routeCode
     }
     
     /// Extract English name from bus stop pole identifier
@@ -139,7 +136,6 @@ extension String {
     }
     
     // MARK: - Localization Helper
-    // Helper function for localized name selection
     func selectLocalizedName(ja: String?, en: String?) -> String {
         return self == "ja" ? (ja ?? en ?? "") : (en ?? ja ?? "")
     }
@@ -453,22 +449,8 @@ extension String {
             let trainTypes = Array(Set(trainTypeListString.components(separatedBy: " ")
                 .filter { !$0.isEmpty }))
                 .sorted { trainType1, trainType2 in
-                    let color1 = Color.colorForTrainType(trainType1)
-                    let color2 = Color.colorForTrainType(trainType2)
-                    
-                    // Define color priority: white, yellow-green, yellow, orange, pink, light blue
-                    let colorPriority: [Color: Int] = [
-                        .white: 0,
-                        .yelwgre: 1,
-                        .yellow: 2,
-                        .orange: 3,
-                        .pink: 4,
-                        .ligblue: 5
-                    ]
-                    
-                    let priority1 = colorPriority[color1] ?? 999
-                    let priority2 = colorPriority[color2] ?? 999
-                    
+                    let priority1 = Color.colorForTrainType(trainType1).priorityValue
+                    let priority2 = Color.colorForTrainType(trainType2).priorityValue
                     if priority1 != priority2 {
                         return priority1 < priority2
                     } else {
@@ -555,28 +537,6 @@ extension Array where Element == (trainNumber: String, departureTime: String, de
     }
 }
 
-// MARK: - Bus Stop Name Extraction Extension
-// Extension for extracting station names from bus stop pole codes
-extension String {
-    
-    // MARK: - Bus Stop Name Extraction
-    /// Extract station name from bus stop pole code
-    /// Example: "odpt.BusstopPole:Toei.TOKYOSKYTREEStation.2028.3" -> "TOKYOSKYTREEStation"
-    func extractStationNameFromCode() -> String {
-        let components = self.components(separatedBy: ".")
-        guard components.count >= 3 else { return self }
-        
-        // Extract the station name part (usually the 3rd component)
-        let stationName = components[2]
-        
-        // Convert camelCase to readable format
-        let readableName = stationName.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression)
-        
-        return readableName.isEmpty ? stationName : readableName
-    }
-    
-}
-
 // MARK: - Character Extensions
 extension Character {
     /// Check if the character is a Japanese character (Hiragana, Katakana, or Kanji)
@@ -587,3 +547,213 @@ extension Character {
                (0x4E00...0x9FAF).contains(unicodeScalar.value)    // Kanji
     }
 }
+
+// MARK: - TransportationLine Display Extensions
+extension SettingsLineSheetViewModel {
+    
+    // MARK: - Display Name Helpers
+    // Get localized display name for transportation line
+    func lineDisplayName(for line: TransportationLine) -> String {
+        let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+        
+        if line.kind == .bus {
+            return currentLanguage == "ja" ? line.title! :
+            (line.busRouteEnglishName ?? line.railwayTitle?.en ?? line.name)
+        }
+        
+        guard let railwayTitle = line.railwayTitle else { return line.name }
+        return railwayTitle.getLocalizedName(fallbackTo: line.name)
+    }
+    
+    // Get localized display name based on operator code
+    func getOperatorDisplayName(for operatorCode: String, lineKind: TransportationLine.Kind? = nil) -> String {
+        let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
+        return NSLocalizedString(operatorName, comment: "Railway operator name")
+    }
+    
+    // MARK: - Data Extraction Helpers
+    // Extract bus stops from bus route data
+    func extractStopsFromBusRoute(_ busRoute: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
+        guard let busStopData = busRoute["odpt:busstopPoleOrder"] as? [[String: Any]] else { return nil }
+        
+        let busStops: [TransportationStop] = busStopData.compactMap { busStopInfo -> TransportationStop? in
+            let note = busStopInfo["odpt:note"] as? String ?? ""
+            let busstopPole = busStopInfo["odpt:busstopPole"] as? String ?? ""
+            
+            guard !note.isEmpty || !busstopPole.isEmpty else { return nil }
+            
+            // Check if note contains Japanese characters
+            let hasJapaneseInNote = note.contains(where: { $0.isJapanese })
+            
+            // If note doesn't contain Japanese or is empty, and we have busstopPole, fetch from API
+            if (!hasJapaneseInNote || note.isEmpty) && !busstopPole.isEmpty {
+                // Japanese name will be fetched later in selectLine
+                // For now, use busstopPole as fallback
+                let finalNote = note.isEmpty ? busstopPole : note
+                let title = String.generateBusStopTitle(note: finalNote, busstopPole: busstopPole)
+                let stopName = title?.getLocalizedName(fallbackTo: finalNote) ?? finalNote
+                
+                return TransportationStop(
+                    kind: .bus,
+                    name: stopName,
+                    code: busstopPole.isEmpty ? nil : busstopPole,
+                    index: busStopInfo["odpt:index"] as? Int,
+                    lineCode: lineCode,
+                    title: title,
+                    note: finalNote,
+                    busstopPole: busstopPole.isEmpty ? nil : busstopPole
+                )
+            }
+            
+            // Use shared bus stop title generation logic for stops with Japanese
+            let title = String.generateBusStopTitle(note: note, busstopPole: busstopPole)
+            let stopName = title?.getLocalizedName(fallbackTo: note) ?? (note.isEmpty ? busstopPole : note)
+            
+            return TransportationStop(
+                kind: .bus,
+                name: stopName,
+                code: busstopPole.isEmpty ? nil : busstopPole,
+                index: busStopInfo["odpt:index"] as? Int,
+                lineCode: lineCode,
+                title: title,
+                note: note,
+                busstopPole: busstopPole.isEmpty ? nil : busstopPole
+            )
+        }
+        
+        return busStops.isEmpty ? nil : busStops
+    }
+    
+    // Extract stations from railway data
+    func extractStationsFromRailway(_ railway: [String: Any], searchMethod: String, searchValue: String, lineCode: String? = nil) -> [TransportationStop]? {
+        let stations: [TransportationStop]? = (railway["odpt:stationOrder"] as? [[String: Any]])?.compactMap { stationInfo in
+            (stationInfo["odpt:stationTitle"] as? [String: Any]).map { stationTitle in
+                let jaName = stationTitle["ja"] as? String
+                let enName = stationTitle["en"] as? String
+                let stationCode = stationInfo["odpt:station"] as? String
+                let stationIndex = stationInfo["odpt:index"] as? Int
+                
+                return TransportationStop(
+                    kind: .railway,
+                    name: jaName ?? enName ?? "Unknown station",
+                    code: stationCode,
+                    index: stationIndex,
+                    lineCode: lineCode,
+                    title: LocalizedTitle(ja: jaName, en: enName),
+                    note: nil,
+                    busstopPole: nil
+                )
+            }
+        }
+        return !(stations?.isEmpty ?? true) ? stations : nil
+    }
+    
+    // Load local data from cache or bundle
+    func loadLocalData(for filename: String) -> Data? {
+        // Try ODPT cache first
+        let cache = CacheStore()
+        if let data = cache.loadData(for: filename) {
+            return data
+        }
+        
+        // Try LineData folder
+        if let lineDataURL = Bundle.main.url(forResource: "LineData", withExtension: nil) {
+            let jsonURL = lineDataURL.appendingPathComponent(filename)
+            if let data = try? Data(contentsOf: jsonURL) {
+                return data
+            }
+        }
+        
+        // Fallback to bundle
+        guard let url = Bundle.main.url(forResource: filename.replacingOccurrences(of: ".json", with: ""), withExtension: "json") else {
+            print("❌ File not found: \(filename)")
+            return nil
+        }
+        return try? Data(contentsOf: url)
+    }
+    
+    // MARK: - Data Parsing Helpers
+    // Parse stations by line code
+    // Generic parser for both bus stops and railway stations by line code
+    func parseStationsByLineCode(_ data: Data, lineCode: String, isBus: Bool) -> [TransportationStop]? {
+        do {
+            let json = try JSONSerialization.jsonObject(with: data, options: [])
+            guard let array = json as? [[String: Any]] else { return nil }
+            
+            for item in array {
+                if isBus != ((item["@type"] as? String) == "odpt:BusroutePattern") { continue }
+                
+                if let itemCode = item["owl:sameAs"] as? String, itemCode == lineCode {
+                    return isBus ? 
+                        self.extractStopsFromBusRoute(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode) :
+                        self.extractStationsFromRailway(item, searchMethod: "owl:sameAs", searchValue: lineCode, lineCode: lineCode)
+                }
+            }
+        } catch {
+            print("❌ Failed to parse stations by line code: \(error)")
+        }
+        return nil
+    }
+}
+
+// MARK: - LocalDataSource Extensions
+// File and data loading utilities for transportation operators
+extension LocalDataSource {
+    /// Load data from Documents/LineData directory for this operator
+    /// Returns data from LineData folder in Documents directory
+    func loadDataFromDocuments() -> Data? {
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        let lineDataDirectory = documentsDirectory.appendingPathComponent("LineData", isDirectory: true)
+        let fileURL = lineDataDirectory.appendingPathComponent(self.fileName)
+        
+        return try? Data(contentsOf: fileURL)
+    }
+    
+    /// Get file URL for this operator's data in Documents/LineData directory
+    func fileURLInDocuments() -> URL? {
+        let fileManager = FileManager.default
+        guard let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        let lineDataDirectory = documentsDirectory.appendingPathComponent("LineData", isDirectory: true)
+        return lineDataDirectory.appendingPathComponent(self.fileName)
+    }
+}
+
+// MARK: - Dictionary ODPT Extensions
+// Utilities for extracting ODPT API data from dictionaries
+extension Dictionary where Key == String {
+    /// Extract destination station from ODPT data
+    /// Handles both String and [String] formats
+    func odptDestinationStation() -> String? {
+        if let destString = self["odpt:destinationStation"] as? String {
+            return destString
+        } else if let destArray = self["odpt:destinationStation"] as? [String] {
+            return destArray.first
+        }
+        return nil
+    }
+    
+    /// Extract line color from ODPT data
+    /// Supports both odpt:color (local) and odpt:lineColor (API) fields
+    func odptLineColor() -> String? {
+        return (self["odpt:lineColor"] as? String) ?? (self["odpt:color"] as? String)
+    }
+    
+    /// Extract LocalizedTitle from ODPT railway title dictionary
+    func odptRailwayTitle() -> LocalizedTitle? {
+        guard let railwayTitleDict = self["odpt:railwayTitle"] as? [String: String] else {
+            return nil
+        }
+        return LocalizedTitle(
+            ja: railwayTitleDict["ja"],
+            en: railwayTitleDict["en"]
+        )
+    }
+}
+

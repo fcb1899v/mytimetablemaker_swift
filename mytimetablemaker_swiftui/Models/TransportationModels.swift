@@ -448,22 +448,6 @@ struct BusTime: TransportationTime {
     }
 }
 
-// MARK: - Data Statistics
-// Simple statistics structure for monitoring data state
-struct DataStatistics {
-    let totalLines: Int
-    let railwayLines: Int
-    let busLines: Int
-    let operators: Int
-    
-    init(totalLines: Int, railwayLines: Int, busLines: Int, operators: Int) {
-        self.totalLines = totalLines
-        self.railwayLines = railwayLines
-        self.busLines = busLines
-        self.operators = operators
-    }
-}
-
 // MARK: - TransferType Utilities
 // Helper function to convert string labels to TransferType enum values
 func transferType(from label: String) -> TransferType {

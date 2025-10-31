@@ -13,6 +13,7 @@ import SwiftUI
 extension Color {
     
     // MARK: - App Theme Colors
+    // Application-wide color constants
     static let primary = CustomColor.primary.color
     static let accent = CustomColor.accent.color
     static let red = CustomColor.red.color
@@ -23,17 +24,10 @@ extension Color {
     static let pink = CustomColor.pink.color
     static let ligblue = CustomColor.ligblue.color
 
+    // Hex string values for color storage
     static let accentString = CustomColor.accent.RGB
     static let grayString = CustomColor.gray.RGB
 
-    // MARK: - Legacy Color Support
-    // Maintain backward compatibility with existing code
-    // static let primaryColor = primary
-    // static let accentColor = accent
-    // static let grayColor = gray
-    // static let redColor = red
-    // static let yellowColor = yellow
-    
     // MARK: - Hex Color Initializer
     // Initialize color from hex integer value
     init(
@@ -54,17 +48,6 @@ extension Color {
         self.init(hexValue)
     }
 
-    // MARK: - Hex String Conversion
-    // Convert color to hex string representation
-    func hex(withHash hash: Bool = false, uppercase up: Bool = false) -> String {
-        if let components = self.cgColor?.components {
-            let r = ("0" + String(Int(components[0] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            let g = ("0" + String(Int(components[1] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            let b = ("0" + String(Int(components[2] * 255.0), radix: 16, uppercase: up)).suffix(2)
-            return (hash ? "#" : "") + String(r + g + b)
-        }
-        return "000000"
-    }    
 }
 
 // MARK: - String Color Extensions
@@ -79,12 +62,6 @@ extension String {
             return 0xAAAAAA // Default gray color
         }
         return Int(cleanString, radix: 16) ?? 0xAAAAAA
-    }
-    
-    // MARK: - Settings Color Logic
-    // Determine color for settings display based on text value
-    var settingsColor: Color {
-        return (self == "Not set".localized) ? .gray: .black
     }
     
     // MARK: - Safe Color Conversion
@@ -137,6 +114,25 @@ extension Color {
         }
         
         return displayTrainType.color
+    }
+    
+    // MARK: - Color Priority
+    // Priority mapping for sorting train types by color order
+    static var colorPriority: [Color: Int] {
+        return [
+            .white: 0,
+            .yelwgre: 1,
+            .yellow: 2,
+            .orange: 3,
+            .pink: 4,
+            .ligblue: 5
+        ]
+    }
+    
+    // MARK: - Color Priority Value
+    // Get priority value for color sorting, returns high value for unknown colors
+    var priorityValue: Int {
+        return Color.colorPriority[self] ?? 999
     }
 }
 

@@ -6,10 +6,12 @@
   
 */
 
-//Title
+// MARK: - Title
+// Application title
 "My Transfer Makers" = "My Transfer Makers";
 
-//MainContentView.swift
+// MARK: - Main Content View
+// Main screen buttons and labels
 "Back" = "Back";
 "Go" = "Go";
 "Start" = "Start";
@@ -20,7 +22,8 @@
 "Enter 0~99 [min]" = "Enter 0~99 [min]";
 "Enter 0~59 [min]" = "Enter 0~59 [min]";
 
-//DataExtension.swift
+// MARK: - Route Data
+// Default locations and station labels
 "Office" = "Office";
 "Home" = "Home";
 "Dep. St. " = "Dep. St.";
@@ -48,7 +51,8 @@
 "[min]" = " [min]";
 "Not set" = "Not set";
 
-//SettingsContentView
+// MARK: - Settings Content View
+// Settings screen labels and options
 "Settings" = "Settings";
 "Back to homepage" = "Back";
 "Direction Settings" = "Direction Settings";
@@ -80,7 +84,8 @@
 "Setting your transfer time [min]" = "Setting your transfer time [min]";
 "Setting your timetable" = "Setting your timetable";
 
-//SettingsTransferSheet
+// MARK: - Settings Transfer Sheet
+// Home and destination transportation settings
 "Home & Destination Settings" = "Home & Destination Settings";
 "Home & Destination" = "Home & Destination";
 "Destination" = "Destination";
@@ -96,33 +101,37 @@
 "Route 1" = "Route 1";
 "Route 2" = "Route 2";
 
-//GetDataButton
+// MARK: - Data Management
+// Firestore data get and save operations
 "Get saved data" = "Get saved data";
+"Get data error" = "Get data error";
 "Overwritten current data?" = "Overwritten current data?";
 "Data got successfully" = "Data got successfully";
 "Data could not be got" = "Data could not be got";
 
-//SaveDataButton
 "Save current data" = "Save current data";
+"Save data error" = "Save data error";
 "Overwritten saved data?" = "Overwritten saved data?";
 "Data saved successfully" = "Data saved successfully";
 "Data could not be saved" = "Data could not be saved";
 
-//Logout
+// MARK: - Authentication
+// Login, logout and account management
 "Logout" = "Logout";
 "Logout your account?" = "Logout your account?";
 "Logout error" = "Logout error";
 "Logged out successfully" = "Logged out successfully";
 
-//Delete Account
 "Delete Account" = "Delete Account";
 "Delete your account?" = "Delete your account?";
 "Delete account error" = "Delete account error";
+"Delete account successfully" = "Delete account successfully";
 "Account deleted successfully" = "Account deleted successfully";
 "Account could not be deleted" = "Account could not be deleted";
 
 
-//TimetableContentView
+// MARK: - Timetable Content View
+// Timetable editing and calendar type selection
 " > " = " > ";
 "Add" = "Add";
 "Update" = "Update";
@@ -154,7 +163,8 @@
 "Other route of line 3" = "Other route of line 3";
 
 
-//LoginContentView
+// MARK: - Login Content View
+// Login screen labels and actions
 "Email" = "Email";
 "Password (8+ chars: alnum !@#$&~)" = "Password (8+ chars: alnum !@#$&~)";
 "Login" = "Login";
@@ -164,7 +174,8 @@
 "Password Reset" = "Password Reset";
 
 
-//SignUpContentView
+// MARK: - Sign Up Content View
+// Account creation form labels
 "Create Account" = "Create Account";
 "Confirm Password" = "Confirm Password";
 "I have read and agree to the " = "I have read and agree to the ";
@@ -172,22 +183,23 @@
 "kakunin" = "";
 
 
-////MyLogin.swift
-
-//Input
+// MARK: - Input Validation
+// Error messages for input validation
 "Input error" = "Input error";
 "Enter your email" = "Enter your email";
 "Enter your password" = "Enter your password";
 "Enter your confirm password" = "Enter your confirm password";
 "Enter your email again" = "Enter your email again";
 "Check your email" = "Check your email";
+"Confirm your email" = "Confirm your email";
 "Incorrect email" = "Incorrect email";
 "Incorrect email format" = "Incorrect email format";
 "Incorrect password format" = "Incorrect password format";
 "Incorrect email or password" = "Incorrect email or password";
 "Confirm password don't match" = "Confirm password don't match";
 
-//Login
+// MARK: - Login Messages
+// Login success and error messages
 "Login successfully" = "Login successfully";
 "Login error" = "Login error";
 "Not verified account" = "Not verified account";
@@ -195,33 +207,30 @@
 "Check error" = "Check error";
 "Check the terms and privacy policy" = "Check the terms and privacy policy";
 
-//Sign up
 "Signup successfully" = "Signup successfully";
 "Signup error" = "Sign up error";
 "Verification email Sent successfully" = "Verification email Sent successfully";
 "This email has already been registered" = "This email has already been registered";
 
-//Password reset
-"Password reset successfully" = "Password reset successfully";
 "Password reset error" = "Password reset error";
 "Password reset email Sent successfully" = "Password reset email Sent successfully";
 "Password reset email could not be sent" = "Password reset email could not be sent";
 
 
-//EnumSetting.swift
-
-//TransferTime
+// MARK: - Enums
+// Transfer count and transportation method options
 "Zero" = "Zero";
 "Once" = "Once";
 "Twice" = "Twice";
 
-//Transportation
 "Walking" = "Walking";
 "Bicycle" = "Bicycle";
 "Car" = "Car";
+"bicycle" = "Bicycle";
+"car" = "Car";
+"walking" = "Walking";
+"none" = "None";
 
-//CustomColor
-"RED" = "RED";
 "DARK RED" = "DARK RED";
 "ORANGE" = "ORANGE";
 "BROWN" = "BROWN";
@@ -246,10 +255,8 @@
 "BLACK" = "BLACK";
 "DEFAULT" = "DEFAULT";
 
-//SelectLineView
-"Line Color" = "Line Color";
-
-// Railway Operator Names
+// MARK: - Railway Operators
+// Railway and bus operator display names
 "JR-East" = "JR-East";
 "Keikyu" = "Keikyu";
 "TokyoMetro" = "TokyoMetro";
@@ -271,8 +278,10 @@
 "SeibuBus" = "Seibu";
 "TokyuBus" = "Tokyu";
 
-//SettingsLineSheet
+// MARK: - Settings Line Sheet
+// Route and line configuration labels
 "Route Settings" = "Route Settings";
+"Line Color" = "Line Color";
 "Select Line Color" = "Line Color Select";
 "Timetable Settings" = "Timetable Settings";
 "Timetable (Riding Time)" = "Timetable (Riding Time)";
@@ -303,7 +312,6 @@
 "Enter departure stop" = "Enter departure stop";
 "Arrival Stop" = "Arrival";
 "Enter arrival stop" = "Enter arrival stop";
-"Station Input" = "Station Input";
 "Bus Stop Input" = "Bus Stop Input";
 "Railway" = "Railway";
 "Bus" = "Bus";
@@ -312,7 +320,8 @@
 "None" = "None";
 "Time Settings" = "Time Settings";
 
-// TrainType Localization
+// MARK: - Train Types
+// Train type display names for timetable
 "AccessExpress" = "Access Express";
 "AirportRapidLimitedExpress" = "Airport Rapid Limited Express";
 "ChuoSpecialRapid" = "Chuo Special Rapid";
@@ -347,18 +356,12 @@
 "Copy Timetable" = "Copy Timetable";
 "Select Type" = "Train Type";
 
-// Default train types
-"defaultLocal" = "Local";
 "defaultExpress" = "Express";
 "defaultRapid" = "Rapid";
 "defaultSpecialRapid" = "Special Rapid";
 "defaultLimitedExpress" = "Limited Express";
 
-// Weekday/Holiday Toggle
-"Weekday" = "Weekday";
-"Holiday" = "Holiday";
-
-// SettingsTransferSheet
+// MARK: - Settings Transfer Sheet (Additional)
 "Home transportation settings" = "Home Transportation Settings";
 "Destination transportation settings" = "Destination Transportation Settings";
 "Route" = "Route";
@@ -366,7 +369,10 @@
 "Display" = "Display";
 "Hide" = "Hide";
 
-// ODPT Calendar Types
+// MARK: - ODPT Calendar Types
+// Calendar type labels for timetable schedule
+"-" = "-";
+"Timetable" = "Timetable";
 "Weekday" = "Weekday";
 "Holiday" = "Holiday";
 "Saturday/Holiday" = "Saturday/Holiday";

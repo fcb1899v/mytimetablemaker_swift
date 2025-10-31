@@ -18,17 +18,29 @@ import Foundation
 struct SettingsLineSheet: View {
     
     // MARK: - State Management
+    // View model for managing line selection logic and data
     @StateObject private var vm: SettingsLineSheetViewModel
+    
+    // Text field focus state
     @FocusState private var focused: Bool
+    
+    // Currently selected line (for color display)
     @State private var selected: TransportationLine?
+    
+    // Flag to track if color selection UI should be shown (legacy, not actively used)
     @State private var showColorSelect = false
-    @State private var shouldClearText = false
+    
+    // Flag to show timetable settings sheet
     @State private var showTimetableSettings = false
+    
+    // Environment value to dismiss the sheet
     @Environment(\.dismiss) private var dismiss
     
     // MARK: - Configuration
-    // Integration with lineInfomation.swift
+    // Direction identifier for route context (back1, back2, go1, go2)
     private let goorback: String
+    
+    // Index of the line being configured (0-based)
     private let lineIndex: Int
     
     init(
@@ -141,7 +153,7 @@ struct SettingsLineSheet: View {
             
             // Direction selection dropdown
             Menu {
-                ForEach(vm.goorbackOptions, id: \.self) { option in
+                ForEach(goorbackOptions, id: \.self) { option in
                     Button(vm.goorbackDisplayNames[option] ?? option) {
                         vm.selectGoorback(option)
                     }
@@ -251,7 +263,8 @@ struct SettingsLineSheet: View {
         }
     }
     
-    // MARK: - Line Suggestions
+    // MARK: - Line Suggestions View
+    // Dropdown list showing suggested lines based on search input
     private var lineSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
@@ -379,6 +392,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Color Selection Section
+    // Color picker overlay for selecting line colors
     private var colorSelectionSection: some View {
         HStack {
             Spacer()
@@ -491,6 +505,7 @@ struct SettingsLineSheet: View {
     }
 
     // MARK: - Departure Stop Suggestions
+    // Dropdown list showing suggested departure stops based on search input
     private var departureStopSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
@@ -551,6 +566,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Arrival Stop Suggestions
+    // Dropdown list showing suggested arrival stops based on search input
     private var arrivalStopSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
@@ -574,9 +590,15 @@ struct SettingsLineSheet: View {
     }
 
     // MARK: - StopRowView
+    // Individual row component for displaying a stop in the suggestions list
     private struct StopRowView: View {
+        // Stop data to display
         let stop: TransportationStop
+        
+        // Whether this is a departure or arrival stop
         let isDeparture: Bool
+        
+        // View model reference for updating state context
         @ObservedObject var vm: SettingsLineSheetViewModel
         
         var body: some View {
@@ -790,6 +812,7 @@ struct SettingsLineSheet: View {
             action: {
                 Task {
                     await vm.handleLineSave()
+                    NotificationCenter.default.post(name: NSNotification.Name("SettingsLineUpdated"), object: nil)
                     dismiss()
                 }
             }
@@ -799,6 +822,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Timetable Settings Button Section
+    // Button to open manual timetable configuration settings
     private var timetableSettingsButtonSection: some View {
         CustomButton(
             title: "Timetable Settings".localized,
@@ -820,6 +844,7 @@ struct SettingsLineSheet: View {
     }
 
     // MARK: - Timetable Auto Settings Button Section
+    // Button to automatically generate timetable data using ODPT API
     private var timetableAutoSettingsButtonSection: some View {
         CustomButton(
             title: "Auto Generate Timetable".localized,
@@ -863,4 +888,5 @@ struct SettingsLineSheet_Previews: PreviewProvider {
 // MARK: - File Summary
 // Comprehensive line configuration sheet interface for MyTimeTableMaker app
 // Features: ODPT API integration, station search, line customization, data management
+
 

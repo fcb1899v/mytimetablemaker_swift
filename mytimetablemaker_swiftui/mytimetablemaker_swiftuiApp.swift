@@ -21,12 +21,12 @@ struct mytimetablemaker_swiftuiApp: App {
     var body: some Scene {
         
         // Initialize core data models for the application
-        let myTransfer = MyTransfer()
-        let myLogin = MyLogin()
-        let myFirestore = MyFirestore()
+        let myTransfer = TransferViewModel()
+        let myLogin = LoginViewModel()
+        let myFirestore = FirestoreViewModel()
         
         WindowGroup {
-            ContentView(myTransfer, myLogin, myFirestore)
+            SplashContentView(myTransfer, myLogin, myFirestore)
         }
     }
 }

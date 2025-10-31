@@ -13,14 +13,21 @@ import GoogleMobileAds
 // User registration screen with form validation and terms agreement
 struct SignUpContentView: View {
     
+    // MARK: - Environment & Observed Objects
+    // Dismisses the sheet when sign up is successful
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myLogin: MyLogin
-    @State private var isSignUpAlert = false
+    // Login view model for authentication state management
+    @ObservedObject private var myLogin: LoginViewModel
+    
+    // MARK: - State Variables
+    // Password visibility toggle states for input fields
     @State private var isPasswordVisible = false
     @State private var isConfirmPasswordVisible = false
 
+    // MARK: - Initialization
+    // Initialize with login view model
     init(
-        _ myLogin: MyLogin
+        _ myLogin: LoginViewModel
     ) {
         self.myLogin = myLogin
     }
@@ -40,6 +47,7 @@ struct SignUpContentView: View {
                 .padding(.bottom, screen.loginTitleBottomMargin)
             
             // MARK: - Email Input Field
+            // Text field for email address entry with validation
             TextField("Email".localized, text: $myLogin.email)
                 .font(.system(size: screen.loginTextFieldFontSize))
                 .lineLimit(1)
@@ -51,6 +59,7 @@ struct SignUpContentView: View {
                 .frame(width: screen.loginButtonWidth)
             
             // MARK: - Password Input Field
+            // Secure text field with visibility toggle for password entry
             HStack {
                 if isPasswordVisible {
                     TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
@@ -62,6 +71,7 @@ struct SignUpContentView: View {
                         .lineLimit(1)
                 }
                 
+                // Toggle password visibility button
                 Button(action: {
                     isPasswordVisible.toggle()
                 }) {
@@ -78,6 +88,7 @@ struct SignUpContentView: View {
             .frame(width: screen.loginButtonWidth)
             
             // MARK: - Confirm Password Input Field
+            // Secure text field with visibility toggle for password confirmation
             HStack {
                 if isConfirmPasswordVisible {
                     TextField("Confirm Password".localized, text: $myLogin.passwordConfirm)
@@ -89,6 +100,7 @@ struct SignUpContentView: View {
                         .lineLimit(1)
                 }
                 
+                // Toggle confirm password visibility button
                 Button(action: {
                     isConfirmPasswordVisible.toggle()
                 }) {
@@ -104,6 +116,7 @@ struct SignUpContentView: View {
             .onChange(of: myLogin.passwordConfirm) { _ in myLogin.signUpCheck() }
             
             // MARK: - Sign Up Button
+            // Button to submit registration form with loading indicator
             CustomButton(
                 title: "Signup".localized,
                 backgroundColor: myLogin.isValidSignUp ? Color.accent : Color.gray,
@@ -111,6 +124,7 @@ struct SignUpContentView: View {
                 action: myLogin.signUp
             )
             .frame(width: screen.loginButtonWidth)
+            // Loading indicator overlay during sign up process
             .overlay(
                 Group {
                     if myLogin.isLoading {
@@ -118,8 +132,10 @@ struct SignUpContentView: View {
                             .progressViewStyle(CircularProgressViewStyle())
                     }
                 }
-            ).alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
-                                    Button("OK".localized, role: .none){
+            )
+            // Sign up result alert that dismisses sheet on success
+            .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
+                Button("OK".localized, role: .none){
                     myLogin.isShowMessage = false
                     if myLogin.isSignUpSuccess {
                         self.presentationMode.wrappedValue.dismiss()
@@ -131,13 +147,14 @@ struct SignUpContentView: View {
             .tint(.primary)
             
             // MARK: - Terms and Conditions Agreement
+            // Checkbox and link to terms and privacy policy
             HStack(spacing: screen.settingsSheetHorizontalSpacing) {
-                // Checkbox for terms agreement
+                // Checkbox button to toggle terms agreement
                 Button(action: myLogin.toggle) {
                     Image(systemName: myLogin.isTermsAgree ? "checkmark.square.fill": "square")
                         .foregroundColor(myLogin.isTermsAgree ? .accent: .white)
                 }
-                // Terms and privacy policy link
+                // Button to open terms and privacy policy in browser
                 Button(action: {
                     if let termsURL = URL(string: termslink) {
                         UIApplication.shared.open(termsURL, options: [:], completionHandler: nil)
@@ -155,9 +172,11 @@ struct SignUpContentView: View {
             .frame(width: screen.loginButtonWidth, alignment: .top)
             }
         }
+        // Set sheet height to 70% of screen
         .presentationDetents([.fraction(0.7)])
+        // MARK: - Lifecycle
+        // Clear form fields and validate on appear
         .onAppear {
-            // Clear text fields when signup screen appears
             myLogin.email = ""
             myLogin.password = ""
             myLogin.passwordConfirm = ""
@@ -171,7 +190,7 @@ struct SignUpContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SignUpView_Previews: PreviewProvider {
     static var previews: some View {
-        let myLogin = MyLogin()
+        let myLogin = LoginViewModel()
         SignUpContentView(myLogin)
     }
 }

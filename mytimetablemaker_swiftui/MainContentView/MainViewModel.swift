@@ -11,7 +11,8 @@ import SwiftUI
 
 // MARK: - Transfer Data Model
 // Manages transfer information, timetables, and real-time updates
-class MyTransfer: ObservableObject {
+@MainActor
+final class TransferViewModel: ObservableObject {
     
     // Timer for real-time updates
     private var cancellable: AnyCancellable?
@@ -50,7 +51,6 @@ class MyTransfer: ObservableObject {
     @Published var rideTimeArray1: [Int]
     @Published var rideTimeArray2: [Int]
     
-
     // MARK: - Initialization
     init() {
         self.isBack = true
@@ -194,17 +194,37 @@ class MyTransfer: ObservableObject {
     // Current date and time information
     var currentTime: Int { return timeLabel.currentTime }
     
+    // Calendar type based on current date
+    // Automatically determines calendar type (weekday/holiday) based on current date
+    var currentCalendarType: ODPTCalendarType {
+        // Try to get cached calendar types for the route
+        let routeCacheKey = "\(goOrBack1)_calendarTypes"
+        var availableTypes: [ODPTCalendarType] = []
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
+           !cachedTypes.isEmpty {
+            availableTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+        }
+        
+        // Fallback to default types if no cache found
+        if availableTypes.isEmpty {
+            availableTypes = [.weekday, .holiday, .saturdayHoliday]
+        }
+        
+        // Determine calendar type from current date
+        return selectDate.odpTCalendarType(fallbackTo: availableTypes)
+    }
+    
     // Route visibility based on current direction
     var isShowRoute2: Bool { return isBack ? isShowBackRoute2: isShowGoRoute2 }
     var routeWidth: CGFloat { return isShowRoute2.routeWidth }
     
-    // Timetable data for both routes
-    var timetableArray1: [[Int]] { return goOrBack1.timetableArray(Date().odpTCalendarType) }
-    var timetableArray2: [[Int]] { return goOrBack2.timetableArray(Date().odpTCalendarType) }
+    // Timetable data for both routes using current calendar type
+    var timetableArray1: [[Int]] { return goOrBack1.timetableArray(currentCalendarType) }
+    var timetableArray2: [[Int]] { return goOrBack2.timetableArray(currentCalendarType) }
     
-    // Current time-based schedule information
-    var timeArray1: [Int] { return goOrBack1.timeArray(Date().odpTCalendarType, currentTime) }
-    var timeArray2: [Int] { return goOrBack2.timeArray(Date().odpTCalendarType, currentTime) }
+    // Current time-based schedule information using current calendar type
+    var timeArray1: [Int] { return goOrBack1.timeArray(currentCalendarType, currentTime) }
+    var timeArray2: [Int] { return goOrBack2.timeArray(currentCalendarType, currentTime) }
     var timeArrayString1: [String] { return timeArray1.map { $0.stringTime } }
     var timeArrayString2: [String] { return timeArray2.map { $0.stringTime } }
     

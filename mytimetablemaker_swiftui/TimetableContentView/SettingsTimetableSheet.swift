@@ -15,17 +15,24 @@ struct SettingsTimetableSheet: View {
     @State private var departureTime: Int? = nil
     @State private var rideTime: Int = 0
     @State private var selectedTrainType: String?
+    // Controls visibility of train type dropdown menu
     @State private var isTrainTypeDropdownOpen = false
+    // Controls visibility of calendar type dropdown menu
     @State private var isCalendarTypeDropdownOpen = false
+    // Controls visibility of copy time dropdown menu
     @State private var isCopyTimeDropdownOpen = false
     @State private var transportationTimes: [any TransportationTime] = []
     @State private var hour: Int
+    // Selected calendar type for filtering timetable data
     @State private var selectedCalendarType: ODPTCalendarType
+    // Available calendar types loaded from cache or detected from data
     @State private var availableOdptCalendar: [ODPTCalendarType] = [.weekday, .saturdayHoliday]
     
     private let goorback: String
     private let num: Int
     
+    // MARK: - Initialization
+    // Initialize with route identifier, calendar type, line number, and hour
     init(
         goorback: String,
         selectedCalendarType: ODPTCalendarType,
@@ -112,7 +119,7 @@ struct SettingsTimetableSheet: View {
     
     
     // MARK: - View Components
-    /// Calendar type dropdown section
+    // Calendar type dropdown section for selecting weekday/holiday/etc.
     @ViewBuilder
     private var calendarDropDownSection: some View {
         HStack {
@@ -140,10 +147,11 @@ struct SettingsTimetableSheet: View {
             Spacer()
         }
         .onAppear {
-            loadAvailableCalendarTypes()
+            availableOdptCalendar = goorback.loadAvailableCalendarTypes(num: num)
         }
     }
     
+    // Calendar type dropdown menu for selecting weekday/holiday/etc.
     private var calendarTypeDropdownView: some View {
         VStack(spacing: 0) {
             ForEach(availableOdptCalendar, id: \.self) { calendarType in
@@ -188,7 +196,7 @@ struct SettingsTimetableSheet: View {
         )
     }
     
-    /// Hour control section with decrease/increase buttons
+    // Hour control section with decrease/increase buttons (4-24 range)
     @ViewBuilder
     private var hourControlSection: some View {
         HStack {
@@ -228,6 +236,7 @@ struct SettingsTimetableSheet: View {
     }
         
     // MARK: - Current Timetable Display
+    // Display current timetable times in grid format (10 items per row)
     @ViewBuilder
     private var timetableDisplaySection: some View {
         if transportationTimes.count > 0 {
@@ -261,7 +270,7 @@ struct SettingsTimetableSheet: View {
         }
     }
     
-    // Train type selection (only for railway)
+    // Train type selection section (only for railway lines)
     private var trainTypeSelectSection: some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
 
@@ -313,7 +322,7 @@ struct SettingsTimetableSheet: View {
     }
     
     // MARK: - Computed Properties
-    // Train type dropdown view for overlay
+    // Train type dropdown menu for overlay selection
     private var trainTypeDropdownView: some View {
         VStack(spacing: 0) {
             ForEach(getAvailableTrainTypes(), id: \.self) { trainType in
@@ -354,7 +363,8 @@ struct SettingsTimetableSheet: View {
             y: screen.timetableTypeMenuOffsetY,
         )
     }
-            
+    
+    // Departure time selection section with picker (0-59 minutes)
     private var departureTimeSelectSection: some View {
         VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
             HStack {
@@ -408,6 +418,7 @@ struct SettingsTimetableSheet: View {
         .frame(width: screen.timetablePickerWidth)
     }
     
+    // Ride time selection section with picker (0-99 minutes)
     var rideTimeSelectSection: some View {
         VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
             HStack {
@@ -457,8 +468,9 @@ struct SettingsTimetableSheet: View {
         .frame(width: screen.timetablePickerWidth)
     }
     
-    // Add button
-    var addDeleteButtonSection: some View {
+    // Add/Update and Delete buttons section for timetable editing
+    @ViewBuilder
+    private var addDeleteButtonSection: some View {
         HStack {
             CustomButton(
                 title: isTimeExistsForDeletion() ? "Update".localized: "Add".localized,
@@ -498,7 +510,7 @@ struct SettingsTimetableSheet: View {
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
     
-    /// Copy time button section
+    // Copy time button section for copying timetable from other hours or routes
     @ViewBuilder
     private var copyTimeButtonSection: some View {
         Button(action: {
@@ -532,11 +544,12 @@ struct SettingsTimetableSheet: View {
 
     // MARK: - Copy Time Sheet
     // Sheet for copying timetable times from other hours
+    @ViewBuilder
     private var copyTimeDropdownView: some View {
         let startIndex = (hour == 4) ? 1 : 0
         let items = hour.choiceCopyTimeList
         
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             ForEach(Array(startIndex..<items.count), id: \.self) { index in
                 if !(hour == 25 && index == 1) {
                     Button(action: {
@@ -575,6 +588,8 @@ struct SettingsTimetableSheet: View {
         )
     }
     
+    // MARK: - Time Management
+    // Add or update time entry in timetable with train type and ride time, then notify view update
     private func addTime() {
         guard let departureTime = departureTime else { return }
         
@@ -591,10 +606,10 @@ struct SettingsTimetableSheet: View {
         // Keep ride time and train type unchanged
     }
     
+    // Delete time entry from timetable along with train type and ride time, then notify view update
     private func deleteTime() {
         guard let departureTime = departureTime else { return }
         
-        // Delete time and train type as a pair
         deleteTimeAndTrainTypePair(departureTime: departureTime)
         
         // Update trainTimes array with fresh data from UserDefaults
@@ -607,67 +622,18 @@ struct SettingsTimetableSheet: View {
         // Keep ride time and train type unchanged
     }
     
-    private func saveRideTime() {
-        let rideTimeKey = goorback.timetableRideTimeKey(selectedCalendarType, num, hour)
-        UserDefaults.standard.set(rideTime, forKey: rideTimeKey)
-    }
-    
     // MARK: - Time Validation
-    /// Checks if the selected departure time already exists in the timetable with the same train type
-    private func isTimeAlreadyExists() -> Bool {
-        guard let departureTime = departureTime else { return false }
-        
-        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
-        
-        guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
-        let existingTrainTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
-        
-        let existingTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        
-        // Check both single digit and double digit formats
-        let singleDigitTime = String(departureTime)
-        let doubleDigitTime = String(format: "%02d", departureTime)
-        
-        // Find the index of the existing time
-        var existingIndex: Int?
-        for (index, time) in existingTimes.enumerated() {
-            if time == singleDigitTime || time == doubleDigitTime {
-                existingIndex = index
-                break
-            }
-        }
-        
-        // If time doesn't exist, it's not a duplicate
-        guard let index = existingIndex else { return false }
-        
-        // If train type is the same, it's a duplicate
-        let existingTrainType = index < existingTrainTypes.count ? existingTrainTypes[index] : ""
-        let newTrainType = selectedTrainType ?? ""
-        
-        return existingTrainType == newTrainType
-    }
-        /// Checks if the selected departure time exists in the timetable (for deletion)
+    /// Checks if the selected departure time exists in the timetable (for deletion)
     private func isTimeExistsForDeletion() -> Bool {
         guard let departureTime = departureTime else { return false }
         
         let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
         
-        let existingTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        
-        // Check both single digit and double digit formats
-        let singleDigitTime = String(departureTime)
-        let doubleDigitTime = String(format: "%02d", departureTime)
-        
-        return existingTimes.contains(singleDigitTime) || existingTimes.contains(doubleDigitTime)
+        return timetableString.containsTimeInAnyFormat(departureTime)
     }
     
-    /// Checks if the Add button is enabled
-    private func isAddButtonEnabled() -> Bool {
-        return !(rideTime == 0 || departureTime == nil || (goorback.lineKind(num) == .railway && selectedTrainType == nil) || (goorback.lineKind(num) != .railway && isTimeAlreadyExists()) || (goorback.lineKind(num) == .railway && isTimeAlreadyExists()))
-    }
-    
+    // Get available train types for selection (default types or custom types from line)
     private func getAvailableTrainTypes() -> [String] {
         
         let defaultTypeList = [
@@ -696,60 +662,10 @@ struct SettingsTimetableSheet: View {
         return hasOnlyDefaultTypes ? defaultTypeList : existingTrainTypes
     }
     
-    private func saveTrainType(_ trainType: String) {
-        // Save train type for the current time
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
-        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
-        
-        // Get current timetable and train types
-        let timetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
-        let departureTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        let existingTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
-        
-        // Find the index of the newly added time (should be the last one)
-        let addedTimeIndex = departureTimes.count - 1
-        
-        // Ensure trainTypes array has the same length as departureTimes
-        var updatedTypes = existingTypes
-        while updatedTypes.count < departureTimes.count {
-            updatedTypes.append("")
-        }
-        
-        // Set the train type for the newly added time
-        if addedTimeIndex >= 0 && addedTimeIndex < updatedTypes.count {
-            updatedTypes[addedTimeIndex] = trainType
-        }
-        
-        UserDefaults.standard.set(updatedTypes.joined(separator: " "), forKey: timetableTrainTypeKey)
-        
-        // Update train type list for the line
-        updateTrainTypeList(trainType)
-    }
-    
-    private func deleteTrainType() {
-        // Delete train type for the current time
-        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
-        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
-        
-        // Get current timetable and train types
-        let timetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
-        let departureTimes = timetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        let existingTypes = UserDefaults.standard.string(forKey: timetableTrainTypeKey)?.components(separatedBy: " ") ?? []
-        
-        // Find the index of the deleted time
-        guard let departureTime = departureTime else { return }
-        let deletedTimeIndex = departureTimes.firstIndex(of: String(format: "%02d", departureTime)) ?? -1
-        
-        if deletedTimeIndex >= 0 && deletedTimeIndex < existingTypes.count {
-            var updatedTypes = existingTypes
-            updatedTypes.remove(at: deletedTimeIndex)
-            UserDefaults.standard.set(updatedTypes.joined(separator: " "), forKey: timetableTrainTypeKey)
-        }
-    }
-    
+    // Update train type list for the line by adding new type if not exists
     private func updateTrainTypeList(_ trainType: String) {
         let trainTypeListKey = goorback.trainTypeListKey(selectedCalendarType, num)
-        let existingList = UserDefaults.standard.string(forKey: trainTypeListKey)?.components(separatedBy: " ") ?? []
+        let existingList = UserDefaults.standard.string(forKey: trainTypeListKey)?.timetableComponents ?? []
         
         // Add new train type if not already in the list
         if !existingList.contains(trainType) {
@@ -760,8 +676,8 @@ struct SettingsTimetableSheet: View {
     }
     
     // MARK: - Time and Train Type Pair Management
-    /// Adds a new time and train type pair, then sorts both arrays together
-    /// If the same time exists with a different train type, it will be overwritten
+    // Adds a new time, train type, and ride time triplet, then sorts by departure time
+    // If the same time exists, it will be overwritten with new train type and ride time
     private func addTimeAndTrainTypePair(departureTime: Int, trainType: String?, rideTime: Int) {
         let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
@@ -775,13 +691,13 @@ struct SettingsTimetableSheet: View {
         let defaultRideTime = UserDefaults.standard.integer(forKey: routeRideTimeKey)
         
         // Convert to arrays
-        var departureTimes = currentTimetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        var trainTypes = currentTrainTypeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        var rideTimes = currentRideTimeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        var departureTimes = currentTimetableString.timetableComponents
+        var trainTypes = currentTrainTypeString.timetableComponents
+        var rideTimes = currentRideTimeString.timetableComponents
         
-        let newTimeString = String(format: "%02d", departureTime)
+        let newTimeString = departureTime.addZeroTime
         let newTrainType = trainType ?? ""
-        let newRideTimeString = String(format: "%02d", rideTime)
+        let newRideTimeString = rideTime.addZeroTime
         
         // Check if the same time already exists
         var existingIndex: Int?
@@ -807,15 +723,13 @@ struct SettingsTimetableSheet: View {
         var timeTypeRidePairs: [(time: String, type: String, rideTime: String)] = []
         for i in 0..<departureTimes.count {
             let type = i < trainTypes.count ? trainTypes[i] : "Local"
-            let rideTime = i < rideTimes.count ? rideTimes[i] : String(defaultRideTime)
+            let rideTime = i < rideTimes.count ? rideTimes[i] : defaultRideTime.addZeroTime
             timeTypeRidePairs.append((time: departureTimes[i], type: type, rideTime: rideTime))
         }
         
         // Sort triplets by time (convert to Int for proper sorting)
         timeTypeRidePairs.sort { (pair1, pair2) in
-            let time1 = Int(pair1.time) ?? 0
-            let time2 = Int(pair2.time) ?? 0
-            return time1 < time2
+            pair1.time.isTimeLessThan(pair2.time)
         }
         
         // Extract sorted arrays
@@ -834,7 +748,7 @@ struct SettingsTimetableSheet: View {
         }
     }
     
-    /// Deletes a time and its corresponding train type, then sorts remaining pairs
+    // Deletes a time entry along with its train type and ride time, then sorts remaining pairs
     private func deleteTimeAndTrainTypePair(departureTime: Int) {
         let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
@@ -848,13 +762,13 @@ struct SettingsTimetableSheet: View {
         let defaultRideTime = UserDefaults.standard.integer(forKey: routeRideTimeKey)
         
         // Convert to arrays
-        var departureTimes = currentTimetableString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        var trainTypes = currentTrainTypeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
-        var rideTimes = currentRideTimeString.components(separatedBy: " ").compactMap { $0.isEmpty ? nil : $0 }
+        var departureTimes = currentTimetableString.timetableComponents
+        var trainTypes = currentTrainTypeString.timetableComponents
+        var rideTimes = currentRideTimeString.timetableComponents
         
         // Find and remove the time (try both single and double digit formats)
         let singleDigitTime = String(departureTime)
-        let doubleDigitTime = String(format: "%02d", departureTime)
+        let doubleDigitTime = departureTime.addZeroTime
         
         var indexToRemove: Int?
         for (index, time) in departureTimes.enumerated() {
@@ -879,15 +793,13 @@ struct SettingsTimetableSheet: View {
         var timeTypeRidePairs: [(time: String, type: String, rideTime: String)] = []
         for i in 0..<departureTimes.count {
             let type = i < trainTypes.count ? trainTypes[i] : "defaultLocal"
-            let rideTime = i < rideTimes.count ? rideTimes[i] : String(defaultRideTime)
+            let rideTime = i < rideTimes.count ? rideTimes[i] : defaultRideTime.addZeroTime
             timeTypeRidePairs.append((time: departureTimes[i], type: type, rideTime: rideTime))
         }
         
         // Sort triplets by time (convert to Int for proper sorting)
         timeTypeRidePairs.sort { (pair1, pair2) in
-            let time1 = Int(pair1.time) ?? 0
-            let time2 = Int(pair2.time) ?? 0
-            return time1 < time2
+            pair1.time.isTimeLessThan(pair2.time)
         }
         
         // Extract sorted arrays
@@ -902,25 +814,7 @@ struct SettingsTimetableSheet: View {
     }
     
     // MARK: - Helper Methods
-    /// Load available calendar types from cache or use default
-    private func loadAvailableCalendarTypes() {
-        // Try to get cached calendar types for the current route
-        let routeCacheKey = "\(goorback)_calendarTypes"
-        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
-           !cachedTypes.isEmpty {
-            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
-            if !cachedCalendarTypes.isEmpty {
-                print("📅 Using cached calendar types for \(goorback): \(cachedCalendarTypes.map { $0.debugDisplayName })")
-                availableOdptCalendar = cachedCalendarTypes
-                return
-            }
-        }
-        
-        // Fallback to default calendar types if no cache found
-        availableOdptCalendar = [.weekday, .saturdayHoliday]
-        print("📅 Using default calendar types: \(availableOdptCalendar.map { $0.debugDisplayName })")
-    }
-    
+    // Copy timetable times from another hour or route based on selection index
     private func copyTime(from index: Int) {
         UserDefaults.standard.set(
             goorback.choiceCopyTime(selectedCalendarType, num, hour, index),

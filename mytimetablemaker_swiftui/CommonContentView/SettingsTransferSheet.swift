@@ -118,7 +118,9 @@ struct SettingsTransferSheet: View {
     }
     
     // MARK: - View Components
+    
     // Route 2 Toggle Section
+    // Toggle to show/hide Route 2 configuration options
     private var route2ToggleSection: some View {
         HStack {
             Spacer()
@@ -139,7 +141,7 @@ struct SettingsTransferSheet: View {
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
     
-    // Header section with title
+    // Header section with title text
     @ViewBuilder
     private func headerSection(title: String) -> some View {
         Text(title)
@@ -147,7 +149,7 @@ struct SettingsTransferSheet: View {
             .foregroundColor(.black)
     }
     
-    // Place input section with title and text field
+    // Place input section with title, text field, and validation checkmark
     @ViewBuilder
     private func placeInputSection(title: String, placeholder: String, text: Binding<String>) -> some View {
         HStack(spacing: screen.settingsSheetHorizontalSpacing) {
@@ -169,7 +171,8 @@ struct SettingsTransferSheet: View {
         }
     }
     
-    /// Route row component with transportation method, time selector, and checkmark
+    // Route row component with transportation method, time selector, and checkmark
+    // Displays configuration for a single route with all transfer settings
     @ViewBuilder
     private func routeRow(
         routeTitle: String,
@@ -192,7 +195,8 @@ struct SettingsTransferSheet: View {
         }
     }
     
-    /// Transportation method selector component
+    // Transportation method selector component
+    // Menu-based selector for choosing transfer transportation type
     @ViewBuilder
     private func transportationMethodSelector(selectedTransportation: Binding<String>) -> some View {
         HStack(spacing: screen.settingsSheetIconSpacing) {
@@ -235,7 +239,8 @@ struct SettingsTransferSheet: View {
         .overlay(CustomBorder())
     }
     
-    /// Time selector component using Custom2DigitPicker for better UX
+    // Time selector component using Custom2DigitPicker for better UX
+    // Allows selecting transfer time in minutes (0-99)
     @ViewBuilder
     private func timeSelector(selectedTime: Binding<Int>) -> some View {
         ZStack {
@@ -261,7 +266,8 @@ struct SettingsTransferSheet: View {
         }
     }
     
-    /// Save button section
+    // Save button section
+    // Button to save all transfer settings and return to previous view
     @ViewBuilder
     private func saveButtonSection() -> some View {
         CustomButton(
@@ -289,17 +295,24 @@ class SettingsTransferSheetViewModel: ObservableObject {
     // MARK: - Published Properties
     // Observable properties that trigger UI updates when changed
     
-    @Published var homeInput: String                      // departure point input text
-    @Published var officeInput: String                    // office input text
-    @Published var selectedHomeTransportation1: String    // Selected transportation 1 from departure
-    @Published var selectedHomeTransportation2: String    // Selected transportation 2 from departure
-    @Published var selectedOfficeTransportation1: String  // Selected transportation 1 from office
-    @Published var selectedOfficeTransportation2: String  // Selected transportation 2 from office
-    @Published var selectedHomeTransferTime1: Int         // Selected transfer time 1 from departure
-    @Published var selectedHomeTransferTime2: Int         // Selected transfer time 2 from departure
-    @Published var selectedOfficeTransferTime1: Int       // Selected transfer time 1 from office
-    @Published var selectedOfficeTransferTime2: Int       // Selected transfer time 2 from office
-    @Published var showRoute2: Bool                        // Flag to show/hide Route 2
+    // Departure point and destination place names
+    @Published var homeInput: String                      // Departure point input text
+    @Published var officeInput: String                    // Destination input text
+    
+    // Transportation methods for each route
+    @Published var selectedHomeTransportation1: String    // Selected transportation method for Route 1 from departure
+    @Published var selectedHomeTransportation2: String    // Selected transportation method for Route 2 from departure
+    @Published var selectedOfficeTransportation1: String  // Selected transportation method for Route 1 from office
+    @Published var selectedOfficeTransportation2: String  // Selected transportation method for Route 2 from office
+    
+    // Transfer times in minutes for each route
+    @Published var selectedHomeTransferTime1: Int         // Transfer time for Route 1 from departure (minutes)
+    @Published var selectedHomeTransferTime2: Int         // Transfer time for Route 2 from departure (minutes)
+    @Published var selectedOfficeTransferTime1: Int       // Transfer time for Route 1 from office (minutes)
+    @Published var selectedOfficeTransferTime2: Int       // Transfer time for Route 2 from office (minutes)
+    
+    // Visibility control
+    @Published var showRoute2: Bool                        // Flag to show/hide Route 2 configuration options
     
     // MARK: - Initialization
     // Initialize view model with nil values if no saved data exists

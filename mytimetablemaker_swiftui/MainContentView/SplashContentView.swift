@@ -1,38 +1,42 @@
 //
-//  MainContentView.swift
+//  SwiftUIView.swift
 //  mytimetablemaker_swiftui
-//  Created by Nakajima Masao on 2020/12/25.
+//
+//  Created by Nakajima Masao on 2021/04/18.
 //
 
 import SwiftUI
-import GoogleMobileAds
+import FirebaseAuth
 import AppTrackingTransparency
+import AdSupport
 
 // MARK: - Splash Content View
-// Initial splash screen displayed when app launches
+// Main view that manages app navigation and core functionality
 struct SplashContentView: View {
-
-    @ObservedObject private var myTransfer: MyTransfer
-    @ObservedObject private var myLogin: MyLogin
-    @ObservedObject private var myFirestore: MyFirestore
-
+    
+    // Core data models for app state management
+    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myLogin: LoginViewModel
+    @ObservedObject private var myFirestore: FirestoreViewModel
+    // Inline splash navigation state
     @State private var isFinishSplash = false
 
+    // MARK: - Initialization
     init(
-        _ myTransfer: MyTransfer,
-        _ myLogin: MyLogin,
-        _ myFirestore: MyFirestore
+        _ myTransfer: TransferViewModel,
+        _ myLogin: LoginViewModel,
+        _ myFirestore: FirestoreViewModel
     ) {
         self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
+        self.toTracking()
     }
 
     var body: some View {
-        
+        // Splash screen with light color scheme
         NavigationStack {
             ZStack {
-                // MARK: - Background and Content
                 Color.accent
                 VStack {
                     Spacer()
@@ -45,9 +49,7 @@ struct SplashContentView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: screen.splashIconSize, height: screen.splashIconSize)
-                    Spacer()
-                    Spacer()
-                    Spacer()
+                    Spacer(); Spacer(); Spacer()
                 }
                 VStack(spacing: 0) {
                     Spacer()
@@ -61,16 +63,26 @@ struct SplashContentView: View {
             }
             .frame(width: screen.screenWidth, height: screen.screenHeight)
             .onAppear {
-                // Auto-navigate to main content after 2 seconds
+                // Auto-navigate to main content after 2 seconds.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation() {
-                        isFinishSplash = true
-                    }
+                    withAnimation() { isFinishSplash = true }
                 }
             }
             .edgesIgnoringSafeArea(.all)
             .navigationDestination(isPresented: $isFinishSplash) {
                 MainContentView(myTransfer, myLogin, myFirestore)
+            }
+        }
+        .preferredColorScheme(.light)
+    }
+    
+    // MARK: - Tracking Authorization
+    // Request app tracking transparency permission
+    private func toTracking(){
+        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                print("🔍 AdMob Debug: App tracking transparency status: \(status.rawValue)")
             }
         }
     }
@@ -80,20 +92,9 @@ struct SplashContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SplashContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = MyTransfer()
-        let myLogin = MyLogin()
-        let myFirestore = MyFirestore()
+        let myTransfer = TransferViewModel()
+        let myLogin = LoginViewModel()
+        let myFirestore = FirestoreViewModel()
         SplashContentView(myTransfer, myLogin, myFirestore)
-    }
-}
-
-// MARK: - App Tracking Transparency Helper
-// Requests app tracking transparency authorization
-private func requestAppTrackingTransparencyAuthorization() {
-    guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-        ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
-            // Handle post-request state processing
-        })
     }
 }

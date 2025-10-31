@@ -8,16 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		021A12022C70391A00B12BF1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 021A12012C70391A00B12BF1 /* GoogleService-Info.plist */; };
-		0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */; };
 		0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1B1263FE1120007EDC8 /* SizeExtensions.swift */; };
 		022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 022E53442633B3C0007921D9 /* InfoPlist.strings */; };
 		0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* ColorExtensions.swift */; };
-		026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D22AD3E366001CF251 /* FirestoreButton.swift */; };
-		026257D72AD3E515001CF251 /* AccountButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026257D62AD3E515001CF251 /* AccountButton.swift */; };
 		02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723E5C2E688CB000F1528E /* AccountExtensions.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
-		027F23FD2AC9852800852C89 /* LineTimeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23FC2AC9852800852C89 /* LineTimeImage.swift */; };
 		027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
 		027F240B2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
 		027F240C2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
@@ -42,19 +38,16 @@
 		027F24222ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
 		027F24232ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
 		027F24242ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
-		027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F24292ACEB7B500852C89 /* SplashContentView.swift */; };
 		0298F55E2E3A52B100271243 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0298F55D2E3A52B100271243 /* Algorithms */; };
-		02C15511262BC9170037EEC0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* ContentView.swift */; };
+		02C15511262BC9170037EEC0 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* SplashContentView.swift */; };
 		02D3F5BD2E3A485100C33E15 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		02D3F5BE2E3A485100C33E15 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 023F303F29DB2CBB00ECE4CF /* FirebaseAuth */; };
 		02D3F5BF2E3A485100C33E15 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 023F304029DB2CBB00ECE4CF /* FirebaseFirestore */; };
 		02D3F5C02E3A485100C33E15 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 023F307529DB2E7300ECE4CF /* GoogleMobileAds */; };
-		02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D9765D2E50AC68003C3766 /* StationLineView.swift */; };
 		02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */; };
 		02E7F69E261F35D700C00545 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 02E7F6A0261F35D700C00545 /* Localizable.strings */; };
 		02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */; };
 		02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E7F7272620856100C00545 /* TimetableContentView.swift */; };
-		02EBD0FD2E51500E00450D16 /* HomeOfficeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */; };
 		02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */; };
 		02EBD4A02E5AB57300450D16 /* SettingsLineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */; };
 		02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */; };
@@ -71,13 +64,12 @@
 		02F025C5261BDED100655E54 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025C4261BDED100655E54 /* Enums.swift */; };
 		02F025CA261BDF0600655E54 /* LineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025C9261BDF0600655E54 /* LineExtensions.swift */; };
 		02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */; };
-		02F025E7261BE54700655E54 /* MyLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025E6261BE54700655E54 /* MyLogin.swift */; };
-		02F025ED261BE5A500655E54 /* MyTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025EC261BE5A500655E54 /* MyTransfer.swift */; };
-		02F02623261C935A00655E54 /* MyFirestore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02622261C935A00655E54 /* MyFirestore.swift */; };
+		02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025E6261BE54700655E54 /* LoginViewModel.swift */; };
+		02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F025EC261BE5A500655E54 /* MainViewModel.swift */; };
+		02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F02622261C935A00655E54 /* FirestoreViewModel.swift */; };
 		02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0262C261C94E600655E54 /* LoginContentView.swift */; };
 		02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* SignUpContentView.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
-		02F026F1261DED0400655E54 /* TransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026F0261DED0400655E54 /* TransferView.swift */; };
 		E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -100,17 +92,13 @@
 
 /* Begin PBXFileReference section */
 		021A12012C70391A00B12BF1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableGridView.swift; sourceTree = "<group>"; };
 		0220F1B1263FE1120007EDC8 /* SizeExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizeExtensions.swift; sourceTree = "<group>"; };
 		022E53432633B3C0007921D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mytimetablemaker_swiftuiRelease.entitlements; sourceTree = "<group>"; };
 		0257E431263E1B3D00D45CFB /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
-		026257D22AD3E366001CF251 /* FirestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreButton.swift; sourceTree = "<group>"; };
-		026257D62AD3E515001CF251 /* AccountButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountButton.swift; sourceTree = "<group>"; };
 		02723E5C2E688CB000F1528E /* AccountExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExtensions.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
-		027F23FC2AC9852800852C89 /* LineTimeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineTimeImage.swift; sourceTree = "<group>"; };
 		027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Heavy.otf"; sourceTree = "<group>"; };
 		027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-SemiLight.otf"; sourceTree = "<group>"; };
 		027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Regular.otf"; sourceTree = "<group>"; };
@@ -119,16 +107,13 @@
 		027F24072ACB686300852C89 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Ligh.otf"; sourceTree = "<group>"; };
 		027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-ExtraLigh.otf"; sourceTree = "<group>"; };
-		027F24292ACEB7B500852C89 /* SplashContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashContentView.swift; sourceTree = "<group>"; };
 		02A7302428F3A67A00BE48A5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		02C15510262BC9170037EEC0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		02D9765D2E50AC68003C3766 /* StationLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationLineView.swift; sourceTree = "<group>"; };
+		02C15510262BC9170037EEC0 /* SplashContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashContentView.swift; sourceTree = "<group>"; };
 		02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTimetableSheet.swift; sourceTree = "<group>"; };
 		02E7F69F261F35D700C00545 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6A4261F35DE00C00545 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsContentView.swift; sourceTree = "<group>"; };
 		02E7F7272620856100C00545 /* TimetableContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetableContentView.swift; sourceTree = "<group>"; };
-		02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeOfficeView.swift; sourceTree = "<group>"; };
 		02EBD1172E56E97800450D16 /* SettingsTransferSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTransferSheet.swift; sourceTree = "<group>"; };
 		02EBD49F2E5AB56800450D16 /* SettingsLineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineViewModel.swift; sourceTree = "<group>"; };
 		02EBD4A12E5ABEFA00450D16 /* CustomComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomComponents.swift; sourceTree = "<group>"; };
@@ -151,13 +136,12 @@
 		02F025C4261BDED100655E54 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		02F025C9261BDF0600655E54 /* LineExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineExtensions.swift; sourceTree = "<group>"; };
 		02F025D6261BE0D500655E54 /* NavigationBarModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarModifier.swift; sourceTree = "<group>"; };
-		02F025E6261BE54700655E54 /* MyLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyLogin.swift; sourceTree = "<group>"; };
-		02F025EC261BE5A500655E54 /* MyTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTransfer.swift; sourceTree = "<group>"; };
-		02F02622261C935A00655E54 /* MyFirestore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFirestore.swift; sourceTree = "<group>"; };
+		02F025E6261BE54700655E54 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		02F025EC261BE5A500655E54 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		02F02622261C935A00655E54 /* FirestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreViewModel.swift; sourceTree = "<group>"; };
 		02F0262C261C94E600655E54 /* LoginContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginContentView.swift; sourceTree = "<group>"; };
 		02F0263F261C95E400655E54 /* SignUpContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpContentView.swift; sourceTree = "<group>"; };
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
-		02F026F0261DED0400655E54 /* TransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferView.swift; sourceTree = "<group>"; };
 		02F026F1261DED0500655E54 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Debug.xcconfig; sourceTree = "<group>"; };
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
 		E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineSheet.swift; sourceTree = "<group>"; };
@@ -327,7 +311,7 @@
 			isa = PBXGroup;
 			children = (
 				02F0262C261C94E600655E54 /* LoginContentView.swift */,
-				02F025E6261BE54700655E54 /* MyLogin.swift */,
+				02F025E6261BE54700655E54 /* LoginViewModel.swift */,
 				02F0263F261C95E400655E54 /* SignUpContentView.swift */,
 			);
 			path = LoginContentView;
@@ -336,14 +320,9 @@
 		02F025AF261BDDB700655E54 /* MainContentView */ = {
 			isa = PBXGroup;
 			children = (
-				02C15510262BC9170037EEC0 /* ContentView.swift */,
-				02F025EC261BE5A500655E54 /* MyTransfer.swift */,
+				02C15510262BC9170037EEC0 /* SplashContentView.swift */,
+				02F025EC261BE5A500655E54 /* MainViewModel.swift */,
 				02F026C8261D38F900655E54 /* MainContentView.swift */,
-				027F24292ACEB7B500852C89 /* SplashContentView.swift */,
-				027F23FC2AC9852800852C89 /* LineTimeImage.swift */,
-				02EBD0FC2E51500E00450D16 /* HomeOfficeView.swift */,
-				02D9765D2E50AC68003C3766 /* StationLineView.swift */,
-				02F026F0261DED0400655E54 /* TransferView.swift */,
 			);
 			path = MainContentView;
 			sourceTree = "<group>";
@@ -352,9 +331,7 @@
 			isa = PBXGroup;
 			children = (
 				02E7F6AB261FD4D600C00545 /* SettingsContentView.swift */,
-				02F02622261C935A00655E54 /* MyFirestore.swift */,
-				026257D22AD3E366001CF251 /* FirestoreButton.swift */,
-				026257D62AD3E515001CF251 /* AccountButton.swift */,
+				02F02622261C935A00655E54 /* FirestoreViewModel.swift */,
 			);
 			path = SettingsContentView;
 			sourceTree = "<group>";
@@ -372,7 +349,6 @@
 			isa = PBXGroup;
 			children = (
 				02E7F7272620856100C00545 /* TimetableContentView.swift */,
-				0220F1AD263F77FB0007EDC8 /* TimetableGridView.swift */,
 				02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */,
 				027F23F52AC8437600852C89 /* ImagePicker.swift */,
 			);
@@ -549,24 +525,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				02F025D7261BE0D500655E54 /* NavigationBarModifier.swift in Sources */,
-				027F23FD2AC9852800852C89 /* LineTimeImage.swift in Sources */,
 				027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */,
 				02E7F6AC261FD4D600C00545 /* SettingsContentView.swift in Sources */,
-				02F02623261C935A00655E54 /* MyFirestore.swift in Sources */,
+				02F02623261C935A00655E54 /* FirestoreViewModel.swift in Sources */,
 				02EBD4A22E5ABF0B00450D16 /* CustomComponents.swift in Sources */,
 				02E7F7282620856100C00545 /* TimetableContentView.swift in Sources */,
-				02F025E7261BE54700655E54 /* MyLogin.swift in Sources */,
+				02F025E7261BE54700655E54 /* LoginViewModel.swift in Sources */,
 				02F02588261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld in Sources */,
 				02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */,
-				02F026F1261DED0400655E54 /* TransferView.swift in Sources */,
 				0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */,
-				027F242A2ACEB7B500852C89 /* SplashContentView.swift in Sources */,
-				026257D32AD3E366001CF251 /* FirestoreButton.swift in Sources */,
 				02DC90FE2E7AD4D300EE9C42 /* SettingsTimetableSheet.swift in Sources */,
 				02EBD4BE2E5D771200450D16 /* TransportationModels.swift in Sources */,
-				0220F1AE263F77FB0007EDC8 /* TimetableGridView.swift in Sources */,
 				027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */,
-				02C15511262BC9170037EEC0 /* ContentView.swift in Sources */,
+				02C15511262BC9170037EEC0 /* SplashContentView.swift in Sources */,
 				02F026C9261D38F900655E54 /* MainContentView.swift in Sources */,
 				02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */,
 				0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */,
@@ -577,13 +548,10 @@
 				02F025BD261BDEA000655E54 /* TimeExtensions.swift in Sources */,
 				02EBD1182E56E98300450D16 /* SettingsTransferSheet.swift in Sources */,
 				E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */,
-				026257D72AD3E515001CF251 /* AccountButton.swift in Sources */,
-				02D9765E2E50AC6E003C3766 /* StationLineView.swift in Sources */,
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
 				02F025C5261BDED100655E54 /* Enums.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
-				02EBD0FD2E51500E00450D16 /* HomeOfficeView.swift in Sources */,
-				02F025ED261BE5A500655E54 /* MyTransfer.swift in Sources */,
+				02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

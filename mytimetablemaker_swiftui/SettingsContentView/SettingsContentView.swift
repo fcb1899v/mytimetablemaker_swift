@@ -11,21 +11,30 @@ import SwiftUI
 // Main settings screen with route configuration, account management, and app information
 struct SettingsContentView: View {
     
+    // MARK: - Environment & Observed Objects
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransfer: MyTransfer
-    @ObservedObject private var myLogin: MyLogin
-    @ObservedObject private var myFirestore: MyFirestore
+    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myLogin: LoginViewModel
+    @ObservedObject private var myFirestore: FirestoreViewModel
     
+    // MARK: - State Properties
+    // Control visibility of sheets, alerts, and navigation state
     @State private var isShowLogIn = false
     @State private var showTransferSheet = false
     @State private var showLineSheet = false
     @State private var selectedRoute = "back1"
     @State private var isNavigateToMain = false
+    @State private var isShowLogoutAlert = false
+    @State private var isShowDeleteAlert = false
+    @State private var isShowGetFirestoreAlert = false
+    @State private var isShowSaveFirestoreAlert = false
 
+    // MARK: - Initialization
+    // Initialize with view models for transfer, login, and Firestore operations
     init(
-        _ myTransfer: MyTransfer,
-        _ myLogin: MyLogin,
-        _ myFirestore: MyFirestore
+        _ myTransfer: TransferViewModel,
+        _ myLogin: LoginViewModel,
+        _ myFirestore: FirestoreViewModel
     ) {
         self.myTransfer = myTransfer
         self.myLogin = myLogin
@@ -55,9 +64,10 @@ struct SettingsContentView: View {
                             showLineSheet = true
                         }
                     )
+                    // Firestore data management buttons (only shown when logged in)
                     if myLogin.isLoginSuccess {
-                        FirestoreButton(myFirestore: myFirestore, isSaveFirestore: false)
-                        FirestoreButton(myFirestore: myFirestore, isSaveFirestore: true)
+                        firestoreButton(isSaveFirestore: false)
+                        firestoreButton(isSaveFirestore: true)
                     }
                 }
                 
@@ -67,8 +77,8 @@ struct SettingsContentView: View {
                         .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
                 ) {
                     if myLogin.isLoginSuccess {
-                        AccountButton(myLogin: myLogin, isDeleteAccount: false)
-                        AccountButton(myLogin: myLogin, isDeleteAccount: true)
+                        accountButton(isDeleteAccount: false)
+                        accountButton(isDeleteAccount: true)
                     } else {
                         NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
                             Text("Manage your data after login".localized)
@@ -116,6 +126,7 @@ struct SettingsContentView: View {
                     .cornerRadius(screen.settingsSheetCornerRadius)
             }
         }
+        // MARK: - Navigation & Toolbar Configuration
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -130,6 +141,8 @@ struct SettingsContentView: View {
         )
         .navigationBarBackButtonHidden(true)
         .navigationViewStyle(StackNavigationViewStyle())
+        // MARK: - Sheet Presentations
+        // Present transfer and line settings sheets based on user actions
         .sheet(isPresented: $showTransferSheet) {
             NavigationStack {
                 SettingsTransferSheet()
@@ -182,6 +195,55 @@ struct SettingsContentView: View {
             Text(myFirestore.message)
         }
         .tint(.primary)
+        // MARK: - Confirmation Alerts
+        // Alert dialogs for logout, account deletion, and Firestore operations
+        .alert("Logout".localized, isPresented: $isShowLogoutAlert) {
+            Button("OK".localized, role: .none) {
+                isShowLogoutAlert = false
+                myLogin.logOut()
+            }
+            Button("Cancel".localized, role: .cancel) {
+                isShowLogoutAlert = false
+            }
+        } message: {
+            Text("Logout your account?".localized)
+        }
+        // MARK: - Delete Account Alert
+        .alert("Delete Account".localized, isPresented: $isShowDeleteAlert) {
+            Button("OK".localized, role: .destructive) {
+                isShowDeleteAlert = false
+                myLogin.delete()
+            }
+            Button("Cancel".localized, role: .cancel) {
+                isShowDeleteAlert = false
+            }
+        } message: {
+            Text("⚠️ " + "Delete your account?".localized)
+        }
+        // MARK: - Get Firestore Alert
+        .alert("Get saved data".localized, isPresented: $isShowGetFirestoreAlert) {
+            Button("OK".localized, role: .destructive) {
+                myFirestore.getFirestore()
+                isShowGetFirestoreAlert = false
+            }
+            Button("Cancel".localized, role: .cancel) {
+                isShowGetFirestoreAlert = false
+            }
+        } message: {
+            Text("⚠️ " + "Overwritten current data?".localized)
+        }
+        // MARK: - Save Firestore Alert
+        .alert("Save current data".localized, isPresented: $isShowSaveFirestoreAlert) {
+            Button("OK".localized, role: .destructive) {
+                myFirestore.setFirestore()
+                isShowSaveFirestoreAlert = false
+            }
+            Button("Cancel".localized, role: .cancel) {
+                isShowSaveFirestoreAlert = false
+            }
+        } message: {
+            Text("⚠️ " + "Overwritten saved data?".localized)
+        }
     }
     
     // MARK: - Helper Functions
@@ -205,15 +267,51 @@ struct SettingsContentView: View {
             }
         }
     }
+    
+    /// Creates an account button (logout or delete account) with alert confirmation
+    /// - Parameter isDeleteAccount: Whether this is a delete account button (true) or logout button (false)
+    /// - Returns: Configured button view
+    @ViewBuilder
+    private func accountButton(isDeleteAccount: Bool) -> some View {
+        Button(action: {
+            if isDeleteAccount {
+                isShowDeleteAlert = true
+            } else {
+                isShowLogoutAlert = true
+            }
+        }) {
+            Text(isDeleteAccount ? "Delete Account".localized: "Logout".localized)
+                .font(.system(size: screen.settingsFontSize))
+                .foregroundColor(.black)
+        }
+    }
+    
+    /// Creates a Firestore button (get or save data) with alert confirmation
+    /// - Parameter isSaveFirestore: Whether this is a save button (true) or get button (false)
+    /// - Returns: Configured button view
+    @ViewBuilder
+    private func firestoreButton(isSaveFirestore: Bool) -> some View {
+        Button(action: {
+            if isSaveFirestore {
+                isShowSaveFirestoreAlert = true
+            } else {
+                isShowGetFirestoreAlert = true
+            }
+        }) {
+            Text(isSaveFirestore ? "Save current data".localized: "Get saved data".localized)
+                .font(.system(size: screen.settingsFontSize))
+                .foregroundColor(.black)
+        }
+    }
 }
 
 // MARK: - Preview Provider
 // Provides preview data for SwiftUI previews in Xcode
 struct SettingsContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = MyTransfer()
-        let myLogin = MyLogin()
-        let myFirestore = MyFirestore()
+        let myTransfer = TransferViewModel()
+        let myLogin = LoginViewModel()
+        let myFirestore = FirestoreViewModel()
         SettingsContentView(myTransfer, myLogin, myFirestore)
     }
 }

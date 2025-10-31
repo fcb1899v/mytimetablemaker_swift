@@ -12,7 +12,9 @@ import SwiftUI
 // MARK: - UI Components
 // Small tag display component for showing metadata
 struct CustomTag: View {
+    // Text content to display in the tag
     let text: String
+    
     var body: some View {
         Text(text)
             .font(.system(size: screen.settingsLineSheetCaptionFontSize, weight: .medium))
@@ -25,13 +27,21 @@ struct CustomTag: View {
 // MARK: - Generic Custom Toggle Component
 // Customizable toggle component with left/right text and colors
 struct CustomToggle: View {
+    // Binding for selected state (true = left, false = right)
     @Binding var isLeftSelected: Bool
     
+    // Left option text and color
     let leftText: String
-    let rightText: String
     let leftColor: Color
+    
+    // Right option text and color
+    let rightText: String
     let rightColor: Color
+    
+    // Toggle circle color
     let circleColor: Color
+    
+    // Color for unselected state
     let offColor: Color
     
     // MARK: - Initializer
@@ -136,24 +146,34 @@ extension CustomToggle {
 // MARK: - Two Digit Number Picker
 // Picker component for selecting two-digit numbers with separate tens and ones place
 struct Custom2DigitPicker: View {
+    // Binding for the selected value
     @Binding var value: Int
     
+    // Flag to restrict range to 0-59 (for time) or 0-99 (for general use)
     let isZeroToFive: Bool
     
     // MARK: - Computed Properties
-    private var minValue: Int { 0 }    
+    
+    // Minimum selectable value
+    private var minValue: Int { 0 }
+    
+    // Maximum selectable value based on isZeroToFive flag
     private var maxValue: Int { isZeroToFive ? 59 : 99 }
     
-    // MARK: - Computed Properties
+    // Extract tens digit from value
     private var tensDigit: Int { value / 10 }
+    
+    // Extract ones digit from value
     private var onesDigit: Int { value % 10 }
     
+    // Range for tens digit picker
     private var tensRange: ClosedRange<Int> {
         let minTens = minValue / 10
         let maxTens = maxValue / 10
         return minTens...maxTens
     }
     
+    // Range for ones digit picker (dynamically adjusted based on tens value)
     private var onesRange: ClosedRange<Int> {
         // Always allow 0-9 for ones digit regardless of isZeroToFive setting
         let baseRange = 0...9
@@ -222,10 +242,19 @@ struct Custom2DigitPicker: View {
 
 /// Custom button component for consistent styling
 struct CustomButton: View {
+    // Button title text
     let title: String
+    
+    // Optional SF Symbol icon name
     let icon: String?
+    
+    // Background color when enabled
     let backgroundColor: Color
+    
+    // Whether button is enabled/disabled
     let isEnabled: Bool
+    
+    // Action to perform when tapped
     let action: () -> Void
     
     init(
@@ -266,9 +295,16 @@ struct CustomButton: View {
 
 /// Custom rectangle button component for consistent styling
 struct CustomRectangleButton: View {
+    // Button title text
     let title: String
+    
+    // Optional SF Symbol icon name
     let icon: String?
+    
+    // Tint color for the button
     let tintColor: Color
+    
+    // Action to perform when tapped
     let action: () -> Void
     
     init(
@@ -307,8 +343,10 @@ struct CustomRectangleButton: View {
 
 /// Custom background for input fields
 struct CustomBackground: View {
+    // Background color to apply
     let backgroundColor: Color
     
+    // Initialize with default or custom background color
     init(backgroundColor: Color = Color(.secondarySystemBackground)) {
         self.backgroundColor = backgroundColor
     }
@@ -321,8 +359,10 @@ struct CustomBackground: View {
 
 /// Custom border for input fields
 struct CustomBorder: View {
+    // Border color to apply
     let borderColor: Color
     
+    // Initialize with default or custom border color
     init(borderColor: Color = Color(.separator)) {
         self.borderColor = borderColor
     }
@@ -336,12 +376,16 @@ struct CustomBorder: View {
 // MARK: - Custom Back Button Button
 // Reusable back button component with consistent styling across iOS versions
 struct CustomBackButton: View {
+    // Foreground color for button text and icon
     let foregroundColor: Color
+    
+    // Action to perform when tapped
     let action: () -> Void
     
+    // Initialize with default or custom foreground color
     init(
         foregroundColor: Color = .white,
-        action: @escaping () -> Void,
+        action: @escaping () -> Void
     ) {
         self.foregroundColor = foregroundColor
         self.action = action
@@ -365,11 +409,12 @@ struct CustomBackButton: View {
 // Generic button component for account-related operations with confirmation and result alerts
 struct CustomAccountButton: View {
     
-    @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransfer: MyTransfer
-    @ObservedObject private var myLogin: MyLogin
-    @ObservedObject private var myFirestore: MyFirestore
+    // Observed objects
+    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myLogin: LoginViewModel
+    @ObservedObject private var myFirestore: FirestoreViewModel
     
+    // Alert and navigation state flags
     @State private var isShowAlert = false
     @State private var isShowResultAlert = false
     @State private var isNavigateToMain = false
@@ -382,9 +427,9 @@ struct CustomAccountButton: View {
     let isSuccess: () -> Bool
     
     init(
-        myTransfer: MyTransfer,
-        myLogin: MyLogin,
-        myFirestore: MyFirestore,
+        myTransfer: TransferViewModel,
+        myLogin: LoginViewModel,
+        myFirestore: FirestoreViewModel,
         buttonTitle: String,
         alertTitle: String,
         alertMessage: String,

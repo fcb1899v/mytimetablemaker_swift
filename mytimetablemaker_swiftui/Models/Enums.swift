@@ -170,6 +170,7 @@ enum LocalDataSource: CaseIterable {
         }
     }
 
+    // Indicates if this operator provides train timetables.
     var hasTrainTimeTable: Bool {
         switch self {
         case .jrEast, .tobu, .sotetsu, .tokyoMetro, .toeiMetro, .yokohamaMetro, .rinkai, .tsukuba, .tama:
@@ -179,6 +180,7 @@ enum LocalDataSource: CaseIterable {
         }
     }
 
+    // Indicates if this operator provides bus timetables.
     var hasBusTimeTable: Bool {
         switch self {
         case .toeiBus, .yokohamaBus, .tokyuBus, .seibuBus, .sotetsuBus, .kanachuBus, .kokusaiKogyo:
@@ -327,13 +329,10 @@ enum LocalDataSource: CaseIterable {
         guard let trainType = trainType else { 
             return NSLocalizedString("Unknown", comment: "Unknown train type")
         }
-        
-        // Split by "." and get the last component
         let components = trainType.components(separatedBy: ".")
         guard let lastComponent = components.last else {
             return NSLocalizedString("Unknown", comment: "Unknown train type")
         }
-        
         return NSLocalizedString(lastComponent, comment: "Train type display name")
     }
     
@@ -343,7 +342,6 @@ enum LocalDataSource: CaseIterable {
         guard let operatorCode = operatorCode else {
             return ""
         }
-        
         let odptDataType = transportationKind == .railway ?
             dataType.railwayOdpTDataType :
             dataType.busOdpTDataType
@@ -356,9 +354,10 @@ enum LocalDataSource: CaseIterable {
 enum APIDataType {
     case line               // Railway line or bus route information
     case timetable          // Train timetable data
-    case stopTimetable       // Station timetable data
+    case stopTimetable      // Station timetable data
     case stop               // Bus stop pole data
     
+    // Maps APIDataType to ODPTDataType for railway context.
     var railwayOdpTDataType: ODPTDataType {
         switch self {
         case .line: return .railway
@@ -368,6 +367,7 @@ enum APIDataType {
         }
     }
     
+    // Maps APIDataType to ODPTDataType for bus context.
     var busOdpTDataType: ODPTDataType {
         switch self {
         case .line: return .busRoutePattern
@@ -429,6 +429,8 @@ enum ODPTError: Error, LocalizedError {
     case networkError(String)
     case invalidData
     
+    // Human-readable error description for UI and logs.
+    // Keeps messages concise and localized where applicable.
     var errorDescription: String? {
         switch self {
         case .dateExtractionFailed:
@@ -510,6 +512,8 @@ enum ODPTCalendarType: String, CaseIterable {
         }
     }
     
+    // Returns primary color for calendar labels (weekend = red, weekday = white).
+    // Used for quick visual distinction between weekend and weekday.
     var calendarColor: Color {
         switch self {
         case .holiday, .sunday, .saturday, .saturdayHoliday:
@@ -519,6 +523,8 @@ enum ODPTCalendarType: String, CaseIterable {
         }
     }
     
+    // Returns secondary text color for calendar labels (weekend = red, weekday = black).
+    // Keeps contrast readable against calendarColor background.
     var calendarSubColor: Color {
         switch self {
         case .holiday, .sunday, .saturday, .saturdayHoliday:
@@ -527,8 +533,40 @@ enum ODPTCalendarType: String, CaseIterable {
             return Color.black
         }
     }
+}
 
+// MARK: - ODPT Data Type Enum
+// Enumeration for different ODPT data types with associated values
+enum ODPTDataType: CaseIterable {
+    case railway
+    case trainTimetable
+    case stationTimetable
+    case trainStation
+    case busRoutePattern
+    case busTimetable
+    case busstopPole
+    
+    // MARK: - API Endpoint
+    var apiEndpoint: String {
+        switch self {
+        case .railway: return "odpt:Railway"
+        case .trainTimetable: return "odpt:TrainTimetable"
+        case .stationTimetable: return "odpt:StationTimetable"
+        case .trainStation: return "odpt:Station"
+        case .busRoutePattern: return "odpt:BusroutePattern"
+        case .busTimetable: return "odpt:BusTimetable"
+        case .busstopPole: return "odpt:BusstopPole"
+        }
+    }
+}
 
+// MARK: - ODPT API Type Enum
+// Enumeration for different ODPT API endpoints
+enum ODPTAPIType: CaseIterable {
+    case standard    // Standard API with access key
+    case publicAPI   // Public API without access key
+    case challenge   // Challenge API with challenge key
+    case gtfs        // No API (Use GTFS Data)
 }
 
 // MARK: - Transfer Type Enumeration
