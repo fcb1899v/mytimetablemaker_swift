@@ -302,6 +302,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         var request = URLRequest(url: url)
         configureRequest(&request, consumerKey: consumerKey)
         
+        print("🔗 Fetch URL: \(urlString)")
         let (data, response) = try await session.data(for: request)
         
         // Check for successful response
@@ -364,6 +365,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
             // Load cached data for conditional headers and comparison
             let cachedData = cache.loadData(for: cacheKey)
             
+            print("🔗 Fetch URL: \(urlString)")
             let (data, response) = try await session.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {

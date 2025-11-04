@@ -11,8 +11,7 @@ import SwiftUI
 
 // MARK: - Transfer Data Model
 // Manages transfer information, timetables, and real-time updates
-@MainActor
-final class TransferViewModel: ObservableObject {
+class MyTransfer: ObservableObject {
     
     // Timer for real-time updates
     private var cancellable: AnyCancellable?
@@ -51,6 +50,7 @@ final class TransferViewModel: ObservableObject {
     @Published var rideTimeArray1: [Int]
     @Published var rideTimeArray2: [Int]
     
+
     // MARK: - Initialization
     init() {
         self.isBack = true

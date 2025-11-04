@@ -214,7 +214,7 @@ extension String{
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransferType.walking.rawValue)! }
     func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
     func timetableTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return timetableKey(calendarType, num, hour).userDefaultsValue("")! }
-    func timetableRideTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return timetableKey(calendarType, num, hour).userDefaultsValue("")! }
+    func timetableRideTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return timetableRideTimeKey(calendarType, num, hour).userDefaultsValue("")! }
     func choiceCopyTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(calendarType, num, hour)[i].userDefaultsValue("")! }
     
     // MARK: - Settings View Data Access
@@ -357,10 +357,6 @@ extension String {
         let timetableRideTimeKey = self.timetableRideTimeKey(calendarType, num, hour)
         let timetableTrainTypeKey = self.timetableTrainTypeKey(calendarType, num, hour)
         
-        if hour < 9 {
-            print("💾 saveTransportationTimes: Saving \(transportationTimes.count) TransportationTime objects for hour \(hour) (\(calendarType.displayName))")
-        }
-        
         // Clear existing data (always remove to ensure clean state)
         UserDefaults.standard.removeObject(forKey: timetableKey)
         UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
@@ -398,15 +394,6 @@ extension String {
         UserDefaults.standard.set(timetableRideTimeString, forKey: timetableRideTimeKey)
         UserDefaults.standard.set(timetableTrainTypeString, forKey: timetableTrainTypeKey)
         
-        if hour < 9 {
-            print("📊 Data: timetable='\(timetableString)', rideTime='\(timetableRideTimeString)', trainType='\(timetableTrainTypeString)'")
-            
-            // Print detailed ride time information for verification
-            print("🚉 Ride Time Details for hour \(hour):")
-            for (index, transportationTime) in transportationTimes.enumerated() {
-                print("   \(index + 1). \(transportationTime.departureTime) → \(transportationTime.arrivalTime) (\(transportationTime.rideTime)分)")
-            }
-        }
     }
     
     // MARK: - Save Train Type List

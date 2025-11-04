@@ -445,94 +445,68 @@ enum ODPTError: Error, LocalizedError {
 
 // MARK: - ODPT Calendar Type Enumeration
 // Defines calendar types used in ODPT API for timetable scheduling
-enum ODPTCalendarType: String, CaseIterable {
-    case weekday = "odpt.Calendar:Weekday"                    // Weekdays (Monday to Friday, excluding holidays)
-    case holiday = "odpt.Calendar:Holiday"                    // Holidays (Sunday, national holidays, holidays, substitute holidays)
-    case saturdayHoliday = "odpt.Calendar:SaturdayHoliday"    // Saturday holidays (Saturday or holidays)
-    case sunday = "odpt.Calendar:Sunday"                      // Sunday
-    case monday = "odpt.Calendar:Monday"                      // Monday
-    case tuesday = "odpt.Calendar:Tuesday"                    // Tuesday
-    case wednesday = "odpt.Calendar:Wednesday"                // Wednesday
-    case thursday = "odpt.Calendar:Thursday"                  // Thursday
-    case friday = "odpt.Calendar:Friday"                      // Friday
-    case saturday = "odpt.Calendar:Saturday"                  // Saturday
-    case allday = ""                                          // All day (fallback when no specific calendar type exists)
-    
-    // MARK: - Display Name
-    // Localized display name for each calendar type
-    var displayName: String {
+enum ODPTCalendarType: CaseIterable, Equatable, Hashable {
+    case weekday                                            // Weekdays (Monday to Friday, excluding holidays)
+    case holiday                                            // Holidays (Sunday, national holidays, holidays, substitute holidays)
+    case saturdayHoliday                                    // Saturday holidays (Saturday or holidays)
+    case sunday                                             // Sunday
+    case monday                                             // Monday
+    case tuesday                                            // Tuesday
+    case wednesday                                          // Wednesday
+    case thursday                                           // Thursday
+    case friday                                             // Friday
+    case saturday                                           // Saturday
+    case specific(String)                                   // Special calendar types (e.g., "odpt.Calendar:Specific.Toei.81-170")
+
+    // MARK: - Raw Value
+    // String representation of calendar type for API and storage
+    var rawValue: String {
         switch self {
-        case .weekday: return "Weekday".localized
-        case .holiday: return "Holiday".localized
-        case .saturdayHoliday: return "Saturday/Holiday".localized
-        case .sunday: return "Sunday".localized
-        case .monday: return "Monday".localized
-        case .tuesday: return "Tuesday".localized
-        case .wednesday: return "Wednesday".localized
-        case .thursday: return "Thursday".localized
-        case .friday: return "Friday".localized
-        case .saturday: return "Saturday".localized
-        case .allday: return "Timetable".localized
+        case .weekday: return "odpt.Calendar:Weekday"
+        case .holiday: return "odpt.Calendar:Holiday"
+        case .saturdayHoliday: return "odpt.Calendar:SaturdayHoliday"
+        case .sunday: return "odpt.Calendar:Sunday"
+        case .monday: return "odpt.Calendar:Monday"
+        case .tuesday: return "odpt.Calendar:Tuesday"
+        case .wednesday: return "odpt.Calendar:Wednesday"
+        case .thursday: return "odpt.Calendar:Thursday"
+        case .friday: return "odpt.Calendar:Friday"
+        case .saturday: return "odpt.Calendar:Saturday"
+        case .specific(let value): return value
         }
     }
     
-    // MARK: - Debug Display Name
-    // English display name for debugging purposes
-    var debugDisplayName: String {
-        switch self {
-        case .weekday: return "Weekday"
-        case .holiday: return "Holiday"
-        case .saturdayHoliday: return "Saturday/Holiday"
-        case .sunday: return "Sunday"
-        case .monday: return "Monday"
-        case .tuesday: return "Tuesday"
-        case .wednesday: return "Wednesday"
-        case .thursday: return "Thursday"
-        case .friday: return "Friday"
-        case .saturday: return "Saturday"
-        case .allday: return "All Day"
+    // MARK: - Custom Initializer
+    // Initialize from raw value string, handling special calendar types
+    init?(rawValue: String) {
+        switch rawValue {
+        case "odpt.Calendar:Weekday": self = .weekday
+        case "odpt.Calendar:Holiday": self = .holiday
+        case "odpt.Calendar:SaturdayHoliday": self = .saturdayHoliday
+        case "odpt.Calendar:Sunday": self = .sunday
+        case "odpt.Calendar:Monday": self = .monday
+        case "odpt.Calendar:Tuesday": self = .tuesday
+        case "odpt.Calendar:Wednesday": self = .wednesday
+        case "odpt.Calendar:Thursday": self = .thursday
+        case "odpt.Calendar:Friday": self = .friday
+        case "odpt.Calendar:Saturday": self = .saturday
+        default:
+            // Handle special calendar types (keep original rawValue for API calls)
+            if rawValue.hasPrefix("odpt.Calendar:Specific.") {
+                self = .specific(rawValue)
+            } else {
+                return nil  // Unknown calendar type
+            }
         }
     }
     
-    // MARK: - Calendar Tag
-    // Get calendar tag for UserDefaults keys
-    var calendarTag: String {
-        switch self {
-        case .holiday:   return "holiday"
-        case .sunday:    return "sunday"
-        case .saturday:  return "saturday"
-        case .saturdayHoliday:  return "weekend"
-        case .monday:    return "monday"
-        case .tuesday:   return "tuesday"
-        case .wednesday: return "wednesday"
-        case .thursday:  return "thursday"
-        case .friday:    return "friday"
-        case .weekday:   return "weekday"
-        case .allday:    return "allday"
-        }
+    // MARK: - Case Iterable
+    // Include all static calendar types, excluding .specific case
+    // .specific has associated value and cannot be included in allCases
+    static var allCases: [ODPTCalendarType] {
+        return [.weekday, .holiday, .saturdayHoliday, .sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
     }
     
-    // Returns primary color for calendar labels (weekend = red, weekday = white).
-    // Used for quick visual distinction between weekend and weekday.
-    var calendarColor: Color {
-        switch self {
-        case .holiday, .sunday, .saturday, .saturdayHoliday:
-            return Color.red
-        case .monday, .tuesday, .wednesday, .thursday, .friday, .weekday, .allday:
-            return Color.white
-        }
-    }
-    
-    // Returns secondary text color for calendar labels (weekend = red, weekday = black).
-    // Keeps contrast readable against calendarColor background.
-    var calendarSubColor: Color {
-        switch self {
-        case .holiday, .sunday, .saturday, .saturdayHoliday:
-            return Color.red
-        case .monday, .tuesday, .wednesday, .thursday, .friday, .weekday, .allday:
-            return Color.black
-        }
-    }
 }
 
 // MARK: - ODPT Data Type Enum

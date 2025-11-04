@@ -60,8 +60,7 @@ extension Int {
                self == 3 && availableTypes.contains(.wednesday) ? .wednesday:
                self == 4 && availableTypes.contains(.thursday) ? .thursday:
                self == 5 && availableTypes.contains(.friday) ? .friday:
-               availableTypes.contains(.weekday) ? .weekday:
-               .allday
+               .weekday
     }
     
     // MARK: - Choice Copy Time List
@@ -106,23 +105,79 @@ extension Date {
     
     // MARK: - ODPT Calendar Type
     // Determine calendar type based on date with fallback to available types
+    // For .specific types, check their displayCalendarType for matching
     func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
-        return isJapaneseHoliday && availableTypes.contains(.holiday) ? .holiday:
-               isWeekMatch(enWeek: "Sun", jaWeek: "日") && availableTypes.contains(.sunday) ? .sunday:
-               isWeekMatch(enWeek: "Sat", jaWeek: "土") && availableTypes.contains(.saturday) ? .saturday:
-               isSaturdayHoloday && availableTypes.contains(.saturdayHoliday) ? .saturdayHoliday:
-               isWeekMatch(enWeek: "Mon", jaWeek: "月") && availableTypes.contains(.monday) ? .monday:
-               isWeekMatch(enWeek: "Tue", jaWeek: "火") && availableTypes.contains(.tuesday) ? .tuesday:
-               isWeekMatch(enWeek: "Wed", jaWeek: "水") && availableTypes.contains(.wednesday) ? .wednesday:
-               isWeekMatch(enWeek: "Thu", jaWeek: "木") && availableTypes.contains(.thursday) ? .thursday:
-               isWeekMatch(enWeek: "Fri", jaWeek: "金") && availableTypes.contains(.friday) ? .friday:
-               availableTypes.contains(.weekday) ? .weekday:
-               .allday
-    }   
+        // Helper function to check if a type or its displayCalendarType is available
+        func isAvailable(_ type: ODPTCalendarType) -> Bool {
+            availableTypes.contains(type) || availableTypes.contains { $0.displayCalendarType == type }
+        }
+        
+        // Helper function to find matching .specific type for a display type
+        func findSpecificType(for displayType: ODPTCalendarType) -> ODPTCalendarType? {
+            return availableTypes.first { $0.displayCalendarType == displayType }
+        }
+        
+        // Check date properties
+        let isHoliday = isJapaneseHoliday
+        let isSunday = isWeekMatch(enWeek: "Sun", jaWeek: "日")
+        let isSaturday = isWeekMatch(enWeek: "Sat", jaWeek: "土")
+        let isSatHoliday = isSaturdayHoloday
+        
+        // Check if it's a weekday (Monday-Friday, not a holiday)
+        let isWeekdayDate = !isHoliday && !isSunday && !isSaturday
+        
+        // If it's a weekday date, prioritize weekday calendar types
+        if isWeekdayDate {
+            // Check for specific weekday types first
+            if isWeekMatch(enWeek: "Mon", jaWeek: "月") && isAvailable(.monday) {
+                return findSpecificType(for: .monday) ?? .monday
+            }
+            if isWeekMatch(enWeek: "Tue", jaWeek: "火") && isAvailable(.tuesday) {
+                return findSpecificType(for: .tuesday) ?? .tuesday
+            }
+            if isWeekMatch(enWeek: "Wed", jaWeek: "水") && isAvailable(.wednesday) {
+                return findSpecificType(for: .wednesday) ?? .wednesday
+            }
+            if isWeekMatch(enWeek: "Thu", jaWeek: "木") && isAvailable(.thursday) {
+                return findSpecificType(for: .thursday) ?? .thursday
+            }
+            if isWeekMatch(enWeek: "Fri", jaWeek: "金") && isAvailable(.friday) {
+                return findSpecificType(for: .friday) ?? .friday
+            }
+            // Fallback to weekday if available
+            if isAvailable(.weekday) {
+                return findSpecificType(for: .weekday) ?? .weekday
+            }
+        }
+        
+        // Check for holiday/weekend calendar types
+        if isHoliday && isAvailable(.holiday) {
+            return findSpecificType(for: .holiday) ?? .holiday
+        }
+        if isSunday && isAvailable(.sunday) {
+            return findSpecificType(for: .sunday) ?? .sunday
+        }
+        if isSaturday && isAvailable(.saturday) {
+            return findSpecificType(for: .saturday) ?? .saturday
+        }
+        if isSatHoliday && isAvailable(.saturdayHoliday) {
+            return findSpecificType(for: .saturdayHoliday) ?? .saturdayHoliday
+        }
+        
+        // Final fallback: Use weekday if available, otherwise use first available type
+        if isAvailable(.weekday) {
+            return findSpecificType(for: .weekday) ?? .weekday
+        }
+        
+        // If weekday is not available, use the first available type
+        return availableTypes.first ?? .weekday
+    }
     
     // MARK: - Japanese Holiday Detection
     // Check for Japanese holidays and weekday matching
-    var isJapaneseHoliday: Bool { isRegularHoliday || isSubstituteHoliday || isNationalHoliday }
+    var isJapaneseHoliday: Bool { 
+        return isRegularHoliday || isSubstituteHoliday || isNationalHoliday
+    }
     func isWeekMatch(enWeek: String, jaWeek: String) -> Bool {
         let formatter = DateFormatter()
         formatter.dateFormat = "E"
@@ -252,10 +307,12 @@ extension Date {
         let calendar = Calendar.current
         let holidays = getAllHolidaysForYear(year)
         var nationalHolidays: [Date] = []
+        
         // Check if this date is between two holidays
         for i in 0..<holidays.count - 1 {
             let currentHoliday = holidays[i]
             let nextHoliday = holidays[i + 1]
+            
             // Check if there's exactly one day between holidays
             if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday),
                calendar.isDate(dayBetween, inSameDayAs: nextHoliday) {
@@ -264,9 +321,14 @@ extension Date {
             }
             // Check if there's a day between two holidays
             if let dayBetween = calendar.date(byAdding: .day, value: 1, to: currentHoliday) {
-                nationalHolidays.append(dayBetween)
+                // Only add if it's actually between two consecutive holidays (within 2 days)
+                let daysBetween = calendar.dateComponents([.day], from: currentHoliday, to: nextHoliday).day ?? 0
+                if daysBetween == 2 {
+                    nationalHolidays.append(dayBetween)
+                }
             }
         }
+        
         return nationalHolidays
     }
 }
@@ -300,17 +362,29 @@ extension String {
     }
     
     // MARK: - Calendar Type
-    // Get calendar type for route based on date with cached available types
-    func calendarType(for date: Date) -> ODPTCalendarType {
-        let routeCacheKey = "\(self)_calendarTypes"
+    // Get calendar type for route and line based on date with cached available types
+    // Uses line-level cache key (structure: goorback -> line -> calendar types)
+    func calendarType(for date: Date, num: Int) -> ODPTCalendarType {
+        // Use line-level cache key to get available types for this specific line
+        let lineCacheKey = "\(self)line\(num + 1)_calendarTypes"
         var availableTypes: [ODPTCalendarType] = []
-        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
+        
+        // Try to get cached calendar types for this specific line
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: lineCacheKey),
            !cachedTypes.isEmpty {
             availableTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
         }
+        
+        // If no line-specific cache, try to detect from actual data
+        if availableTypes.isEmpty {
+            availableTypes = self.loadAvailableCalendarTypes(num: num)
+        }
+        
+        // Fallback to default types if no cache or data found
         if availableTypes.isEmpty {
             availableTypes = [.weekday, .holiday, .saturdayHoliday]
         }
+        
         return date.odpTCalendarType(fallbackTo: availableTypes)
     }
     
@@ -412,36 +486,107 @@ extension String {
     var otherroute: String { self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
     // MARK: - Timetable Data Processing
-    // Process and convert timetable data for specific calendar type and line number
-    func timetable(_ calendarType: ODPTCalendarType, _ num: Int) -> [Int] {
-        (4...25).flatMap { hour in timetableTime(calendarType, num, hour).timeString
-            .components(separatedBy: CharacterSet(charactersIn: " "))
-            .compactMap { Int($0) }
-            .map { $0 + hour * 100 }
-            .filter { $0 >= 0 && $0 < 2700 }
-            .sorted()
+    // Get target calendar type based on date and available calendar types for the line
+    // Cache available types per route to avoid repeated loading
+    private static var availableTypesCache: [String: [ODPTCalendarType]] = [:]
+    
+    func getTargetCalendarType(_ date: Date, _ num: Int) -> ODPTCalendarType {
+        // Create cache key: route + line number
+        let cacheKey = "\(self)_line\(num)"
+        
+        // Get available calendar types for this line (use cache if available)
+        let availableTypes: [ODPTCalendarType]
+        if let cached = String.availableTypesCache[cacheKey] {
+            availableTypes = cached
+        } else {
+            availableTypes = self.loadAvailableCalendarTypes(num: num)
+            String.availableTypesCache[cacheKey] = availableTypes
+        }
+        
+        // Determine target calendar type based on the provided date
+        let targetCalendarType = date.odpTCalendarType(fallbackTo: availableTypes)
+        
+        return targetCalendarType
+    }
+    
+    // Clear cache when calendar types are updated (called from SettingsLineViewModel)
+    func clearCalendarTypesCache(num: Int) {
+        let cacheKey = "\(self)_line\(num)"
+        String.availableTypesCache.removeValue(forKey: cacheKey)
+    }
+    
+    // Generate timetable arrays for all lines (0-2)
+    // Each line uses its own target calendar type based on date and available calendar types
+    func timetableArray(_ date: Date) -> [[Int]] {
+        return (0...2).map { num in
+            let targetCalendarType = getTargetCalendarType(date, num)
+            return (4...25).flatMap { hour in timetableTime(targetCalendarType, num, hour).timeString
+                .components(separatedBy: CharacterSet(charactersIn: " "))
+                .compactMap { Int($0) }
+                .map { $0 + hour * 100 }
+                .filter { $0 >= 0 && $0 < 2700 }
+            }.sorted()
         }
     }
-    // Generate timetable arrays for all lines (0-2)
-    func timetableArray(_ calendarType: ODPTCalendarType) -> [[Int]] { (0...2).map { num in timetable(calendarType, num) } }
+    // Get ride time for a specific departure time
+    // Uses timetableRideTime if available, otherwise falls back to input rideTime
+    // Determines calendar type based on date and available calendar types for the line
+    func getRideTime(_ date: Date, departTime: Int, num: Int) -> Int {
+        // Get target calendar type based on date and available calendar types
+        let targetCalendarType = getTargetCalendarType(date, num)
+        
+        let hour = departTime / 100
+        let minutesInHour = departTime % 100
+        
+        // Try to get timetableRideTime for this hour
+        let rideTimeKey = self.timetableRideTimeKey(targetCalendarType, num, hour)
+        
+        if let rideTimeString = UserDefaults.standard.string(forKey: rideTimeKey),
+           !rideTimeString.isEmpty {
+            let rideTimes = rideTimeString.components(separatedBy: " ").compactMap { Int($0) }
+            
+            // Find corresponding ride time by matching departure time
+            let timetableKey = self.timetableKey(targetCalendarType, num, hour)
+            if let timetableString = UserDefaults.standard.string(forKey: timetableKey),
+               !timetableString.isEmpty {
+                let departureTimes = timetableString.components(separatedBy: " ").compactMap { Int($0) }
+                if let index = departureTimes.firstIndex(of: minutesInHour),
+                   index < rideTimes.count {
+                    return rideTimes[index]
+                }
+                // If exact match not found, use first available ride time
+                if let firstRideTime = rideTimes.first {
+                    return firstRideTime
+                }
+            }
+        }
+        
+        // Fallback to default ride time for this line
+        return rideTimeArray[num]
+    }
+    
     // Calculate departure and arrival times for current route based on current time
-    func timeArray(_ calendarType: ODPTCalendarType, _ currenttime: Int) -> [Int] {
+    // Uses timetableRideTime if available, otherwise falls back to input rideTime
+    func timeArray(_ date: Date, _ currenttime: Int) -> [Int] {
         // Depart time of line 1
-        var timeArray = [timetableArray(calendarType)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
+        var timeArray = [timetableArray(date)[0].first { $0 > (currenttime/100).plusHHMM(transferTimeArray[1]) } ?? 2700]
         // Arrive time of line 1
-        timeArray.append(timeArray[0].plusHHMM(rideTimeArray[0]).overTime(timeArray[0]))
+        timeArray.append(timeArray[0].plusHHMM(getRideTime(date, departTime: timeArray[0], num: 0)).overTime(timeArray[0]))
         // Depart time from depart point
         timeArray.insert(timeArray[0].minusHHMM(transferTimeArray[1]).overTime(timeArray[0]), at: 0)
+        
         if (changeLineInt > 0) {
             for i in 1...changeLineInt {
                 // Depart time of line i
-                timeArray.append(timetableArray(calendarType)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
-                // Arrive time of line 1
-                timeArray.append(timeArray[2 * i + 1].plusHHMM(rideTimeArray[i]).overTime(timeArray[2 * i + 1]))
+                timeArray.append(timetableArray(date)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
+                // Arrive time of line i
+                timeArray.append(timeArray[2 * i + 1].plusHHMM(getRideTime(date, departTime: timeArray[2 * i + 1], num: i)).overTime(timeArray[2 * i + 1]))
             }
         }
-        // Arrive time to destination
-        timeArray.insert(timeArray[2 * changeLineInt + 2].plusHHMM(transferTimeArray[0]).overTime(timeArray[2 * changeLineInt + 2]), at: 0)
+        // Arrive time to destination (insert at index 0, so it becomes timeArray[0])
+        // Use the last arrival time (which is the last element after all inserts)
+        let lastArrivalTime = timeArray.last!
+        timeArray.insert(lastArrivalTime.plusHHMM(transferTimeArray[0]).overTime(lastArrivalTime), at: 0)
         return timeArray
     }
     
@@ -495,7 +640,12 @@ extension String {
     
     // MARK: - Timetable Data Existence Check
     // Check if timetable data exists for the specified calendar type and line
+    // For .specific types, use original calendarType to check with unique identifier-based key
     func hasTimetableDataForType(_ calendarType: ODPTCalendarType, num: Int) -> Bool {
+        // Use original calendarType directly to check with the correct key
+        // For .specific types, this ensures we check the identifier-based key
+        // For standard types, this checks the standard key
+        
         // Check all hours (4-25) to see if data exists
         for hour in 4...25 {
             let key = self.timetableKey(calendarType, num, hour)
@@ -518,41 +668,61 @@ extension String {
             }
         }
         
+        // Also check cached calendar types which may include .specific cases
+        // Check line-level cache (each line has its own calendar types list)
+        let lineCacheKey = "\(self)line\(num + 1)_calendarTypes"
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: lineCacheKey),
+           !cachedTypes.isEmpty {
+            for cachedTypeString in cachedTypes {
+                if let cachedCalendarType = ODPTCalendarType(rawValue: cachedTypeString) {
+                    // If it's a .specific type, check if data exists for THIS specific line
+                    if case .specific = cachedCalendarType {
+                        if hasTimetableDataForType(cachedCalendarType, num: num) {
+                            detectedTypes.insert(cachedCalendarType)
+                            // Also add the displayCalendarType so it appears in the dropdown
+                            let displayType = cachedCalendarType.displayCalendarType
+                            if !detectedTypes.contains(displayType) && displayType != cachedCalendarType {
+                                // Check if data exists for the display type as well
+                                if hasTimetableDataForType(displayType, num: num) {
+                                    detectedTypes.insert(displayType)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         return Array(detectedTypes).sorted { $0.rawValue < $1.rawValue }
     }
     
     // MARK: - Available Calendar Types Loading
     // Load available calendar types from cache or detect from data
     func loadAvailableCalendarTypes(num: Int) -> [ODPTCalendarType] {
-        // Always try to detect from actual data first to ensure we have the most up-to-date information
+        // Check line-level cache first
+        // Structure: goorback -> line -> calendar types -> timetable data
+        let lineCacheKey = "\(self)line\(num + 1)_calendarTypes"
+        if let cachedTypes = UserDefaults.standard.stringArray(forKey: lineCacheKey),
+           !cachedTypes.isEmpty {
+            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+            if !cachedCalendarTypes.isEmpty {
+                // Verify that cached types have actual data for THIS specific line
+                let verifiedTypes = cachedCalendarTypes.filter { hasTimetableDataForType($0, num: num) }
+                if !verifiedTypes.isEmpty {
+                    return verifiedTypes
+                }
+            }
+        }
+        
+        // Try to detect from actual data
         let detectedTypes = detectAvailableCalendarTypesFromData(num: num)
         if !detectedTypes.isEmpty {
             return detectedTypes
         }
         
-        // Try to get cached calendar types for the current route
-        let routeCacheKey = "\(self)_calendarTypes"
-        if let cachedTypes = UserDefaults.standard.stringArray(forKey: routeCacheKey),
-           !cachedTypes.isEmpty {
-            let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
-            if !cachedCalendarTypes.isEmpty {
-                return cachedCalendarTypes
-            }
-        }
-        
-        // Try to find any cached calendar types by searching all keys
-        let allKeys = UserDefaults.standard.dictionaryRepresentation().keys
-        for key in allKeys {
-            if key.contains("calendarTypes") {
-                if let cachedTypes = UserDefaults.standard.stringArray(forKey: key),
-                   !cachedTypes.isEmpty {
-                    let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
-                    if !cachedCalendarTypes.isEmpty {
-                        return cachedCalendarTypes
-                    }
-                }
-            }
-        }
+        // IMPORTANT: Do NOT search all keys for calendar types, as this can cause cross-route contamination
+        // Each route should only use its own cached calendar types
+        // If the current route's cache is not available, fall back to detection from actual data
         
         // Final fallback to default calendar types
         return [.weekday, .saturdayHoliday]
@@ -579,6 +749,123 @@ extension String {
         let singleDigitTime = String(departureTime)
         let doubleDigitTime = departureTime.addZeroTime
         return existingTimes.contains(singleDigitTime) || existingTimes.contains(doubleDigitTime)
+    }
+}
+
+// MARK: - TransportationTime Array Extensions
+// Extensions for processing arrays of TransportationTime
+extension Array where Element == any TransportationTime {
+    // Merge and sort transportation times, removing duplicates
+    func mergeAndSortTransportationTimes() -> [any TransportationTime] {
+        // Use Set to remove exact duplicates (based on departureTime and arrivalTime)
+        var seenTimes: Set<String> = []
+        var uniqueTimes: [any TransportationTime] = []
+        
+        for time in self {
+            let timeKey = "\(time.departureTime)-\(time.arrivalTime)"
+            if !seenTimes.contains(timeKey) {
+                seenTimes.insert(timeKey)
+                uniqueTimes.append(time)
+            }
+        }
+        
+        // Sort by departure time
+        uniqueTimes.sort { time1, time2 in
+            let dep1Minutes = time1.departureTime.timeToMinutes
+            let dep2Minutes = time2.departureTime.timeToMinutes
+            if dep1Minutes != dep2Minutes {
+                return dep1Minutes < dep2Minutes
+            }
+            // If departure times are equal, sort by arrival time
+            let arr1Minutes = time1.arrivalTime.timeToMinutes
+            let arr2Minutes = time2.arrivalTime.timeToMinutes
+            return arr1Minutes < arr2Minutes
+        }
+        
+        return uniqueTimes
+    }
+}
+
+// MARK: - ODPT Calendar Type Extensions
+// Extensions for ODPT calendar type utilities
+extension ODPTCalendarType {
+    
+    // MARK: - Display Calendar Type
+    // Convert .specific calendar types to standard types for display
+    // API calls use original rawValue, but display uses converted types
+    var displayCalendarType: ODPTCalendarType {
+        switch self {
+        
+        case .specific(let rawValue):
+            // Check for suffix patterns (e.g., "odpt.Calendar:Specific.YokohamaMunicipal.01_1.Weekday")
+            let components = rawValue.components(separatedBy: ".")
+            if let lastComponent = components.last {
+                // Check if last component is a day type name
+                switch lastComponent {
+                case "Weekday": return .weekday
+                case "Saturday": return .saturday
+                case "Holiday": return .holiday
+                default:
+                    // Handle identifier patterns (e.g., "odpt.Calendar:Specific.Toei.81-170" or "21_7")
+                    // Extract identifier and check last part after "-" or "_"
+                    let identifier = lastComponent
+                    // Try to extract last part after "-" first, then "_"
+                    let partsByDash = identifier.components(separatedBy: "-")
+                    let partsByUnderscore = identifier.components(separatedBy: "_")
+                    let lastPart = partsByDash.count > 1 ? partsByDash.last ?? "" : (partsByUnderscore.count > 1 ? partsByUnderscore.last ?? "" : identifier)
+                    
+                    switch lastPart {
+                    case "100", "109": return .holiday
+                    case "160": return .saturday
+                    case "170", "179": return .weekday
+                    default: return .weekday  // Fallback to weekday
+                    }
+                }
+            }
+            return .weekday  // Default fallback
+        default: return self
+        }
+    }
+    
+    // MARK: - Base Display Name
+    // Base English name for each calendar type
+    // For .specific types, include identifier to distinguish different types with same display type
+    var debugDisplayName: String {
+        let displayType = displayCalendarType
+        switch displayType {
+        case .weekday: return "Weekday"
+        case .holiday: return "Holiday"
+        case .saturdayHoliday: return "Saturday/Holiday"
+        case .sunday: return "Sunday"
+        case .monday: return "Monday"
+        case .tuesday: return "Tuesday"
+        case .wednesday: return "Wednesday"
+        case .thursday: return "Thursday"
+        case .friday: return "Friday"
+        case .saturday: return "Saturday"
+        case .specific: return "Specific"
+        }
+    }
+    
+    // MARK: - Display Name
+    // Localized display name for each calendar type
+    // For .specific types, shows only the display type (identifier not shown for cleaner UI)
+    var displayName: String {
+        return displayCalendarType.debugDisplayName.localized
+    }
+    
+    // MARK: - Calendar Tag
+    // Get calendar tag for UserDefaults keys
+    // For .specific types, use identifier to ensure unique keys and prevent data overwriting
+    var calendarTag: String {
+        // Extract identifier from .specific rawValue for unique key
+        if case .specific(let rawValue) = self,
+           let lastComponent = rawValue.components(separatedBy: ".").last {
+            return lastComponent.lowercased()
+        }
+        // For standard types, use display type tag
+        let displayType = displayCalendarType
+        return displayType == .saturdayHoliday ? "weekend" : displayType.debugDisplayName.lowercased()
     }
 }
 

@@ -373,10 +373,10 @@ struct MainContentView: View {
     // MARK: - StationLine View (func)
     @ViewBuilder
     func StationLineView(_ goorback: String, _ num: Int) -> some View {
-        let currentDate = Date()
+        let currentDate = myTransfer.selectDate
         let currentTime = currentDate.currentTime
-        let selectedCalendarType = goorback.calendarType(for: currentDate)
-        let timeArray = goorback.timeArray(selectedCalendarType, currentTime).map { $0.stringTime }
+        // Use line-specific calendar type (num is 0-based line index)
+        let timeArray = goorback.timeArray(currentDate, currentTime).map { $0.stringTime }
         let departureTime = timeArray[2 * num + 2]
         let arrivalTime = timeArray[2 * num + 3]
         let stationArray = goorback.stationArray

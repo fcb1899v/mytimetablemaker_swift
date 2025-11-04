@@ -139,10 +139,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Direction Selection Management
     // Handle goorback selection changes and reset related state
     func selectGoorback(_ newGoorback: String) {
-        print("🔄 selectGoorback called with: \(newGoorback)")
-        print("   Current selectedGoorback: \(selectedGoorback)")
-        print("   Current selectedLineNumber: \(selectedLineNumber)")
-        
         // Early return if same value to avoid unnecessary processing
         if selectedGoorback == newGoorback { return }
         
@@ -358,11 +354,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Get stops information for the selected line (unified for both railway and bus)
     func getStopsForSelectedLine() -> [TransportationStop] {
         guard let selectedLine = selectedLine else { 
-            print("🚫 getStopsForSelectedLine: No selected line")
             return [] 
         }
-        
-        print("🚌 getStopsForSelectedLine: Line kind = \(selectedLine.kind), code = \(selectedLine.code)")
         
         if selectedLine.kind == .bus {
             // Handle bus routes - use lineBusStops if available, otherwise fallback to busstopPoleOrder
@@ -391,7 +384,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                         return TransportationStop(from: busStop)
                     }
                 }
-                print("🚌 getStopsForSelectedLine: Found \(stops.count) bus stops from lineBusStops")
                 return stops
             } else if let busstopPoleOrder = selectedLine.busstopPoleOrder {
                 let stops = busstopPoleOrder.map { busStop -> TransportationStop in
@@ -405,11 +397,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     
                     return transportationStop
                 }
-                print("🚌 getStopsForSelectedLine: Found \(stops.count) bus stops from busstopPoleOrder")
                 return stops
             } else {
-                print("🚫 getStopsForSelectedLine: No busstopPoleOrder found")
-                
                 // Fallback: Try to fetch bus stops from BusstopPole API if busstopPoleOrder is not available
                 Task {
                     await fetchBusStopsFromAPI(for: selectedLine)
@@ -423,11 +412,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
             }.first ?? []
             
-            print("🚂 getStopsForSelectedLine: Found \(stations.count) railway stations")
             return stations
         }
         
-        print("🚫 getStopsForSelectedLine: Returning empty array")
         return []
     }
     
@@ -469,12 +456,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    // Check if custom line station input is complete
-    // Validates that all required fields for a custom line are filled
-    func isCustomLineStationInputComplete() -> Bool {
-        return !lineInput.isEmpty && !departureStopInput.isEmpty && !arrivalStopInput.isEmpty && departureStopInput != arrivalStopInput
-    }
-    
     // Set line color without saving to UserDefaults
     // Update selected color for display only (saved when user explicitly saves)
     func setLineColor(_ color: String) {
@@ -497,11 +478,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Data Validation
     // Check if line read from UserDefaults exists in current data
     func checkSavedLineInData() async {
-        print("🔍 checkSavedLineInData called")
-        print("   selectedGoorback: \(selectedGoorback)")
-        print("   selectedLineNumber: \(selectedLineNumber)")
-        print("   lineInput: '\(lineInput)'")
-        
         // Wait for data loading to complete before validation
         while all.isEmpty {
             try? await Task.sleep(nanoseconds: 100_000_000)
@@ -542,8 +518,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     
                     // Update transportation kind to match found line
                     selectedTransportationKind = foundLine.kind
-                    
-                    print("✅ Restored saved line: \(foundLine.name) (\(foundLine.kind.rawValue))")
                 }
             } else {
                 // Keep user input even if saved line not found in current data
@@ -556,8 +530,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     // Set lineSelected flag to false when line is not found
                     let lineSelectedKey = selectedGoorback.lineSelectedKey(selectedLineNumber - 1)
                     UserDefaults.standard.set(false, forKey: lineSelectedKey)
-                    
-                    print("⚠️ Saved line '\(lineInput)' not found in current data - keeping user input")
                 }
             }
         }
@@ -566,12 +538,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Station information is independent of line information
         await MainActor.run {
             loadStationSettings()
-            print("✅ Loaded station settings independently of line status")
         }
         
         // Station information is now loaded directly from UserDefaults
         // No need for complex station object restoration
-        print("✅ Station information loaded from UserDefaults")
     }
     
     // Helper method to find saved line in current data
@@ -623,7 +593,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 
         // Update selectedLine's lineDirection
         if var updatedLine = selectedLine {
-            print("🔍 Before update - selectedLine.lineDirection: \(selectedLine?.lineDirection ?? "nil")")
             
             updatedLine = TransportationLine(
                 kind: updatedLine.kind,
@@ -667,7 +636,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 UserDefaults.standard.set(stationLineCode, forKey: departureLineCodeKey)
             }
             
-            print("✅ Saved departure stop: \(departureStopInput)")
         }
         
         // Save arrival stop information
@@ -689,7 +657,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 UserDefaults.standard.set(stationLineCode, forKey: arrivalLineCodeKey)
             }
             
-            print("✅ Saved arrival stop: \(arrivalStopInput)")
         }
         
         // Save ride time
@@ -725,26 +692,19 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Load station settings from UserDefaults
     private func loadStationSettings() {
         let currentLineIndex = selectedLineNumber - 1
-        print("🔍 loadStationSettings - selectedGoorback: \(selectedGoorback), selectedLineNumber: \(selectedLineNumber), currentLineIndex: \(currentLineIndex)")
         
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
-        print("   Departure key: \(departureKey)")
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             self.departureStopInput = savedDeparture
-            print("✅ Restored departure station: \(savedDeparture)")
         } else {
             self.departureStopInput = ""
-            print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
-        print("   Arrival key: \(arrivalKey)")
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             self.arrivalStopInput = savedArrival
-            print("✅ Restored arrival station: \(savedArrival)")
         } else {
             self.arrivalStopInput = ""
-            print("   No saved arrival found")
         }
     }
     
@@ -815,19 +775,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             self.departureStopInput = savedDeparture
-            print("✅ Restored departure station: \(savedDeparture)")
         } else {
             self.departureStopInput = ""
-            print("   No saved departure found")
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             self.arrivalStopInput = savedArrival
-            print("✅ Restored arrival station: \(savedArrival)")
         } else {
             self.arrivalStopInput = ""
-            print("   No saved arrival found")
         }
         
         let rideTimeKey = selectedGoorback.rideTimeKey(currentLineIndex)
@@ -863,11 +819,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Data Clearing
     // Clear timetable data for current route and line number for all calendar types
     private func clearAllTimetableData() async {
-        print("🗑️ Clearing timetable data for current route (\(selectedGoorback)) and line (\(selectedLineNumber))...")
-        
         // Clear data for all calendar types for current route and line number
         for calendarType in ODPTCalendarType.allCases {
-            clearTimetableDataForRoute(calendarType: calendarType, goorback: selectedGoorback, lineNumber: selectedLineNumber)
+            clearTimetableDataForRoute(calendarType: calendarType, goorback: goorback, lineNumber: lineIndex + 1)
         }
         
         // Clear cached calendar types to force refresh
@@ -875,12 +829,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let cacheKey = "\(selectedLine.code)_\(selectedLine.kind.rawValue)_calendarTypes"
             UserDefaults.standard.removeObject(forKey: cacheKey)
             
-            // Clear route-specific cache for current route only
-            let routeCacheKey = "\(selectedGoorback)_calendarTypes"
-            UserDefaults.standard.removeObject(forKey: routeCacheKey)
+            // Clear line-level cache for current route and line only
+            let lineCacheKey = "\(goorback)line\(lineIndex + 1)_calendarTypes"
+            UserDefaults.standard.removeObject(forKey: lineCacheKey)
         }
-        
-        print("✅ Timetable data and cache cleared for current route and line")
     }
     
     // MARK: - Unified Timetable Data Processing
@@ -889,32 +841,23 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
-            print("⚠️ Skipping timetable generation: not all required fields are filled")
             return [:]
         }
         
         guard let selectedLine = selectedLine else {
-            print("⚠️ No line selected")
             return [:]
         }
-        
-        print("🚌🚂 Starting \(selectedLine.kind.rawValue) timetable data generation")
-        print("🚌🚂 Departure: \(selectedDepartureStop?.name ?? "Unknown") (Code: \(selectedDepartureStop?.code ?? "nil"))")
-        print("🚌🚂 Arrival: \(selectedArrivalStop?.name ?? "Unknown") (Code: \(selectedArrivalStop?.code ?? "nil"))")
         
         // Clear existing timetable data for all calendar types before generating new data
         await clearAllTimetableData()
         
         // Get available calendar types for this line
         let availableCalendarTypes = await getAvailableCalendarTypes()
-        print("📅 Available calendar types for \(selectedLine.name): \(availableCalendarTypes.map { $0.debugDisplayName })")
         
-        // Process data for each available calendar type
+        // Process data for each calendar type first (create timetables individually)
         var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
         
         for calendarType in availableCalendarTypes {
-            
-            print("🚌🚂 Processing \(calendarType.debugDisplayName) \(selectedLine.kind.rawValue) timetable data")
             
             let times: [any TransportationTime] = (selectedLine.kind == .bus) ? 
                 await processBusTimetableData(calendarType: calendarType): 
@@ -923,12 +866,87 @@ final class SettingsLineSheetViewModel: ObservableObject {
             // Save times for this specific calendar type
             allTimes[calendarType] = times
             
-            print("✅ \(calendarType.debugDisplayName) \(selectedLine.kind.rawValue)s: \(times.count)")
         }
         
-        print("✅ \(selectedLine.kind.rawValue.capitalized) timetable generation completed")
+        // After creating all timetables, check and merge timetables with same displayCalendarType
         
-        return allTimes        
+        // Group calendar types by displayCalendarType
+        var groupedByDisplayType: [ODPTCalendarType: [ODPTCalendarType]] = [:]
+        for calendarType in availableCalendarTypes {
+            let displayType = calendarType.displayCalendarType
+            if groupedByDisplayType[displayType] == nil {
+                groupedByDisplayType[displayType] = []
+            }
+            groupedByDisplayType[displayType]?.append(calendarType)
+        }
+        
+        var mergedTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
+        var mergedSourceTypes: Set<ODPTCalendarType> = [] // Track all merged source calendar types (including representative) to clear later
+        
+        // Process each display calendar type group
+        for (displayType, calendarTypes) in groupedByDisplayType {
+            if calendarTypes.count > 1 {
+                // Multiple calendar types with same display type - merge them
+                
+                var mergedTimeList: [any TransportationTime] = []
+                
+                // Use the first calendar type (prefer .specific if available) as the representative
+                let representativeCalendarType = calendarTypes.first { if case .specific = $0 { return true }; return false } ?? calendarTypes.first ?? displayType
+                
+                for typeToMerge in calendarTypes {
+                    if let times = allTimes[typeToMerge] {
+                        mergedTimeList.append(contentsOf: times)
+                    }
+                }
+                
+                // Remove duplicates and sort by departure time
+                mergedTimeList = mergedTimeList.mergeAndSortTransportationTimes()
+                
+                // Save merged timetable under representative calendar type
+                mergedTimes[representativeCalendarType] = mergedTimeList
+                
+                // Track ALL merged source types (including representative) for cleanup
+                // We need to clear all of them, including the representative, because it might have old data
+                for typeToDelete in calendarTypes {
+                    allTimes.removeValue(forKey: typeToDelete)
+                    mergedSourceTypes.insert(typeToDelete)
+                }
+                
+            } else {
+                // Only one calendar type with this display type - keep as is
+                if let calendarType = calendarTypes.first, let times = allTimes[calendarType] {
+                    mergedTimes[calendarType] = times
+                    allTimes.removeValue(forKey: calendarType)
+                }
+            }
+        }
+        
+        // Clear ALL merged source calendar types from UserDefaults (including representatives)
+        // This ensures old data is removed before new merged data is saved
+        // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
+        if !mergedSourceTypes.isEmpty {
+            for sourceType in mergedSourceTypes {
+                // Check if this type is actually in mergedTimes (it's the representative that will be saved)
+                // If it's in mergedTimes, we still clear it first, then it will be re-saved with merged data
+                let willBeResaved = mergedTimes.keys.contains(sourceType)
+                
+                // Double-check that we're clearing for the correct route and line number
+                clearTimetableDataForRoute(calendarType: sourceType, goorback: goorback, lineNumber: lineIndex + 1)
+                
+                if willBeResaved {
+                } else {
+                }
+            }
+        }
+        
+        // Update cache with only the merged representative calendar types
+        // This ensures that loadAvailableCalendarTypes returns only the merged types
+        let mergedRepresentativeTypes = Array(mergedTimes.keys)
+        let lineCacheKey = "\(goorback)line\(lineIndex + 1)_calendarTypes"
+        let typeStrings = mergedRepresentativeTypes.map { $0.rawValue }
+        UserDefaults.standard.set(typeStrings, forKey: lineCacheKey)
+        
+        return mergedTimes        
     }
     
     // MARK: - Available Calendar Types Detection
@@ -937,7 +955,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         guard let selectedLine = selectedLine,
               let operatorCode = selectedLine.operatorCode,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
-            print("⚠️ Cannot determine available calendar types - using default")
             return [.weekday, .holiday] // Fallback to default
         }
         
@@ -947,7 +964,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
            !cachedTypes.isEmpty {
             let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
             if !cachedCalendarTypes.isEmpty {
-                print("📅 Using cached calendar types: \(cachedCalendarTypes.map { $0.debugDisplayName })")
                 return cachedCalendarTypes
             }
         }
@@ -959,19 +975,16 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let typeStrings = availableTypes.map { $0.rawValue }
         UserDefaults.standard.set(typeStrings, forKey: cacheKey)
         
-        // Also cache for each route direction for TimetableContentView
-        for goorback in goorbackOptions {
-            let routeCacheKey = "\(goorback)_calendarTypes"
-            UserDefaults.standard.set(typeStrings, forKey: routeCacheKey)
-        }
+        // Cache at line level (each line has its own calendar types list)
+        // Structure: goorback -> line -> calendar types -> timetable data
+        let lineCacheKey = "\(goorback)line\(lineIndex + 1)_calendarTypes"
+        UserDefaults.standard.set(typeStrings, forKey: lineCacheKey)
         
         // Ensure we have at least weekday and holiday as fallback
         if availableTypes.isEmpty {
-            print("⚠️ No calendar types found - using default fallback")
             return [.weekday, .holiday]
         }
         
-        print("📅 Available calendar types: \(availableTypes.map { $0.debugDisplayName })")
         return availableTypes
     }
     
@@ -989,10 +1002,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .railway))&odpt:railway=\(selectedLineCode)"
             }
             
-            print("🔍 Fetching available calendar types from: \(apiLink)")
             
             guard let url = URL(string: apiLink) else { return [] }
             
+            print("🔗 Fetch URL: \(apiLink)")
             let (data, response) = try await URLSession.shared.data(from: url)
             
             // Check HTTP status code
@@ -1015,10 +1028,36 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
             
             // Convert to ODPTCalendarType array
-            let availableTypes = foundCalendarTypes.compactMap { ODPTCalendarType(rawValue: $0) }
-                .sorted { $0.rawValue < $1.rawValue }
+            let allTypes = foundCalendarTypes.compactMap { ODPTCalendarType(rawValue: $0) }
             
-            print("📅 Found calendar types: \(availableTypes.map { $0.displayName })")
+            // Remove duplicates based on displayCalendarType while preserving .specific types
+            // If multiple .specific types map to the same displayCalendarType, keep all of them
+            // But if both .specific and standard type exist for same display type, prefer .specific
+            var uniqueTypes: [ODPTCalendarType] = []
+            var seenDisplayTypes: Set<ODPTCalendarType> = []
+            
+            // First pass: Add all .specific types
+            for type in allTypes {
+                if case .specific = type {
+                    uniqueTypes.append(type)
+                    seenDisplayTypes.insert(type.displayCalendarType)
+                }
+            }
+            
+            // Second pass: Add standard types only if their display type hasn't been seen
+            for type in allTypes {
+                if case .specific = type {
+                    continue // Already added
+                }
+                let displayType = type.displayCalendarType
+                if !seenDisplayTypes.contains(displayType) {
+                    uniqueTypes.append(type)
+                    seenDisplayTypes.insert(displayType)
+                }
+            }
+            
+            let availableTypes = uniqueTypes.sorted { $0.rawValue < $1.rawValue }
+            
             return availableTypes
             
         } catch {
@@ -1041,6 +1080,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             guard let url = URL(string: apiLink) else { return false }
             
+            print("🔗 Fetch URL: \(apiLink)")
             let (data, response) = try await URLSession.shared.data(from: url)
             
             // Check HTTP status code
@@ -1050,7 +1090,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     return false
                 }
                 if httpResponse.statusCode != 200 {
-                    print("❌ Calendar type \(calendarType.displayName) returned status \(httpResponse.statusCode)")
                     return false
                 }
             }
@@ -1059,21 +1098,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             // Consider it available if we get a valid response (even empty array means the calendar type exists)
             // But we can also check if there's actual timetable data
-            let hasTimetableData = json.contains { timetable in
+            let _ = json.contains { timetable in
                 if selectedLine?.kind == .bus {
                     return timetable["odpt:busTimetableObject"] != nil
                 } else {
                     return timetable["odpt:trainTimetableObject"] != nil
                 }
             }
-            
-            if hasTimetableData {
-                print("✅ Calendar type \(calendarType.displayName) has timetable data")
-            } else {
-                print("⚠️ Calendar type \(calendarType.displayName) exists but has no timetable data")
-            }
-            
-            return true // Return true if the calendar type exists, even without data
+            // Return true if the calendar type exists, even without data
+            return true 
             
         } catch {
             print("❌ Error testing calendar type \(calendarType.displayName): \(error.localizedDescription)")
@@ -1081,11 +1114,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Timetable Data Processing
     // Process bus timetable data for specific day type
     private func processBusTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
-        print("🚌 Processing \(calendarType.displayName) bus timetable data")
-        print("🚌 Departure stop busstopPole: \(selectedDepartureStop?.busstopPole ?? "nil")")
-        print("🚌 Arrival stop busstopPole: \(selectedArrivalStop?.busstopPole ?? "nil")")
         
         // Fetch bus timetable data from API
         let busTimetableData = await fetchBusTimetableData(calendarType: calendarType)
@@ -1096,7 +1127,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         for timetable in busTimetableData {
             
             guard let busTimetableObjects = timetable["odpt:busTimetableObject"] as? [[String: Any]] else {
-                print("   ❌ Failed to extract bus timetable objects")
                 continue
             }
 
@@ -1141,7 +1171,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 // Convert time strings to minutes for comparison
                 let depMinutes = depTime.timeToMinutes
                 let arrMinutes = arrTime.timeToMinutes
-                print("🕐 Time comparison: \(depTime) (\(depMinutes)min) → \(arrTime) (\(arrMinutes)min)")
                 if arrMinutes > depMinutes {
                     // Calculate ride time in minutes
                     let rideTime = depTime.calculateRideTime(arrivalTime: arrTime)
@@ -1155,16 +1184,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                         rideTime: rideTime
                     )
                     transportationTimes.append(busTime)
-                    print("✅ Added bus time: \(depTime) → \(arrTime) (\(rideTime)min)")
                 } else {
-                    print("❌ Skipped bus time: \(depTime) → \(arrTime) (arrival not later than departure)")
                 }
             } else {
-                print("❌ Missing times: departure=\(departureTime ?? "nil"), arrival=\(arrivalTime ?? "nil")")
             }
         }
         
-        print("🚌 Bus Times: \(transportationTimes.count) buses")
         
         return transportationTimes
     }
@@ -1175,11 +1200,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
               let selectedLineTitle = selectedLine?.title,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
-        print("🔍 Calendar type: \(calendarType.rawValue)")
         
         // Use bus-specific timetable API (force bus API regardless of transportationType)
         let apiLink = "\(selectedOperator.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)&odpt:calendar=\(calendarType.rawValue)"
-        print("🔍 Bus timetable API link: \(apiLink)")
         
         guard let url = URL(string: apiLink) else {
             print("❌ Invalid bus timetable API URL")
@@ -1187,13 +1210,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         do {
+            print("🔗 Fetch URL: \(apiLink)")
             let (data, _) = try await URLSession.shared.data(from: url)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
                 print("❌ Failed to parse bus timetable JSON")
                 return []
             }
             
-            print("✅ Bus timetable data fetched: \(json.count) timetables")
             return json
         } catch {
             print("❌ Error fetching bus timetable data: \(error)")
@@ -1204,7 +1227,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // Process train timetable data for specific day type
     private func processTrainTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
-        print("🚂 Processing \(calendarType.displayName) train timetable data")
         
         // Fetch train timetable data from API
         let trainTimetableData = await fetchTrainTimetableData(calendarType: calendarType)
@@ -1217,7 +1239,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             guard let trainNumber = timetable["odpt:trainNumber"] as? String,
                   let trainType = timetable["odpt:trainType"] as? String,
                   let trainTimetableObjects = timetable["odpt:trainTimetableObject"] as? [[String: Any]] else {
-                print("   ❌ Failed to extract required fields")
                 continue
             }
 
@@ -1262,7 +1283,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
         }
         
-        print("🚂 Train Times: \(transportationTimes.count) trains")
         
         return transportationTimes
     }
@@ -1273,7 +1293,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
               let selectedLineCode = selectedLine?.code,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
-        print("🔍 Calendar type: \(calendarType.rawValue)")
         
         let apiLink = "\(selectedOperator.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType.rawValue)"
         
@@ -1282,8 +1301,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 print("❌ Invalid URL: \(apiLink)")
                 return []
             }
-            print("🌐 Fetching train timetable from: \(apiLink)")
 
+            print("🔗 Fetch URL: \(apiLink)")
             let (data, _) = try await URLSession.shared.data(from: url)
             
             guard let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
@@ -1291,7 +1310,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 return []
             }
             
-            print("✅ Fetched \(json.count) train timetable records for \(calendarType.rawValue)")
             return json
             
         } catch {
@@ -1306,61 +1324,46 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
-            print("⚠️ Skipping timetable generation: not all required fields are filled")
             return [:]
         }
         
         // Clear existing timetable data for all calendar types before generating new data
         await clearAllTimetableData()
         
-        print("🔗 Get Timetable Links for both directions:")
         
         // Get the actual direction from selectedLine
         let actualDirection = selectedLine?.lineDirection ?? ""
-        print("🔍 Actual direction from selectedLine: \(actualDirection)")
         
         // Get actual directions from JSON data with fallback
         let ascendingDirection = selectedLine?.ascendingRailDirection ?? actualDirection
         let descendingDirection = selectedLine?.descendingRailDirection ?? actualDirection
         
-        print("🔍 Using directions:")
-        print("   Ascending: \(ascendingDirection)")
-        print("   Descending: \(descendingDirection)")
         
         var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
         
         // Get available calendar types dynamically
         let availableCalendarTypes = await getAvailableCalendarTypesForStation()
-        print("📅 Available calendar types for station: \(availableCalendarTypes.map { $0.debugDisplayName })")
         
         for calendarType in availableCalendarTypes {
-            print("🔄 Processing \(calendarType.debugDisplayName) data for both directions")
             
             // Get data for both directions
             let directions = [ascendingDirection, descendingDirection]
-            let directionNames = ["ascending", "descending"]
             var directionResults: [[any TransportationTime]] = []
             
-            for (index, direction) in directions.enumerated() {
-                print("📊 Get \(directionNames[index].capitalized) Direction Timetable Data:")
+            for direction in directions {
                 
                 // Get departure and arrival data for this direction
                 let departureLink = stationTimetableApiLink(isDeparture: true, calendarType: calendarType, direction: direction)
                 let arrivalLink = stationTimetableApiLink(isDeparture: false, calendarType: calendarType, direction: direction)
                 
-                print("🔗 Departure link: \(departureLink)")
-                print("🔗 Arrival link: \(arrivalLink)")
                 
                 let departureData = await fetchStationTimetableData(from: departureLink)
                 let arrivalData = await fetchStationTimetableData(from: arrivalLink)
                 
-                print("\(directionNames[index]) \(calendarType.debugDisplayName) Departure count: \(departureData.count)")
-                print("\(directionNames[index]) \(calendarType.debugDisplayName) Arrival count: \(arrivalData.count)")
                 
                 // Process this direction if we have both departure and arrival data
                 var result: [any TransportationTime] = []
                 if departureData.count > 0 {
-                    print("Get \(directionNames[index]) departure timetable not using train numbers (no trains with numbers found)")
                     result = await getEstimatedTrainTime(
                         departureTimetableData: departureData,
                         arrivalTimetableData: arrivalData,
@@ -1391,6 +1394,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             throw URLError(.badURL)
         }
         
+        print("🔗 Fetch URL: \(urlString)")
         let (data, response) = try await URLSession.shared.data(from: url)
         
         if let httpResponse = response as? HTTPURLResponse {
@@ -1423,17 +1427,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 let data = try await self.fetchData(from: testLink)
                 if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]], !json.isEmpty {
                     availableTypes.append(calendarType)
-                    print("✅ Calendar type \(calendarType.debugDisplayName) is available")
                 }
             } catch {
-                print("❌ Calendar type \(calendarType.debugDisplayName) is not available: \(error)")
             }
         }
         
         // Fallback to basic types if none found
         if availableTypes.isEmpty {
             availableTypes = [.weekday, .saturdayHoliday]
-            print("⚠️ No calendar types found, using fallback: weekday, saturdayHoliday")
         }
         
         return availableTypes
@@ -1465,7 +1466,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         let apiLink = "\(stationTimetableApiLink)\(lineName).\(stationName).\(directionName).\(dateSuffix)"
         
-        print("🔍 Station timetable link - isDeparture: \(isDeparture), calendarType: \(calendarType.debugDisplayName), direction: \(directionName), apiLink: \(apiLink)")
         return apiLink
     }
 
@@ -1479,10 +1479,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         do {
+            print("🔗 Fetch URL: \(urlString)")
             let (data, response) = try await URLSession.shared.data(from: url)
             
             if let httpResponse = response as? HTTPURLResponse {
-                print("📡 HTTP Status: \(httpResponse.statusCode)")
                 guard httpResponse.statusCode == 200 else {
                     print("❌ HTTP error \(httpResponse.statusCode) for URL: \(urlString)")
                     return []
@@ -1520,11 +1520,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     return firstMinutes < secondMinutes
                 }
                 
-                print("✅ Parsed \(result.count) valid timetable entries (sorted ascending)")
                 return result
                 
                 } else {
-                print("❌ No stationTimetableObject found in JSON data")
                 return []
             }
             
@@ -1544,24 +1542,18 @@ final class SettingsLineSheetViewModel: ObservableObject {
         approxRideTime: Int
     ) async -> [any TransportationTime] {
 
-        print("🚀🚀🚀 getEstimatedTrainTime STARTED 🚀🚀🚀")
-        print("🔍 getEstimatedTrainTime: Processing \(departureTimetableData.count) departure records and \(arrivalTimetableData.count) arrival records")
 
         // Get unique train types from departure data
         let trainTypeList = departureTimetableData.trainTypeList
-        print("🔍 Processing train types: \(trainTypeList)")
         
         var allTransportationTimes: [any TransportationTime] = []
         
         // Process each train type separately
         for trainType in trainTypeList {
-            print("🚂 Processing train type: \(trainType)")
             
             // Filter departure and arrival data by train type
             let departureData = departureTimetableData.filtered(by: trainType)
             let arrivalData = arrivalTimetableData.filtered(by: trainType)
-            print("   Departure data count: \(departureData.count)")
-            print("   Arrival data count: \(arrivalData.count)")
             
             // Skip if no data for this train type
             guard !departureData.isEmpty else { continue }
@@ -1570,7 +1562,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 !data.destinationStation.isEmpty && data.destinationStation == selectedArrivalStop?.code
             }
             
-            print("📊 terminalDepartureData: \(terminalDepartureData)")
             
             // Create terminalTrainTimes list from terminalDepartureData
             let terminalTrainTimes = terminalDepartureData.map { data in
@@ -1586,17 +1577,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 allTransportationTimes.append(contentsOf: terminalTrainTimes)
             }
 
-            print("🚉 terminalTrainTimes count: \(terminalTrainTimes.count)")
             
             // Remove terminalDepartureData from departureData
             let filteredDepartureData = departureData.filter { data in
                 data.destinationStation.isEmpty || data.destinationStation != selectedArrivalStop?.code
             }
             
-            print("📊 Filtered departure data: \(departureData.count) → \(filteredDepartureData.count)")
             
             // Process this train type with filtered data
-            print("🔬 Using algorithm for train type: \(trainType)")
             if !filteredDepartureData.isEmpty {
                 let trainTimes = processTrainType(
                     departureData: filteredDepartureData,
@@ -1608,8 +1596,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 if !trainTimes.isEmpty {
                     allTransportationTimes.append(contentsOf: trainTimes)
                 }
-            } else {
-                print("❌ No data for train type: \(trainType)")
             }
         }
         
@@ -1620,8 +1606,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             return firstMinutes < secondMinutes
         }
         
-        print("✅ getEstimatedTrainTime: Generated \(sortedTrainTimes.count) total train times")
-        print("🏁🏁🏁 getEstimatedTrainTime FINISHED 🏁🏁🏁")
         return sortedTrainTimes
     }
     
@@ -1637,15 +1621,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // 0) Filter out trains that don't reach the arrival station (only for trains without train numbers)
         let filteredDepartureData = departureData.filter { data in
             if data.trainNumber.isEmpty && !isTrainReachingArrivalStop(destinationStation: data.destinationStation) {
-                let departureIndex = selectedDepartureStop?.index ?? -1
-                let arrivalIndex = selectedArrivalStop?.index ?? -1
-                let destinationIndex = getStationIndexFromDestinationStation(data.destinationStation) ?? -1
-                print("🚫 Filtered out estimated train - Departure: \(departureIndex), Arrival: \(arrivalIndex), Destination: \(destinationIndex)")
                 return false
             }
             return true
         }
-        print("📊 Filtered departure data: \(departureData.count) → \(filteredDepartureData.count)")
         
         // 0.5) Filter arrival data to match departure destinations
         let filteredArrivalData = arrivalData.filter { arrivalDataItem in
@@ -1654,7 +1633,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 departureDataItem.destinationStation == arrivalDataItem.destinationStation
             }
         }
-        print("📊 Filtered arrival data: \(arrivalData.count) → \(filteredArrivalData.count)")
         
         // 1) Build departure and arrival station data
         let departureTimes = filteredDepartureData.compactMap(\.departureTime).filter { !$0.isEmpty }
@@ -1663,10 +1641,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // 2) Sort time strings directly
         let sortedDepartureTimes = departureTimes.sorted()
         let sortedArrivalTimes = arrivalTimes.sorted()
-        print("📊 \(sortedDepartureTimes.count) departure times, \(sortedArrivalTimes.count) arrival times")
-        print("📊 Departure Times: \(sortedDepartureTimes)")
-        print("📊 Arrival Times: \(sortedArrivalTimes)")
-        print("📊 User input: \(approxRideTime) min (no range restrictions)")
 
         
         // 5) Collect pairs using no duplicates with minimum ride time within range
@@ -1747,7 +1721,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Only process if the destination station belongs to the selected line
         // Check if the destination station code contains the selected line code
         guard destinationStationCode.contains(selectedLineCode) else {
-            print("🚫 Line code mismatch - skipping destination station")
             return nil
         }
         
@@ -1774,9 +1747,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             $0.name == stationName || 
             $0.title?.getLocalizedName(fallbackTo: $0.name) ?? $0.name == stationName
         }) {
-            let matchType = station.code == destinationStationCode ? "code" : "name"
             if station.index == -1 {
-                print("✅ Found station by \(matchType) match: \(station.name) (index: -1)")
             }
             return station.index
         }
@@ -1791,25 +1762,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Saves both departure times and ride times grouped by hour
     private func saveTimetableToUserDefaults(transportationTimes: [any TransportationTime], calendarType: ODPTCalendarType) {
         // Clear existing timetable data for this line and calendar type
-        clearTimetableData(calendarType: calendarType)
+        // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
+        clearTimetableDataForRoute(calendarType: calendarType, goorback: goorback, lineNumber: lineIndex + 1)
         
-        print("💾 Saving timetable data for \(calendarType.debugDisplayName)")
-        print("📊 Total TransportationTime objects: \(transportationTimes.count)")
         
         // Group TransportationTime objects by hour
         var hourlyTransportationTimes: [Int: [any TransportationTime]] = [:]
         
-        for (index, transportationTimeItem) in transportationTimes.enumerated() {
+        for transportationTimeItem in transportationTimes {
             let timeComponents = transportationTimeItem.departureTime.components(separatedBy: ":")
             if timeComponents.count == 2, let hour = Int(timeComponents[0]) {
                 hourlyTransportationTimes[hour, default: []].append(transportationTimeItem)
-                if index < 5 {
-                    if let busTime = transportationTimeItem as? BusTime {
-                        print("🚌\(busTime.busNumber ?? "N/A"): \(busTime.departureTime) → \(busTime.arrivalTime) (\(busTime.rideTime)min)")
-                    } else if let trainTime = transportationTimeItem as? TrainTime {
-                        print("🚉\(trainTime.trainNumber ?? "N/A") (\(trainTime.trainType?.split(separator: ".").last ?? "N/A")): \(trainTime.departureTime) → \(trainTime.arrivalTime) (\(trainTime.rideTime)min)")
-                    }
-                }
             }
         }
         
@@ -1818,21 +1781,19 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let sortedTransportationTimes = transportationTimesForHour.sorted { 
                 $0.departureTime < $1.departureTime 
             }
-            selectedGoorback.saveTransportationTimes(sortedTransportationTimes, calendarType, selectedLineNumber - 1, hour)
+            // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
+            
+            goorback.saveTransportationTimes(sortedTransportationTimes, calendarType, lineIndex, hour)
         }
         
         // Save train type list for the entire timetable
+        // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
         let allTransportationTimes = hourlyTransportationTimes.values.flatMap { $0 }
-        selectedGoorback.saveTrainTypeList(allTransportationTimes, calendarType, selectedLineNumber - 1)
+        
+        goorback.saveTrainTypeList(allTransportationTimes, calendarType, lineIndex)
         
         // Ensure all UserDefaults changes are synchronized to disk
         UserDefaults.standard.synchronize()
-        
-        // Summary log
-        print("📈 Summary - Saved \(hourlyTransportationTimes.count) hours of timetable data")
-        
-        // Print ride time list for verification
-        print("AllTransportationTimes: \(allTransportationTimes.count)")
     }
     
     // MARK: - Common Timetable Data Finalization with Arrays
@@ -1844,6 +1805,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Save all data after timetable data has been processed and saved
         await saveAllDataToUserDefaults()
+        
+        // Clear cache for available calendar types to force reload
+        goorback.clearCalendarTypesCache(num: lineIndex)
         
         // Notify that timetable data has been updated
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
@@ -1860,33 +1824,56 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Save all data after timetable data has been processed and saved
         await saveAllDataToUserDefaults()
         
+        // Update cache with only the merged representative calendar types
+        // This ensures that loadAvailableCalendarTypes returns only the merged types
+        let mergedRepresentativeTypes = Array(calendarTimes.keys)
+        let lineCacheKey = "\(goorback)line\(lineIndex + 1)_calendarTypes"
+        let typeStrings = mergedRepresentativeTypes.map { $0.rawValue }
+        UserDefaults.standard.set(typeStrings, forKey: lineCacheKey)
+        
+        // Clear cache for available calendar types to force reload
+        goorback.clearCalendarTypesCache(num: lineIndex)
+        
         // Notify that timetable data has been updated
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
     }
     
     
     // MARK: - Timetable Data Clearing
-    // Clear existing timetable data for specified day type using current route and line number
-    private func clearTimetableData(calendarType: ODPTCalendarType) {
-        clearTimetableDataForRoute(calendarType: calendarType, goorback: selectedGoorback, lineNumber: selectedLineNumber)
-    }
-    
     // Clear existing timetable data for specified route, line number, and calendar type
     private func clearTimetableDataForRoute(calendarType: ODPTCalendarType, goorback: String, lineNumber: Int) {
+        var clearedCount = 0
+        var clearedKeys: [String] = []
+        
         // Clear all hours (4-24) for the specified calendar type, route, and line
         for hour in 4...25 {
             let timetableKey = goorback.timetableKey(calendarType, lineNumber - 1, hour)
             let timetableRideTimeKey = goorback.timetableRideTimeKey(calendarType, lineNumber - 1, hour)
             let timetableTrainTypeKey = goorback.timetableTrainTypeKey(calendarType, lineNumber - 1, hour)
+            
+            let hadTimetable = UserDefaults.standard.object(forKey: timetableKey) != nil
+            let hadRideTime = UserDefaults.standard.object(forKey: timetableRideTimeKey) != nil
+            let hadTrainType = UserDefaults.standard.object(forKey: timetableTrainTypeKey) != nil
+            
+            if hadTimetable || hadRideTime || hadTrainType {
+                // Log actual key being deleted for first few hours
+                if hour <= 6 && clearedKeys.count < 3 {
+                    clearedKeys.append(timetableKey)
+                }
+            }
+            
             UserDefaults.standard.removeObject(forKey: timetableKey)
             UserDefaults.standard.removeObject(forKey: timetableRideTimeKey)
             UserDefaults.standard.removeObject(forKey: timetableTrainTypeKey)
+            
+            if hadTimetable || hadRideTime || hadTrainType {
+                clearedCount += 1
+            }
         }
         
         // Clear train type list
         let trainTypeListKey = goorback.trainTypeListKey(calendarType, lineNumber - 1)
         UserDefaults.standard.removeObject(forKey: trainTypeListKey)
-        
         UserDefaults.standard.synchronize()
     }
     
@@ -2026,7 +2013,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         if line.kind == .bus {
             if let busstopPoleOrder = line.busstopPoleOrder {
                 lineBusStops = busstopPoleOrder
-                print("🚌 selectLine: Initialized lineBusStops with \(busstopPoleOrder.count) bus stops")
                 
                 // Check if any bus stops need Japanese names and fetch them once
                 let needsJapaneseNames = busstopPoleOrder.contains { busStop in
@@ -2035,14 +2021,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 
                 if needsJapaneseNames {
-                    print("🚌 selectLine: Some bus stops need Japanese names, fetching...")
                     Task {
                         await fetchJapaneseNamesForAllBusStops()
                     }
                 }
             } else {
                 lineBusStops = []
-                print("🚫 selectLine: No busstopPoleOrder found, cleared lineBusStops")
             }
         } else {
             lineBusStops = []
@@ -2092,15 +2076,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Helper Functions
-    /// Get corresponding LocalDataSource from selected line's operator code
-    private func getLocalDataSource() -> LocalDataSource? {
-        guard let operatorCode = selectedLine?.operatorCode else { return nil }
-        return LocalDataSource.allCases.first { $0.operatorCode == operatorCode }
-    }
-    
     /// Check if selected line has train timetable support
     func hasTrainTimetableSupport() -> Bool {
-        return getLocalDataSource()?.hasTrainTimeTable ?? false
+        guard let operatorCode = selectedLine?.operatorCode else { return false }
+        return LocalDataSource.allCases.first { $0.operatorCode == operatorCode }?.hasTrainTimeTable ?? false
     }
     
     // MARK: - BusstopPole API Integration
@@ -2108,115 +2087,61 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private var isFetchingJapaneseNames = false
     
     /// Fetches Japanese names for all bus stops in the selected route
+    /// Called when a bus line is selected and bus stops need Japanese names
     private func fetchJapaneseNamesForAllBusStops() async {
-        // Prevent multiple simultaneous calls
-        guard !isFetchingJapaneseNames else {
-            print("🚌 fetchJapaneseNamesForAllBusStops: Already fetching, skipping duplicate call")
-            return
-        }
+        guard !isFetchingJapaneseNames else { return }
         
         isFetchingJapaneseNames = true
         defer { isFetchingJapaneseNames = false }
+        
         guard let selectedLine = selectedLine,
-              let operatorCode = selectedLine.operatorCode else {
-            print("❌ fetchJapaneseNamesForAllBusStops: Missing selected line or operator code")
+              let operatorCode = selectedLine.operatorCode,
+              let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+              let url = URL(string: dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(selectedLine.code)") else {
+            print("❌ fetchJapaneseNamesForAllBusStops: Missing required data or invalid URL")
             return
         }
         
         do {
-            // Find the corresponding LocalDataSource for the operator
-            guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
-                print("❌ fetchJapaneseNamesForAllBusStops: No matching LocalDataSource found for operator: \(operatorCode)")
-                return
-            }
-            
-            // Generate API link for BusstopPole with busroutePattern filter
-            let urlString = dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(selectedLine.code)"
-            
-            guard let url = URL(string: urlString) else {
-                print("❌ fetchJapaneseNamesForAllBusStops: Invalid URL: \(urlString)")
-                return
-            }
-            
-            print("🚌 fetchJapaneseNamesForAllBusStops: Fetching Japanese names for route pattern: \(selectedLine.code)")
-            print("🔗 API URL: \(urlString)")
-            
             var request = URLRequest(url: url)
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             request.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
             
+            print("🔗 Fetch URL: \(url.absoluteString)")
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("❌ fetchJapaneseNamesForAllBusStops: Invalid HTTP response")
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("❌ fetchJapaneseNamesForAllBusStops: HTTP error \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return
             }
             
-            guard httpResponse.statusCode == 200 else {
-                print("❌ fetchJapaneseNamesForAllBusStops: HTTP error \(httpResponse.statusCode)")
-                return
-            }
-            
-            // Decode BusstopPoleDTO array
             let allBusstopPoles = try JSONDecoder().decode([BusstopPoleDTO].self, from: data)
-            
-            // Filter out bus stops that have odpt:busstopPoleTimetable (exclude timetable data)
-            // But keep bus stops that have both odpt:busstopPoleTimetable AND owl:sameAs
-            let busstopPoles = allBusstopPoles.filter { pole in
-                // Keep bus stops that have owl:sameAs (these are actual bus stops)
-                // Exclude only those that have odpt:busstopPoleTimetable but no owl:sameAs
-                if let sameAs = pole.sameAs, !sameAs.isEmpty {
-                    return true // Keep bus stops with owl:sameAs
-                }
-                // Exclude bus stops without owl:sameAs (these are likely timetable-only entries)
-                return false
-            }
-            
-            print("✅ fetchJapaneseNamesForAllBusStops: Successfully fetched \(allBusstopPoles.count) total bus stop poles, filtered to \(busstopPoles.count) with owl:sameAs")
+            let busstopPoles = allBusstopPoles.filter { $0.sameAs != nil && !$0.sameAs!.isEmpty }
             
             await MainActor.run {
-                // Debug: Log API response
-                print("🔍 API Response contains \(busstopPoles.count) bus stop poles (after filtering):")
-                for (i, pole) in busstopPoles.enumerated() {
-                    print("  [\(i)] \(pole.title)")
-                }
-                
-                // Update all bus stops with Japanese names using owl:sameAs matching
                 for (index, busStop) in self.lineBusStops.enumerated() {
-                    print("🔍 Checking bus stop [\(index)]: \(busStop.name) (busstopPole: \(busStop.busstopPole ?? "nil"))")
-                    
-                    // Match by owl:sameAs identifier
-                    if let busstopPole = busStop.busstopPole,
-                       let matchingBusStopPole = busstopPoles.first(where: { $0.sameAs == busstopPole }) {
-                        // Extract English name from busstopPole for bilingual support
-                        let englishName: String?
-                        if let busstopPole = busStop.busstopPole, !busstopPole.isEmpty {
-                            let components = busstopPole.components(separatedBy: ".")
-                            englishName = components.count > 2 ? components[2].trimmingCharacters(in: .whitespacesAndNewlines) : nil
-                        } else {
-                            englishName = nil
-                        }
-                        
-                        let updatedBusStop = BusStop(
-                            name: matchingBusStopPole.title,
-                            code: busStop.code,
-                            index: busStop.index,
-                            lineCode: busStop.lineCode,
-                            title: LocalizedTitle(ja: matchingBusStopPole.title, en: englishName),
-                            note: matchingBusStopPole.title,
-                            busstopPole: busStop.busstopPole
-                        )
-                        self.lineBusStops[index] = updatedBusStop
-                        print("✅ fetchJapaneseNamesForAllBusStops: Updated bus stop '\(busStop.name)' with Japanese name: \(matchingBusStopPole.title)")
-                    } else {
-                        print("❌ fetchJapaneseNamesForAllBusStops: No matching Japanese name found for bus stop [\(index)]: \(busStop.name)")
+                    guard let busstopPole = busStop.busstopPole,
+                          let matchingBusStopPole = busstopPoles.first(where: { $0.sameAs == busstopPole }) else {
+                        continue
                     }
+                    
+                    let englishName = busstopPole.components(separatedBy: ".").count > 2 ?
+                        busstopPole.components(separatedBy: ".")[2].trimmingCharacters(in: .whitespacesAndNewlines) : nil
+                    
+                    self.lineBusStops[index] = BusStop(
+                        name: matchingBusStopPole.title,
+                        code: busStop.code,
+                        index: busStop.index,
+                        lineCode: busStop.lineCode,
+                        title: LocalizedTitle(ja: matchingBusStopPole.title, en: englishName),
+                        note: matchingBusStopPole.title,
+                        busstopPole: busStop.busstopPole
+                    )
                 }
                 
-                // Update lineStops to reflect the changes
                 self.lineStops = self.getStopsForSelectedLine()
             }
-            
         } catch {
             print("❌ fetchJapaneseNamesForAllBusStops: Failed to fetch Japanese names: \(error)")
         }
@@ -2226,50 +2151,28 @@ final class SettingsLineSheetViewModel: ObservableObject {
     /// - Parameter line: The selected transportation line
     private func fetchBusStopsFromAPI(for line: TransportationLine) async {
         guard let operatorCode = line.operatorCode,
-              let pattern = line.pattern else {
-            print("❌ fetchBusStopsFromAPI: Missing operator code or bus route pattern")
+              let pattern = line.pattern,
+              let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+              let url = URL(string: dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(pattern)") else {
+            print("❌ fetchBusStopsFromAPI: Missing required data or invalid URL")
             return
         }
         
         do {
-            // Find the corresponding LocalDataSource for the operator
-            guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
-                print("❌ fetchBusStopsFromAPI: No matching LocalDataSource found for operator: \(operatorCode)")
-                return
-            }
-            
-            // Generate API link using apiLink
-            let urlString = dataSource.apiLink(for: .stop, transportationKind: .bus) + "&odpt:busroutePattern=\(pattern)"
-            
-            guard let url = URL(string: urlString) else {
-                print("❌ fetchBusStopsFromAPI: Invalid URL: \(urlString)")
-                return
-            }
-            
-            print("🚌 fetchBusStopsFromAPI: Fetching bus stops for pattern: \(pattern)")
-            print("🔗 API URL: \(urlString)")
-            
             var request = URLRequest(url: url)
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             request.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
             
+            print("🔗 Fetch URL: \(url.absoluteString)")
             let (data, response) = try await URLSession.shared.data(for: request)
             
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("❌ fetchBusStopsFromAPI: Invalid HTTP response")
+            guard let httpResponse = response as? HTTPURLResponse,
+                  httpResponse.statusCode == 200 else {
+                print("❌ fetchBusStopsFromAPI: HTTP error \((response as? HTTPURLResponse)?.statusCode ?? -1)")
                 return
             }
             
-            guard httpResponse.statusCode == 200 else {
-                print("❌ fetchBusStopsFromAPI: HTTP error \(httpResponse.statusCode)")
-                return
-            }
-            
-            // Decode BusstopPoleDTO array
             let busstopPoles = try JSONDecoder().decode([BusstopPoleDTO].self, from: data)
-            print("✅ fetchBusStopsFromAPI: Successfully fetched \(busstopPoles.count) bus stop poles")
-            
-            // Convert to TransportationStop objects using only dc:title
             let transportationStops = busstopPoles.enumerated().map { index, pole in
                 TransportationStop(
                     name: pole.title,
@@ -2285,11 +2188,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
             
             await MainActor.run {
-                // Update lineBusStops with fetched data (convert TransportationStop to BusStop)
                 self.lineBusStops = transportationStops.map { BusStop(from: $0) }
-                print("✅ fetchBusStopsFromAPI: Updated lineBusStops with \(transportationStops.count) stops")
             }
-            
         } catch {
             print("❌ fetchBusStopsFromAPI: Failed to fetch bus stops: \(error)")
         }
