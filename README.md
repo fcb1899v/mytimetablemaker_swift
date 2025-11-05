@@ -14,6 +14,11 @@ My Transfer Makers is a SwiftUI-based iOS application that helps users create an
 
 ### 🎯 Key Features
 
+- **Personal Timetable Creation**: Create custom transfer guides for daily commutes and schedules
+- **Countdown Display**: Real-time countdown to departure time
+- **Route Comparison**: Display and compare two routes simultaneously
+- **Home/Office Routes**: Register separate routes for commuting and return trips with easy switching
+- **Automatic Timetable Generation**: Auto-generate timetables for supported railway lines and bus routes
 - **Modern SwiftUI Interface**: Declarative UI with smooth animations
 - **Firebase Integration**: Authentication, Firestore database, Analytics
 - **User Authentication**: Sign up, login, password reset functionality
@@ -49,7 +54,7 @@ My Transfer Makers is a SwiftUI-based iOS application that helps users create an
 ## 📋 Prerequisites
 
 - Xcode 14.0+
-- iOS 15.6+
+- iOS 16.6+
 - Swift Package Manager
 - Firebase project setup
 - Google Mobile Ads account
@@ -102,106 +107,71 @@ xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetable
 
 ```
 mytimetablemaker_swiftui/
-├── mytimetablemaker_swiftuiApp.swift    # Application entry point
-├── ContentView/                          # Main content views and sheets
-│   ├── ContentView.swift
-│   ├── AdMobView.swift
-│   ├── AdMobBannerView.swift
-│   ├── NavigationBarModifier.swift
-│   ├── SettingsLineSheet.swift          # Line configuration sheet
-│   ├── SettingsLineViewModel.swift      # Line settings view model
-│   └── SettingsTransferSheet.swift      # Transfer configuration sheet
-├── LoginContentView/                     # Authentication views
-│   ├── LoginContentView.swift
-│   ├── SignUpContentView.swift
-│   ├── MyLogin.swift                    # Authentication logic
-│   └── SwiftUIView.swift
-├── MainContentView/                      # Main app views
-│   ├── MainContentView.swift
-│   ├── SplashContentView.swift
-│   ├── MyTransfer.swift                 # Transfer data model
-│   ├── StationLineView.swift
-│   ├── TransferView.swift
-│   ├── LineTimeImage.swift
-│   ├── OperationButton.swift
-│   └── HomeOfficeView.swift
-├── SettingsContentView/                  # Settings views
-│   ├── SettingsContentView.swift
-│   ├── MyFirestore.swift               # Firebase integration
-│   ├── SaveFirestoreButton.swift
-│   ├── GetFirestoreButton.swift
-│   ├── LogOutButton.swift
-│   └── DeleteAccountButton.swift
-├── TimetableContentView/                 # Timetable views
-│   ├── TimetableContentView.swift
-│   ├── TimetableGridView.swift
-│   ├── ImagePicker.swift
-│   └── TimetableBackButton.swift
-├── Components/                           # Shared components
-│   └── CommonComponents.swift
-├── Constants/                            # Constants and configurations
-│   ├── CommonConstants.swift
-│   └── SizeConstants.swift
-├── Extensions/                           # Swift extensions
-│   ├── ColorExtensions.swift
-│   ├── DataExtensions.swift             # Route data and UserDefaults
-│   └── TimeExtensions.swift             # Time formatting and calculations
-├── Models/                               # Data models
-│   ├── TransportationModels.swift       # Transportation types
-│   ├── DataTransferObjects.swift        # DTOs for external data
-│   ├── Enums.swift                      # App enumerations
-│   └── RailwayModels.swift              # Railway and station models
-├── Services/                             # Service layer
-│   ├── CacheService.swift               # Data caching management
-│   ├── ODPTDataService.swift            # ODPT API integration
-│   └── LocalDataService.swift           # Local data file management
-├── Assets.xcassets/                      # App assets
-│   ├── AppIcon.appiconset/
-│   ├── icon.imageset/
-│   ├── splash.imageset/
-│   ├── arrow_back_ios.imageset/
-│   ├── ic_clock2.imageset/
-│   ├── ic_settings1.imageset/
-│   └── Various color sets
-├── Font/                                 # Custom fonts
-│   ├── GenEiGothicN-Bold.otf
-│   ├── GenEiGothicN-ExtraLight.otf
-│   ├── GenEiGothicN-Heavy.otf
-│   ├── GenEiGothicN-Light.otf
-│   ├── GenEiGothicN-Regular.otf
-│   ├── GenEiGothicN-SemiBold.otf
-│   ├── GenEiGothicN-SemiLight.otf
-│   └── LICENSE.txt
-├── LineData/                             # Railway line data
-│   ├── jreast.json                      # JR East lines (141KB)
-│   ├── tokyometro.json                  # Tokyo Metro lines (49KB)
-│   ├── toeimetro.json                   # Toei Metro lines (22KB)
-│   ├── keikyu.json                      # Keikyu lines (16KB)
-│   ├── odakyu.json                      # Odakyu lines (11KB)
-│   ├── tokyu.json                       # Tokyu lines (19KB)
-│   ├── seibu.json                       # Seibu Railway (20KB)
-│   ├── tobu.json                        # Tobu Railway (57KB)
-│   ├── sotetsu.json                     # Sotetsu Railway (5.3KB)
-│   ├── tsukuba.json                     # Tsukuba Express (4.8KB)
-│   ├── tama.json                        # Tama Monorail (3.4KB)
-│   ├── yurikamome.json                  # Yurikamome Line (3.6KB)
-│   ├── yokohamametro.json               # Yokohama Metro (6.8KB)
-│   ├── rinkai.json                      # Rinkai Line (2.1KB)
-│   ├── toeibus.json                     # Toei Bus (3.1MB)
-│   └── yokohamabus.json                 # Yokohama Bus (6.7MB)
-├── en.lproj/                             # English localization
-│   ├── InfoPlist.strings
-│   └── Localizable.strings
-├── ja.lproj/                             # Japanese localization
-│   ├── InfoPlist.strings
-│   └── Localizable.strings
-├── Info.plist                           # App configuration
-├── GoogleService-Info.plist             # Firebase configuration
-├── Debug.xcconfig                        # Debug configuration
-├── Release.xcconfig                      # Release configuration
-├── Release.xcconfig.template            # Release config template
+├── mytimetablemaker_swiftuiApp.swift  # Application entry point
+├── CommonContentView/                 # Common content views and sheets
+│   ├── AdMobBannerView.swift          # AdMob banner advertisement view
+│   ├── CustomComponents.swift         # Custom reusable UI components
+│   ├── NavigationBarModifier.swift    # Navigation bar customization
+│   ├── SettingsLineSheet.swift        # Line configuration sheet
+│   ├── SettingsLineViewModel.swift    # Line settings view model
+│   └── SettingsTransferSheet.swift    # Transfer configuration sheet
+├── LoginContentView/                  # Authentication views
+│   ├── LoginContentView.swift         # Login screen view
+│   ├── LoginViewModel.swift           # Login view model
+│   └── SignUpContentView.swift        # Sign up screen view
+├── MainContentView/                   # Main app views
+│   ├── MainContentView.swift          # Main content view
+│   ├── MainViewModel.swift            # Main view model
+│   ├── MyTransfer.swift               # Transfer data model
+│   └── SplashContentView.swift        # Splash screen view
+├── SettingsContentView/               # Settings views
+│   ├── SettingsContentView.swift      # Settings screen view
+│   └── FirestoreViewModel.swift       # Firebase Firestore view model
+├── TimetableContentView/              # Timetable views
+│   ├── TimetableContentView.swift     # Timetable content view
+│   ├── SettingsTimetableSheet.swift   # Timetable settings sheet
+│   └── ImagePicker.swift              # Image picker component
+├── Extensions/                        # Swift extensions
+│   ├── AccountExtensions.swift        # Account-related extensions
+│   ├── ColorExtensions.swift          # Color utility extensions
+│   ├── LineExtensions.swift           # Line-related extensions
+│   ├── SizeExtensions.swift           # Size calculation extensions
+│   └── TimeExtensions.swift           # Time formatting and calculations
+├── Models/                            # Data models
+│   ├── Enums.swift                    # App enumerations
+│   └── TransportationModels.swift     # Transportation types and models
+├── Services/                          # Service layer
+│   ├── CacheService.swift             # Data caching management
+│   └── ODPTDataService.swift          # ODPT API integration
+├── Assets.xcassets/                   # App assets
+│   ├── AppIcon.appiconset/            # App icon assets
+│   ├── icon.imageset/                 # App icon image set
+│   └── splash.imageset/               # Splash screen images
+├── Font/                              # Custom fonts
+│   ├── GenEiGothicN-Bold.otf          # Bold font weight
+│   ├── GenEiGothicN-ExtraLigh.otf     # Extra light font weight
+│   ├── GenEiGothicN-Heavy.otf         # Heavy font weight
+│   ├── GenEiGothicN-Ligh.otf          # Light font weight
+│   ├── GenEiGothicN-Regular.otf       # Regular font weight
+│   ├── GenEiGothicN-SemiBold.otf      # Semi-bold font weight
+│   ├── GenEiGothicN-SemiLight.otf     # Semi-light font weight
+│   └── LICENSE.txt                    # Font license
+├── Preview Content/                   # Preview assets for SwiftUI
+│   └── Preview Assets.xcassets/
+├── en.lproj/                          # English localization
+│   ├── InfoPlist.strings              # Info.plist localization
+│   └── Localizable.strings            # App strings localization
+├── ja.lproj/                          # Japanese localization
+│   ├── InfoPlist.strings              # Info.plist localization
+│   └── Localizable.strings            # App strings localization
+├── Info.plist                         # App configuration
+├── GoogleService-Info.plist           # Firebase configuration
+├── Debug.xcconfig                     # Debug build configuration
+├── Release.xcconfig                   # Release build configuration
+├── Release.xcconfig.template          # Release config template
 ├── mytimetablemaker_swiftuiRelease.entitlements
-└── mytimetablemaker_swiftui.xcdatamodeld # Core Data model
+└── mytimetablemaker_swiftui.xcdatamodeld/ # Core Data model
+    └── mytimetablemaker_swiftui.xcdatamodel/
 ```
 
 ## 🚂 Railway Data Integration
@@ -217,12 +187,31 @@ The app integrates with the Open Data Platform for Transportation (ODPT) API to 
 ### Local Railway Database
 Comprehensive offline railway data covering major operators in Japan:
 
+**Railway Operators:**
 - **JR East**: Complete station and line data
-- **Tokyo Metro & Toei**: Full subway network coverage
-- **Private Railways**: Keikyu, Odakyu, Tokyu, Seibu, Tobu, Sotetsu
+- **Tokyo Metro**: Full subway network coverage
+- **Toei Subway**: Full subway network coverage
+- **Yokohama Municipal Subway**: Complete subway line data
+- **Private Railways**: Tokyu Railway, Keikyu Railway, Odakyu Railway, Seibu Railway, Tobu Railway, Sotetsu Railway
 - **Monorails**: Tama Monorail, Yurikamome
-- **Regional Lines**: Tsukuba Express, Rinkai Line
-- **Bus Networks**: Toei Bus, Yokohama Bus
+- **Regional Lines**: Tsukuba Express (首都圏新都市鉄道), Rinkai Line (東京臨海高速鉄道)
+
+**Bus Operators:**
+- **Toei Bus**: Comprehensive bus route coverage
+- **Yokohama Municipal Bus**: Complete bus route data
+- **Tokyu Bus**: Major bus routes
+- **Seibu Bus**: Complete bus network
+- **Sotetsu Bus**: Sotetsu Railway bus routes
+- **Kanachu Bus**: Kanagawa Chuo Bus routes
+- **Kokusai Kogyo**: International Kogyo Bus routes
+- **Odakyu Bus**: Odakyu Railway bus routes
+- **Keio Bus**: Keio Railway bus routes
+- **Nishitokyo Bus**: Nishitokyo Bus routes
+
+### Automatic Timetable Generation
+The app features automatic timetable generation for supported operators using the Open Data Platform for Transportation (ODPT) API.
+
+**Note**: Some operators (Tokyu Railway, Keikyu Railway, Odakyu Railway, Seibu Railway, Yurikamome) use proprietary algorithms for automatic generation, which may result in incorrect timetables. Manual correction is available when needed.
 
 ### Data Processing
 - **Multi-format Support**: Handles various JSON data formats
@@ -258,8 +247,8 @@ Comprehensive offline railway data covering major operators in Japan:
 
 ## 📱 Supported Platforms
 
-- **iOS**: iOS 15.6+
-- **iPad**: iPadOS 15.6+
+- **iOS**: iOS 16.6+
+- **iPad**: iPadOS 16.6+
 - **Device Support**: iPhone and iPad optimized layouts
 
 ## 🔧 Development
@@ -345,9 +334,11 @@ For new developers:
 - **Swift Files**: 60+
 - **Railway Data Files**: 16 JSON files covering major Japanese railways
 - **Supported Languages**: 2 (Japanese, English)
-- **Target Platforms**: iOS 15.6+, iPadOS 15.6+
+- **Target Platforms**: iOS 16.6+, iPadOS 16.6+
 - **External Dependencies**: Firebase, Google Mobile Ads, ODPT API
 - **Data Coverage**: 1000+ railway stations across Japan
+- **Supported Railway Operators**: 14 operators
+- **Supported Bus Operators**: 10 operators
 
 ---
 
