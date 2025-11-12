@@ -70,6 +70,9 @@ struct CustomToggle: View {
                 .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                 .foregroundColor(isLeftSelected ? leftColor : offColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .fixedSize(horizontal: false, vertical: true)
             
             // Toggle switch
             ZStack {
@@ -95,8 +98,12 @@ struct CustomToggle: View {
                 .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                 .foregroundColor(isLeftSelected ? offColor : rightColor)
                 .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, screen.customTogglePaddingHorizontal)
+        .fixedSize(horizontal: true, vertical: false)
     }
 }
 
@@ -251,6 +258,9 @@ struct CustomButton: View {
     // Background color when enabled
     let backgroundColor: Color
     
+    // Text color for button title and icon
+    let textColor: Color
+    
     // Whether button is enabled/disabled
     let isEnabled: Bool
     
@@ -261,12 +271,14 @@ struct CustomButton: View {
         title: String,
         icon: String? = nil,
         backgroundColor: Color = Color.accent,
+        textColor: Color = .white,
         isEnabled: Bool = true,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.icon = icon
         self.backgroundColor = backgroundColor
+        self.textColor = textColor
         self.isEnabled = isEnabled
         self.action = action
     }
@@ -280,8 +292,11 @@ struct CustomButton: View {
                 }
                 Text(title)
                     .font(.system(size: screen.settingsSheetButtonFontSize, weight: .bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .foregroundColor(.white)
+            .foregroundColor(textColor)
             .frame(maxWidth: .infinity)
             .frame(height: screen.settingsSheetButtonHeight)
             .background(

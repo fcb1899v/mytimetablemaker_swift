@@ -9,6 +9,7 @@ import SwiftUI
 import FirebaseAuth
 import AppTrackingTransparency
 import AdSupport
+import GoogleMobileAds
 
 // MARK: - Splash Content View
 // Main view that manages app navigation and core functionality
@@ -18,8 +19,12 @@ struct SplashContentView: View {
     @ObservedObject private var myTransfer: TransferViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
+    // Shared data manager for monitoring loading state
+    @ObservedObject private var sharedDataManager = SharedDataManager.shared
     // Inline splash navigation state
     @State private var isFinishSplash = false
+    // Ad banner view for preloading ads during splash
+    @State private var adBannerView: GADBannerView?
 
     // MARK: - Initialization
     init(
@@ -30,7 +35,6 @@ struct SplashContentView: View {
         self.myTransfer = myTransfer
         self.myLogin = myLogin
         self.myFirestore = myFirestore
-        self.toTracking()
     }
 
     var body: some View {
@@ -60,12 +64,41 @@ struct SplashContentView: View {
                     Color.primary
                         .frame(width: screen.screenWidth, height: screen.admobBannerHeight)
                 }
+                
+                // MARK: - Loading Overlay
+                // Dark overlay with progress bar when loading initial data
+                if sharedDataManager.isLoading {
+                    Color.black.opacity(0.7)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 20) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                        
+                        Text("Loading data...".localized)
+                            .font(.system(size: screen.splashLoadingFontSize))
+                            .foregroundColor(.white)
+                    }
+                }
             }
             .frame(width: screen.screenWidth, height: screen.screenHeight)
             .onAppear {
-                // Auto-navigate to main content after 2 seconds.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation() { isFinishSplash = true }
+                // Set loading state immediately when view appears
+                sharedDataManager.isLoading = true
+                
+                // Preload ads during splash screen (ATT is requested inside preloadAds)
+                print("🚀 Splash screen appeared - starting initialization")
+                adBannerView = AdMobBannerView.preloadAds()
+                
+                // Initialize data and perform update check when app launches
+                Task {
+                    await sharedDataManager.performSplashInitialization()
+                    
+                    // Navigate to main content after loading completes
+                    await MainActor.run {
+                        withAnimation() { isFinishSplash = true }
+                    }
                 }
             }
             .edgesIgnoringSafeArea(.all)
@@ -74,17 +107,6 @@ struct SplashContentView: View {
             }
         }
         .preferredColorScheme(.light)
-    }
-    
-    // MARK: - Tracking Authorization
-    // Request app tracking transparency permission
-    private func toTracking(){
-        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            ATTrackingManager.requestTrackingAuthorization { status in
-                print("🔍 AdMob Debug: App tracking transparency status: \(status.rawValue)")
-            }
-        }
     }
 }
 

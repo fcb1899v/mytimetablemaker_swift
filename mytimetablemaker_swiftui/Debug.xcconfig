@@ -1,7 +1,7 @@
 // Debug Configuration
 // This file contains debug-specific build settings
 
-// AdMob Configuration
+// AdMob Banner Unit ID
 ADMOB_BANNER_UNIT_ID = ca-app-pub-3940256099942544/6300978111
 
 // ODPT API

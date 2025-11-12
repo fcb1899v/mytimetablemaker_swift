@@ -138,7 +138,8 @@ struct LoginContentView: View {
                 // MARK: - Sign Up Button
                 CustomButton(
                     title: "Signup".localized,
-                    backgroundColor: Color.primary,
+                    backgroundColor: Color.white,
+                    textColor: Color.primary,
                     action: { isShowSignUp = true }
                 )
                 .frame(width: screen.loginButtonWidth)

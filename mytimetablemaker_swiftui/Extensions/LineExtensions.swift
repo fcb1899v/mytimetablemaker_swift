@@ -164,6 +164,8 @@ extension String{
     func arriveStationKey(_ num: Int) -> String { return "\(self)arrivestation\(num + 1)" }
     func departStationCodeKey(_ num: Int) -> String { return "\(self)departstationcode\(num + 1)" }
     func arriveStationCodeKey(_ num: Int) -> String { return "\(self)arrivestationcode\(num + 1)" }
+    func operatorNameKey(_ num: Int) -> String { return "\(self)operatorname\(num + 1)" }
+    func operatorCodeKey(_ num: Int) -> String { return "\(self)operatorcode\(num + 1)" }
     func lineNameKey(_ num: Int) -> String { return "\(self)linename\(num + 1)" }
     func lineSelectedKey(_ num: Int) -> String { return "\(self)lineSelected\(num + 1)" }
     func lineColorKey(_ num: Int) -> String { return "\(self)linecolor\(num + 1)" }
@@ -191,8 +193,8 @@ extension String{
     
     // MARK: - Default Data Definitions
     // Default values for route configuration
-    var departurePointDefault: String { return isBack ? "Home".localized: "Office".localized }
-    var destinationDefault: String { return isBack ? "Office".localized: "Home".localized }
+    var departurePointDefault: String { return isBack ? "Office".localized: "Home".localized }
+    var destinationDefault: String { return isBack ? "Home".localized: "Office".localized }
     
     // MARK: - Main View Data Access
     // UserDefaults data retrieval for main view display
@@ -202,6 +204,7 @@ extension String{
     var destination: String { return destinationKey.userDefaultsValue(destinationDefault)! }
     func departStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(num.departStationDefault)! }
     func arriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(num.arriveStationDefault)! }
+    func operatorName(_ num: Int) -> String { return operatorNameKey(num).userDefaultsValue("")! }
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(num.lineNameDefault)! }
     func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(Color.accentString) }
     func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
@@ -236,6 +239,7 @@ extension String{
     var departStationArray: Array<String> { return (0..<3).map { i in departStation(i)} }
     var arriveStationArray: Array<String> { return (0..<3).map { i in arriveStation(i)} }
     var stationArray: Array<String> { return (0..<3).flatMap { i in [departStation(i), arriveStation(i)] } }
+    var operatorNameArray: Array<String> { return (0..<3).map { i in operatorName(i) } }
     var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
     var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
     var lineCodeArray: Array<String> { return (0..<3).map { i in lineCode(i) } }
@@ -554,6 +558,25 @@ extension SettingsLineSheetViewModel {
     
     // Get localized display name based on operator code
     func getOperatorDisplayName(for operatorCode: String, lineKind: TransportationLine.Kind? = nil) -> String {
+        // Find matching LocalDataSource by operator code and transportation kind
+        // This ensures correct operator name for cases where same operatorCode is used for railway and bus
+        let matchingDataSources = LocalDataSource.allCases.filter { dataSource in
+            dataSource.operatorCode == operatorCode
+        }
+        
+        // If lineKind is provided, prioritize matching transportation type
+        if let lineKind = lineKind {
+            if let dataSource = matchingDataSources.first(where: { $0.transportationType == lineKind }) {
+                return dataSource.operatorDisplayName
+            }
+        }
+        
+        // Fallback to first matching data source if no lineKind or no match found
+        if let dataSource = matchingDataSources.first {
+            return dataSource.operatorDisplayName
+        }
+        
+        // Final fallback: extract operator name from operator code
         let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
         return NSLocalizedString(operatorName, comment: "Railway operator name")
     }

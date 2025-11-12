@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import GoogleMobileAds
+import AppTrackingTransparency
 
 // MARK: - Banner Width Delegate Protocol
 // Delegate methods for receiving width update messages from banner view controller
@@ -222,5 +223,99 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         func bannerViewController(_ bannerViewController: BannerViewController, didUpdate width: CGFloat) {
             parent.viewWidth = width
         }
+    }
+    
+    // MARK: - App Tracking Transparency
+    // Request app tracking transparency permission
+    // Must be called before ad preloading
+    private static func requestAppTrackingTransparency(completion: @escaping () -> Void) {
+        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
+            print("🔍 AdMob Debug: ATT already determined: \(ATTrackingManager.trackingAuthorizationStatus.rawValue)")
+            // ATT already determined, proceed with ad loading immediately
+            completion()
+            return
+        }
+        
+        // Request immediately
+        // Small delay to ensure view is fully presented
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                print("🔍 AdMob Debug: App tracking transparency status: \(status.rawValue)")
+                // Proceed with ad loading after ATT response
+                completion()
+            }
+        }
+    }
+    
+    // MARK: - Ad Preloading
+    // Preload ads during splash screen to improve user experience
+    // ATT is requested first, then ads are loaded after user response
+    static func preloadAds() -> GADBannerView? {
+        // Request ATT first, then load ads after user response
+        requestAppTrackingTransparency {
+            // This closure is called after ATT response (or immediately if already determined)
+            loadAdAfterATT()
+        }
+        
+        // Return banner view immediately (will be configured after ATT)
+        // Get screen width for adaptive banner sizing
+        let bannerWidth = screen.screenWidth
+        
+        // Create banner view for preloading
+        let bannerView = GADBannerView()
+        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(bannerWidth)
+        
+        // Get root view controller for banner view
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootViewController = windowScene.windows.first?.rootViewController {
+            bannerView.rootViewController = rootViewController
+            return bannerView
+        } else {
+            print("🔍 AdMob Debug: ⚠️ Failed to get root view controller for ad preloading")
+            return nil
+        }
+    }
+    
+    // MARK: - Load Ad After ATT
+    // Load ad after ATT permission is determined
+    private static func loadAdAfterATT() {
+        print("🔍 AdMob Debug: Starting ad preloading after ATT response...")
+        
+        // Get ad unit ID (same logic as AdMobBannerView)
+        let adUnitID: String = {
+            if let unitID = Bundle.main.infoDictionary?["ADMOB_BANNER_UNIT_ID"] as? String,
+               !unitID.isEmpty && unitID != "$(ADMOB_BANNER_UNIT_ID)" {
+                print("🔍 AdMob Debug: ✅ Using unit ID from Info.plist for preload: \(unitID)")
+                return unitID
+            }
+            if let unitID = ProcessInfo.processInfo.environment["ADMOB_BANNER_UNIT_ID"],
+               !unitID.isEmpty {
+                print("🔍 AdMob Debug: ✅ Using unit ID from environment for preload: \(unitID)")
+                return unitID
+            }
+            // Fallback to test unit ID
+            print("🔍 AdMob Debug: ⚠️ Using fallback test unit ID for preload")
+            return "ca-app-pub-3940256099942544/6300978111"
+        }()
+        
+        // Get root view controller and banner view
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let rootViewController = windowScene.windows.first?.rootViewController else {
+            print("🔍 AdMob Debug: ⚠️ Failed to get root view controller for ad loading")
+            return
+        }
+        
+        // Find existing banner view or create new one
+        let bannerWidth = screen.screenWidth
+        let bannerView = GADBannerView()
+        bannerView.adUnitID = adUnitID
+        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(bannerWidth)
+        bannerView.rootViewController = rootViewController
+        
+        // Load the ad
+        let request = GADRequest()
+        bannerView.load(request)
+        
+        print("🔍 AdMob Debug: ✅ Ad preloading started after ATT response")
     }
 }

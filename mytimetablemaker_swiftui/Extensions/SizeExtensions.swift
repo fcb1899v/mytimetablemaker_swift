@@ -26,9 +26,10 @@ extension UIScreen {
     }
     
     // MARK: - Splash Screen
-    var splashTitleFontSize: CGFloat { customWidth / 12 }
-    var splashIconSize: CGFloat { customWidth / 3 }
-    
+    var splashTitleFontSize: CGFloat { customWidth * 0.08 }
+    var splashIconSize: CGFloat { customWidth * 0.3 }
+    var splashLoadingFontSize: CGFloat { customWidth * 0.06 }
+
     // MARK: - Header & Navigation
     var headerTopMargin: CGFloat { statusBarHeight + 5 }
     var headerHeight: CGFloat { statusBarHeight + operationButtonWidth + 10 }
@@ -134,7 +135,7 @@ extension UIScreen {
     var settingsSheetVerticalSpacing: CGFloat { screenHeight * 0.012 }
     var settingsSheetSaveButtonSpacing: CGFloat { screenHeight * 0.03 }
     var settingsSheetInputPaddingVertical: CGFloat { screenHeight * 0.008 }
-    var settingsSheetCornerRadius: CGFloat { screenHeight * 0.01 }
+    var settingsSheetCornerRadius: CGFloat { screenHeight * 0.016 }
     var settingsSheetPickerSelectHeight: CGFloat { screenHeight * 0.10 }
     var settingsSheetPickerDisplayHeight: CGFloat { screenHeight * 0.022 }
     var settingsSheetButtonHeight: CGFloat { screenHeight * 0.044 }
@@ -148,11 +149,13 @@ extension UIScreen {
     var settingsLineSheetColorVerticalPadding: CGFloat { screenHeight * 0.008 }
     var settingsLineSheetSuggestionItemHeight: CGFloat { screenHeight * 0.056 }
     var settingsLineSheetMaxSuggestionHeight: CGFloat { screenHeight * 0.4 }
+    var settingsLineSheetOperatorMaxSuggestionHeight: CGFloat { screenHeight * 0.25 }
     var settingsLineSheetTagPaddingVertical: CGFloat { screenHeight * 0.003 }
-    var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.12 }
-    var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.19 }
-    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.27 }
-    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.32 }
+    var settingsLineSheetOperatorOffset: CGFloat { screenHeight * 0.13 }
+    var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.18 }
+    var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.25 }
+    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.22 }
+    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.27 }
     var settingsLineSheetCaptionFontSize: CGFloat { customWidth * 0.024 }
     var settingsLineSheetColorSettingWidth: CGFloat { customWidth * 0.80 }
     var settingsLineSheetColorHorizontalPadding: CGFloat { customWidth * 0.04 }
@@ -167,7 +170,7 @@ extension UIScreen {
     var settingsTransferSheetPaddingLeft: CGFloat { screenWidth * 0.03 }
     
     // MARK: - Components
-    var customToggleSpacing: CGFloat { screenHeight * 0.013 }
+    var customToggleSpacing: CGFloat { screenHeight * 0.006 }
     var customToggleCornerRadius: CGFloat { screenHeight * 0.026 }
     var customToggleWidth: CGFloat { screenHeight * 0.051 }
     var customToggleHeight: CGFloat { screenHeight * 0.029 }

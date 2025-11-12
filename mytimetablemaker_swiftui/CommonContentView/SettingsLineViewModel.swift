@@ -20,6 +20,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Published Properties
     // UI state properties that trigger view updates when changed
+    @Published var operatorInput: String = ""             // Operator search input
+    @Published var operatorSuggestions: [String] = []    // Search results for operator suggestions
+    @Published var showOperatorSuggestions: Bool = false // Operator suggestions visibility
+    @Published var operatorSelected: Bool = false         // Flag to prevent operator suggestions re-display
+    @Published var showOperatorSelection: Bool = false   // Operator selection UI visibility state
+    @Published var selectedOperatorCode: String? = nil  // Selected operator code for filtering lines
+    @Published var isOperatorFieldFocused: Bool = false  // Operator field focus state
     @Published var lineInput: String = ""                // Line search input
     @Published var lineSuggestions: [TransportationLine] = [] // Search results for line suggestions
     @Published var isLoading: Bool = false               // Loading state for update operations
@@ -61,6 +68,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var arrivalSuggestions: [TransportationStop] = []   // Arrival stop search results
     @Published var isArrivalFieldFocused: Bool = false        // Arrival field focus state
     @Published var showLineSuggestions: Bool = false          // Line suggestions visibility
+    @Published var isLineFieldFocused: Bool = false          // Line field focus state
     
     // Selection flags to prevent re-display of suggestions after selection
     @Published var departureStopSelected: Bool = false     // Flag to prevent departure suggestions re-display
@@ -160,6 +168,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             await checkSavedLineInData()
 
             // Hide all suggestions during direction change to prevent UI conflicts
+            showOperatorSuggestions = false
+            operatorSuggestions = []
             showDepartureSuggestions = false
             showArrivalSuggestions = false
             showLineSuggestions = false
@@ -177,6 +187,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Reset all selections when direction changes
     // Clear all user selections to start fresh
     private func resetSelections() {
+        operatorInput = ""
+        operatorSuggestions = []
+        showOperatorSuggestions = false
+        operatorSelected = false
+        showOperatorSelection = false
+        selectedOperatorCode = nil
         lineInput = ""
         selectedLine = nil
         lineStops = []
@@ -245,18 +261,33 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Filter railway lines based on search lineInput with performance optimizations
     func filter(_ q: String) async {
         let t = q.normalizedForSearch
-        guard !t.isEmpty else {
+        
+        // Don't show suggestions if line number or direction is being changed or line is already selected
+        if isLineNumberChanging || isGoorBackChanging || lineSelected { return }
+        
+        // Don't show line suggestions if operator is not selected from dropdown
+        // User must select an operator from dropdown before searching for lines
+        guard let operatorCode = selectedOperatorCode, operatorSelected else {
             lineSuggestions = []
             nameCounts = [:]
             showLineSuggestions = false
             return
         }
         
-        // Don't show suggestions if line number or direction is being changed or line is already selected
-        if isLineNumberChanging || isGoorBackChanging || lineSelected { return }
+        // Filter by transportation kind (.railway or .bus)
+        // Always filter by selected transportation kind regardless of operator selection
+        var searchData = selectedTransportationKind == .railway ? railwayLines: busLines
         
-        // Use cached data for better performance based on transportation kind
-        let searchData = selectedTransportationKind == .railway ? railwayLines: busLines
+        // Filter by selected operator
+        searchData = searchData.filter { $0.operatorCode == operatorCode }
+        
+        // If query is empty, don't show suggestions
+        guard !t.isEmpty else {
+            lineSuggestions = []
+            nameCounts = [:]
+            showLineSuggestions = false
+            return
+        }
         
         // Search key generation helper for different transportation types
         let key: (TransportationLine) -> String = { p in
@@ -271,14 +302,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Simplified search for bus data to improve performance
         if selectedTransportationKind == .bus {
-            // Only search if query has 2 or more characters for bus routes
-            guard t.count >= 2 else {
-                lineSuggestions = []
-                showLineSuggestions = false
-                nameCounts = [:]
-                return
-            }
-            
             let starts = searchData.filter { lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) }
             let contains = searchData.filter { !lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) && lineDisplayName(for: $0).normalizedForSearch.contains(t) }
             let allResults = starts + contains
@@ -307,7 +330,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let hiraganaMatches = searchData.filter { !key($0).hasPrefix(t) && !key($0).contains(t) && matchesQuery($0) }
         
         let allResults = starts + contains + hiraganaMatches
-        lineSuggestions = Array(allResults.prefix(100))
+        // Remove duplicates for railway lines to ensure unique line representation
+        let uniqueResults = removeDuplicates(from: allResults)
+        lineSuggestions = Array(uniqueResults.prefix(100))
         
         // Show suggestions based on results count
         if lineSuggestions.count == 1 {
@@ -319,6 +344,81 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
             .mapValues { $0.count }
+    }
+    
+    // MARK: - Operator Search and Filtering
+    // Filter operators based on search input and transportation kind (railway or bus)
+    func filterOperators(_ q: String) async {
+        let t = q.normalizedForSearch
+        
+        // Don't show suggestions if line number or direction is being changed or operator is already selected
+        if isLineNumberChanging || isGoorBackChanging || operatorSelected { return }
+        
+        // Get available operators filtered by transportation kind (railway or bus)
+        // Only include operators that match the selected transportation kind
+        let availableOperators = LocalDataSource.allCases
+            .filter { dataSource in
+                // Filter by transportation type: railway or bus
+                dataSource.transportationType == selectedTransportationKind
+            }
+            .compactMap { dataSource -> String? in
+                // Only include operators with valid operator codes
+                // Use operatorDisplayName directly to ensure correct name for each transportation type
+                guard dataSource.operatorCode != nil else { return nil }
+                return dataSource.operatorDisplayName
+            }
+        
+        // Filter operators based on search query
+        let filtered: [String]
+        if t.isEmpty {
+            // If query is empty, show all operators when field is focused
+            if isOperatorFieldFocused {
+                filtered = availableOperators
+            } else {
+                operatorSuggestions = []
+                showOperatorSuggestions = false
+                return
+            }
+        } else {
+            // If query is not empty, filter operators based on search input
+            // Filter by prefix match or contains match
+            filtered = availableOperators.filter { operatorName in
+                operatorName.normalizedForSearch.hasPrefix(t) || operatorName.normalizedForSearch.contains(t)
+            }
+        }
+        
+        // Sort results: starts with query first, then contains (or all sorted if query is empty)
+        let sortedResults: [String]
+        if t.isEmpty {
+            sortedResults = filtered.sorted()
+        } else {
+            // Prioritize operators that start with the query
+            let starts = filtered.filter { $0.normalizedForSearch.hasPrefix(t) }
+            let contains = filtered.filter { !$0.normalizedForSearch.hasPrefix(t) }
+            sortedResults = starts + contains
+        }
+        
+        operatorSuggestions = Array(sortedResults.prefix(20))
+        showOperatorSuggestions = !operatorSuggestions.isEmpty
+    }
+    
+    // MARK: - Data Processing
+    /// Remove duplicates based on operator and line name combination
+    /// Ensures unique line representation in the UI
+    func removeDuplicates(from lines: [TransportationLine]) -> [TransportationLine] {
+        var seen = Set<String>()
+        var result: [TransportationLine] = []
+        
+        for line in lines {
+            // Create unique key combining operator code and display name
+            let key = "\(line.operatorCode ?? "")_\(lineDisplayName(for: line))"
+            if !seen.contains(key) {
+                seen.insert(key)
+                result.append(line)
+            }
+        }
+        
+        return result
     }
     
     // MARK: - Station Search and Filtering
@@ -491,27 +591,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 await MainActor.run {
                     selectedLine = foundLine
                     showStationSelection = true
+                    lineSelected = true
                     
-                    // Set lineSelected flag to true when line is found and restored
-                    let lineSelectedKey = selectedGoorback.lineSelectedKey(selectedLineNumber - 1)
-                    UserDefaults.standard.set(true, forKey: lineSelectedKey)
-                    
-                    // Set bus stops for bus routes
-                    if foundLine.kind == .bus {
-                        if let busstopPoleOrder = foundLine.busstopPoleOrder {
-                            let busStops: [Station] = busstopPoleOrder.compactMap { busStop -> Station? in
-                                guard !busStop.name.isEmpty else { return nil }
-                                return Station(
-                                    name: busStop.name,
-                                    code: busStop.code,
-                                    index: busStop.index,
-                                    lineCode: selectedLine?.code,
-                                    title: busStop.title
-                                )
-                            }
-                            lineStations = busStops
-                        }
-                    }
+                    // Set up line stops (bus stops, stations, etc.)
+                    setupLineStops(for: foundLine)
                     
                     // Don't show color selection for saved lines - user can manually change color if needed
                     showColorSelection = false
@@ -526,10 +609,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     selectedLine = nil
                     lineStations = []
                     showStationSelection = false
-                    
-                    // Set lineSelected flag to false when line is not found
-                    let lineSelectedKey = selectedGoorback.lineSelectedKey(selectedLineNumber - 1)
-                    UserDefaults.standard.set(false, forKey: lineSelectedKey)
+                    lineSelected = false
                 }
             }
         }
@@ -545,7 +625,29 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Helper method to find saved line in current data
+    // First tries to find by line code if available, then falls back to line name
     private func findSavedLineInData() -> TransportationLine? {
+        let currentLineIndex = selectedLineNumber - 1
+        let lineCodeKey = selectedGoorback.lineCodeKey(currentLineIndex)
+        
+        // Try to find by line code first (more reliable)
+        // Compare with lineCode property (short code) or extract from code property
+        if let savedLineCode = UserDefaults.standard.string(forKey: lineCodeKey), !savedLineCode.isEmpty {
+            if let foundLine = all.first(where: { line in
+                // Compare with lineCode property if available
+                if let lineCode = line.lineCode, lineCode == savedLineCode {
+                    return true
+                }
+                // Otherwise, extract from code and compare
+                let codeParts = line.code.components(separatedBy: ".")
+                let extractedCode = codeParts.last ?? line.code
+                return extractedCode == savedLineCode
+            }) {
+                return foundLine
+            }
+        }
+        
+        // Fall back to finding by line name
         return all.first(where: { line in
             if line.kind == .bus {
                 return line.name == lineInput ||
@@ -557,34 +659,92 @@ final class SettingsLineSheetViewModel: ObservableObject {
         })
     }
     
+    // Helper method to set up line stops after finding a line
+    // Handles bus stops and updates lineStops for station selection
+    private func setupLineStops(for foundLine: TransportationLine) {
+        // Set bus stops for bus routes
+        if foundLine.kind == .bus {
+            if let busstopPoleOrder = foundLine.busstopPoleOrder {
+                self.lineBusStops = busstopPoleOrder
+                
+                let busStops: [Station] = busstopPoleOrder.compactMap { busStop -> Station? in
+                    guard !busStop.name.isEmpty else { return nil }
+                    return Station(
+                        name: busStop.name,
+                        code: busStop.code,
+                        index: busStop.index,
+                        lineCode: foundLine.code,
+                        title: busStop.title
+                    )
+                }
+                self.lineStations = busStops
+            } else {
+                self.lineBusStops = []
+                self.lineStations = []
+            }
+        } else {
+            self.lineBusStops = []
+        }
+        self.lineStops = getStopsForSelectedLine()
+    }
+    
     // MARK: - Data Persistence
     // Save all information when save button is pressed
     func saveAllDataToUserDefaults() async {
         let lineIndex = selectedLineNumber - 1
         
-        // Save line name and code
+        // Save line name
         if !lineInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let lineNameKey = selectedGoorback.lineNameKey(lineIndex)
             UserDefaults.standard.set(lineInput, forKey: lineNameKey)
-            
-            let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
-            let lineCodeToSave = all.first { line in
-                if line.kind == .bus {
-                    return line.name == lineInput ||
-                    line.railwayTitle?.getLocalizedName() == lineInput ||
-                    line.busRouteEnglishName == lineInput
-                } else {
-                    return line.name == lineInput || line.railwayTitle?.getLocalizedName() == lineInput
+        }
+        
+        // Save line code for Firestore synchronization
+        // Always save lineCode if selectedLine is available, regardless of lineInput
+        // Use lineCode property (odpt:lineCode) if available, otherwise extract from code
+        let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
+        if let selectedLine = selectedLine {
+            // Use lineCode property (short code like "JY", "TT") if available
+            // Otherwise, extract short name from code (e.g., "ChuoRapid" from "odpt.Railway:JR-East.ChuoRapid")
+            let codeToSave: String
+            if let lineCode = selectedLine.lineCode, !lineCode.isEmpty {
+                codeToSave = lineCode
+            } else {
+                // Extract last component from code as fallback
+                let codeParts = selectedLine.code.components(separatedBy: ".")
+                codeToSave = codeParts.last ?? selectedLine.code
+            }
+            UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
+        } else {
+            // Preserve existing lineCode if selectedLine is nil (e.g., during auto-generation)
+            // Only preserve if lineCode already exists and is not empty
+            let existingLineCode = UserDefaults.standard.string(forKey: lineCodeKey) ?? ""
+            if existingLineCode.isEmpty {
+                // Try to find lineCode from saved line name using reverse lookup
+                if let foundLine = findSavedLineInData() {
+                    // Use lineCode property if available, otherwise extract from code
+                    let codeToSave: String
+                    if let lineCode = foundLine.lineCode, !lineCode.isEmpty {
+                        codeToSave = lineCode
+                    } else {
+                        let codeParts = foundLine.code.components(separatedBy: ".")
+                        codeToSave = codeParts.last ?? foundLine.code
+                    }
+                    UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
                 }
-            }?.lineCode ?? ""
-            
-            UserDefaults.standard.set(lineCodeToSave, forKey: lineCodeKey)
+            }
         }
         
         // Save line color
         if let lineColor = selectedLineColor, !lineColor.isEmpty {
             let lineColorKey = selectedGoorback.lineColorKey(lineIndex)
             UserDefaults.standard.set(lineColor, forKey: lineColorKey)
+        }
+        
+        // Save operator name (consistent with other fields like line name, station names)
+        if !operatorInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let operatorNameKey = selectedGoorback.operatorNameKey(lineIndex)
+            UserDefaults.standard.set(operatorInput, forKey: operatorNameKey)
         }
         
         // Save transportation kind
@@ -757,14 +917,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func loadSettingsForSelectedLine() {
         let currentLineIndex = selectedLineNumber - 1
         
-        let colorKey = selectedGoorback.lineColorKey(currentLineIndex)
-        self.selectedLineColor = UserDefaults.standard.string(forKey: colorKey)
-        
-        let lineNameKey = selectedGoorback.lineNameKey(currentLineIndex)
-        if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
-            self.lineInput = savedLineName
-        }
-        
+        // Load transportation kind first (needed for operator name restoration)
         let lineKindKey = selectedGoorback.lineKindKey(currentLineIndex)
         if let savedKindString = UserDefaults.standard.string(forKey: lineKindKey) {
             self.selectedTransportationKind = TransportationLine.Kind(rawValue: savedKindString) ?? .railway
@@ -772,28 +925,118 @@ final class SettingsLineSheetViewModel: ObservableObject {
             self.selectedTransportationKind = .railway
         }
         
+        // Load operator name (consistent with other fields like line name, station names)
+        let operatorNameKey = selectedGoorback.operatorNameKey(currentLineIndex)
+        if let savedOperatorName = UserDefaults.standard.string(forKey: operatorNameKey) {
+            self.operatorInput = savedOperatorName
+            
+            // Restore operator code from operator name for filtering
+            if let dataSource = LocalDataSource.allCases.first(where: {
+                $0.transportationType == selectedTransportationKind &&
+                $0.operatorDisplayName == savedOperatorName
+            }) {
+                self.selectedOperatorCode = dataSource.operatorCode
+                self.operatorSelected = true
+            } else {
+                self.selectedOperatorCode = nil
+                self.operatorSelected = false
+            }
+        } else {
+            self.operatorInput = ""
+            self.selectedOperatorCode = nil
+            self.operatorSelected = false
+        }
+        
+        // Load line name and restore line object from line name for filtering
+        let lineNameKey = selectedGoorback.lineNameKey(currentLineIndex)
+        if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
+            self.lineInput = savedLineName
+            
+            // Restore line object from line name if data is available
+            if !all.isEmpty {
+                if let foundLine = findSavedLineInData() {
+                    self.selectedLine = foundLine
+                    self.lineSelected = true
+                    
+                    // Set up line stops (bus stops, stations, etc.)
+                    setupLineStops(for: foundLine)
+                } else {
+                    self.selectedLine = nil
+                    self.lineStations = []
+                    self.lineBusStops = []
+                    self.lineStops = []
+                    self.lineSelected = false
+                }
+            }
+        } else {
+            self.lineInput = ""
+            self.selectedLine = nil
+            self.lineStations = []
+            self.lineBusStops = []
+            self.lineStops = []
+            self.lineSelected = false
+        }
+                
+        // Load line color
+        let colorKey = selectedGoorback.lineColorKey(currentLineIndex)
+        if let savedColor = UserDefaults.standard.string(forKey: colorKey) {
+            self.selectedLineColor = savedColor
+        } else {
+            self.selectedLineColor = nil
+        }
+
+        // Load departure station name and restore station object from station name
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             self.departureStopInput = savedDeparture
+            
+            // Restore departure station object from station name if line stops are available
+            if !self.lineStops.isEmpty {
+                if let foundStop = self.lineStops.first(where: { stop in
+                    stop.name == savedDeparture ||
+                    stop.title?.ja == savedDeparture ||
+                    stop.title?.en == savedDeparture
+                }) {
+                    self.selectedDepartureStop = foundStop
+                } else {
+                    self.selectedDepartureStop = nil
+                }
+            } else {
+                self.selectedDepartureStop = nil
+            }
         } else {
             self.departureStopInput = ""
+            self.selectedDepartureStop = nil
         }
         
+        // Load arrival station name and restore station object from station name
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             self.arrivalStopInput = savedArrival
+            
+            // Restore arrival station object from station name if line stops are available
+            if !self.lineStops.isEmpty {
+                if let foundStop = self.lineStops.first(where: { stop in
+                    stop.name == savedArrival ||
+                    stop.title?.ja == savedArrival ||
+                    stop.title?.en == savedArrival
+                }) {
+                    self.selectedArrivalStop = foundStop
+                } else {
+                    self.selectedArrivalStop = nil
+                }
+            } else {
+                self.selectedArrivalStop = nil
+            }
         } else {
             self.arrivalStopInput = ""
+            self.selectedArrivalStop = nil
         }
         
         let rideTimeKey = selectedGoorback.rideTimeKey(currentLineIndex)
         let savedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
         // Use saved value or default to 0 if not set
         self.selectedRideTime = savedRideTime > 0 ? savedRideTime : 0
-        
-        // Load lineSelected flag from UserDefaults
-        let lineSelectedKey = selectedGoorback.lineSelectedKey(currentLineIndex)
-        self.lineSelected = UserDefaults.standard.bool(forKey: lineSelectedKey)
         
         if selectedLineNumber < 3 {
             let transportationKey = selectedGoorback.transportationKey(currentLineIndex + 2)
@@ -964,6 +1207,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
            !cachedTypes.isEmpty {
             let cachedCalendarTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
             if !cachedCalendarTypes.isEmpty {
+                print("📅 getAvailableCalendarTypes: Found cached calendar types: \(cachedCalendarTypes.map { $0.displayName }.joined(separator: ", "))")
                 return cachedCalendarTypes
             }
         }
@@ -982,33 +1226,45 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Ensure we have at least weekday and holiday as fallback
         if availableTypes.isEmpty {
+            print("📅 getAvailableCalendarTypes: No calendar types found, using fallback: [weekday, holiday]")
             return [.weekday, .holiday]
         }
         
+        print("📅 getAvailableCalendarTypes: Found calendar types: \(availableTypes.map { $0.displayName }.joined(separator: ", "))")
         return availableTypes
     }
     
     // Fetch available calendar types from timetable API
+    // Uses BusTimetable for bus, StationTimetable for railway
     private func fetchAvailableCalendarTypes(dataSource: LocalDataSource) async -> [ODPTCalendarType] {
-        do {
-            let apiLink: String
-            if selectedLine?.kind == .bus {
-                guard let selectedLineTitle = selectedLine?.title else { return [] }
-                // Fetch without calendar filter to get all available calendar types
-                apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)"
-            } else {
-                guard let selectedLineCode = selectedLine?.code else { return [] }
-                // Fetch without calendar filter to get all available calendar types
-                apiLink = "\(dataSource.apiLink(for: .timetable, transportationKind: .railway))&odpt:railway=\(selectedLineCode)"
+        // Generate API link and type name based on transportation kind
+        guard let selectedLine = selectedLine else { return [] }
+        
+        let apiTypeName: String = selectedLine.kind == .bus ? "BusTimetable" : "StationTimetable"
+        
+        let apiLink: String? = selectedLine.kind == .bus ?
+            selectedLine.title.map { "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\($0)" } :
+            selectedDepartureStop?.code.flatMap { stationCode in
+                (selectedLine.ascendingRailDirection ?? selectedLine.lineDirection).map { direction in
+                    "\(dataSource.apiLink(for: .stopTimetable))&odpt:station=\(stationCode)&odpt:railDirection=\(direction)"
+                }
             }
-            
-            
-            guard let url = URL(string: apiLink) else { return [] }
-            
-            print("🔗 Fetch URL: \(apiLink)")
+        
+        guard let apiLink = apiLink else {
+            print("⚠️ \(apiTypeName): Missing required information")
+            return []
+        }
+        
+        guard let url = URL(string: apiLink) else {
+            print("⚠️ \(apiTypeName): Invalid URL")
+            return []
+        }
+        
+        print("🔗 Fetch URL: \(apiLink)")
+        
+        do {
             let (data, response) = try await URLSession.shared.data(from: url)
             
-            // Check HTTP status code
             if let httpResponse = response as? HTTPURLResponse {
                 if httpResponse.statusCode != 200 {
                     print("❌ Failed to fetch calendar types - status: \(httpResponse.statusCode)")
@@ -1027,43 +1283,55 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
             }
             
-            // Convert to ODPTCalendarType array
-            let allTypes = foundCalendarTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+            // Convert to ODPTCalendarType array and process
+            let result = processCalendarTypes(foundCalendarTypes, apiTypeName: apiTypeName)
             
-            // Remove duplicates based on displayCalendarType while preserving .specific types
-            // If multiple .specific types map to the same displayCalendarType, keep all of them
-            // But if both .specific and standard type exist for same display type, prefer .specific
-            var uniqueTypes: [ODPTCalendarType] = []
-            var seenDisplayTypes: Set<ODPTCalendarType> = []
-            
-            // First pass: Add all .specific types
-            for type in allTypes {
-                if case .specific = type {
-                    uniqueTypes.append(type)
-                    seenDisplayTypes.insert(type.displayCalendarType)
-                }
-            }
-            
-            // Second pass: Add standard types only if their display type hasn't been seen
-            for type in allTypes {
-                if case .specific = type {
-                    continue // Already added
-                }
-                let displayType = type.displayCalendarType
-                if !seenDisplayTypes.contains(displayType) {
-                    uniqueTypes.append(type)
-                    seenDisplayTypes.insert(displayType)
-                }
-            }
-            
-            let availableTypes = uniqueTypes.sorted { $0.rawValue < $1.rawValue }
-            
-            return availableTypes
+            return result
             
         } catch {
-            print("❌ Error fetching available calendar types: \(error.localizedDescription)")
+            print("❌ Error fetching calendar types from \(apiTypeName): \(error.localizedDescription)")
             return []
         }
+    }
+    
+    // Process calendar types: remove duplicates and preserve .specific types
+    private func processCalendarTypes(_ foundCalendarTypes: Set<String>, apiTypeName: String) -> [ODPTCalendarType] {
+        // Convert to ODPTCalendarType array
+        let allTypes = foundCalendarTypes.compactMap { ODPTCalendarType(rawValue: $0) }
+        
+        // Remove duplicates based on displayCalendarType while preserving .specific types
+        var uniqueTypes: [ODPTCalendarType] = []
+        var seenDisplayTypes: Set<ODPTCalendarType> = []
+        
+        // First pass: Add all .specific types
+        for type in allTypes {
+            if case .specific = type {
+                uniqueTypes.append(type)
+                seenDisplayTypes.insert(type.displayCalendarType)
+            }
+        }
+        
+        // Second pass: Add standard types only if their display type hasn't been seen
+        for type in allTypes {
+            if case .specific = type {
+                continue // Already added
+            }
+            let displayType = type.displayCalendarType
+            if !seenDisplayTypes.contains(displayType) {
+                uniqueTypes.append(type)
+                seenDisplayTypes.insert(displayType)
+            }
+        }
+        
+        let result = uniqueTypes.sorted { $0.rawValue < $1.rawValue }
+        
+        if !result.isEmpty {
+            print("📅 \(apiTypeName): Found calendar types: \(result.map { $0.displayName }.joined(separator: ", "))")
+        } else {
+            print("⚠️ \(apiTypeName): No calendar types found")
+        }
+        
+        return result
     }
     
     // Test if a specific calendar type has data available
@@ -1261,6 +1529,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                           departureStop == selectedArrivalStop?.code {
                     arrivalTime = timetableObject["odpt:departureTime"] as? String
                 }
+
             }
         
             // Only append if arrival time is later than departure time
@@ -1342,7 +1611,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
         
         // Get available calendar types dynamically
-        let availableCalendarTypes = await getAvailableCalendarTypesForStation()
+        // Same calendar types for TrainTimetable and StationTimetable on the same line
+        let availableCalendarTypes = await getAvailableCalendarTypes()
         
         for calendarType in availableCalendarTypes {
             
@@ -1404,40 +1674,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         return data
-    }
-    
-    // MARK: - Available Calendar Types Detection
-    // Get available calendar types for station timetable
-    private func getAvailableCalendarTypesForStation() async -> [ODPTCalendarType] {
-        let operatorCode = selectedLine?.operatorCode ?? ""
-        let dataSource = LocalDataSource.allCases.first { $0.operatorCode == operatorCode }
-        let stationTimetableApiLink = dataSource?.apiLink(for: .stopTimetable) ?? ""
-        
-        // Test each calendar type by making API calls
-        var availableTypes: [ODPTCalendarType] = []
-        
-        for calendarType in ODPTCalendarType.allCases {
-            // Remove odpt.Calendar: prefix from calendar type for URL
-            let calendarSuffix = calendarType.rawValue.replacingOccurrences(of: "odpt.Calendar:", with: "")
-            // Remove odpt.Operator: prefix from operator code
-            let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
-            let testLink = "\(stationTimetableApiLink)&acl:consumerKey=\(odptAccessKey)&owl:sameAs=odpt.StationTimetable:\(operatorName).\(calendarSuffix)"
-            
-            do {
-                let data = try await self.fetchData(from: testLink)
-                if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]], !json.isEmpty {
-                    availableTypes.append(calendarType)
-                }
-            } catch {
-            }
-        }
-        
-        // Fallback to basic types if none found
-        if availableTypes.isEmpty {
-            availableTypes = [.weekday, .saturdayHoliday]
-        }
-        
-        return availableTypes
     }
     
     // MARK: - Data Fetching
@@ -1822,6 +2058,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Save all data after timetable data has been processed and saved
+        // Note: saveAllDataToUserDefaults() will save lineCode if selectedLine is available
         await saveAllDataToUserDefaults()
         
         // Update cache with only the merged representative calendar types
@@ -1895,6 +2132,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
         isArrivalFieldFocused = false
         showStationSelection = false
         
+        // Clear operator suggestions and reset operator selection when switching transportation kind
+        operatorSuggestions = []
+        showOperatorSuggestions = false
+        operatorSelected = false
+        selectedOperatorCode = nil
+        
         // Load data for the new kind from cache only (no fetch, no save)
         Task {
             let newLines = await sharedDataManager.getLines(for: selectedTransportationKind, allowFetch: false)
@@ -1909,6 +2152,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
             // Re-filter existing data if line input exists
             if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
                 await filter(lineInput)
+            }
+            
+            // Re-filter operator suggestions if operator input exists
+            if !operatorInput.isEmpty && operatorInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                await filterOperators(operatorInput)
             }
         }
     }
@@ -1958,6 +2206,62 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
+    /// Process operator input changes and trigger search/filter
+    func processOperatorInput(_ newValue: String) {
+        // Don't reset operator selection if line number is being changed
+        if isLineNumberChanging {
+            return
+        }
+        
+        // Trigger filtering when operatorInput changes
+        Task { await filterOperators(newValue) }
+        
+        // Get current selected operator name for comparison
+        let currentOperatorName: String? = {
+            guard let operatorCode = selectedOperatorCode else { return nil }
+            return LocalDataSource.allCases.first(where: {
+                $0.transportationType == selectedTransportationKind &&
+                $0.operatorCode == operatorCode
+            })?.operatorDisplayName
+        }()
+        
+        // Reset operator selection and code when operatorInput changes
+        if newValue.isEmpty {
+            // Clear operator selection when input is empty
+            selectedOperatorCode = nil
+            operatorSelected = false
+            showOperatorSuggestions = false
+            operatorSuggestions = []
+            
+            // Re-filter lines without operator filter
+            if !lineInput.isEmpty {
+                Task { await filter(lineInput) }
+            }
+        } else if operatorSelected {
+            // Only reset selection flag if input changes to a different value
+            // Don't reset if input matches the currently selected operator name
+            let shouldResetSelection = newValue != currentOperatorName
+            
+            if shouldResetSelection {
+                // Reset selection flag if input changes after selection
+                operatorSelected = false
+                showOperatorSuggestions = false
+                operatorSuggestions = []
+                selectedOperatorCode = nil
+                
+                // Re-filter lines without operator filter
+                if !lineInput.isEmpty {
+                    Task { await filter(lineInput) }
+                }
+            }
+        }
+        
+        // Show operator selection UI for custom operator input
+        if !newValue.isEmpty {
+            showOperatorSelection = true
+        }
+    }
+    
     /// Process line input changes and trigger search/filter
     func processLineInput(_ newValue: String) {
         // Don't reset station selection if line number is being changed
@@ -1966,6 +2270,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Trigger filtering when lineInput changes
+        // Only show suggestions if operator is selected from dropdown
         Task { await filter(newValue) }
         
         // Reset station selection when lineInput changes
@@ -2051,6 +2356,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Form Data Management
     /// Clears all form data and resets to initial state
     func clearAllFormData() {
+        // Clear operator name
+        operatorInput = ""
+        operatorSuggestions = []
+        showOperatorSuggestions = false
+        operatorSelected = false
+        showOperatorSelection = false
+        selectedOperatorCode = nil
+        
         // Clear line name
         lineInput = ""
         

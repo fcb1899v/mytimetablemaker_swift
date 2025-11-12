@@ -53,8 +53,9 @@ struct TimetableContentView: View {
                 VStack(alignment: .leading, spacing: screen.timetableVerticalSpacing) {
 
                     // MARK: - Header Section
-                    Text(goorback.lineNameArray[num])
-                        .font(.system(size: screen.settingsSheetInputFontSize, weight: .semibold))
+                    // MARK: - Operator & Line Name Display
+                    Text("\(goorback.operatorNameArray[num]) : \(goorback.lineNameArray[num])")
+                        .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
 

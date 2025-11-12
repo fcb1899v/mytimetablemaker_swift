@@ -43,7 +43,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         // Initialize Firebase services when app launches
         FirebaseApp.configure()
+        
+        // Initialize Google Mobile Ads SDK
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
     
         return true
+    }
+    
+    // MARK: - Screen Orientation
+    // Lock screen orientation to portrait mode only
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        return .portrait
     }
 }

@@ -136,15 +136,18 @@ final class FirestoreViewModel: ObservableObject {
                 "changeline" : "\(goorback.changeLineInt)",
                 "departpoint" : goorback.departurePoint,
                 "arrivalpoint" : goorback.destination,
+                "operatorname1" : goorback.operatorNameArray[0],
+                "operatorname2" : goorback.operatorNameArray[1],
+                "operatorname3" : goorback.operatorNameArray[2],
+                "linename1" : goorback.lineNameArray[0],
+                "linename2" : goorback.lineNameArray[1],
+                "linename3" : goorback.lineNameArray[2],
                 "departstation1" : goorback.departStationArray[0],
                 "departstation2" : goorback.departStationArray[1],
                 "departstation3" : goorback.departStationArray[2],
                 "arrivalstation1" : goorback.arriveStationArray[0],
                 "arrivalstation2" : goorback.arriveStationArray[1],
                 "arrivalstation3" : goorback.arriveStationArray[2],
-                "linename1" : goorback.lineNameArray[0],
-                "linename2" : goorback.lineNameArray[1],
-                "linename3" : goorback.lineNameArray[2],
                 "linecolor1" : goorback.lineColorStringArray[0],
                 "linecolor2" : goorback.lineColorStringArray[1],
                 "linecolor3" : goorback.lineColorStringArray[2],
@@ -223,6 +226,7 @@ final class FirestoreViewModel: ObservableObject {
                     UserDefaults.standard.set(data["departpoint"], forKey: goorback.departurePointKey)
                     UserDefaults.standard.set(data["arrivalpoint"], forKey: goorback.destinationKey)
                     for num in 0..<3 {
+                        UserDefaults.standard.set(data["operatorname\(num + 1)"], forKey: goorback.operatorNameKey(num))
                         UserDefaults.standard.set(data["departstation\(num + 1)"], forKey: goorback.departStationKey(num))
                         UserDefaults.standard.set(data["arrivalstation\(num + 1)"], forKey: goorback.arriveStationKey(num))
                         UserDefaults.standard.set(data["linename\(num + 1)"], forKey: goorback.lineNameKey(num))

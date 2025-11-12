@@ -20,55 +20,28 @@ struct SettingsLineSheet: View {
     // MARK: - State Management
     // View model for managing line selection logic and data
     @StateObject private var vm: SettingsLineSheetViewModel
-    
-    // Text field focus state
-    @FocusState private var focused: Bool
-    
-    // Currently selected line (for color display)
     @State private var selected: TransportationLine?
-    
-    // Flag to track if color selection UI should be shown (legacy, not actively used)
     @State private var showColorSelect = false
-    
-    // Flag to show timetable settings sheet
     @State private var showTimetableSettings = false
+    @FocusState private var focused: Bool
+    @FocusState private var operatorFocused: Bool
     
     // Environment value to dismiss the sheet
     @Environment(\.dismiss) private var dismiss
     
     // MARK: - Configuration
-    // Direction identifier for route context (back1, back2, go1, go2)
     private let goorback: String
-    
-    // Index of the line being configured (0-based)
     private let lineIndex: Int
     
     init(
         goorback: String,
         lineIndex: Int
     ) {
-        self.goorback = goorback
+        // Validate goorback value and use default if invalid
+        let validGoorback = goorback.isEmpty || !goorbackOptions.contains(goorback) ? "back1" : goorback
+        self.goorback = validGoorback
         self.lineIndex = lineIndex
-        self._vm = StateObject(wrappedValue: SettingsLineSheetViewModel(goorback: goorback, lineIndex: lineIndex))
-    }
-    
-    // MARK: - Data Processing
-    /// Remove duplicates based on operator and line name combination
-    /// Ensures unique line representation in the UI
-    private func removeDuplicates(from lines: [TransportationLine]) -> [TransportationLine] {
-        var seen = Set<String>()
-        var result: [TransportationLine] = []
-        
-        for line in lines {
-            // Create unique key combining operator code and display name
-            let key = "\(line.operatorCode ?? "")_\(vm.lineDisplayName(for: line))"
-            if !seen.contains(key) {
-                seen.insert(key)
-                result.append(line)
-            }
-        }
-        
-        return result
+        self._vm = StateObject(wrappedValue: SettingsLineSheetViewModel(goorback: validGoorback, lineIndex: lineIndex))
     }
     
     var body: some View {
@@ -77,7 +50,8 @@ struct SettingsLineSheet: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: screen.settingsSheetVerticalSpacing) {
                         routeHeaderMenu
-                        lineHeaderMenu
+                        lineNumberMenu
+                        operatorInputSection
                         lineInputSection
                         lineColorSection
                         stationHeaderText
@@ -107,11 +81,15 @@ struct SettingsLineSheet: View {
                     }
                 }
 
+                // MARK: - Operator Suggestions
+                if vm.showOperatorSuggestions && !vm.operatorSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.operatorSelected {
+                    operatorSuggestionsView
+                }
+
                 // MARK: - Line Suggestions
                 if vm.showLineSuggestions && !vm.lineSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.lineSelected {
                     lineSuggestionsView
                 }
-                
                 // MARK: - Color Selection Section
                 if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected) {
                     colorSelectionSection
@@ -144,6 +122,12 @@ struct SettingsLineSheet: View {
                 CustomBackButton(foregroundColor: .black, action: { dismiss() })
             }
         }
+        .onAppear {
+            // Ensure selectedGoorback matches the specified goorback parameter
+            if vm.selectedGoorback != goorback {
+                vm.selectGoorback(goorback)
+            }
+        }
     }
     
     // MARK: - Route Header Menu
@@ -172,25 +156,23 @@ struct SettingsLineSheet: View {
             }
             
             Spacer()
-            
-            // MARK: - Data Update Button
+
+            // MARK: - Clear Button
             CustomRectangleButton(
-                title: "Update Line Data".localized,
-                icon: "arrow.trianglehead.2.clockwise.rotate.90.circle.fill",
-                tintColor: vm.lastUpdatedDisplay != nil ? .accent : .secondary,
+                title: "Clear".localized,
+                icon: "xmark.circle.fill",
+                tintColor: .red,
                 action: {
-                    Task { await vm.performDataUpdate() }
+                    vm.clearAllFormData()
+                    selected = nil
                 }
             )
         }
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
     
-    // MARK: - Line Header Menu
-    /// Line header with line number selection menu
-    private var lineHeaderMenu: some View {
+    private var lineNumberMenu: some View {
         HStack {
-
             Menu {
                 ForEach(vm.availableLineNumbers, id: \.self) { lineNumber in
                     Button("\("Line".localized)\(lineNumber)") {
@@ -199,7 +181,7 @@ struct SettingsLineSheet: View {
                 }
             } label: {
                 HStack {
-                    Text("\("Line".localized)\(vm.selectedLineNumber) \("Input".localized)")
+                    Text("\("Line".localized)\(vm.selectedLineNumber)")
                         .font(.system(size: screen.settingsSheetTitleFontSize, weight: .bold))
                         .foregroundColor(.black)
                     Image(systemName: "chevron.down")
@@ -207,9 +189,9 @@ struct SettingsLineSheet: View {
                         .foregroundColor(.black)
                 }
             }
-            
+
             Spacer()
-            
+
             // MARK: - Transportation Kind Toggle
             // Custom toggle for switching between railway and bus transportation types
             CustomToggle(
@@ -226,8 +208,123 @@ struct SettingsLineSheet: View {
                 circleColor: .white,
                 offColor: .secondary
             )
+            .fixedSize(horizontal: true, vertical: false)
         }
-        .padding(.top, screen.settingsSheetVerticalSpacing)
+    }
+
+    
+    // MARK: - Line Header Menu
+    /// Line header with line number selection menu
+    private var operatorInputSection: some View {
+        HStack(spacing: screen.settingsSheetHorizontalSpacing) {
+            Text("Operator Name".localized)
+                .font(.system(size: screen.settingsSheetHeadlineFontSize, weight: .semibold))
+                .foregroundColor(.primary)
+
+            TextField("Enter operator name".localized,
+                text: $vm.operatorInput
+            )
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .font(.system(size: screen.settingsSheetInputFontSize))
+            .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+            .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+            .background(CustomBackground())
+            .overlay(CustomBorder())
+            .focused($operatorFocused)
+            .onChange(of: operatorFocused) { isFocused in
+                vm.isOperatorFieldFocused = isFocused
+                // Show all operators when field is focused and operator input is empty
+                if isFocused && vm.operatorInput.isEmpty {
+                    Task {
+                        await vm.filterOperators("")
+                    }
+                }
+            }
+            .onChange(of: vm.operatorInput) { newValue in
+                vm.processOperatorInput(newValue)
+                // Ensure focus is maintained when typing and show operator selection UI
+                if !newValue.isEmpty {
+                    operatorFocused = true
+                    vm.showOperatorSelection = true
+                }
+            }
+            
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(vm.operatorInput.isEmpty ? .gray : .accent)
+        }
+    }
+    
+    // MARK: - Operator Suggestions View
+    // Dropdown list showing suggested operators based on search input
+    private var operatorSuggestionsView: some View {
+        VStack(alignment: .leading) {
+            ScrollView {
+                ForEach(Array(vm.operatorSuggestions.enumerated()), id: \.offset) { index, operatorName in
+                    if index == 0 {
+                        Color.clear.frame(height: 0)
+                    }
+                    Button {
+                        vm.operatorInput = operatorName
+                        vm.operatorSelected = true
+                        vm.showOperatorSuggestions = false
+                        vm.operatorSuggestions = []
+                        
+                        // Find and set operator code from operator name
+                        if let dataSource = LocalDataSource.allCases.first(where: { 
+                            $0.transportationType == vm.selectedTransportationKind &&
+                            $0.operatorDisplayName == operatorName
+                        }) {
+                            vm.selectedOperatorCode = dataSource.operatorCode
+                        }
+                        
+                        // Re-filter lines if line input exists
+                        if !vm.lineInput.isEmpty {
+                            Task {
+                                await vm.filter(vm.lineInput)
+                            }
+                        }
+                        
+                        // Reset flag after a short delay to allow UI updates
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            vm.isLineNumberChanging = false
+                        }
+                    } label: {
+                        HStack {
+                            Text(vm.selectedTransportationKind == .railway ? "Railway".localized : "Bus".localized)
+                                .font(.system(size: screen.settingsLineSheetCaptionFontSize))
+                                .padding(.vertical, screen.settingsLineSheetTagPaddingVertical)
+                                .padding(.horizontal, screen.settingsLineSheetTagPaddingHorizontal)
+                                .background(Capsule().fill(Color(0xAAAAAA).opacity(0.5)))
+
+                            Text(operatorName)
+                                .font(.system(size: screen.settingsSheetInputFontSize))
+                                .lineLimit(1)
+                                .foregroundColor(.primary)
+                                
+                            Spacer()
+                        }
+                        .contentShape(Rectangle())
+                        .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
+                    }
+                    .buttonStyle(.plain)
+                    if index < vm.operatorSuggestions.count - 1 {
+                        Color.clear.frame(height: 0)
+                    }
+                }
+            }
+            Spacer()
+        }
+        .frame(maxHeight: min(CGFloat(vm.operatorSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetOperatorMaxSuggestionHeight))
+        .background(CustomBackground())
+        .overlay(CustomBorder())
+        .animation(.default, value: vm.operatorSuggestions)
+        .shadow(radius: screen.settingsLineSheetShadowRadius)
+        .transition(.opacity.combined(with: .move(edge: .top)))
+        .padding()
+        .offset(y: screen.settingsLineSheetOperatorOffset)
+        .zIndex(100)
     }
     
     // MARK: - Line Name Section
@@ -249,6 +346,16 @@ struct SettingsLineSheet: View {
             .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
             .background(CustomBackground())
             .overlay(CustomBorder())
+            .focused($focused)
+            .onChange(of: focused) { isFocused in
+                vm.isLineFieldFocused = isFocused
+                // Show all lines when field is focused and operator is not selected
+                if isFocused && vm.selectedOperatorCode == nil {
+                    Task {
+                        await vm.filter(vm.lineInput.isEmpty ? "" : vm.lineInput)
+                    }
+                }
+            }
             .onChange(of: vm.lineInput) { newValue in
                 vm.processLineInput(newValue)
                 // Ensure focus is maintained when typing and show station selection UI
@@ -262,13 +369,13 @@ struct SettingsLineSheet: View {
                 .foregroundColor(vm.lineInput.isEmpty ? .gray : .accent)
         }
     }
-    
+        
     // MARK: - Line Suggestions View
     // Dropdown list showing suggested lines based on search input
     private var lineSuggestionsView: some View {
         VStack(alignment: .leading) {
             ScrollView {
-                let uniqueLines = removeDuplicates(from: vm.lineSuggestions)
+                let uniqueLines = vm.removeDuplicates(from: vm.lineSuggestions)
                 let enumeratedLines = Array(uniqueLines.enumerated())
                 ForEach(enumeratedLines, id: \.element.id) { index, line in
                     if index == 0 {
@@ -291,20 +398,25 @@ struct SettingsLineSheet: View {
 
                     } label: {
                          HStack(alignment: .top, spacing: screen.settingsSheetHorizontalSpacing) {
-                             Text(line.kind == .railway ? (line.lineCode ?? "Railway".localized) : "Bus".localized)
-                                 .font(.system(size: screen.settingsLineSheetCaptionFontSize))
-                                 .padding(.vertical, screen.settingsLineSheetTagPaddingVertical)
-                                 .padding(.horizontal, screen.settingsLineSheetTagPaddingHorizontal)
-                                 .background(Capsule().fill((line.lineColor?.safeColor ?? Color(0xAAAAAA)).opacity(0.5)))
-                             
-                             Text(vm.lineDisplayName(for: line))
-                                 .font(.system(size: screen.settingsSheetInputFontSize))
-                                 .lineLimit(1)
-                             
-                             if let operatorCode = line.operatorCode {
+
+                            if let lineCode = line.lineCode {
+                                Text(lineCode)
+                                    .font(.system(size: screen.settingsLineSheetCaptionFontSize))
+                                    .padding(.vertical, screen.settingsLineSheetTagPaddingVertical)
+                                    .padding(.horizontal, screen.settingsLineSheetTagPaddingHorizontal)
+                                    .background(
+                                        Capsule().fill(
+                                            (line.lineColor?.safeColor ?? Color(0xAAAAAA)).opacity(0.5)
+                                        )
+                                    )
+                            } else if let operatorCode = line.operatorCode {
                                  let displayText = vm.getOperatorDisplayName(for: operatorCode, lineKind: line.kind)
                                  CustomTag(text: displayText)
                              }
+                                                         
+                             Text(vm.lineDisplayName(for: line))
+                                 .font(.system(size: screen.settingsSheetInputFontSize))
+                                 .lineLimit(1)
                              
                              Spacer()
                          }
@@ -313,7 +425,7 @@ struct SettingsLineSheet: View {
                          .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                      }
                     .buttonStyle(.plain)
-                    if index < removeDuplicates(from: vm.lineSuggestions).count - 1 {
+                    if index < uniqueLines.count - 1 {
                         Color.clear.frame(height: 0)
                     }
                 }
@@ -376,18 +488,7 @@ struct SettingsLineSheet: View {
                 action: { vm.showColorSelection = true }
             )
             
-            Spacer()
-            
-            // MARK: - Clear Button
-            CustomRectangleButton(
-                title: "Clear".localized,
-                icon: "xmark.circle.fill",
-                tintColor: .red,
-                action: {
-                    vm.clearAllFormData()
-                    selected = nil
-                }
-            )
+            Spacer(minLength: 0)
         }
     }
     
@@ -818,7 +919,7 @@ struct SettingsLineSheet: View {
             }
         )
         .disabled(!vm.isAllNotEmpty)
-        .padding(.top, screen.settingsSheetSaveButtonSpacing)
+        .padding(.top, screen.settingsSheetVerticalSpacing)
     }
     
     // MARK: - Timetable Settings Button Section
@@ -840,7 +941,6 @@ struct SettingsLineSheet: View {
             }
         )
         .disabled(!vm.isAllNotEmpty)
-        .padding(.top, screen.settingsSheetVerticalSpacing)
     }
 
     // MARK: - Timetable Auto Settings Button Section
@@ -871,7 +971,6 @@ struct SettingsLineSheet: View {
             }
         )
         .disabled(!vm.isAllNotEmpty)
-        .padding(.top, screen.settingsSheetVerticalSpacing)
     }
 }
 

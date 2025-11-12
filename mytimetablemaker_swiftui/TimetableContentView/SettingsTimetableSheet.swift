@@ -13,6 +13,7 @@ struct SettingsTimetableSheet: View {
     
     @Environment(\.dismiss) private var dismiss
     @State private var departureTime: Int? = nil
+    @State private var displayDepartureTime: Int? = nil  // Display value that persists after add
     @State private var rideTime: Int = 0
     @State private var selectedTrainType: String?
     // Controls visibility of train type dropdown menu
@@ -387,7 +388,7 @@ struct SettingsTimetableSheet: View {
             // Departure time picker (0-59 minutes)
             ZStack {
                 HStack {
-                    Text(departureTime == nil ? "-": "\(String(departureTime!))\(" min".localized)")
+                    Text((departureTime ?? displayDepartureTime) == nil ? "-": "\(String(departureTime ?? displayDepartureTime ?? 0))\(" min".localized)")
                         .font(.system(size: screen.settingsSheetInputFontSize))
                         .foregroundColor(.black)
                     Spacer()
@@ -402,9 +403,10 @@ struct SettingsTimetableSheet: View {
                     Spacer()
                     Custom2DigitPicker(
                         value: Binding(
-                            get: { departureTime ?? 0 },
+                            get: { departureTime ?? displayDepartureTime ?? 0 },
                             set: {
                                 departureTime = $0
+                                displayDepartureTime = $0
                                 isTrainTypeDropdownOpen = false
                             }
                         ),
@@ -602,6 +604,8 @@ struct SettingsTimetableSheet: View {
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         
+        // Save display value before resetting internal state
+        displayDepartureTime = departureTime
         self.departureTime = nil
         // Keep ride time and train type unchanged
     }
@@ -618,6 +622,8 @@ struct SettingsTimetableSheet: View {
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         
+        // Save display value before resetting internal state
+        displayDepartureTime = departureTime
         self.departureTime = nil
         // Keep ride time and train type unchanged
     }
@@ -825,7 +831,7 @@ struct SettingsTimetableSheet: View {
         
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
-        dismiss()
+        // Keep sheet open after copying
     }
 }
 

@@ -28,6 +28,8 @@ struct SettingsContentView: View {
     @State private var isShowDeleteAlert = false
     @State private var isShowGetFirestoreAlert = false
     @State private var isShowSaveFirestoreAlert = false
+    // Route 2 display setting (controls both back2 and go2)
+    @State private var showRoute2: Bool = false
 
     // MARK: - Initialization
     // Initialize with view models for transfer, login, and Firestore operations
@@ -64,6 +66,30 @@ struct SettingsContentView: View {
                             showLineSheet = true
                         }
                     )
+
+                    // Route 2 display toggle
+                    HStack {
+                        Text("Another route".localized)
+                            .font(.system(size: screen.settingsFontSize))
+                            .foregroundColor(.black)
+                        Spacer()
+                        CustomToggle(
+                            isLeftSelected: Binding(
+                                get: { !showRoute2 },
+                                set: { newValue in
+                                    showRoute2 = !newValue
+                                    saveRoute2Setting(!newValue)
+                                }
+                            ),
+                            leftText: "Hide".localized,
+                            leftColor: .gray,
+                            rightText: "Display".localized,
+                            rightColor: .primary,
+                            circleColor: .white,
+                            offColor: .gray
+                        )
+                    }
+
                     // Firestore data management buttons (only shown when logged in)
                     if myLogin.isLoginSuccess {
                         firestoreButton(isSaveFirestore: false)
@@ -244,9 +270,38 @@ struct SettingsContentView: View {
         } message: {
             Text("⚠️ " + "Overwritten saved data?".localized)
         }
+        // MARK: - Load Route 2 Setting
+        .onAppear {
+            loadRoute2Setting()
+        }
     }
     
     // MARK: - Helper Functions
+    
+    /// Load Route 2 display setting from UserDefaults
+    /// Checks both back2 and go2 settings, uses OR logic
+    private func loadRoute2Setting() {
+        let back2Route2Value = UserDefaults.standard.object(forKey: "back2".isShowRoute2Key) != nil ?
+            UserDefaults.standard.bool(forKey: "back2".isShowRoute2Key) : false
+        let go2Route2Value = UserDefaults.standard.object(forKey: "go2".isShowRoute2Key) != nil ?
+            UserDefaults.standard.bool(forKey: "go2".isShowRoute2Key) : false
+        
+        // Use OR logic: show Route 2 if either back2 or go2 is enabled
+        showRoute2 = back2Route2Value || go2Route2Value
+    }
+    
+    /// Save Route 2 display setting to UserDefaults and update ViewModel
+    /// Saves the same value to both back2 and go2
+    /// - Parameter value: New Route 2 display state
+    private func saveRoute2Setting(_ value: Bool) {
+        // Save to UserDefaults for both routes
+        UserDefaults.standard.set(value, forKey: "back2".isShowRoute2Key)
+        UserDefaults.standard.set(value, forKey: "go2".isShowRoute2Key)
+        
+        // Update TransferViewModel
+        myTransfer.isShowBackRoute2 = value
+        myTransfer.isShowGoRoute2 = value
+    }
     
     /// Creates a settings button with consistent styling
     /// - Parameters:

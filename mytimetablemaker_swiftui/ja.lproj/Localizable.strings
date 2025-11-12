@@ -21,6 +21,7 @@
 "Maximum 20 Charactors" = "全角10文字以内";
 "Enter 0~99 [min]" = "0〜99[分]を入力";
 "Enter 0~59 [min]" = "0〜59[分]を入力";
+"Loading data..." = "データ読み込み中...";
 
 // MARK: - Route Data
 // Default locations and station labels
@@ -291,7 +292,9 @@
 "Updated: " = "更新: ";
 "Clear" = "クリア";
 "Ride Time" = "乗車時間";
+"Operator Name" = "事業者名";
 "Line Name" = "路線名";
+"Enter operator name" = "事業者名を入力";
 "Enter line name" = "路線名を入力";
 "Enter bus route name" = "バス路線名を入力";
 "Enter line name or bus route name" = "路線名・バス路線名を入力";
@@ -362,7 +365,7 @@
 "Home transportation settings" = "移動手段設定：自宅〜";
 "Destination transportation settings" = "移動手段設定：目的地〜";
 "Route" = "ルート";
-"Route 2 Display" = "ルート2表示";
+"Another route" = "別ルート";
 "Display" = "表示";
 "Hide" = "非表示";
 

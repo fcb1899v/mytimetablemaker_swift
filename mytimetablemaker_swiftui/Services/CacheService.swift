@@ -283,7 +283,7 @@ final class SharedDataManager: ObservableObject {
     // Perform initial data fetch when no cache is available
     private func performInitialFetch() async {
         // MARK: - Parallel Fetch using withTaskGroup
-        let results = await withTaskGroup(of: (LocalDataSource, [TransportationLine]).self) { group in
+        let results = await withTaskGroup(of: (LocalDataSource, [TransportationLine], Data?).self) { group in
             for transportOperator in LocalDataSource.allCases {
                 group.addTask {
                     do {
@@ -293,18 +293,35 @@ final class SharedDataManager: ObservableObject {
                             ? (try? ODPTParser.parseRailwayRoutes(data)) ?? []
                             : (try? ODPTParser.parseBusRoutes(data)) ?? []
                         
-                        return (transportOperator, lines)
+                        // Write data to file for persistence
+                        try? await self.net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                        
+                        // Save data to cache (must be on MainActor)
+                        let cacheKey = transportOperator.fileName
+                        await MainActor.run {
+                            self.cache.saveData(data, for: cacheKey)
+                        }
+                        
+                        // Calculate data size in KB
+                        let dataSizeKB = Double(data.count) / 1024.0
+                        
+                        // Print data size and line count for each operator
+                        print("📊 \(transportOperator.operatorDisplayName): \(String(format: "%.2f", dataSizeKB)) KB (\(lines.count) lines)")
+                        print("✅ Fetched and saved: \(transportOperator.operatorDisplayName)")
+                        
+                        return (transportOperator, lines, data)
                     } catch {
-                        return (transportOperator, [])
+                        print("❌ Failed to fetch \(transportOperator.operatorDisplayName): \(error)")
+                        return (transportOperator, [], nil)
                     }
                 }
             }
             
-            var results: [TransportationLine] = []
+            var allLines: [TransportationLine] = []
             for await result in group {
-                results.append(contentsOf: result.1)
+                allLines.append(contentsOf: result.1)
             }
-            return results
+            return allLines
         }
         
         // Update data if any operators were fetched
@@ -318,6 +335,7 @@ final class SharedDataManager: ObservableObject {
     
     // MARK: - Common Update Processing
     // Common function to process updates for both railway and bus operators
+    // Only processes operators that have ETag/Last-Modified for conditional GET
     private func processUpdate(
         for operators: [LocalDataSource],
         updateType: String,
@@ -326,10 +344,26 @@ final class SharedDataManager: ObservableObject {
     ) async -> [TransportationLine] {
         print("🔄 Performing \(updateType) update...")
         
+        // Filter operators: only process those with ETag/Last-Modified
+        let operatorsToUpdate = operators.filter { transportOperator in
+            let cacheKey = transportOperator.fileName
+            // Check if ETag or Last-Modified exists
+            let etagKey = "\(cacheKey)_etag"
+            let lastModifiedKey = "\(cacheKey)_last_modified"
+            let hasETag = UserDefaults.standard.string(forKey: etagKey) != nil
+            let hasLastModified = UserDefaults.standard.string(forKey: lastModifiedKey) != nil
+            return hasETag || hasLastModified
+        }
+        
+        guard !operatorsToUpdate.isEmpty else {
+            print("ℹ️ \(updateType.capitalized) update: No operators with ETag/Last-Modified found")
+            return []
+        }
+        
         // MARK: - Parallel Update Processing
         // Process all operators in parallel for improved performance
         let results = await withTaskGroup(of: (LocalDataSource, [TransportationLine]).self) { group in
-            for transportOperator in operators {
+            for transportOperator in operatorsToUpdate {
                 group.addTask {
                     let result = await updateHandler(transportOperator)
                     
@@ -501,6 +535,50 @@ final class SharedDataManager: ObservableObject {
     private func updateRailwayLastUpdateTime() {
         let lastUpdateKey = "LastRailwayUpdate"
         UserDefaults.standard.set(Date(), forKey: lastUpdateKey)
+    }
+    
+    // MARK: - Cache Availability Check
+    // Check if any cache exists to determine if we need to fetch data
+    // Cache existence indicates that data has been fetched at least once
+    func checkCacheAvailability() -> Bool {
+        return LocalDataSource.allCases.contains { transportOperator in
+            let cacheKey = transportOperator.fileName
+            return cache.loadData(for: cacheKey) != nil
+        }
+    }
+    
+    // MARK: - Splash Initialization
+    // Perform complete initialization for splash screen
+    // Handles data loading, fetching, and update checks
+    // Note: isLoading should be set to true before calling this method
+    func performSplashInitialization() async {
+        print("🔄 Starting data initialization...")
+        
+        // Check if we have any cache (indicates data has been fetched at least once)
+        let hasAnyCache = checkCacheAvailability()
+        
+        if !hasAnyCache {
+            // No cache exists: fetch all operators' data
+            print("📥 No cache found - fetching all operators' data")
+            await performInitialFetch()
+        } else {
+            // Cache exists: load from cache (data already fetched)
+            print("📂 Cache found - loading from cache")
+            await loadFromCache()
+        }
+        
+        // Perform update check for operators with ETag/Last-Modified
+        // Only operators with ETag/Last-Modified will be checked
+        //        await performRailwayUpdate()
+        //        await performBusUpdate()
+        
+        // Ensure isLoading is false after all operations complete
+        await MainActor.run {
+            isLoading = false
+        }
+        
+        // Small delay to ensure all print statements complete
+        try? await Task.sleep(for: .seconds(0.5))
     }
     
 }

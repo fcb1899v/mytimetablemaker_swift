@@ -21,6 +21,7 @@
 "Maximum 20 Charactors" = "Maximum 20 Charactors";
 "Enter 0~99 [min]" = "Enter 0~99 [min]";
 "Enter 0~59 [min]" = "Enter 0~59 [min]";
+"Loading data..." = "Loading data...";
 
 // MARK: - Route Data
 // Default locations and station labels
@@ -294,7 +295,9 @@
 "Save" = "Save";
 "Input Save" = "Input Save";
 "Ride Time" = "Ride Time";
+"Operator Name" = "Operator Name";
 "Line Name" = "Line Name";
+"Enter operator name" = "Enter operator name";
 "Enter line name" = "Enter line name";
 "Enter bus route name" = "Enter bus route name";
 "Enter line name or bus route name" = "Enter line name or bus route name";
@@ -365,7 +368,7 @@
 "Home transportation settings" = "Home Transportation Settings";
 "Destination transportation settings" = "Destination Transportation Settings";
 "Route" = "Route";
-"Route 2 Display" = "Route 2 Display";
+"Another route" = "Another route";
 "Display" = "Display";
 "Hide" = "Hide";
 

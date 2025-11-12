@@ -122,20 +122,28 @@ struct SettingsTransferSheet: View {
     // Route 2 Toggle Section
     // Toggle to show/hide Route 2 configuration options
     private var route2ToggleSection: some View {
-        HStack {
+        HStack(spacing: screen.settingsSheetHorizontalSpacing) {
+            
             Spacer()
+            
+            headerSection(title: "Another route".localized)
+            
             // Header section with Route 2 toggle
             CustomToggle(
                 isLeftSelected: Binding(
                     get: { !vm.showRoute2 },
-                    set: { vm.showRoute2 = !$0 }
+                    set: { newValue in
+                        vm.showRoute2 = !newValue
+                        // Save to UserDefaults immediately when changed
+                        vm.saveRoute2Setting()
+                    }
                 ),
-                leftText: vm.showRoute2 ? "Display".localized: "Hide".localized,
-                leftColor: vm.showRoute2 ? .primary: .gray,
-                rightText: "Route 2".localized,
-                rightColor: vm.showRoute2 ? .primary: .gray,
+                leftText: "Hide".localized,
+                leftColor: .gray,
+                rightText: "Display".localized,
+                rightColor: .primary,
                 circleColor: .white,
-                offColor: vm.showRoute2 ? .primary: .gray
+                offColor: .gray
             )
         }
         .padding(.top, screen.settingsSheetVerticalSpacing)
@@ -341,8 +349,8 @@ class SettingsTransferSheetViewModel: ObservableObject {
             UserDefaults.standard.integer(forKey: "back2".transferTimeKey(1)) : 0
         self.selectedOfficeTransferTime2 = officeTime2
         
-        // Initialize Route 2 visibility flag from MainContentView's UserDefaults keys
-        // Use the same logic as MainContentView: isBack ? isShowBackRoute2: isShowGoRoute2
+        // Initialize Route 2 visibility flag from UserDefaults
+        // Load from UserDefaults, default to false if not set
         let back2Route2Value = UserDefaults.standard.object(forKey: "back2".isShowRoute2Key) != nil ? 
             UserDefaults.standard.bool(forKey: "back2".isShowRoute2Key) : false
         let go2Route2Value = UserDefaults.standard.object(forKey: "go2".isShowRoute2Key) != nil ? 
@@ -380,6 +388,13 @@ class SettingsTransferSheetViewModel: ObservableObject {
         
         // Use the same value for both routes (as per requirement)
         showRoute2 = back2Route2Value || go2Route2Value
+    }
+    
+    // MARK: - Route 2 Setting Management
+    // Save Route 2 visibility setting to UserDefaults immediately
+    func saveRoute2Setting() {
+        UserDefaults.standard.set(showRoute2, forKey: "back2".isShowRoute2Key)
+        UserDefaults.standard.set(showRoute2, forKey: "go2".isShowRoute2Key)
     }
     
     // MARK: - Validation
@@ -427,8 +442,7 @@ class SettingsTransferSheetViewModel: ObservableObject {
         UserDefaults.standard.set(selectedOfficeTransferTime1, forKey: "go1".transferTimeKey(0))
         UserDefaults.standard.set(selectedOfficeTransferTime2, forKey: "go2".transferTimeKey(0))
         // Update MainContentView route2 visibility settings
-        UserDefaults.standard.set(showRoute2, forKey: "back2".isShowRoute2Key)
-        UserDefaults.standard.set(showRoute2, forKey: "go2".isShowRoute2Key)
+        saveRoute2Setting()
     }
 }
 

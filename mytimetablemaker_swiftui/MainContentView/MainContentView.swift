@@ -24,6 +24,9 @@ struct MainContentView: View {
     @State private var activeGoorback: String? = nil
     @State private var isShowingLineSheet: Bool = false
     @State private var isShowingTransferSheet: Bool = false
+    // Computed values for sheet initialization to ensure correct values are captured
+    @State private var sheetGoorback: String = ""
+    @State private var sheetLineIndex: Int = 0
 
     init(
         _ myTransfer: TransferViewModel,
@@ -169,6 +172,7 @@ struct MainContentView: View {
                             .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
                             .foregroundColor(myTransfer.countdownColor1)
                             .padding(.vertical, screen.routeCountdownPadding)
+                            .frame(height: screen.routeCountdownFontSize + screen.routeCountdownPadding * 2, alignment: .center)
                         HomeOfficeView(myTransfer.goOrBack1, 1)
                         ForEach(0...myTransfer.changeLine1, id: \.self) { num in
                             TransferView(myTransfer.goOrBack1, num + 1)
@@ -190,9 +194,10 @@ struct MainContentView: View {
                         VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                             Spacer().frame(height: screen.routeCountdownTopSpace)
                             Text(myTransfer.countdownTime2)
-                                .font(.system(size: screen.routeCountdownFontSize))
+                                .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
                                 .foregroundColor(myTransfer.countdownColor2)
                                 .padding(.vertical, screen.routeCountdownPadding)
+                                .frame(height: screen.routeCountdownFontSize + screen.routeCountdownPadding * 2, alignment: .center)
                             HomeOfficeView(myTransfer.goOrBack2, 1)
                             ForEach(0...myTransfer.changeLine2, id: \.self) { num in
                                 TransferView(myTransfer.goOrBack2, num + 1)
@@ -202,7 +207,7 @@ struct MainContentView: View {
                             HomeOfficeView(myTransfer.goOrBack2, 0)
                             Spacer()
                         }
-                        .frame(width: myTransfer.routeWidth)
+                        .frame(width: myTransfer.routeWidth, alignment: .top)
                         .padding(.horizontal, screen.routeSidePadding)
                     }
                     if(screen.screenWidth > 600) { Spacer() }
@@ -231,8 +236,8 @@ struct MainContentView: View {
         .sheet(isPresented: $isShowingLineSheet) {
             NavigationStack {
                 SettingsLineSheet(
-                    goorback: activeGoorback ?? myTransfer.goOrBack1,
-                    lineIndex: max((activeTransferNum ?? 2) - 2, 0)
+                    goorback: sheetGoorback,
+                    lineIndex: sheetLineIndex
                 )
             }
         }
@@ -357,10 +362,19 @@ struct MainContentView: View {
             Button(action: {
                 activeTransferNum = num
                 activeGoorback = goorback
-                if num < 2 {
-                    isShowingTransferSheet = true
-                } else {
-                    isShowingLineSheet = true
+                // Calculate and store values for sheet initialization when showing line sheet
+                if num >= 2 {
+                    sheetGoorback = goorback
+                    sheetLineIndex = max(num - 2, 0)
+                }
+                // Ensure state updates are applied before showing sheet
+                // Use Task to ensure state is updated on MainActor before showing sheet
+                Task { @MainActor in
+                    if num < 2 {
+                        isShowingTransferSheet = true
+                    } else {
+                        isShowingLineSheet = true
+                    }
                 }
             }) {
                 LineTimeImage(goorback, num, isTransfer: true)
@@ -374,7 +388,7 @@ struct MainContentView: View {
     @ViewBuilder
     func StationLineView(_ goorback: String, _ num: Int) -> some View {
         let currentDate = myTransfer.selectDate
-        let currentTime = currentDate.currentTime
+        let currentTime = myTransfer.currentTime
         // Use line-specific calendar type (num is 0-based line index)
         let timeArray = goorback.timeArray(currentDate, currentTime).map { $0.stringTime }
         let departureTime = timeArray[2 * num + 2]
@@ -397,7 +411,14 @@ struct MainContentView: View {
             Button(action: {
                 activeTransferNum = num + 2 // Convert line num to Settings' lineIndex.
                 activeGoorback = goorback
-                isShowingLineSheet = true
+                // Calculate and store values for sheet initialization
+                sheetGoorback = goorback
+                sheetLineIndex = max((num + 2) - 2, 0)
+                // Ensure state updates are applied before showing sheet
+                // Use Task to ensure state is updated on MainActor before showing sheet
+                Task { @MainActor in
+                    isShowingLineSheet = true
+                }
             }) {
                 HStack {
                     LineTimeImage(goorback, num, isTransfer: false)

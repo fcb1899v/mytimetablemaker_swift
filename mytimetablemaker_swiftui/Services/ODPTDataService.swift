@@ -305,10 +305,19 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
         print("🔗 Fetch URL: \(urlString)")
         let (data, response) = try await session.data(for: request)
         
-        // Check for successful response
+        // Check for successful response and save ETag/Last-Modified for future conditional GET
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
                 throw ODPTError.networkError("HTTP \(httpResponse.statusCode)")
+            }
+            
+            // Save ETag and Last-Modified headers for future conditional requests
+            if let etag = httpResponse.value(forHTTPHeaderField: "ETag") {
+                saveETag(etag, for: transportOperator)
+            }
+            
+            if let lastModified = httpResponse.value(forHTTPHeaderField: "Last-Modified") {
+                saveLastModified(lastModified, for: transportOperator)
             }
         }
         
@@ -345,11 +354,28 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
     
     // MARK: - Conditional GET Request Check (ODPT API Optimized)
     // Check if individual operator data needs updating using conditional GET requests
+    // Only performs update check if cache exists and ETag/Last-Modified are available
     func checkIndividualOperatorForUpdates(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Bool {
         
         // MARK: - Cache-Based Update Check
-        // Check if we have cached data and its age
+        // Check if we have cached data
         let cacheKey = transportOperator.fileName
+        let cachedData = cache.loadData(for: cacheKey)
+        
+        // If no cache exists, skip update check (data will be fetched during initial fetch)
+        guard cachedData != nil else {
+            return false
+        }
+        
+        // Check if we have ETag or Last-Modified for conditional GET
+        let etag = getETag(for: transportOperator)
+        let lastModified = getLastModified(for: transportOperator)
+        
+        // If we don't have conditional headers, skip update check
+        // Rule: Cache exists but no ETag/Last-Modified -> do nothing
+        guard etag != nil || lastModified != nil else {
+            return false
+        }
         
         // MARK: - Conditional GET Request Check
         // Use conditional GET request with ETag and Last-Modified headers
@@ -360,10 +386,7 @@ final class ODPTNetworkClient: NSObject, URLSessionDelegate {
             }
             
             var request = URLRequest(url: url)
-            configureRequest(&request, consumerKey: consumerKey, conditionalHeaders: (getETag(for: transportOperator), getLastModified(for: transportOperator)))
-            
-            // Load cached data for conditional headers and comparison
-            let cachedData = cache.loadData(for: cacheKey)
+            configureRequest(&request, consumerKey: consumerKey, conditionalHeaders: (etag, lastModified))
             
             print("🔗 Fetch URL: \(urlString)")
             let (data, response) = try await session.data(for: request)
