@@ -138,9 +138,6 @@ final class TransferViewModel: ObservableObject {
         setRoute2()
         // Update line settings
         setLineData()
-        // Update time
-        timeLabel = Date().setTime
-        // Remove objectWillChange.send() to prevent SwiftUI state modification errors
     }
     
     // MARK: - Direction Control

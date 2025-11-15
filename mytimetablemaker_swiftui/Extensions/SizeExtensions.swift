@@ -154,8 +154,8 @@ extension UIScreen {
     var settingsLineSheetOperatorOffset: CGFloat { screenHeight * 0.13 }
     var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.18 }
     var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.25 }
-    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.22 }
-    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.27 }
+    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.32 }
+    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.37 }
     var settingsLineSheetCaptionFontSize: CGFloat { customWidth * 0.024 }
     var settingsLineSheetColorSettingWidth: CGFloat { customWidth * 0.80 }
     var settingsLineSheetColorHorizontalPadding: CGFloat { customWidth * 0.04 }

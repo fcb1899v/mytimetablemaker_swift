@@ -56,8 +56,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         !departureStopInput.isEmpty && 
         !arrivalStopInput.isEmpty && 
         !lineInput.isEmpty && 
-        selectedRideTime > 0 && 
-        (selectedTransportation == "none" || selectedTransferTime > 0)
+        (hasTimetableSupport() || selectedRideTime > 0)
     }
     
     // Suggestion and focus state management
@@ -79,7 +78,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Line configuration and customization
     @Published var selectedLineColor: String? = nil           // Selected line color hex value for display
     @Published var selectedTransportationKind: TransportationLine.Kind = .railway  // Selected transportation kind (default: railway)
-    @Published var selectedTransferTime: Int = 0              // Acceptable transfer time in minutes (initial value: 0)
+    @Published var selectedTransferTime: Int = 0              // Acceptable transfer time in minutes (0 is valid for direct connections)
     @Published var selectedTransportation: String = "none"    // Selected transportation method (default: none)
     @Published var selectedLineNumber: Int = 1                // Currently selected line number (1-3)
     @Published var availableLineNumbers: [Int] = [1]          // Available line numbers based on changeLine
@@ -281,11 +280,25 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Filter by selected operator
         searchData = searchData.filter { $0.operatorCode == operatorCode }
         
-        // If query is empty, don't show suggestions
-        guard !t.isEmpty else {
-            lineSuggestions = []
-            nameCounts = [:]
-            showLineSuggestions = false
+        // If query is empty but operator is selected, show all lines for that operator
+        if t.isEmpty {
+            // Show all lines for the selected operator when query is empty
+            if selectedTransportationKind == .bus {
+                let displayNames = searchData.map { lineDisplayName(for: $0) }
+                let uniqueDisplayNames = Array(Set(displayNames))
+                let uniqueResults = uniqueDisplayNames.compactMap { uniqueDisplayName in
+                    searchData.first { lineDisplayName(for: $0) == uniqueDisplayName }
+                }
+                lineSuggestions = Array(uniqueResults.prefix(10))
+                showLineSuggestions = !lineSuggestions.isEmpty
+                nameCounts = [:]
+            } else {
+                let uniqueResults = removeDuplicates(from: searchData)
+                lineSuggestions = uniqueResults
+                showLineSuggestions = !lineSuggestions.isEmpty
+                nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
+                    .mapValues { $0.count }
+            }
             return
         }
         
@@ -332,14 +345,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let allResults = starts + contains + hiraganaMatches
         // Remove duplicates for railway lines to ensure unique line representation
         let uniqueResults = removeDuplicates(from: allResults)
-        lineSuggestions = Array(uniqueResults.prefix(100))
+        lineSuggestions = uniqueResults
         
-        // Show suggestions based on results count
+        // Show suggestions based on results count and focus state
         if lineSuggestions.count == 1 {
             let singleLine = lineSuggestions[0]
-            showLineSuggestions = lineDisplayName(for: singleLine).normalizedForSearch != q.normalizedForSearch
+            showLineSuggestions = isLineFieldFocused && lineDisplayName(for: singleLine).normalizedForSearch != q.normalizedForSearch
         } else {
-            showLineSuggestions = !lineSuggestions.isEmpty
+            showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
         }
         
         nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
@@ -399,7 +412,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         operatorSuggestions = Array(sortedResults.prefix(20))
-        showOperatorSuggestions = !operatorSuggestions.isEmpty
+        showOperatorSuggestions = isOperatorFieldFocused && !operatorSuggestions.isEmpty
     }
     
     // MARK: - Data Processing
@@ -438,7 +451,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // Unified filtering logic for both railway stations and bus stops
     private func filterStops(_ lineInput: String, excludeStop: TransportationStop?) -> [TransportationStop] {
-        guard !lineInput.isEmpty else { return [] }
+        // If input is empty, return all stops (excluding the excludeStop)
+        if lineInput.isEmpty {
+            return lineStops.filter { stop in
+                if let excludeStop = excludeStop, stop.id == excludeStop.id {
+                    return false
+                }
+                return true
+            }
+        }
         
         return lineStops.filter { stop in
             // Exclude the stop if it's the same as the excludeStop
@@ -701,18 +722,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Save line code for Firestore synchronization
         // Always save lineCode if selectedLine is available, regardless of lineInput
-        // Use lineCode property (odpt:lineCode) if available, otherwise extract from code
+        // Use lineCode property (odpt:lineCode) if available, otherwise save empty string
         let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
         if let selectedLine = selectedLine {
             // Use lineCode property (short code like "JY", "TT") if available
-            // Otherwise, extract short name from code (e.g., "ChuoRapid" from "odpt.Railway:JR-East.ChuoRapid")
+            // If odpt:lineCode is not available, save empty string (do not extract from code)
             let codeToSave: String
             if let lineCode = selectedLine.lineCode, !lineCode.isEmpty {
                 codeToSave = lineCode
             } else {
-                // Extract last component from code as fallback
-                let codeParts = selectedLine.code.components(separatedBy: ".")
-                codeToSave = codeParts.last ?? selectedLine.code
+                // Save empty string when odpt:lineCode is not available
+                codeToSave = ""
             }
             UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
         } else {
@@ -722,13 +742,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
             if existingLineCode.isEmpty {
                 // Try to find lineCode from saved line name using reverse lookup
                 if let foundLine = findSavedLineInData() {
-                    // Use lineCode property if available, otherwise extract from code
+                    // Use lineCode property if available, otherwise save empty string
                     let codeToSave: String
                     if let lineCode = foundLine.lineCode, !lineCode.isEmpty {
                         codeToSave = lineCode
                     } else {
-                        let codeParts = foundLine.code.components(separatedBy: ".")
-                        codeToSave = codeParts.last ?? foundLine.code
+                        // Save empty string when odpt:lineCode is not available
+                        codeToSave = ""
                     }
                     UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
                 }
@@ -1242,56 +1262,126 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         let apiTypeName: String = selectedLine.kind == .bus ? "BusTimetable" : "StationTimetable"
         
-        let apiLink: String? = selectedLine.kind == .bus ?
-            selectedLine.title.map { "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\($0)" } :
-            selectedDepartureStop?.code.flatMap { stationCode in
-                (selectedLine.ascendingRailDirection ?? selectedLine.lineDirection).map { direction in
-                    "\(dataSource.apiLink(for: .stopTimetable))&odpt:station=\(stationCode)&odpt:railDirection=\(direction)"
-                }
+        // For bus, use title-based API link
+        if selectedLine.kind == .bus {
+            guard let apiLink = selectedLine.title.map({ "\(dataSource.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\($0)" }),
+                  let url = URL(string: apiLink) else {
+                print("⚠️ \(apiTypeName): Missing required information")
+                return []
             }
+            
+            print("🔗 Fetch URL: \(apiLink)")
+            
+            do {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode != 200 {
+                        print("❌ Failed to fetch calendar types - status: \(httpResponse.statusCode)")
+                        return []
+                    }
+                }
+                
+                let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
+                
+                // Extract unique calendar types from the response
+                var foundCalendarTypes: Set<String> = []
+                
+                for timetable in json {
+                    if let calendar = timetable["odpt:calendar"] as? String {
+                        foundCalendarTypes.insert(calendar)
+                    }
+                }
+                
+                // Convert to ODPTCalendarType array and process
+                let result = processCalendarTypes(foundCalendarTypes, apiTypeName: apiTypeName)
+                
+                return result
+                
+            } catch {
+                print("❌ Error fetching calendar types from \(apiTypeName): \(error.localizedDescription)")
+                return []
+            }
+        }
         
-        guard let apiLink = apiLink else {
-            print("⚠️ \(apiTypeName): Missing required information")
+        // For railway, try both directions (ascending and descending)
+        guard let stationCode = selectedDepartureStop?.code else {
+            print("⚠️ \(apiTypeName): Missing station code")
             return []
         }
         
-        guard let url = URL(string: apiLink) else {
-            print("⚠️ \(apiTypeName): Invalid URL")
-            return []
-        }
+        // Get available directions with fallback
+        let actualDirection = selectedLine.lineDirection ?? ""
+        let ascendingDirection = selectedLine.ascendingRailDirection ?? actualDirection
+        let descendingDirection = selectedLine.descendingRailDirection ?? actualDirection
         
-        print("🔗 Fetch URL: \(apiLink)")
+        // Try both directions and collect calendar types from both
+        var allCalendarTypes: Set<String> = []
         
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+        // Try ascending direction first
+        if !ascendingDirection.isEmpty {
+            let ascendingLink = "\(dataSource.apiLink(for: .stopTimetable))&odpt:station=\(stationCode)&odpt:railDirection=\(ascendingDirection)"
             
-            if let httpResponse = response as? HTTPURLResponse {
-                if httpResponse.statusCode != 200 {
-                    print("❌ Failed to fetch calendar types - status: \(httpResponse.statusCode)")
-                    return []
+            if let url = URL(string: ascendingLink) {
+                print("🔗 Fetch URL (ascending): \(ascendingLink)")
+                
+                do {
+                    let (data, response) = try await URLSession.shared.data(from: url)
+                    
+                    if let httpResponse = response as? HTTPURLResponse {
+                        if httpResponse.statusCode == 200 {
+                            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
+                            
+                            for timetable in json {
+                                if let calendar = timetable["odpt:calendar"] as? String {
+                                    allCalendarTypes.insert(calendar)
+                                }
+                            }
+                            print("✅ Successfully fetched calendar types from ascending direction")
+                        } else {
+                            print("⚠️ Failed to fetch calendar types from ascending direction - status: \(httpResponse.statusCode)")
+                        }
+                    }
+                } catch {
+                    print("⚠️ Error fetching calendar types from ascending direction: \(error.localizedDescription)")
                 }
             }
+        }
+        
+        // Try descending direction
+        if !descendingDirection.isEmpty && descendingDirection != ascendingDirection {
+            let descendingLink = "\(dataSource.apiLink(for: .stopTimetable))&odpt:station=\(stationCode)&odpt:railDirection=\(descendingDirection)"
             
-            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
-            
-            // Extract unique calendar types from the response
-            var foundCalendarTypes: Set<String> = []
-            
-            for timetable in json {
-                if let calendar = timetable["odpt:calendar"] as? String {
-                    foundCalendarTypes.insert(calendar)
+            if let url = URL(string: descendingLink) {
+                print("🔗 Fetch URL (descending): \(descendingLink)")
+                
+                do {
+                    let (data, response) = try await URLSession.shared.data(from: url)
+                    
+                    if let httpResponse = response as? HTTPURLResponse {
+                        if httpResponse.statusCode == 200 {
+                            let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] ?? []
+                            
+                            for timetable in json {
+                                if let calendar = timetable["odpt:calendar"] as? String {
+                                    allCalendarTypes.insert(calendar)
+                                }
+                            }
+                            print("✅ Successfully fetched calendar types from descending direction")
+                        } else {
+                            print("⚠️ Failed to fetch calendar types from descending direction - status: \(httpResponse.statusCode)")
+                        }
+                    }
+                } catch {
+                    print("⚠️ Error fetching calendar types from descending direction: \(error.localizedDescription)")
                 }
             }
-            
-            // Convert to ODPTCalendarType array and process
-            let result = processCalendarTypes(foundCalendarTypes, apiTypeName: apiTypeName)
-            
-            return result
-            
-        } catch {
-            print("❌ Error fetching calendar types from \(apiTypeName): \(error.localizedDescription)")
-            return []
         }
+        
+        // Convert to ODPTCalendarType array and process
+        let result = processCalendarTypes(allCalendarTypes, apiTypeName: apiTypeName)
+        
+        return result
     }
     
     // Process calendar types: remove duplicates and preserve .specific types
@@ -2173,8 +2263,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         isDepartureFieldFocused = true
         departureStopSelected = false
         
-        // Clear input if same station as arrival station is entered
-        let isSameAsArrival = selectedArrivalStop?.title?.getLocalizedName(fallbackTo: selectedArrivalStop?.name ?? "") ?? selectedArrivalStop?.name ?? "" == newValue
+        // Clear input if same station as arrival station is entered (check both selected and input)
+        let arrivalStopName = selectedArrivalStop?.title?.getLocalizedName(fallbackTo: selectedArrivalStop?.name ?? "") ?? selectedArrivalStop?.name ?? ""
+        let isSameAsArrival = arrivalStopName == newValue || arrivalStopInput == newValue
         if isSameAsArrival {
             departureStopInput = ""
             selectedDepartureStop = nil
@@ -2195,8 +2286,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
         isArrivalFieldFocused = true
         arrivalStopSelected = false
         
-        // Clear input message on input
-        let isSameAsDeparture = selectedDepartureStop?.title?.getLocalizedName(fallbackTo: selectedDepartureStop?.name ?? "") ?? selectedDepartureStop?.name ?? "" == newValue
+        // Clear input if same station as departure station is entered (check both selected and input)
+        let departureStopName = selectedDepartureStop?.title?.getLocalizedName(fallbackTo: selectedDepartureStop?.name ?? "") ?? selectedDepartureStop?.name ?? ""
+        let isSameAsDeparture = departureStopName == newValue || departureStopInput == newValue
         if isSameAsDeparture {
             arrivalStopInput = ""
             selectedArrivalStop = nil
@@ -2389,10 +2481,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Helper Functions
-    /// Check if selected line has train timetable support
-    func hasTrainTimetableSupport() -> Bool {
+    /// Check if selected line has timetable support (train or bus)
+    func hasTimetableSupport() -> Bool {
         guard let operatorCode = selectedLine?.operatorCode else { return false }
-        return LocalDataSource.allCases.first { $0.operatorCode == operatorCode }?.hasTrainTimeTable ?? false
+        guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return false }
+        return dataSource.hasTrainTimeTable || dataSource.hasBusTimeTable
     }
     
     // MARK: - BusstopPole API Integration

@@ -578,7 +578,7 @@ extension String {
         if (changeLineInt > 0) {
             for i in 1...changeLineInt {
                 // Depart time of line i
-                timeArray.append(timetableArray(date)[i].first { $0 > timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
+                timeArray.append(timetableArray(date)[i].first { $0 >= timeArray[2 * i].plusHHMM(transferTimeArray[i + 1]) } ?? 2700)
                 // Arrive time of line i
                 timeArray.append(timeArray[2 * i + 1].plusHHMM(getRideTime(date, departTime: timeArray[2 * i + 1], num: i)).overTime(timeArray[2 * i + 1]))
             }

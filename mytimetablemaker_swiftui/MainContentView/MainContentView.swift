@@ -51,15 +51,16 @@ struct MainContentView: View {
     private func requestAppTrackingTransparencyAuthorization() {
         guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in
-            })
+            ATTrackingManager.requestTrackingAuthorization(completionHandler: { status in })
         }
     }
     
     var body: some View {
         NavigationStack {
+
             // MARK: - Main View Layout
             VStack(spacing: 0) {
+
                 // MARK: - Header Section
                 VStack(alignment: .center, spacing: screen.headerSpace) {
 
@@ -165,7 +166,9 @@ struct MainContentView: View {
                 
                 // MARK: - Transfer Information Display
                 HStack(alignment: .top) {
+
                     if(screen.screenWidth > 600) { Spacer() }
+
                     VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                         Spacer().frame(height: screen.routeCountdownTopSpace)
                         Text(myTransfer.countdownTime1)
@@ -187,10 +190,12 @@ struct MainContentView: View {
                     
                     // MARK: - Second Direction Display (if enabled)
                     if (myTransfer.isShowRoute2) {
+
                         Divider()
                             .frame(width: 1.5)
                             .frame(maxHeight: .infinity)
                             .background(Color.primary)
+
                         VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                             Spacer().frame(height: screen.routeCountdownTopSpace)
                             Text(myTransfer.countdownTime2)
@@ -210,6 +215,7 @@ struct MainContentView: View {
                         .frame(width: myTransfer.routeWidth, alignment: .top)
                         .padding(.horizontal, screen.routeSidePadding)
                     }
+
                     if(screen.screenWidth > 600) { Spacer() }
                 }
                     
@@ -302,7 +308,7 @@ struct MainContentView: View {
     // MARK: - Line Time Image (func)
     // Build small icon view from goorback/num without holding state
     @ViewBuilder
-    func LineTimeImage(_ goorback: String, _ num: Int, isTransfer: Bool) -> some View {
+    func LineTimeImage(_ goorback: String, _ num: Int, isTransfer: Bool, isDirectConnection: Bool = false) -> some View {
         let transportationArray = goorback.transportationArray
         let lineColorArray = goorback.lineColorArray
         let lineCodeArray = goorback.lineCodeArray
@@ -313,17 +319,14 @@ struct MainContentView: View {
         let transportation: String = isTransfer ? transportationArray[num] : ""
         let transportationKind: TransportationLine.Kind? = isTransfer ? nil : lineKindArray[num]
 
-        let iconName: String = {
-            if isTransfer {
-                return transportation != "" ? transferType(from: transportation).iconName: "figure.walk"
-            } else {
-                switch transportationKind {
-                case .railway: return "lightrail"
-                case .bus: return "bus"
-                case .none: return "lightrail"
-                }
-            }
-        }()
+        // Check if it's a direct connection (0 minutes transfer with same arrival/departure time)
+        // isDirectConnection already includes transfer time == 0 check in TransferView
+        let iconName: String = 
+            !isTransfer && transportationKind == .bus ? "bus":
+            !isTransfer ? "lightrail": 
+            isDirectConnection ? "chevron.down.2":
+            transportation != "" ? transferType(from: transportation).iconName:
+            "figure.walk"
 
         ZStack(alignment: .center) {
             Rectangle()
@@ -358,6 +361,20 @@ struct MainContentView: View {
     // MARK: - Transfer View (func)
     @ViewBuilder
     func TransferView(_ goorback: String, _ num: Int) -> some View {
+        // Check if this is a direct connection (0 minutes transfer with same arrival/departure time)
+        let currentDate = myTransfer.selectDate
+        let currentTime = myTransfer.currentTime
+        let timeArray = goorback.timeArray(currentDate, currentTime)
+        let transferTimeArray = goorback.transferTimeArray
+        
+        // Determine if this is a direct connection (0 minutes transfer with same arrival/departure time)
+        let isDirectConnection: Bool = transferTimeArray[num] == 0 && num > 0 && {
+            let prevIndex = num == 1 ? 1 : 2 * (num - 2) + 3
+            let nextIndex = num == 1 ? 2 : 2 * (num - 2) + 4
+            return prevIndex < timeArray.count && nextIndex < timeArray.count 
+                && timeArray[prevIndex] == timeArray[nextIndex]
+        }()
+        
         HStack {
             Button(action: {
                 activeTransferNum = num
@@ -377,7 +394,7 @@ struct MainContentView: View {
                     }
                 }
             }) {
-                LineTimeImage(goorback, num, isTransfer: true)
+                LineTimeImage(goorback, num, isTransfer: true, isDirectConnection: isDirectConnection)
             }
             Spacer()
         }

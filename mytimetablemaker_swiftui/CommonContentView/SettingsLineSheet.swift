@@ -25,6 +25,8 @@ struct SettingsLineSheet: View {
     @State private var showTimetableSettings = false
     @FocusState private var focused: Bool
     @FocusState private var operatorFocused: Bool
+    @FocusState private var departureFocused: Bool
+    @FocusState private var arrivalFocused: Bool
     
     // Environment value to dismiss the sheet
     @Environment(\.dismiss) private var dismiss
@@ -234,11 +236,16 @@ struct SettingsLineSheet: View {
             .focused($operatorFocused)
             .onChange(of: operatorFocused) { isFocused in
                 vm.isOperatorFieldFocused = isFocused
-                // Show all operators when field is focused and operator input is empty
-                if isFocused && vm.operatorInput.isEmpty {
-                    Task {
-                        await vm.filterOperators("")
+                if isFocused {
+                    // Show all operators when field is focused and operator input is empty
+                    if vm.operatorInput.isEmpty {
+                        Task {
+                            await vm.filterOperators("")
+                        }
                     }
+                } else {
+                    // Hide suggestions when field loses focus
+                    vm.showOperatorSuggestions = false
                 }
             }
             .onChange(of: vm.operatorInput) { newValue in
@@ -278,11 +285,9 @@ struct SettingsLineSheet: View {
                             vm.selectedOperatorCode = dataSource.operatorCode
                         }
                         
-                        // Re-filter lines if line input exists
-                        if !vm.lineInput.isEmpty {
-                            Task {
-                                await vm.filter(vm.lineInput)
-                            }
+                        // Show line suggestions when operator is selected (even if line input is empty)
+                        Task {
+                            await vm.filter(vm.lineInput)
                         }
                         
                         // Reset flag after a short delay to allow UI updates
@@ -349,11 +354,18 @@ struct SettingsLineSheet: View {
             .focused($focused)
             .onChange(of: focused) { isFocused in
                 vm.isLineFieldFocused = isFocused
-                // Show all lines when field is focused and operator is not selected
-                if isFocused && vm.selectedOperatorCode == nil {
-                    Task {
-                        await vm.filter(vm.lineInput.isEmpty ? "" : vm.lineInput)
+                if isFocused {
+                    // Show line suggestions when field is focused, operator is selected, and line input is empty
+                    if vm.selectedOperatorCode != nil && vm.operatorSelected && vm.lineInput.isEmpty {
+                        // Reset lineSelected flag to allow suggestions to show when field is focused
+                        vm.lineSelected = false
+                        Task {
+                            await vm.filter("")
+                        }
                     }
+                } else {
+                    // Hide suggestions when field loses focus
+                    vm.showLineSuggestions = false
                 }
             }
             .onChange(of: vm.lineInput) { newValue in
@@ -590,6 +602,21 @@ struct SettingsLineSheet: View {
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                 .background(CustomBackground())
                 .overlay(CustomBorder())
+                .focused($departureFocused)
+                .onChange(of: departureFocused) { isFocused in
+                    vm.isDepartureFieldFocused = isFocused
+                    if isFocused {
+                        // Show departure stop suggestions when field is focused, operator and line are selected, and input is empty
+                        if vm.selectedOperatorCode != nil && vm.operatorSelected && vm.lineSelected && vm.departureStopInput.isEmpty {
+                            // Reset departureStopSelected flag to allow suggestions to show when field is focused
+                            vm.departureStopSelected = false
+                            vm.filterDepartureStops("")
+                        }
+                    } else {
+                        // Hide suggestions when field loses focus
+                        vm.showDepartureSuggestions = false
+                    }
+                }
                 .onChange(of: vm.departureStopInput) { newValue in
                     vm.processdepartureStopInput(newValue)
                 }
@@ -651,6 +678,21 @@ struct SettingsLineSheet: View {
                     RoundedRectangle(cornerRadius: screen.settingsSheetCornerRadius)
                         .stroke(Color(.separator), lineWidth: screen.settingsSheetStrokeLineWidth)
                 )
+                .focused($arrivalFocused)
+                .onChange(of: arrivalFocused) { isFocused in
+                    vm.isArrivalFieldFocused = isFocused
+                    if isFocused {
+                        // Show arrival stop suggestions when field is focused, operator and line are selected, and input is empty
+                        if vm.selectedOperatorCode != nil && vm.operatorSelected && vm.lineSelected && vm.arrivalStopInput.isEmpty {
+                            // Reset arrivalStopSelected flag to allow suggestions to show when field is focused
+                            vm.arrivalStopSelected = false
+                            vm.filterArrivalStops("")
+                        }
+                    } else {
+                        // Hide suggestions when field loses focus
+                        vm.showArrivalSuggestions = false
+                    }
+                }
                 .onChange(of: vm.arrivalStopInput) { newValue in
                     vm.processarrivalStopInput(newValue)
                 }
@@ -800,8 +842,9 @@ struct SettingsLineSheet: View {
             }
 
             // Checkmark indicator
+            // Gray if ride time is 0 and timetable support is not available
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.selectedRideTime == 0 ? .gray : .accent)
+                .foregroundColor(vm.selectedRideTime == 0 && !vm.hasTimetableSupport() ? .gray : .accent)
         }
         .padding(.vertical, screen.settingsLineSheetPickerPadding)
     }
@@ -895,9 +938,9 @@ struct SettingsLineSheet: View {
                 }
             }
             
-            // Checkmark indicator
+            // Checkmark indicator (0 minutes is valid for direct connections)
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.selectedTransferTime == 0 ? .gray : .accent)
+                .foregroundColor(.accent)
         }
         .padding(.vertical, screen.settingsLineSheetPickerPadding)
     }
@@ -957,7 +1000,7 @@ struct SettingsLineSheet: View {
                     // Save input data before auto generating timetable
                     Task {
                         await vm.handleLineSave()
-                        if vm.hasTrainTimetableSupport() || vm.selectedTransportationKind == .bus {
+                        if vm.hasTimetableSupport() {
                             let result: [ODPTCalendarType: [any TransportationTime]] = await vm.getTimeTableData()
                             // Use new finalizeTimetableData method with individual calendar types
                             await vm.finalizeTimetableData(calendarTimes: result)
