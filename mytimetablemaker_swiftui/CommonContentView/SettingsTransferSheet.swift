@@ -166,6 +166,7 @@ struct SettingsTransferSheet: View {
                 .foregroundColor(.primary)
 
             TextField(placeholder, text: text)
+                .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: screen.settingsSheetInputFontSize))

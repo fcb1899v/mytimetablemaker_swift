@@ -76,6 +76,7 @@ struct LoginContentView: View {
                 // MARK: - Email Input Field
                 // Text field for email address entry
                 TextField("Email".localized, text: $myLogin.email)
+                    .keyboardType(.default)
                     .font(.system(size: screen.loginTextFieldFontSize))
                     .lineLimit(1)
                     .padding()
@@ -90,6 +91,7 @@ struct LoginContentView: View {
                 HStack {
                     if isPasswordVisible {
                         TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                            .keyboardType(.default)
                             .font(.system(size: screen.loginTextFieldFontSize))
                             .lineLimit(1)
                     } else {
@@ -158,6 +160,7 @@ struct LoginContentView: View {
                 // Password reset confirmation alert with email input
                 .alert("Password Reset".localized, isPresented: $isShowReset) {
                     TextField("Email".localized, text: $myLogin.resetEmail)
+                        .keyboardType(.default)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                     // OK button

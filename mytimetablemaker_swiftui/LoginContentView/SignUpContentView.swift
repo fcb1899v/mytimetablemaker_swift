@@ -49,6 +49,7 @@ struct SignUpContentView: View {
             // MARK: - Email Input Field
             // Text field for email address entry with validation
             TextField("Email".localized, text: $myLogin.email)
+                .keyboardType(.default)
                 .font(.system(size: screen.loginTextFieldFontSize))
                 .lineLimit(1)
                 .padding()
@@ -63,6 +64,7 @@ struct SignUpContentView: View {
             HStack {
                 if isPasswordVisible {
                     TextField("Password (8+ chars: alnum !@#$&~)".localized, text: $myLogin.password)
+                        .keyboardType(.default)
                         .font(.system(size: screen.loginTextFieldFontSize))
                         .lineLimit(1)
                 } else {
@@ -92,6 +94,7 @@ struct SignUpContentView: View {
             HStack {
                 if isConfirmPasswordVisible {
                     TextField("Confirm Password".localized, text: $myLogin.passwordConfirm)
+                        .keyboardType(.default)
                         .font(.system(size: screen.loginTextFieldFontSize))
                         .lineLimit(1)
                 } else {

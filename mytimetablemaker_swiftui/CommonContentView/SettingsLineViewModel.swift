@@ -1317,6 +1317,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Try both directions and collect calendar types from both
         var allCalendarTypes: Set<String> = []
+        var ascendingSuccess = false
         
         // Try ascending direction first
         if !ascendingDirection.isEmpty {
@@ -1337,6 +1338,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                                     allCalendarTypes.insert(calendar)
                                 }
                             }
+                            ascendingSuccess = true
                             print("✅ Successfully fetched calendar types from ascending direction")
                         } else {
                             print("⚠️ Failed to fetch calendar types from ascending direction - status: \(httpResponse.statusCode)")
@@ -1348,8 +1350,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
         }
         
-        // Try descending direction
-        if !descendingDirection.isEmpty && descendingDirection != ascendingDirection {
+        // Try descending direction only if ascending failed
+        if !ascendingSuccess && !descendingDirection.isEmpty && descendingDirection != ascendingDirection {
             let descendingLink = "\(dataSource.apiLink(for: .stopTimetable))&odpt:station=\(stationCode)&odpt:railDirection=\(descendingDirection)"
             
             if let url = URL(string: descendingLink) {
@@ -1586,74 +1588,110 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // Process train timetable data for specific day type
     private func processTrainTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
         
-        // Fetch train timetable data from API
-        let trainTimetableData = await fetchTrainTimetableData(calendarType: calendarType)
+        // Get actual directions from JSON data with fallback
+        let actualDirection = selectedLine?.lineDirection ?? ""
+        let ascendingDirection = selectedLine?.ascendingRailDirection ?? actualDirection
+        let descendingDirection = selectedLine?.descendingRailDirection ?? actualDirection
         
-        // Extract train information and timetable objects in a single loop
-        var transportationTimes: [any TransportationTime] = []
+        // Try both directions and collect results
+        let directions = [ascendingDirection, descendingDirection]
+        var directionResults: [[any TransportationTime]] = []
         
-        for timetable in trainTimetableData {
+        for direction in directions {
+            // Fetch train timetable data from API for this direction
+            let trainTimetableData = await fetchTrainTimetableData(calendarType: calendarType, direction: direction)
             
-            guard let trainNumber = timetable["odpt:trainNumber"] as? String,
-                  let trainType = timetable["odpt:trainType"] as? String,
-                  let trainTimetableObjects = timetable["odpt:trainTimetableObject"] as? [[String: Any]] else {
-                continue
-            }
-
-            var departureTime: String?
-            var arrivalTime: String?
+            // Extract train information and timetable objects in a single loop
+            var transportationTimes: [any TransportationTime] = []
             
-            for timetableObject in trainTimetableObjects {
+            for timetable in trainTimetableData {
                 
-                // Check departure station match
-                if let departureStop = timetableObject["odpt:departureStation"] as? String,
-                   departureStop == selectedDepartureStop?.code {
-                    departureTime = timetableObject["odpt:departureTime"] as? String
-                }
-                
-                // Check arrival station match
-                if let arrivalStop = timetableObject["odpt:arrivalStation"] as? String,
-                   arrivalStop == selectedArrivalStop?.code {
-                    arrivalTime = timetableObject["odpt:arrivalTime"] as? String
-                } else if let departureStop = timetableObject["odpt:departureStation"] as? String,
-                          departureStop == selectedArrivalStop?.code {
-                    arrivalTime = timetableObject["odpt:departureTime"] as? String
+                guard let trainNumber = timetable["odpt:trainNumber"] as? String,
+                      let trainType = timetable["odpt:trainType"] as? String,
+                      let trainTimetableObjects = timetable["odpt:trainTimetableObject"] as? [[String: Any]] else {
+                    continue
                 }
 
-            }
-        
-            // Only append if arrival time is later than departure time
-            if let depTime = departureTime, let arrTime = arrivalTime {
-                // Convert time strings to minutes for comparison
-                let depMinutes = depTime.timeToMinutes
-                let arrMinutes = arrTime.timeToMinutes
-                if arrMinutes > depMinutes {
-                    // Calculate ride time in minutes
-                    let rideTime = depTime.calculateRideTime(arrivalTime: arrTime)
-                    let trainTime = TrainTime(
-                        departureTime: depTime,
-                        arrivalTime: arrTime,
-                        trainNumber: trainNumber,
-                        trainType: trainType,
-                        rideTime: rideTime
-                    )
-                    transportationTimes.append(trainTime)
+                var departureTime: String?
+                var arrivalTime: String?
+                
+                for timetableObject in trainTimetableObjects {
+                    
+                    // Check departure station match
+                    if let departureStop = timetableObject["odpt:departureStation"] as? String,
+                       departureStop == selectedDepartureStop?.code {
+                        departureTime = timetableObject["odpt:departureTime"] as? String
+                    }
+                    
+                    // Check arrival station match
+                    if let arrivalStop = timetableObject["odpt:arrivalStation"] as? String,
+                       arrivalStop == selectedArrivalStop?.code {
+                        arrivalTime = timetableObject["odpt:arrivalTime"] as? String
+                    } else if let departureStop = timetableObject["odpt:departureStation"] as? String,
+                              departureStop == selectedArrivalStop?.code {
+                        arrivalTime = timetableObject["odpt:departureTime"] as? String
+                    }
+
+                }
+            
+                // Only append if arrival time is later than departure time
+                if let depTime = departureTime, let arrTime = arrivalTime {
+                    // Convert time strings to minutes for comparison
+                    let depMinutes = depTime.timeToMinutes
+                    let arrMinutes = arrTime.timeToMinutes
+                    if arrMinutes > depMinutes {
+                        // Calculate ride time in minutes
+                        let rideTime = depTime.calculateRideTime(arrivalTime: arrTime)
+                        let trainTime = TrainTime(
+                            departureTime: depTime,
+                            arrivalTime: arrTime,
+                            trainNumber: trainNumber,
+                            trainType: trainType,
+                            rideTime: rideTime
+                        )
+                        transportationTimes.append(trainTime)
+                    }
                 }
             }
+            
+            directionResults.append(transportationTimes)
         }
         
+        // Filter out empty results (directions that didn't generate a list)
+        let validResults = directionResults.filter { !$0.isEmpty }
         
-        return transportationTimes
+        // Choose the direction with smaller average ride time
+        // For loop lines, both directions may have data, so compare average ride times
+        let selectedResult: [any TransportationTime]
+        if validResults.count == 0 {
+            // No valid results from either direction
+            selectedResult = []
+        } else if validResults.count == 1 {
+            // Only one direction has data, use it
+            selectedResult = validResults[0]
+        } else {
+            // Both directions have data (e.g., loop line), choose the one with smaller average ride time
+            selectedResult = validResults.min { 
+                let avg1 = $0.map { $0.rideTime }.reduce(0, +) / $0.count
+                let avg2 = $1.map { $0.rideTime }.reduce(0, +) / $1.count
+                return avg1 < avg2
+            } ?? []
+        }
+        
+        return selectedResult
     }
     
     // Fetch train timetable data from API
-    private func fetchTrainTimetableData(calendarType: ODPTCalendarType) async -> [[String: Any]] {
+    private func fetchTrainTimetableData(calendarType: ODPTCalendarType, direction: String) async -> [[String: Any]] {
         guard let operatorCode = selectedLine?.operatorCode,
               let selectedLineCode = selectedLine?.code,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
-        
-        let apiLink = "\(selectedOperator.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType.rawValue)"
+        // Build API link with direction parameter if direction is not empty
+        var apiLink = "\(selectedOperator.apiLink(for: .timetable))&odpt:railway=\(selectedLineCode)&odpt:calendar=\(calendarType.rawValue)"
+        if !direction.isEmpty {
+            apiLink += "&odpt:railDirection=\(direction)"
+        }
         
         do {
             guard let url = URL(string: apiLink) else {

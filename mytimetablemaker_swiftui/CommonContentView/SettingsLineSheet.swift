@@ -226,6 +226,7 @@ struct SettingsLineSheet: View {
             TextField("Enter operator name".localized,
                 text: $vm.operatorInput
             )
+            .keyboardType(.default)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .font(.system(size: screen.settingsSheetInputFontSize))
@@ -344,6 +345,7 @@ struct SettingsLineSheet: View {
                 vm.selectedTransportationKind == .railway ? "Enter line name".localized : "Enter bus route name".localized,
                 text: $vm.lineInput
             )
+            .keyboardType(.default)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .font(.system(size: screen.settingsSheetInputFontSize))
@@ -595,6 +597,7 @@ struct SettingsLineSheet: View {
                 .foregroundColor(.primary)
 
             TextField(vm.selectedTransportationKind == .bus ? "Enter departure stop".localized : "Enter departure station".localized, text: $vm.departureStopInput)
+                .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: screen.settingsSheetInputFontSize))
@@ -652,7 +655,7 @@ struct SettingsLineSheet: View {
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: screen.settingsLineSheetDepartureOffset)
+        .offset(y: screen.settingsLineSheetDepartureOffset(isEmpty: vm.departureStopInput.isEmpty))
         .zIndex(100)
     }
     
@@ -665,6 +668,7 @@ struct SettingsLineSheet: View {
                 .foregroundColor(.primary)
 
             TextField(vm.selectedTransportationKind == .bus ? "Enter arrival stop".localized : "Enter arrival station".localized, text: $vm.arrivalStopInput)
+                .keyboardType(.default)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .font(.system(size: screen.settingsSheetInputFontSize))
@@ -728,7 +732,7 @@ struct SettingsLineSheet: View {
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: screen.settingsLineSheetArrivalOffset)
+        .offset(y: screen.settingsLineSheetArrivalOffset(isEmpty: vm.arrivalStopInput.isEmpty))
         .zIndex(100)
     }
 
