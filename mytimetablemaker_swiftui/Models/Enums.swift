@@ -81,31 +81,18 @@ enum LocalDataSource: CaseIterable {
     // MARK: - Operator Display Name Mapping
     // Get localized display name for operator selection UI
     var operatorDisplayName: String {
+        // Extract operator name from operatorCode for localization
+        if let operatorCode = operatorCode {
+            let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
+            return NSLocalizedString(operatorName, comment: "Railway or bus operator name")
+        }
+        
+        // Fallback for operators without operatorCode
         switch self {
-        case .jrEast: return "JR東日本"
-        case .tokyoMetro: return "東京メトロ"
-        case .toeiMetro: return "都営地下鉄"
-        case .tokyu: return "東急電鉄"
-        case .keikyu: return "京急電鉄"
-        case .odakyu: return "小田急電鉄"
-        case .tobu: return "東武鉄道"
-        case .seibu: return "西武鉄道"
-        case .sotetsu: return "相模鉄道"
-        case .yokohamaMetro: return "横浜市営地下鉄"
-        case .rinkai: return "東京臨海高速鉄道"
-        case .yurikamome: return "ゆりかもめ"
-        case .tsukuba: return "首都圏新都市鉄道"
-        case .tama: return "多摩都市モノレール"
-        case .toeiBus: return "都営バス"
-        case .yokohamaBus: return "横浜市営バス"
-        case .tokyuBus: return "東急バス"
-        case .seibuBus: return "西武バス"
-        case .sotetsuBus: return "相鉄バス"
-        case .kanachuBus: return "神奈中バス"
-        case .kokusaiKogyo: return "国際興業"
-        case .odakyuBus: return "小田急バス"
-        case .keioBus: return "京王バス"
-        case .nishitokyoBus: return "西東京バス"
+        case .odakyuBus: return NSLocalizedString("OdakyuBus", comment: "Odakyu Bus operator name")
+        case .keioBus: return NSLocalizedString("KeioBus", comment: "Keio Bus operator name")
+        case .nishitokyoBus: return NSLocalizedString("NishitokyoBus", comment: "Nishitokyo Bus operator name")
+        default: return ""
         }
     }
     

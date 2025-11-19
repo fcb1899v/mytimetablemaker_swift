@@ -72,7 +72,7 @@
 "About" = "このアプリについて";
 "Version" = "バージョン";
 "Terms and privacy policy" = "利用規約・プライバシーポリシー";
-"https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/ja/terms";
+"https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/terms/ja";
 "Setting your number of transfers" = "乗換回数の設定";
 "Setting your departure place" = "出発地の設定";
 "Setting your station name" = "駅名の設定";
@@ -276,6 +276,8 @@
 "OdakyuBus" = "小田急";
 "SeibuBus" = "西武";
 "TokyuBus" = "東急";
+"KeioBus" = "京王";
+"NishitokyoBus" = "西東京";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels

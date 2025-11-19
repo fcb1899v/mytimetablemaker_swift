@@ -278,6 +278,8 @@
 "OdakyuBus" = "Odakyu";
 "SeibuBus" = "Seibu";
 "TokyuBus" = "Tokyu";
+"KeioBus" = "Keio";
+"NishitokyoBus" = "Nishitokyo";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels
