@@ -256,28 +256,28 @@
 // MARK: - Railway Operators
 // Railway and bus operator display names
 "Line Color" = "路線カラー";
-"JR-East" = "JR東";
-"Keikyu" = "京急";
+"JR-East" = "JR東日本";
+"Keikyu" = "京急電鉄";
 "TokyoMetro" = "東京メトロ";
-"Toei" = "都営";
-"Odakyu" = "小田急";
+"Toei" = "都営地下鉄";
+"Odakyu" = "小田急電鉄";
 "Yurikamome" = "ゆりかもめ";
-"TWR" = "TWR";
-"Seibu" = "西武";
-"Sotetsu" = "相鉄";
-"TamaMonorail" = "多摩";
-"Tobu" = "東武";
-"Tokyu" = "東急";
-"MIR" = "MIR";
-"YokohamaMunicipal" = "横浜市";
-"Kanachu" = "神奈中";
-"SotetsuBus" = "相鉄";
+"TWR" = "東京臨海高速鉄道";
+"Seibu" = "西武鉄道";
+"Sotetsu" = "相模鉄道";
+"TamaMonorail" = "多摩都市モノレール";
+"Tobu" = "東武鉄道";
+"Tokyu" = "東急電鉄";
+"MIR" = "首都圏新都市鉄道";
+"YokohamaMunicipal" = "横浜市営地下鉄";
+"Kanachu" = "神奈中バス";
+"SotetsuBus" = "相鉄バス";
 "KokusaiKogyoBus" = "国際興業";
-"OdakyuBus" = "小田急";
-"SeibuBus" = "西武";
-"TokyuBus" = "東急";
-"KeioBus" = "京王";
-"NishitokyoBus" = "西東京";
+"OdakyuBus" = "小田急バス";
+"SeibuBus" = "西武バス";
+"TokyuBus" = "東急バス";
+"KeioBus" = "京王バス";
+"NishitokyoBus" = "西東京バス";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels

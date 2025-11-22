@@ -6,6 +6,13 @@
 // Replace with your actual AdMob Banner Unit ID
 ADMOB_BANNER_UNIT_ID = ca-app-pub-XXXXXXXXXX/XXXXXXXXXX
 
+// ODPT API Configuration
+// Replace with your actual ODPT API access token (optional, for real-time railway data)
+ODPT_ACCESS_TOKEN = your-odpt-access-token
+
+// Replace with your actual ODPT API challenge token (optional, for API authentication)
+ODPT_CHALLENGE_TOKEN = your-odpt-challenge-token
+
 // Other configuration variables can be added here
 // ROLLBAR_KEY = your-release-rollbar-key
 // REVENUECAT_KEY = your-release-revenuecat-key 

@@ -576,9 +576,33 @@ extension SettingsLineSheetViewModel {
             return dataSource.operatorDisplayName
         }
         
-        // Final fallback: extract operator name from operator code
+        // Final fallback: extract operator name from operator code (should rarely happen)
         let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
-        return NSLocalizedString(operatorName, comment: "Railway operator name")
+        return operatorName
+    }
+    
+    // Get short display name for CustomTag based on operator code
+    func getOperatorDisplayNameForTag(for operatorCode: String, lineKind: TransportationLine.Kind? = nil) -> String {
+        // Find matching LocalDataSource by operator code and transportation kind
+        let matchingDataSources = LocalDataSource.allCases.filter { dataSource in
+            dataSource.operatorCode == operatorCode
+        }
+        
+        // If lineKind is provided, prioritize matching transportation type
+        if let lineKind = lineKind {
+            if let dataSource = matchingDataSources.first(where: { $0.transportationType == lineKind }) {
+                return dataSource.operatorShortDisplayName
+            }
+        }
+        
+        // Fallback to first matching data source if no lineKind or no match found
+        if let dataSource = matchingDataSources.first {
+            return dataSource.operatorShortDisplayName
+        }
+        
+        // Final fallback: extract operator name from operator code (should rarely happen)
+        let operatorName = operatorCode.replacingOccurrences(of: "odpt.Operator:", with: "")
+        return operatorName
     }
     
     // MARK: - Data Extraction Helpers

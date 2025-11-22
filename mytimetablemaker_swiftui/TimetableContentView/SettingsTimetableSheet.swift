@@ -113,7 +113,7 @@ struct SettingsTimetableSheet: View {
                 }
             }
         }
-        .presentationDetents([.height(screen.settingsTimetableSheetHeight)])
+        .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
     }
 

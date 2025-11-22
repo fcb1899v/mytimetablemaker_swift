@@ -12,15 +12,28 @@ import SwiftUI
 // MARK: - UI Components
 // Small tag display component for showing metadata
 struct CustomTag: View {
-    // Text content to display in the tag
+
     let text: String
+    let backgroundColor: Color?
+    
+    init(
+        text: String, 
+        backgroundColor: Color? = nil
+    ) {
+        self.text = text
+        self.backgroundColor = backgroundColor
+    }
     
     var body: some View {
         Text(text)
             .font(.system(size: screen.settingsLineSheetCaptionFontSize, weight: .medium))
             .padding(.vertical, 2)
             .padding(.horizontal, 6)
-            .background(Capsule().fill(Color(.secondarySystemFill)))
+            .background(
+                Capsule().fill(
+                    backgroundColor?.opacity(0.5) ?? Color(.secondarySystemFill)
+                )
+            )
     }
 }
 
@@ -503,6 +516,28 @@ struct CustomAccountButton: View {
         .tint(.primary)
         .navigationDestination(isPresented: $isNavigateToMain) {
             MainContentView(myTransfer, myLogin, myFirestore)
+        }
+    }
+}
+
+// MARK: - Sheet Presentation Modifiers
+// Extension to handle sheet presentation differently for iPad and iPhone
+extension View {
+    func adaptiveSheet<Content: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return AnyView(self.fullScreenCover(isPresented: isPresented) {
+                content()
+            })
+        } else {
+            return AnyView(self.sheet(isPresented: isPresented) {
+                content()
+                    .presentationDetents([.large])
+                    .presentationContentInteraction(.scrolls)
+                    .presentationDragIndicator(.visible)
+            })
         }
     }
 }

@@ -322,7 +322,7 @@ struct TimetableContentView: View {
                 .frame(width: 1, height: screen.calculateContentHeight(transportationTimes.count))
         }
         .frame(width: screen.customWidth)
-        .sheet(isPresented: binding) {
+        .adaptiveSheet(isPresented: binding) {
             SettingsTimetableSheet(
                 goorback: goorback,
                 selectedCalendarType: selectedCalendarType,

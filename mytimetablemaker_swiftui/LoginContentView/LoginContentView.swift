@@ -145,8 +145,10 @@ struct LoginContentView: View {
                     action: { isShowSignUp = true }
                 )
                 .frame(width: screen.loginButtonWidth)
-                .sheet(isPresented: $isShowSignUp) {
-                    SignUpContentView(myLogin)
+                .adaptiveSheet(isPresented: $isShowSignUp) {
+                    NavigationStack {
+                        SignUpContentView(myLogin)
+                    }
                 }
                 
                 // MARK: - Password Reset Button

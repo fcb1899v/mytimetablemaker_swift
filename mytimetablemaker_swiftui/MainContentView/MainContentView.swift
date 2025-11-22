@@ -239,7 +239,7 @@ struct MainContentView: View {
         .navigationBarBackButtonHidden(true)
         // Centralized sheets: content uses activeGoorback/activeTransferNum.
         // Avoid closing due to row identity changes by owning sheets here.
-        .sheet(isPresented: $isShowingLineSheet) {
+        .adaptiveSheet(isPresented: $isShowingLineSheet) {
             NavigationStack {
                 SettingsLineSheet(
                     goorback: sheetGoorback,
@@ -247,7 +247,7 @@ struct MainContentView: View {
                 )
             }
         }
-        .sheet(isPresented: $isShowingTransferSheet) {
+        .adaptiveSheet(isPresented: $isShowingTransferSheet) {
             NavigationStack {
                 SettingsTransferSheet()
             }
@@ -458,7 +458,6 @@ struct MainContentView: View {
             .foregroundColor(.primary)
         }
     }
-
 }
 
 // MARK: - Preview Provider

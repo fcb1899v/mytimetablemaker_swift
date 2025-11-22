@@ -169,12 +169,12 @@ struct SettingsContentView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         // MARK: - Sheet Presentations
         // Present transfer and line settings sheets based on user actions
-        .sheet(isPresented: $showTransferSheet) {
+        .adaptiveSheet(isPresented: $showTransferSheet) {
             NavigationStack {
                 SettingsTransferSheet()
             }
         }
-        .sheet(isPresented: $showLineSheet) {
+        .adaptiveSheet(isPresented: $showLineSheet) {
             NavigationStack {
                 SettingsLineSheet(goorback: selectedRoute, lineIndex: 0)
             }

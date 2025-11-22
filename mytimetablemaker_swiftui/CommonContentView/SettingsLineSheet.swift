@@ -75,7 +75,7 @@ struct SettingsLineSheet: View {
                     .padding(.horizontal, screen.settingsSheetHorizontalPadding)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .animation(.default, value: vm.showStationSelection)
-                    .sheet(isPresented: $showTimetableSettings) {
+                    .adaptiveSheet(isPresented: $showTimetableSettings) {
                         NavigationStack {
                             TimetableContentView(goorback, lineIndex)
                                 .navigationBarTitleDisplayMode(.inline)
@@ -322,7 +322,7 @@ struct SettingsLineSheet: View {
             }
             Spacer()
         }
-        .frame(maxHeight: min(CGFloat(vm.operatorSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetOperatorMaxSuggestionHeight))
+        .frame(maxHeight: min(CGFloat(vm.operatorSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
         .background(CustomBackground())
         .overlay(CustomBorder())
         .animation(.default, value: vm.operatorSuggestions)
@@ -424,8 +424,14 @@ struct SettingsLineSheet: View {
                                         )
                                     )
                             } else if let operatorCode = line.operatorCode {
-                                 let displayText = vm.getOperatorDisplayName(for: operatorCode, lineKind: line.kind)
-                                 CustomTag(text: displayText)
+                                 let displayText = vm.getOperatorDisplayNameForTag(for: operatorCode, lineKind: line.kind)
+                                 let tagColor = line.lineColor?.safeColor
+                                 CustomTag(text: displayText, backgroundColor: tagColor)
+                             } else if let lineColor = line.lineColor {
+                                 // Display line color when only lineColor is available
+                                 Circle()
+                                     .fill(lineColor.safeColor)
+                                     .frame(width: screen.settingsLineSheetColorCircleSmallSize, height: screen.settingsLineSheetColorCircleSmallSize)
                              }
                                                          
                              Text(vm.lineDisplayName(for: line))
@@ -648,7 +654,10 @@ struct SettingsLineSheet: View {
                 }
             }
         }
-        .frame(maxHeight: min(CGFloat(vm.departureSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
+        .frame(maxHeight: min(
+            CGFloat(vm.departureSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight,
+            screen.settingsLineSheetStopMaxSuggestionHeight
+        ))
         .background(CustomBackground())
         .overlay(CustomBorder())
         .animation(.default, value: vm.departureSuggestions.count)
@@ -725,7 +734,7 @@ struct SettingsLineSheet: View {
                 }
             }
         }
-        .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetMaxSuggestionHeight))
+        .frame(maxHeight: min(CGFloat(vm.arrivalSuggestions.count) * screen.settingsLineSheetSuggestionItemHeight, screen.settingsLineSheetStopMaxSuggestionHeight))
         .background(CustomBackground())
         .overlay(CustomBorder())
         .animation(.default, value: vm.arrivalSuggestions.count)
@@ -791,11 +800,11 @@ struct SettingsLineSheet: View {
                         .font(.system(size: screen.settingsSheetInputFontSize))
                         .lineLimit(1)
                         .foregroundColor(.primary)
-                        .padding(.vertical, screen.settingsSheetInputPaddingVertical)
-                        .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                     Spacer()
                 }
                 .contentShape(Rectangle())
+                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
             }
             .buttonStyle(.plain)
         }

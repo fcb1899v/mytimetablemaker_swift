@@ -58,7 +58,8 @@ My Transfer Makers is a SwiftUI-based iOS application that helps users create an
 - Swift Package Manager
 - Firebase project setup
 - Google Mobile Ads account
-- ODPT API access token (optional, for real-time data)
+- ODPT API access token (optional, for real-time railway data)
+- ODPT API challenge token (optional, for ODPT API authentication)
 
 ## 🛠️ Setup
 
@@ -77,17 +78,26 @@ The release configuration file contains sensitive information and is not include
 2. Save as `mytimetablemaker_swiftui/Release.xcconfig`
 3. Update the following values with your actual values:
    - `ADMOB_BANNER_UNIT_ID`: Your actual AdMob Banner Unit ID
-   - `ODPT_ACCESS_TOKEN`: Your ODPT API access token (optional)
+   - `ODPT_ACCESS_TOKEN`: Your ODPT API access token (optional, for real-time railway data)
+   - `ODPT_CHALLENGE_TOKEN`: Your ODPT API challenge token (optional, for API authentication)
 
 ```bash
 cp mytimetablemaker_swiftui/Release.xcconfig.template mytimetablemaker_swiftui/Release.xcconfig
 ```
 
 ### 3. Install Dependencies
+
+This project uses Swift Package Manager for dependency management. The following packages are included:
+- Firebase iOS SDK (Authentication, Firestore)
+- Google Mobile Ads SDK
+- Swift Algorithms
+
 ```bash
 # Resolve Swift Package Manager dependencies
 xcodebuild -resolvePackageDependencies
 ```
+
+**Note**: A `Podfile` exists in the project root, but it is for the legacy UIKit project (`mytimetablemaker_uikit`). The current SwiftUI project (`mytimetablemaker_swiftui`) uses Swift Package Manager only.
 
 ### 4. Firebase Configuration
 1. Create a Firebase project
