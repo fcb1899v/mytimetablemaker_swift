@@ -8,7 +8,7 @@
 
 // MARK: - Title
 // Application title
-"My Transfer Makers" = "My Transfer Makers";
+"My Transit Makers" = "My Transit Makers";
 
 // MARK: - Main Content View
 // Main screen buttons and labels
@@ -18,9 +18,6 @@
 "Stop" = "Stop";
 "OK" = "OK";
 "Cancel" = "Cancel";
-"Maximum 20 Charactors" = "Maximum 20 Charactors";
-"Enter 0~99 [min]" = "Enter 0~99 [min]";
-"Enter 0~59 [min]" = "Enter 0~59 [min]";
 "Loading data..." = "Loading data...";
 
 // MARK: - Route Data
@@ -44,45 +41,30 @@
 "To " = "To ";
 "he" = "";
 "on " = "on ";
+" min" = " min";
+"[min]" = " [min]";
+"Not set" = "Not set";
 "Return Route 1" = "Return Route 1";
 "Return Route 2" = "Return Route 2";
 "Outbound Route 1" = "Outbound Route 1";
 "Outbound Route 2" = "Outbound Route 2";
-" min" = " min";
-"[min]" = " [min]";
-"Not set" = "Not set";
 
 // MARK: - Settings Content View
 // Settings screen labels and options
 "Settings" = "Settings";
 "Back to homepage" = "Back";
-"Direction Settings" = "Direction Settings";
-"Setting home and destination" = "Setting home and destination";
 "Setting Return Route 1" = "Setting Return Route 1";
 "Setting Return Route 2" = "Setting Return Route 2";
 "Setting Outbound Route 1" = "Setting Outbound Route 1";
 "Setting Outbound Route 2" = "Setting Outbound Route 2";
-"Display Return Route 2" = "Display Return Route 2";
-"Display Outbound Route 2" = "Display Outbound Route 2";
 "Manage your data after login" = "Manage your data after login";
 
 "Various settings" = "Various settings";
-"Get data" = "Get data";
-"Save data" = "Save data";
 "Account" = "Account";
 "About" = "About";
 "Version" = "Version";
 "Terms and privacy policy" = "Terms and privacy policy";
 "https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/terms";
-"Setting your number of transfers" = "Setting your number of transfers";
-"Setting your departure place" = "Setting your departure place";
-"Setting your station name" = "Setting your station name";
-"Setting your destination" = "Setting your destination";
-"Setting your line name" = "Setting your line name";
-"Setting your line color" = "Setting your line color";
-"Setting your ride time [min]" = "Setting your ride time [min]";
-"Setting your transportation" = "Setting your transportation";
-"Setting your transfer time [min]" = "Setting your transfer time [min]";
 "Setting your timetable" = "Setting your timetable";
 
 // MARK: - Settings Transfer Sheet
@@ -90,13 +72,8 @@
 "Home & Destination Settings" = "Home & Destination Settings";
 "Home & Destination" = "Home & Destination";
 "Destination" = "Destination";
-"Your home" = "Your home";
 "Enter departure point" = "Enter departure point";
 "Enter destination" = "Enter destination";
-"Enter your home" = "Enter your home";
-"Transportation" = "Transportation";
-"Travel Time" = "Travel Time";
-"Setting your home" = "Setting your home";
 "Setting departure point" = "Setting departure point";
 "Setting destination" = "Setting destination";
 "Route 1" = "Route 1";
@@ -137,20 +114,9 @@
 "Add" = "Add";
 "Update" = "Update";
 "Delete" = "Delete";
-"Add and delete departure time [min]" = "Add and delete departure time [min]";
 "Copying your timetable" = "Copying your timetable";
-"Copying all the time?" = "Copying all the time?";
-"Select your timetable picture" =  "Select your timetable picture";
-"Weekdays" = "Weekdays";
-"Weekends" = "Weekends";
-"weekends" = "weekends";
-"weekdays" = "weekdays";
-"Sat/Sun/PH" = "Sat/Sun/PH";
-"Weekdays except Public Holidays" = "Weekdays except Public Holidays" ;
-"Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
 
 "Weekdays (Except Public Holidays)" = "Weekdays (Except Public Holidays)";
-"Saturday & Sunday $ Public Holidays" = "Saturday & Sunday $ Public Holidays";
 "Departure Time" = "Departure Time";
 "Ride Time" = "Ride Time";
 
@@ -191,7 +157,6 @@
 "Enter your password" = "Enter your password";
 "Enter your confirm password" = "Enter your confirm password";
 "Enter your email again" = "Enter your email again";
-"Check your email" = "Check your email";
 "Confirm your email" = "Confirm your email";
 "Incorrect email" = "Incorrect email";
 "Incorrect email format" = "Incorrect email format";
@@ -215,14 +180,10 @@
 
 "Password reset error" = "Password reset error";
 "Password reset email Sent successfully" = "Password reset email Sent successfully";
-"Password reset email could not be sent" = "Password reset email could not be sent";
 
 
 // MARK: - Enums
 // Transfer count and transportation method options
-"Zero" = "Zero";
-"Once" = "Once";
-"Twice" = "Twice";
 
 "Walking" = "Walking";
 "Bicycle" = "Bicycle";
@@ -259,27 +220,45 @@
 // MARK: - Railway Operators
 // Railway and bus operator display names
 "JR-East" = "JR-East";
-"Keikyu" = "Keikyu";
 "TokyoMetro" = "TokyoMetro";
-"Toei" = "Toei";
+"ToeiMetro" = "ToeiMetro";
+"Tokyu" = "Tokyu";
+"Keikyu" = "Keikyu";
 "Odakyu" = "Odakyu";
-"Yurikamome" = "Yurikamome";
-"TWR" = "TWR";
+"Tobu" = "Tobu";
 "Seibu" = "Seibu";
 "Sotetsu" = "Sotetsu";
-"TamaMonorail" = "Tama";
-"Tobu" = "Tobu";
-"Tokyu" = "Tokyu";
+"YokohamaMetro" = "Yokohama";
+"TWR" = "TWR";
+"Yurikamome" = "Yurikamome";
 "MIR" = "MIR";
-"YokohamaMunicipal" = "Yokohama";
+"TamaMonorail" = "Tama";
+"Toei" = "Toei";
+"Yokohama" = "Yokohama";
 "Kanachu" = "Kanachu";
 "SotetsuBus" = "Sotetsu";
-"KokusaiKogyoBus" = "KokusaiKogyo";
+"KokusaiKogyo" = "KokusaiKogyo";
 "OdakyuBus" = "Odakyu";
 "SeibuBus" = "Seibu";
 "TokyuBus" = "Tokyu";
-"KeioBus" = "Keio";
+"Keio" = "Keio";
 "NishitokyoBus" = "Nishitokyo";
+"JR-E" = "JR-E";
+"Metro" = "Metro";
+"Toei" = "Toei";
+"Tokyu" = "Tokyu";
+"Keikyu" = "Keikyu";
+"Odakyu" = "Odakyu";
+"Tobu" = "Tobu";
+"Seibu" = "Seibu";
+"Sotetsu" = "Sotetsu";
+"Yokohama" = "Yokohama";
+"TWR" = "TWR";
+"Yurikamome" = "Yurikamome";
+"MIR" = "MIR";
+"Tama" = "Tama";
+"Kanachu" = "Kanachu";
+"KokusaiKogyo" = "KokusaiKogyo";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels
@@ -289,8 +268,6 @@
 "Timetable Settings" = "Timetable Settings";
 "Timetable (Riding Time)" = "Timetable (Riding Time)";
 "Auto Generate Timetable" = "Auto Generate Timetable";
-"Auto" = "Auto";
-"Update Line Data" = "Update Line Data";
 "Updated: " = "Updated: ";
 "Clear" = "Clear";
 "Select" = "Select";
@@ -302,12 +279,9 @@
 "Enter operator name" = "Enter operator name";
 "Enter line name" = "Enter line name";
 "Enter bus route name" = "Enter bus route name";
-"Enter line name or bus route name" = "Enter line name or bus route name";
 "Line" = "Line";
-"Input" = "Input";
 ": " = ": ";
 " to " = " to ";
-"Select Color" = "Select Color";
 "Station Input" = "Station Input";
 "Departure Station" = "Departure";
 "Enter departure station" = "Enter departure station";
@@ -337,7 +311,6 @@
 "CommuterSpecialRapid" = "Commuter Special Rapid";
 "EveningWing" = "Evening Wing";
 "Express" = "Express";
-"F-Liner" = "F Liner";
 "HaijimaLiner" = "Haijima Liner";
 "KawagoeLimitedExpress" = "Kawagoe Limited Express";
 "LimitedExpress" = "Limited Express";
@@ -348,17 +321,17 @@
 "Rapid" = "Rapid";
 "RapidExpress" = "RapidExpress";
 "RapidLimitedExpress" = "Rapid Limited Express";
-"S-TRAIN" = "S TRAIN";
 "SemiExpress" = "Semi Express";
 "SemiRapid" = "Semi Rapid";
 "SectionExpress" = "Section Express";
 "SectionSemiExpress" = "Section Semi Express";
-"SLTaiju" = "SLTaiju";
 "SpecialRapid" = "Special Rapid";
+"F-Liner" = "F Liner";
+"S-TRAIN" = "S TRAIN";
+"SLTaiju" = "SLTaiju";
 "TH-LINER" = "TH LINER";
 "TJLiner" = "TJ Liner";
 "Edit Timetable" = "Edit Timetable";
-"Copy Timetable" = "Copy Timetable";
 "Select Type" = "Train Type";
 
 "defaultExpress" = "Express";
@@ -367,8 +340,6 @@
 "defaultLimitedExpress" = "Limited Express";
 
 // MARK: - Settings Transfer Sheet (Additional)
-"Home transportation settings" = "Home Transportation Settings";
-"Destination transportation settings" = "Destination Transportation Settings";
 "Route" = "Route";
 "Another route" = "Another route";
 "Display" = "Display";
@@ -377,7 +348,6 @@
 // MARK: - ODPT Calendar Types
 // Calendar type labels for timetable schedule
 "-" = "-";
-"Timetable" = "Timetable";
 "Weekday" = "Weekday";
 "Holiday" = "Holiday";
 "Saturday/Holiday" = "Saturday/Holiday";
@@ -388,5 +358,4 @@
 "Thursday" = "Thursday";
 "Friday" = "Friday";
 "Saturday" = "Saturday";
-"Select Schedule Type" = "Select Schedule Type";
 

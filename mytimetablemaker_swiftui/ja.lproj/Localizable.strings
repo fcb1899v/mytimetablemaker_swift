@@ -8,7 +8,7 @@
 
 // MARK: - Title
 // Application title
-"My Transfer Makers" = "マイ乗換ルートメーカー";
+"My Transit Makers" = "マイ乗換ルートメーカー";
 
 // MARK: - Main Content View
 // Main screen buttons and labels
@@ -18,9 +18,6 @@
 "Stop" = "停止";
 "OK" = "OK";
 "Cancel" = "キャンセル";
-"Maximum 20 Charactors" = "全角10文字以内";
-"Enter 0~99 [min]" = "0〜99[分]を入力";
-"Enter 0~59 [min]" = "0〜59[分]を入力";
 "Loading data..." = "データ読み込み中...";
 
 // MARK: - Route Data
@@ -43,58 +40,38 @@
 "To " = "";
 "he" = "へ";
 "on " = "";
+" min" = " 分";
+"[min]" = " [分]";
+"Not set" = "未設定";
 "Return Route 1" = "帰宅ルート1";
 "Return Route 2" = "帰宅ルート2";
 "Outbound Route 1" = "外出ルート1";
 "Outbound Route 2" = "外出ルート2";
-" min" = " 分";
-"[min]" = " [分]";
-"Not set" = "未設定";
 
 // MARK: - Settings Content View
 // Settings screen labels and options
 "Settings" = "設定";
 "Back to homepage" = "戻る";
-"Direction Settings" = "方向設定";
-"Setting home and destination" = "自宅・行き先の設定";
 "Setting Return Route 1" = "帰宅ルート1の設定";
 "Setting Return Route 2" = "帰宅ルート2の設定";
 "Setting Outbound Route 1" = "外出ルート1の設定";
 "Setting Outbound Route 2" = "外出ルート2の設定";
-"Display Return Route 2" = "帰宅ルート2の表示";
-"Display Outbound Route 2" = "外出ルート2の表示";
 "Manage your data after login" = "ログインしてデータを管理";
 
 "Various settings" = "各種設定";
-"Get data" = "データの取得";
-"Save data" = "データの保存";
 "Account" = "アカウント";
 "About" = "このアプリについて";
 "Version" = "バージョン";
 "Terms and privacy policy" = "利用規約・プライバシーポリシー";
 "https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/terms/ja";
-"Setting your number of transfers" = "乗換回数の設定";
-"Setting your departure place" = "出発地の設定";
-"Setting your station name" = "駅名の設定";
-"Setting your destination" = "目的地の設定";
-"Setting your line name" = "路線名の設定";
-"Setting your line color" = "路線カラーの設定";
-"Setting your ride time [min]" = "乗車時間の設定 [分]";
-"Setting your transportation" = "移動手段の設定";
-"Setting your transfer time [min]" = "乗換時間の設定 [分]";
 
 // MARK: - Settings Transfer Sheet
 // Home and destination transportation settings
 "Home & Destination Settings" = "自宅・行き先設定";
 "Home & Destination" = "自宅・行き先設定";
 "Destination" = "目的地";
-"Your home" = "出発地";
 "Enter departure point" = "出発地を入力";
 "Enter destination" = "目的地を入力";
-"Enter your home" = "出発地を入力";
-"Transportation" = "移動方法";
-"Travel Time" = "移動時間";
-"Setting your home" = "出発地の設定";
 "Setting departure point" = "出発地の設定";
 "Setting destination" = "目的地の設定";
 "Route 1" = "ルート1";
@@ -134,22 +111,12 @@
 "Add" = "追加";
 "Update" = "更新";
 "Delete" = "削除";
-"Add and delete departure time [min]" = "時刻の追加と削除 [分]";
 "Copying your timetable" = "発車時刻のコピー";
-"Copying all the time?" = "全時刻をコピーしますか？";
-"Select your timetable picture" =  "時刻表写真の選択";
 "Departure Time" = "発車時刻";
 "Ride Time" = "乗車時間";
 
 
 //Timetable.swift
-"Weekdays" = "平日";
-"Weekends" = "土日";
-"weekends" = "土日";
-"weekdays" = "平日";
-"Sat/Sun/PH" = "土日祝";
-"Weekdays except Public Holidays" = "平日・祝日を除く";
-"Saturday & Sunday $ Public Holidays" = "土曜・日曜・祝日";
 
 "E, MMM d, yyyy" = "yyyy/M/d (E)";
 
@@ -188,7 +155,6 @@
 "Enter your password" = "パスワードを入力してください";
 "Enter your confirm password" = "確認用パスワードを入力してください";
 "Enter your email again" = "もう一度Eメールアドレスを入力してください";
-"Check your email" = "メールを確認してください";
 "Confirm your email" = "メールを確認してください";
 "Incorrect email" = "メールアドレスが正しくありません";
 "Incorrect email format" = "メールアドレスの形式が正しくありません";
@@ -212,14 +178,10 @@
 
 "Password reset error" = "パスワードリセットエラー";
 "Password reset email Sent successfully" = "パスワードリセット用メールの送信成功";
-"Password reset email could not be sent" = "パスワードリセット用メールの送信失敗";
 
 
 // MARK: - Enums
 // Transfer count and transportation method options
-"Zero" = "なし";
-"Once" = "1回";
-"Twice" = "2回";
 
 "Walking" = "徒歩";
 "Bicycle" = "自転車";
@@ -257,27 +219,47 @@
 // Railway and bus operator display names
 "Line Color" = "路線カラー";
 "JR-East" = "JR東日本";
-"Keikyu" = "京急電鉄";
 "TokyoMetro" = "東京メトロ";
-"Toei" = "都営地下鉄";
+"ToeiMetro" = "都営地下鉄";
+"Tokyu" = "東急電鉄";
+"Keikyu" = "京急電鉄";
 "Odakyu" = "小田急電鉄";
-"Yurikamome" = "ゆりかもめ";
-"TWR" = "東京臨海高速鉄道";
+"Tobu" = "東武鉄道";
 "Seibu" = "西武鉄道";
 "Sotetsu" = "相模鉄道";
-"TamaMonorail" = "多摩都市モノレール";
-"Tobu" = "東武鉄道";
-"Tokyu" = "東急電鉄";
+"YokohamaMetro" = "横浜市営地下鉄";
+"TWR" = "東京臨海高速鉄道";
+"Yurikamome" = "ゆりかもめ";
 "MIR" = "首都圏新都市鉄道";
-"YokohamaMunicipal" = "横浜市営地下鉄";
+"TamaMonorail" = "多摩都市モノレール";
+"Toei" = "都営バス";
+"Yokohama" = "横浜市営バス";
 "Kanachu" = "神奈中バス";
 "SotetsuBus" = "相鉄バス";
-"KokusaiKogyoBus" = "国際興業";
+"KokusaiKogyo" = "国際興業";
 "OdakyuBus" = "小田急バス";
 "SeibuBus" = "西武バス";
 "TokyuBus" = "東急バス";
-"KeioBus" = "京王バス";
+"Keio" = "京王バス";
 "NishitokyoBus" = "西東京バス";
+"JR-E" = "JR東";
+"Metro" = "東京メトロ";
+"Toei" = "都営";
+"Tokyu" = "東急";
+"Keikyu" = "京急";
+"Odakyu" = "小田急";
+"Tobu" = "東武";
+"Seibu" = "西武";
+"Sotetsu" = "相鉄";
+"Yokohama" = "横浜市";
+"TWR" = "TWR";
+"Yurikamome" = "ゆりかもめ";
+"MIR" = "MIR";
+"Tama" = "多摩";
+"Kanachu" = "神奈中";
+"KokusaiKogyo" = "国際興業";
+"Keio" = "京王";
+"NishitokyoBus" = "西東京";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels
@@ -286,8 +268,6 @@
 "Timetable Settings" = "時刻表設定";
 "Timetable (Riding Time)" = "時刻表（乗車時間）";
 "Auto Generate Timetable" = "時刻表の自動生成";
-"Auto" = "自動";
-"Update Line Data" = "路線データの更新";
 "Save" = "保存";
 "Input Save" = "入力保存";
 "Select" = "選択";
@@ -299,12 +279,9 @@
 "Enter operator name" = "事業者名を入力";
 "Enter line name" = "路線名を入力";
 "Enter bus route name" = "バス路線名を入力";
-"Enter line name or bus route name" = "路線名・バス路線名を入力";
 "Line" = "路線";
-"Input" = "の入力";
 ": " = "：";
 " to " = "〜";
-"Select Color" = "色を選択";
 "Station Input" = "駅の入力";
 "Departure Station" = "乗車駅";
 "Enter departure station" = "乗車駅を入力";
@@ -334,7 +311,6 @@
 "CommuterSpecialRapid" = "通勤特快";
 "EveningWing" = "イブニング・ウィング";
 "Express" = "急行";
-"F-Liner" = "Fライナー";
 "HaijimaLiner" = "拝島ライナー";
 "KawagoeLimitedExpress" = "川越特急";
 "LimitedExpress" = "特急";
@@ -345,17 +321,17 @@
 "Rapid" = "快速";
 "RapidExpress" = "快速急行";
 "RapidLimitedExpress" = "快特";
-"S-TRAIN" = "Sトレイン";
 "SemiExpress" = "準急";
 "SemiRapid" = "区間快速";
 "SectionExpress" = "区間急行";
 "SectionSemiExpress" = "区間準急";
-"SLTaiju" = "SL大樹";
 "SpecialRapid" = "特別快速";
+"F-Liner" = "Fライナー";
+"S-TRAIN" = "Sトレイン";
+"SLTaiju" = "SL大樹";
 "TH-LINER" = "THライナー";
 "TJLiner" = "TJライナー";
 "Edit Timetable" = "時刻表設定";
-"Copy Timetable" = "時刻表コピー";
 "Select Type" = "列車種別";
 
 "defaultExpress" = "急行";
@@ -364,8 +340,6 @@
 "defaultLimitedExpress" = "特急";
 
 // MARK: - Settings Transfer Sheet (Additional)
-"Home transportation settings" = "移動手段設定：自宅〜";
-"Destination transportation settings" = "移動手段設定：目的地〜";
 "Route" = "ルート";
 "Another route" = "別ルート";
 "Display" = "表示";
@@ -374,7 +348,6 @@
 // MARK: - ODPT Calendar Types
 // Calendar type labels for timetable schedule
 "-" = "-";
-"Timetable" = "時刻表";
 "Weekday" = "平日";
 "Holiday" = "休日";
 "Saturday/Holiday" = "土休日";
@@ -385,5 +358,4 @@
 "Thursday" = "木曜日";
 "Friday" = "金曜日";
 "Saturday" = "土曜日";
-"Select Schedule Type" = "運行日を選択";
 

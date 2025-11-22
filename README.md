@@ -1,7 +1,7 @@
-# My Transfer Makers
+# My Transit Makers
 
 <div align="center">
-  <img src="mytimetablemaker_swiftui/Assets.xcassets/icon.imageset/icon.png" alt="My Transfer Maker Icon" width="120" height="120">
+  <img src="mytimetablemaker_swiftui/Assets.xcassets/icon.imageset/icon.png" alt="My Transit Maker Icon" width="120" height="120">
   <br>
   <strong>Create and manage your personal timetable with ease</strong>
   <br>
@@ -10,11 +10,11 @@
 
 ## 📱 Application Overview
 
-My Transfer Makers is a SwiftUI-based iOS application that helps users create and manage personal timetables for daily commutes and schedules. It provides a comprehensive solution with Firebase integration, user authentication, real-time railway data, and modern SwiftUI interface.
+My Transit Makers is a SwiftUI-based iOS application that helps users create and manage personal timetables for daily commutes and schedules. It provides a comprehensive solution with Firebase integration, user authentication, real-time railway data, and modern SwiftUI interface.
 
 ### 🎯 Key Features
 
-- **Personal Timetable Creation**: Create custom transfer guides for daily commutes and schedules
+- **Personal Timetable Creation**: Create custom transit guides for daily commutes and schedules
 - **Countdown Display**: Real-time countdown to departure time
 - **Route Comparison**: Display and compare two routes simultaneously
 - **Home/Office Routes**: Register separate routes for commuting and return trips with easy switching
@@ -132,7 +132,7 @@ mytimetablemaker_swiftui/
 ├── MainContentView/                   # Main app views
 │   ├── MainContentView.swift          # Main content view
 │   ├── MainViewModel.swift            # Main view model
-│   ├── MyTransfer.swift               # Transfer data model
+│   ├── MyTransit.swift                # Transit data model
 │   └── SplashContentView.swift        # Splash screen view
 ├── SettingsContentView/               # Settings views
 │   ├── SettingsContentView.swift      # Settings screen view
@@ -353,7 +353,7 @@ For new developers:
 ---
 
 <div align="center">
-  <strong>My Transfer Makers</strong> - Organize your time, organize your life!
+  <strong>My Transit Makers</strong> - Organize your commute, organize your day!
 </div>
 
 ## Licenses & Credits

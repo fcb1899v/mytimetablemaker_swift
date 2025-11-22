@@ -9,10 +9,10 @@ import Foundation
 import Combine
 import SwiftUI
 
-// MARK: - Transfer Data Model
-// Manages transfer information, timetables, and real-time updates
+// MARK: - Transit Data Model
+// Manages transit information, timetables, and real-time updates
 @MainActor
-final class TransferViewModel: ObservableObject {
+final class TransitViewModel: ObservableObject {
     
     // Timer for real-time updates
     private var cancellable: AnyCancellable?

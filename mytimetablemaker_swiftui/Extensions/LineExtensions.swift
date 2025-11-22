@@ -11,7 +11,7 @@ import Combine
 
 // MARK: - App Constants
 // Core application constants and localized strings
-let appTitle = "My Transfer Makers".localized
+let appTitle = "My Transit Makers".localized
 // Array of route direction identifiers
 let goorbackarray = ["back1", "go1", "back2", "go2"]
 

@@ -12,7 +12,7 @@ import AppTrackingTransparency
 // Primary view displaying transfer information, timetables, and navigation controls
 struct MainContentView: View {
 
-    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myTransit: TransitViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
 
@@ -29,11 +29,11 @@ struct MainContentView: View {
     @State private var sheetLineIndex: Int = 0
 
     init(
-        _ myTransfer: TransferViewModel,
+        _ myTransit: TransitViewModel,
         _ myLogin: LoginViewModel,
         _ myFirestore: FirestoreViewModel
     ) {
-        self.myTransfer = myTransfer
+        self.myTransit = myTransit
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -68,12 +68,12 @@ struct MainContentView: View {
 
                         // MARK: - Date Display
                         ZStack {
-                            Text(myTransfer.dateLabel)
-                                .onChange(of: myTransfer.selectDate) {
-                                    newValue in myTransfer.dateLabel = "\(newValue.setDate)"
+                            Text(myTransit.dateLabel)
+                                .onChange(of: myTransit.selectDate) {
+                                    newValue in myTransit.dateLabel = "\(newValue.setDate)"
                                 }
-                            if (myTransfer.isTimeStop) {
-                                DatePicker("datepicker", selection: $myTransfer.selectDate,
+                            if (myTransit.isTimeStop) {
+                                DatePicker("datepicker", selection: $myTransit.selectDate,
                                     displayedComponents: .date
                                 )
                                 .labelsHidden()
@@ -83,13 +83,13 @@ struct MainContentView: View {
                         }
 
                         // MARK: - Time Display
-                        if (myTransfer.isTimeStop) {
+                        if (myTransit.isTimeStop) {
                             ZStack {
-                                Text(myTransfer.timeLabel)
-                                    .onChange(of: myTransfer.selectDate) {
-                                        newValue in myTransfer.timeLabel = "\(newValue.setTime)"
+                                Text(myTransit.timeLabel)
+                                    .onChange(of: myTransit.selectDate) {
+                                        newValue in myTransit.timeLabel = "\(newValue.setTime)"
                                     }
-                                DatePicker("datepicker", selection: $myTransfer.selectDate,
+                                DatePicker("datepicker", selection: $myTransit.selectDate,
                                     displayedComponents: .hourAndMinute
                                 )
                                 .labelsHidden()
@@ -97,12 +97,12 @@ struct MainContentView: View {
                                 .frame(width: screen.headerDateHeight, height: screen.headerDateHeight)
                             }
                         } else {
-                            Text(myTransfer.timeLabel)
+                            Text(myTransit.timeLabel)
                                 .onAppear {
-                                    myTransfer.ensureTimerRunning()
+                                    myTransit.ensureTimerRunning()
                                 }
                                 .onDisappear {
-                                    myTransfer.stopTimerOnDisappear()
+                                    myTransit.stopTimerOnDisappear()
                                 }
                         }
                     }
@@ -116,36 +116,36 @@ struct MainContentView: View {
                         // Display return route button
                         CustomButton(
                             title: "Back".localized,
-                            backgroundColor: myTransfer.isBack ? Color.accent : Color.gray,
+                            backgroundColor: myTransit.isBack ? Color.accent : Color.gray,
                             isEnabled: true,
-                            action: myTransfer.backButton
+                            action: myTransit.backButton
                         )
                         .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                         
                         // Display outbound route button
                         CustomButton(
                             title: "Go".localized,
-                            backgroundColor: !myTransfer.isBack ? Color.accent : Color.gray,
+                            backgroundColor: !myTransit.isBack ? Color.accent : Color.gray,
                             isEnabled: true,
-                            action: myTransfer.goButton
+                            action: myTransit.goButton
                         )
                         .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                         
                         // Time Start Button
                         CustomButton(
                             title: "Start".localized,
-                            backgroundColor: !myTransfer.isTimeStop ? Color.accent : Color.gray,
+                            backgroundColor: !myTransit.isTimeStop ? Color.accent : Color.gray,
                             isEnabled: true,
-                            action: myTransfer.startButton
+                            action: myTransit.startButton
                         )
                         .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                         
                         // Time Stop Button
                         CustomButton(
                             title: "Stop".localized,
-                            backgroundColor: myTransfer.isTimeStop ? Color.accent : Color.gray,
+                            backgroundColor: myTransit.isTimeStop ? Color.accent : Color.gray,
                             isEnabled: true,
-                            action: myTransfer.stopButton
+                            action: myTransit.stopButton
                         )
                         .frame(width: screen.operationButtonWidth, height: screen.operationButtonHeight)
                         
@@ -171,25 +171,25 @@ struct MainContentView: View {
 
                     VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                         Spacer().frame(height: screen.routeCountdownTopSpace)
-                        Text(myTransfer.countdownTime1)
+                        Text(myTransit.countdownTime1)
                             .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
-                            .foregroundColor(myTransfer.countdownColor1)
+                            .foregroundColor(myTransit.countdownColor1)
                             .padding(.vertical, screen.routeCountdownPadding)
                             .frame(height: screen.routeCountdownFontSize + screen.routeCountdownPadding * 2, alignment: .center)
-                        HomeOfficeView(myTransfer.goOrBack1, 1)
-                        ForEach(0...myTransfer.changeLine1, id: \.self) { num in
-                            TransferView(myTransfer.goOrBack1, num + 1)
-                            StationLineView(myTransfer.goOrBack1, num)
+                        HomeOfficeView(myTransit.goOrBack1, 1)
+                        ForEach(0...myTransit.changeLine1, id: \.self) { num in
+                            TransferView(myTransit.goOrBack1, num + 1)
+                            StationLineView(myTransit.goOrBack1, num)
                         }
-                        TransferView(myTransfer.goOrBack1, 0)
-                        HomeOfficeView(myTransfer.goOrBack1, 0)
+                        TransferView(myTransit.goOrBack1, 0)
+                        HomeOfficeView(myTransit.goOrBack1, 0)
                         Spacer()
                     }
-                    .frame(width: myTransfer.routeWidth, alignment: .top)
+                    .frame(width: myTransit.routeWidth, alignment: .top)
                     .padding(.horizontal, screen.routeSidePadding)
                     
                     // MARK: - Second Direction Display (if enabled)
-                    if (myTransfer.isShowRoute2) {
+                    if (myTransit.isShowRoute2) {
 
                         Divider()
                             .frame(width: 1.5)
@@ -198,21 +198,21 @@ struct MainContentView: View {
 
                         VStack(alignment: .center, spacing: screen.routeBottomSpace) {
                             Spacer().frame(height: screen.routeCountdownTopSpace)
-                            Text(myTransfer.countdownTime2)
+                            Text(myTransit.countdownTime2)
                                 .font(.custom("GenEiGothicN-Regular", size: screen.routeCountdownFontSize))
-                                .foregroundColor(myTransfer.countdownColor2)
+                                .foregroundColor(myTransit.countdownColor2)
                                 .padding(.vertical, screen.routeCountdownPadding)
                                 .frame(height: screen.routeCountdownFontSize + screen.routeCountdownPadding * 2, alignment: .center)
-                            HomeOfficeView(myTransfer.goOrBack2, 1)
-                            ForEach(0...myTransfer.changeLine2, id: \.self) { num in
-                                TransferView(myTransfer.goOrBack2, num + 1)
-                                StationLineView(myTransfer.goOrBack2, num)
+                            HomeOfficeView(myTransit.goOrBack2, 1)
+                            ForEach(0...myTransit.changeLine2, id: \.self) { num in
+                                TransferView(myTransit.goOrBack2, num + 1)
+                                StationLineView(myTransit.goOrBack2, num)
                             }
-                            TransferView(myTransfer.goOrBack2, 0)
-                            HomeOfficeView(myTransfer.goOrBack2, 0)
+                            TransferView(myTransit.goOrBack2, 0)
+                            HomeOfficeView(myTransit.goOrBack2, 0)
                             Spacer()
                         }
-                        .frame(width: myTransfer.routeWidth, alignment: .top)
+                        .frame(width: myTransit.routeWidth, alignment: .top)
                         .padding(.horizontal, screen.routeSidePadding)
                     }
 
@@ -234,7 +234,7 @@ struct MainContentView: View {
             .edgesIgnoringSafeArea(.all)
         }
         .navigationDestination(isPresented: $isMoveSettings) {
-            SettingsContentView(myTransfer, myLogin, myFirestore)
+            SettingsContentView(myTransit, myLogin, myFirestore)
         }
         .navigationBarBackButtonHidden(true)
         // Centralized sheets: content uses activeGoorback/activeTransferNum.
@@ -256,31 +256,31 @@ struct MainContentView: View {
         // Reflect any UserDefaults changes into the view model safely on MainActor.
         .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
             Task { @MainActor in
-                myTransfer.updateAllDataFromUserDefaults()
+                myTransit.updateAllDataFromUserDefaults()
             }
         }
         // Refresh when SettingsLineSheet finishes saving.
         // When SettingsLineSheet saves, refresh all derived values.
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsLineUpdated"))) { _ in
             Task { @MainActor in
-                myTransfer.updateAllDataFromUserDefaults()
+                myTransit.updateAllDataFromUserDefaults()
             }
         }
         // Refresh when SettingsTransferSheet finishes saving.
         // When SettingsTransferSheet saves, refresh all derived values.
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("SettingsTransferUpdated"))) { _ in
             Task { @MainActor in
-                myTransfer.updateAllDataFromUserDefaults()
+                myTransit.updateAllDataFromUserDefaults()
             }
         }
         // Refresh all views when Go/Back flag toggles.
-        .onChange(of: myTransfer.isBack) { _ in
-            myTransfer.updateAllDataFromUserDefaults()
+        .onChange(of: myTransit.isBack) { _ in
+            myTransit.updateAllDataFromUserDefaults()
         }
         // Ensure timer is running when MainContentView appears
         .onAppear {
-            if myTransfer.isTimeStop {
-                myTransfer.startButton()
+            if myTransit.isTimeStop {
+                myTransit.startButton()
             }
         }
     }
@@ -289,7 +289,7 @@ struct MainContentView: View {
     // Displays station name and departure time with editing capability
     @ViewBuilder
     func HomeOfficeView(_ goorback: String, _ num: Int) -> some View {
-        let timeArray = goorback == myTransfer.goOrBack1 ? myTransfer.timeArrayString1 : myTransfer.timeArrayString2
+        let timeArray = goorback == myTransit.goOrBack1 ? myTransit.timeArrayString1 : myTransit.timeArrayString2
         let time = num == 0 ? timeArray[0] : timeArray[1]
         
         HStack {
@@ -362,8 +362,8 @@ struct MainContentView: View {
     @ViewBuilder
     func TransferView(_ goorback: String, _ num: Int) -> some View {
         // Check if this is a direct connection (0 minutes transfer with same arrival/departure time)
-        let currentDate = myTransfer.selectDate
-        let currentTime = myTransfer.currentTime
+        let currentDate = myTransit.selectDate
+        let currentTime = myTransit.currentTime
         let timeArray = goorback.timeArray(currentDate, currentTime)
         let transferTimeArray = goorback.transferTimeArray
         
@@ -404,8 +404,8 @@ struct MainContentView: View {
     // MARK: - StationLine View (func)
     @ViewBuilder
     func StationLineView(_ goorback: String, _ num: Int) -> some View {
-        let currentDate = myTransfer.selectDate
-        let currentTime = myTransfer.currentTime
+        let currentDate = myTransit.selectDate
+        let currentTime = myTransit.currentTime
         // Use line-specific calendar type (num is 0-based line index)
         let timeArray = goorback.timeArray(currentDate, currentTime).map { $0.stringTime }
         let departureTime = timeArray[2 * num + 2]
@@ -464,10 +464,10 @@ struct MainContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct MainContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = TransferViewModel()
+        let myTransit = TransitViewModel()
         let myLogin = LoginViewModel()
         let myFirestore = FirestoreViewModel()
-        MainContentView(myTransfer, myLogin, myFirestore)
+        MainContentView(myTransit, myLogin, myFirestore)
     }
 }
 

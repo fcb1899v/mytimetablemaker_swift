@@ -438,7 +438,7 @@ struct CustomBackButton: View {
 struct CustomAccountButton: View {
     
     // Observed objects
-    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myTransit: TransitViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
     
@@ -455,7 +455,7 @@ struct CustomAccountButton: View {
     let isSuccess: () -> Bool
     
     init(
-        myTransfer: TransferViewModel,
+        myTransit: TransitViewModel,
         myLogin: LoginViewModel,
         myFirestore: FirestoreViewModel,
         buttonTitle: String,
@@ -464,7 +464,7 @@ struct CustomAccountButton: View {
         action: @escaping () -> Void,
         isSuccess: @escaping () -> Bool
     ) {
-        self.myTransfer = myTransfer
+        self.myTransit = myTransit
         self.myLogin = myLogin
         self.myFirestore = myFirestore
         self.buttonTitle = buttonTitle
@@ -515,7 +515,7 @@ struct CustomAccountButton: View {
         }
         .tint(.primary)
         .navigationDestination(isPresented: $isNavigateToMain) {
-            MainContentView(myTransfer, myLogin, myFirestore)
+            MainContentView(myTransit, myLogin, myFirestore)
         }
     }
 }

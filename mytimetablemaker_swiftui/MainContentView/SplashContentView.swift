@@ -16,7 +16,7 @@ import GoogleMobileAds
 struct SplashContentView: View {
     
     // Core data models for app state management
-    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myTransit: TransitViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
     // Shared data manager for monitoring loading state
@@ -28,11 +28,11 @@ struct SplashContentView: View {
 
     // MARK: - Initialization
     init(
-        _ myTransfer: TransferViewModel,
+        _ myTransit: TransitViewModel,
         _ myLogin: LoginViewModel,
         _ myFirestore: FirestoreViewModel
     ) {
-        self.myTransfer = myTransfer
+        self.myTransit = myTransit
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -103,7 +103,7 @@ struct SplashContentView: View {
             }
             .edgesIgnoringSafeArea(.all)
             .navigationDestination(isPresented: $isFinishSplash) {
-                MainContentView(myTransfer, myLogin, myFirestore)
+                MainContentView(myTransit, myLogin, myFirestore)
             }
         }
         .preferredColorScheme(.light)
@@ -114,9 +114,9 @@ struct SplashContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SplashContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = TransferViewModel()
+        let myTransit = TransitViewModel()
         let myLogin = LoginViewModel()
         let myFirestore = FirestoreViewModel()
-        SplashContentView(myTransfer, myLogin, myFirestore)
+        SplashContentView(myTransit, myLogin, myFirestore)
     }
 }

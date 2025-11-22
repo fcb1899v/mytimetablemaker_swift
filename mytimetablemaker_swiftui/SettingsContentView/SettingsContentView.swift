@@ -13,7 +13,7 @@ struct SettingsContentView: View {
     
     // MARK: - Environment & Observed Objects
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myTransit: TransitViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
     
@@ -32,13 +32,13 @@ struct SettingsContentView: View {
     @State private var showRoute2: Bool = false
 
     // MARK: - Initialization
-    // Initialize with view models for transfer, login, and Firestore operations
+    // Initialize with view models for transit, login, and Firestore operations
     init(
-        _ myTransfer: TransferViewModel,
+        _ myTransit: TransitViewModel,
         _ myLogin: LoginViewModel,
         _ myFirestore: FirestoreViewModel
     ) {
-        self.myTransfer = myTransfer
+        self.myTransit = myTransit
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -106,7 +106,7 @@ struct SettingsContentView: View {
                         accountButton(isDeleteAccount: false)
                         accountButton(isDeleteAccount: true)
                     } else {
-                        NavigationLink(destination: LoginContentView(myTransfer, myLogin, myFirestore)){
+                        NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
                             Text("Manage your data after login".localized)
                                 .font(.system(size: screen.settingsFontSize))
                         }
@@ -185,7 +185,7 @@ struct SettingsContentView: View {
             }
         }
         .navigationDestination(isPresented: $isNavigateToMain) {
-            MainContentView(myTransfer, myLogin, myFirestore)
+            MainContentView(myTransit, myLogin, myFirestore)
         }
         // MARK: - Logout Result Alert
         .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
@@ -209,8 +209,8 @@ struct SettingsContentView: View {
                 myFirestore.isShowMessage = false
                 if (myFirestore.isFirestoreSuccess) {
                     // Update transfer data for GetFirestore operation
-                    myTransfer.setRoute2()
-                    myTransfer.setLineData()
+                    myTransit.setRoute2()
+                    myTransit.setLineData()
                     // Add slight delay to ensure reliable navigation
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         isNavigateToMain = true
@@ -298,9 +298,9 @@ struct SettingsContentView: View {
         UserDefaults.standard.set(value, forKey: "back2".isShowRoute2Key)
         UserDefaults.standard.set(value, forKey: "go2".isShowRoute2Key)
         
-        // Update TransferViewModel
-        myTransfer.isShowBackRoute2 = value
-        myTransfer.isShowGoRoute2 = value
+        // Update TransitViewModel
+        myTransit.isShowBackRoute2 = value
+        myTransit.isShowGoRoute2 = value
     }
     
     /// Creates a settings button with consistent styling
@@ -364,10 +364,10 @@ struct SettingsContentView: View {
 // Provides preview data for SwiftUI previews in Xcode
 struct SettingsContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let myTransfer = TransferViewModel()
+        let myTransit = TransitViewModel()
         let myLogin = LoginViewModel()
         let myFirestore = FirestoreViewModel()
-        SettingsContentView(myTransfer, myLogin, myFirestore)
+        SettingsContentView(myTransit, myLogin, myFirestore)
     }
 }
 

@@ -81,66 +81,62 @@ enum LocalDataSource: CaseIterable {
     // MARK: - Operator Display Name Mapping
     // Get localized display name for operator selection UI
     var operatorDisplayName: String {
-        let isJa = Locale.current.language.languageCode?.identifier == "ja"
-        
         switch self {
-        case .jrEast: return isJa ? "JR東日本" : "JR-East"
-        case .tokyoMetro: return isJa ? "東京メトロ" : "TokyoMetro"
-        case .toeiMetro: return isJa ? "都営地下鉄" : "ToeiMetro"
-        case .tokyu: return isJa ? "東急電鉄" : "Tokyu"
-        case .keikyu: return isJa ? "京急電鉄" : "Keikyu"
-        case .odakyu: return isJa ? "小田急電鉄" : "Odakyu"
-        case .tobu: return isJa ? "東武鉄道" : "Tobu"
-        case .seibu: return isJa ? "西武鉄道" : "Seibu"
-        case .sotetsu: return isJa ? "相模鉄道" : "Sotetsu"
-        case .yokohamaMetro: return isJa ? "横浜市営地下鉄" : "YokohamaMetro"
-        case .rinkai: return isJa ? "東京臨海高速鉄道" : "TWR"
-        case .yurikamome: return isJa ? "ゆりかもめ" : "Yurikamome"
-        case .tsukuba: return isJa ? "首都圏新都市鉄道" : "MIR"
-        case .tama: return isJa ? "多摩都市モノレール" : "TamaMonorail"
-        case .toeiBus: return isJa ? "都営バス" : "Toei"
-        case .yokohamaBus: return isJa ? "横浜市営バス" : "Yokohama"
-        case .tokyuBus: return isJa ? "東急バス" : "Tokyu"
-        case .seibuBus: return isJa ? "西武バス" : "Seibu"
-        case .sotetsuBus: return isJa ? "相鉄バス" : "Sotetsu"
-        case .kanachuBus: return isJa ? "神奈中バス" : "Kanachu"
-        case .kokusaiKogyo: return isJa ? "国際興業" : "KokusaiKogyo"
-        case .odakyuBus: return isJa ? "小田急バス" : "Odakyu"
-        case .keioBus: return isJa ? "京王バス" : "Keio"
-        case .nishitokyoBus: return isJa ? "西東京バス" : "Nishitokyo"
+        case .jrEast: return "JR-East".localized
+        case .tokyoMetro: return "TokyoMetro".localized
+        case .toeiMetro: return "ToeiMetro".localized
+        case .tokyu: return "Tokyu".localized
+        case .keikyu: return "Keikyu".localized
+        case .odakyu: return "Odakyu".localized
+        case .tobu: return "Tobu".localized
+        case .seibu: return "Seibu".localized
+        case .sotetsu: return "Sotetsu".localized
+        case .yokohamaMetro: return "YokohamaMetro".localized
+        case .rinkai: return "TWR".localized
+        case .yurikamome: return "Yurikamome".localized
+        case .tsukuba: return "MIR".localized
+        case .tama: return "TamaMonorail".localized
+        case .toeiBus: return "Toei".localized
+        case .yokohamaBus: return "Yokohama".localized
+        case .tokyuBus: return "Tokyu".localized
+        case .seibuBus: return "Seibu".localized
+        case .sotetsuBus: return "SotetsuBus".localized
+        case .kanachuBus: return "Kanachu".localized
+        case .kokusaiKogyo: return "KokusaiKogyo".localized
+        case .odakyuBus: return "OdakyuBus".localized
+        case .keioBus: return "Keio".localized
+        case .nishitokyoBus: return "NishitokyoBus".localized
         }
     }
     
     // MARK: - Operator Short Display Name Mapping
     // Get short display name for CustomTag (compact version)
     var operatorShortDisplayName: String {
-        let isJa = Locale.current.language.languageCode?.identifier == "ja"
-        
         switch self {
-        case .jrEast: return isJa ? "JR東" : "JR-E"
-        case .tokyoMetro: return isJa ? "東京メトロ" : "Metro"
-        case .toeiMetro: return isJa ? "都営" : "Toei"
-        case .tokyu: return isJa ? "東急" : "Tokyu"
-        case .keikyu: return isJa ? "京急" : "Keikyu"
-        case .odakyu: return isJa ? "小田急" : "Odakyu"
-        case .tobu: return isJa ? "東武" : "Tobu"
-        case .seibu: return isJa ? "西武" : "Seibu"
-        case .sotetsu: return isJa ? "相鉄" : "Sotetsu"
-        case .yokohamaMetro: return isJa ? "横浜市" : "Yokohama"
-        case .rinkai: return isJa ? "TWR" : "TWR"
-        case .yurikamome: return isJa ? "ゆりかもめ" : "Yurikamome"
-        case .tsukuba: return isJa ? "MIR" : "MIR"
-        case .tama: return isJa ? "多摩" : "Tama"
-        case .toeiBus: return isJa ? "都営" : "Toei"
-        case .yokohamaBus: return isJa ? "横浜市" : "Yokohama"
-        case .tokyuBus: return isJa ? "東急" : "Tokyu"
-        case .seibuBus: return isJa ? "西武" : "Seibu"
-        case .sotetsuBus: return isJa ? "相鉄" : "Sotetsu"
-        case .kanachuBus: return isJa ? "神奈中" : "Kanachu"
-        case .kokusaiKogyo: return isJa ? "国際興業" : "Kokusai"
-        case .odakyuBus: return isJa ? "小田急" : "Odakyu"
-        case .keioBus: return isJa ? "京王" : "Keio"
-        case .nishitokyoBus: return isJa ? "西東京" : "Nishitokyo"
+        case .jrEast: return "JR-E".localized
+        case .tokyoMetro: return "Metro".localized
+        case .toeiMetro: return "Toei".localized
+        case .tokyu: return "Tokyu".localized
+        case .keikyu: return "Keikyu".localized
+        case .odakyu: return "Odakyu".localized
+        case .tobu: return "Tobu".localized
+        case .seibu: return "Seibu".localized
+        case .sotetsu: return "Sotetsu".localized
+        case .yokohamaMetro: return "Yokohama".localized
+        case .rinkai: return "TWR".localized
+        case .yurikamome: return "Yurikamome".localized
+        case .tsukuba: return "MIR".localized
+        case .tama: return "Tama".localized
+        case .toeiBus: return "Toei".localized
+        case .yokohamaBus: return "Yokohama".localized
+        case .tokyuBus: return "Tokyu".localized
+        case .seibuBus: return "Seibu".localized
+        case .sotetsuBus: return "Sotetsu".localized
+        case .kanachuBus: return "Kanachu".localized
+        case .kokusaiKogyo: return "KokusaiKogyo".localized
+        case .odakyuBus: return "Odakyu".localized
+        case .keioBus: return "Keio".localized
+        case .nishitokyoBus: return "NishitokyoBus".localized
         }
     }
     

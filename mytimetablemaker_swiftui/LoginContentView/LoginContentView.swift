@@ -14,7 +14,7 @@ struct LoginContentView: View {
 
     // MARK: - Observed Objects
     // Core data models for app state management
-    @ObservedObject private var myTransfer: TransferViewModel
+    @ObservedObject private var myTransit: TransitViewModel
     @ObservedObject private var myLogin: LoginViewModel
     @ObservedObject private var myFirestore: FirestoreViewModel
 
@@ -30,11 +30,11 @@ struct LoginContentView: View {
     // MARK: - Initialization
     // Initialize with required data models
     init(
-        _ myTransfer: TransferViewModel,
+        _ myTransit: TransitViewModel,
         _ myLogin: LoginViewModel,
         _ myFirestore: FirestoreViewModel
     ) {
-        self.myTransfer = myTransfer
+        self.myTransit = myTransit
         self.myLogin = myLogin
         self.myFirestore = myFirestore
     }
@@ -231,10 +231,10 @@ struct LoginContentView: View {
                 }
             }
             .navigationDestination(isPresented: $isNavigateToSettings) {
-                SettingsContentView(myTransfer, myLogin, myFirestore)
+                SettingsContentView(myTransit, myLogin, myFirestore)
             }
             .navigationDestination(isPresented: $isNavigateToMain) {
-                MainContentView(myTransfer, myLogin, myFirestore)
+                MainContentView(myTransit, myLogin, myFirestore)
             }
             .toolbarBackground(Color.accent, for: .navigationBar)
         }
@@ -246,8 +246,8 @@ struct LoginContentView: View {
 struct LoginContentView_Previews: PreviewProvider {
     static var previews: some View {
         let myLogin = LoginViewModel()
-        let myTransfer = TransferViewModel()
+        let myTransit = TransitViewModel()
         let myFirestore = FirestoreViewModel()
-        LoginContentView(myTransfer, myLogin, myFirestore)
+        LoginContentView(myTransit, myLogin, myFirestore)
     }
 }
