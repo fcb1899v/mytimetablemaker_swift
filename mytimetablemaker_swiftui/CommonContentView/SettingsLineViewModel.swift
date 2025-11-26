@@ -31,6 +31,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var lineSuggestions: [TransportationLine] = [] // Search results for line suggestions
     @Published var isLoading: Bool = false               // Loading state for update operations
     @Published var lastUpdatedDisplay: String? = nil     // Last update timestamp for display
+    @Published var isLoadingBusStops: Bool = false       // Loading state for bus stops fetching
+    @Published var isLoadingTimetable: Bool = false      // Loading state for timetable generation
+    @Published var isLoadingLines: Bool = false           // Loading state for line list fetching
+    @Published var loadingMessage: String? = nil         // Loading message to display
     @Published var showColorSelection: Bool = false      // Color picker visibility state
     @Published var showStationSelection: Bool = false    // Station selection UI visibility state
     
@@ -84,6 +88,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var availableLineNumbers: [Int] = [1]          // Available line numbers based on changeLine
     @Published var isLineNumberChanging: Bool = false         // Flag to indicate line number is being changed
     @Published var isGoorBackChanging: Bool = false           // Flag to indicate direction is being changed
+    @Published var isChangedOperator: Bool = false            // Flag to indicate operator has been changed from saved value
     @Published var selectedGoorback: String = "back1"         // Currently selected route direction
     
     // Computed properties for UI state checking
@@ -107,19 +112,26 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private let goorback: String                              // Direction identifier (go/back) for route context
     private let lineIndex: Int                                // Line index for UserDefaults key generation
     private let sharedDataManager = SharedDataManager.shared  // Shared data manager for app-wide data management
+    private let odptService = ODPTDataService()               // ODPT data service for ODPT API data fetching
+    private let gtfsService = GTFSDataService()               // GTFS data service for GTFS data fetching
+    private let consumerKey: String                           // ODPT API consumer key
     
     // MARK: - Initialization
     // Initialize view model with direction and line index
     init(goorback: String = "back1", lineIndex: Int = 0) {
         self.goorback = goorback
         self.lineIndex = lineIndex
+        self.consumerKey = Bundle.main.infoDictionary?["ODPT_ACCESS_TOKEN"] as? String ?? ""
         self.selectedGoorback = goorback
+        
+        // Set flag to prevent filterLine() from being called during initial setup
+        self.isLineNumberChanging = true
         
         // Setup search lineInput debouncing for improved performance
         $lineInput
             .removeDuplicates()
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
-            .sink { [weak self] q in Task { await self?.filter(q) } }
+            .sink { [weak self] q in Task { await self?.filterLine(q) } }
             .store(in: &cancellables)
         
         // Monitor changeLine changes to update available line numbers
@@ -230,10 +242,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
             self.busLines = sharedLines.filter { $0.kind == .bus }
         }
         
-        await filter(lineInput)
-        
         // Check if saved line exists in loaded data and restore it
+        // Don't call filterLine() here - it will be called when user starts typing in line input field
         await checkSavedLineInData()
+        
+        // Reset flag after initial setup is complete
+        await MainActor.run {
+            self.isLineNumberChanging = false
+        }
     }
     
     // Perform manual data update for both railway and bus operators
@@ -258,10 +274,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Search and Filtering
     // Filter railway lines based on search lineInput with performance optimizations
-    func filter(_ q: String) async {
+    func filterLine(_ q: String) async {
         let t = q.normalizedForSearch
         
         // Don't show suggestions if line number or direction is being changed or line is already selected
+        // Also skip if called during onAppear (UserDefaults data is already loaded in loadSettingsForSelectedLine)
         if isLineNumberChanging || isGoorBackChanging || lineSelected { return }
         
         // Don't show line suggestions if operator is not selected from dropdown
@@ -272,24 +289,50 @@ final class SettingsLineSheetViewModel: ObservableObject {
             showLineSuggestions = false
             return
         }
-        
+                
         // Filter by transportation kind (.railway or .bus)
         // Always filter by selected transportation kind regardless of operator selection
         var searchData = selectedTransportationKind == .railway ? railwayLines: busLines
         
         // Filter by selected operator
         searchData = searchData.filter { $0.operatorCode == operatorCode }
+
+        // For GTFS operators, use lines from busLines (already loaded by fetchGTFSLinesForOperator)
+        // Load from UserDefaults only if operator has not been changed (onAppear case)
+        if let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+           dataSource.apiType == .gtfs,
+           !isChangedOperator {
+            searchData = loadOperatorLineList(goorback: selectedGoorback, num: selectedLineNumber - 1) ?? []
+        }
         
         // If query is empty but operator is selected, show all lines for that operator
         if t.isEmpty {
             // Show all lines for the selected operator when query is empty
             if selectedTransportationKind == .bus {
-                let displayNames = searchData.map { lineDisplayName(for: $0) }
-                let uniqueDisplayNames = Array(Set(displayNames))
-                let uniqueResults = uniqueDisplayNames.compactMap { uniqueDisplayName in
-                    searchData.first { lineDisplayName(for: $0) == uniqueDisplayName }
+                // For GTFS routes, group by lineCode (route_short_name) to avoid duplicates
+                // For ODPT routes, group by displayName
+                var uniqueResults: [TransportationLine] = []
+                var seenLineCodes: Set<String> = []
+                var seenDisplayNames: Set<String> = []
+                
+                for line in searchData {
+                    // For GTFS routes, use lineCode (route_short_name) for grouping
+                    if let lineCode = line.lineCode, !lineCode.isEmpty {
+                        if !seenLineCodes.contains(lineCode) {
+                            seenLineCodes.insert(lineCode)
+                            uniqueResults.append(line)
+                        }
+                    } else {
+                        // For routes without lineCode, use displayName for grouping
+                        let displayName = lineDisplayName(for: line)
+                        if !seenDisplayNames.contains(displayName) {
+                            seenDisplayNames.insert(displayName)
+                            uniqueResults.append(line)
+                        }
+                    }
                 }
-                lineSuggestions = Array(uniqueResults.prefix(10))
+                
+                lineSuggestions = uniqueResults
                 showLineSuggestions = !lineSuggestions.isEmpty
                 nameCounts = [:]
             } else {
@@ -319,14 +362,30 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let contains = searchData.filter { !lineDisplayName(for: $0).normalizedForSearch.hasPrefix(t) && lineDisplayName(for: $0).normalizedForSearch.contains(t) }
             let allResults = starts + contains
             
-            // Remove duplicates by displayName to show only unique direction names
-            let displayNames = allResults.map { lineDisplayName(for: $0) }
-            let uniqueDisplayNames = Array(Set(displayNames))
-            let uniqueResults = uniqueDisplayNames.compactMap { uniqueDisplayName in
-                allResults.first { lineDisplayName(for: $0) == uniqueDisplayName }
+            // For GTFS routes, group by lineCode (route_short_name) to avoid duplicates
+            // For ODPT routes, group by displayName
+            var uniqueResults: [TransportationLine] = []
+            var seenLineCodes: Set<String> = []
+            var seenDisplayNames: Set<String> = []
+            
+            for line in allResults {
+                // For GTFS routes, use lineCode (route_short_name) for grouping
+                if let lineCode = line.lineCode, !lineCode.isEmpty {
+                    if !seenLineCodes.contains(lineCode) {
+                        seenLineCodes.insert(lineCode)
+                        uniqueResults.append(line)
+                    }
+                } else {
+                    // For routes without lineCode, use displayName for grouping
+                    let displayName = lineDisplayName(for: line)
+                    if !seenDisplayNames.contains(displayName) {
+                        seenDisplayNames.insert(displayName)
+                        uniqueResults.append(line)
+                    }
+                }
             }
             
-            lineSuggestions = Array(uniqueResults.prefix(10))
+            lineSuggestions = uniqueResults
             showLineSuggestions = !lineSuggestions.isEmpty
             nameCounts = [:]
             return
@@ -368,25 +427,26 @@ final class SettingsLineSheetViewModel: ObservableObject {
         if isLineNumberChanging || isGoorBackChanging || operatorSelected { return }
         
         // Get available operators filtered by transportation kind (railway or bus)
-        // Only include operators that match the selected transportation kind
-        let availableOperators = LocalDataSource.allCases
+        // Keep enum order by using LocalDataSource array and corresponding operatorDisplayName array
+        let availableDataSources = LocalDataSource.allCases
             .filter { dataSource in
                 // Filter by transportation type: railway or bus
-                dataSource.transportationType == selectedTransportationKind
-            }
-            .compactMap { dataSource -> String? in
-                // Only include operators with valid operator codes
-                // Use operatorDisplayName directly to ensure correct name for each transportation type
-                guard dataSource.operatorCode != nil else { return nil }
-                return dataSource.operatorDisplayName
+                dataSource.transportationType == selectedTransportationKind &&
+                dataSource.operatorCode != nil
             }
         
+        // Create array of (dataSource, operatorDisplayName) tuples to maintain enum order
+        let availableOperatorsWithSource = availableDataSources.compactMap { dataSource -> (LocalDataSource, String)? in
+            guard let operatorCode = dataSource.operatorCode else { return nil }
+            return (dataSource, dataSource.operatorDisplayName)
+        }
+        
         // Filter operators based on search query
-        let filtered: [String]
+        let filtered: [(LocalDataSource, String)]
         if t.isEmpty {
-            // If query is empty, show all operators when field is focused
+            // If query is empty, show all operators when field is focused (maintain enum order)
             if isOperatorFieldFocused {
-                filtered = availableOperators
+                filtered = availableOperatorsWithSource
             } else {
                 operatorSuggestions = []
                 showOperatorSuggestions = false
@@ -394,23 +454,25 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
         } else {
             // If query is not empty, filter operators based on search input
-            // Filter by prefix match or contains match
-            filtered = availableOperators.filter { operatorName in
+            // Filter by prefix match or contains match, maintaining enum order
+            filtered = availableOperatorsWithSource.filter { (_, operatorName) in
                 operatorName.normalizedForSearch.hasPrefix(t) || operatorName.normalizedForSearch.contains(t)
             }
         }
         
-        // Sort results: starts with query first, then contains (or all sorted if query is empty)
+        // Sort results: prioritize operators that start with the query, but maintain enum order within each group
         let sortedResults: [String]
         if t.isEmpty {
-            sortedResults = filtered.sorted()
+            // If query is empty, maintain enum order (no sorting)
+            sortedResults = filtered.map { $0.1 }
         } else {
-            // Prioritize operators that start with the query
-            let starts = filtered.filter { $0.normalizedForSearch.hasPrefix(t) }
-            let contains = filtered.filter { !$0.normalizedForSearch.hasPrefix(t) }
-            sortedResults = starts + contains
+            // Prioritize operators that start with the query, but maintain enum order within each group
+            let starts = filtered.filter { $0.1.normalizedForSearch.hasPrefix(t) }
+            let contains = filtered.filter { !$0.1.normalizedForSearch.hasPrefix(t) }
+            sortedResults = starts.map { $0.1 } + contains.map { $0.1 }
         }
         
+        // Display in enum order (no reversal)
         operatorSuggestions = Array(sortedResults.prefix(20))
         showOperatorSuggestions = isOperatorFieldFocused && !operatorSuggestions.isEmpty
     }
@@ -436,40 +498,63 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Station Search and Filtering
     // Filter candidate departure stops based on search lineInput
+    // If arrival stop is selected, only show stops before the arrival stop
     func filterDepartureStops(_ lineInput: String) {
-        let filtered = filterStops(lineInput, excludeStop: selectedArrivalStop)
+        let filtered = filterStops(lineInput, excludeStop: selectedArrivalStop, isDeparture: true)
         departureSuggestions = filtered
         showDepartureSuggestions = isDepartureFieldFocused && !filtered.isEmpty && !departureStopSelected
     }
     
     // Filter candidate arrival stops based on search lineInput
+    // If departure stop is selected, only show stops after the departure stop
     func filterArrivalStops(_ lineInput: String) {
-        let filtered = filterStops(lineInput, excludeStop: selectedDepartureStop)
+        let filtered = filterStops(lineInput, excludeStop: selectedDepartureStop, isDeparture: false)
         arrivalSuggestions = filtered
         showArrivalSuggestions = isArrivalFieldFocused && !filtered.isEmpty && !arrivalStopSelected
     }
     
     // Unified filtering logic for both railway stations and bus stops
-    private func filterStops(_ lineInput: String, excludeStop: TransportationStop?) -> [TransportationStop] {
-        // If input is empty, return all stops (excluding the excludeStop)
-        if lineInput.isEmpty {
-            return lineStops.filter { stop in
-                if let excludeStop = excludeStop, stop.id == excludeStop.id {
+    // isDeparture: true for departure stops, false for arrival stops
+    private func filterStops(_ lineInput: String, excludeStop: TransportationStop?, isDeparture: Bool) -> [TransportationStop] {
+        var filtered = lineStops
+        
+        // Filter by order: if excludeStop is selected, apply order constraint
+        if let excludeStop = excludeStop, let excludeIndex = lineStops.firstIndex(where: { $0.id == excludeStop.id }) {
+            if isDeparture {
+                // For departure stops: only show stops before the selected arrival stop
+                filtered = filtered.filter { stop in
+                    if let stopIndex = lineStops.firstIndex(where: { $0.id == stop.id }) {
+                        return stopIndex < excludeIndex
+                    }
                     return false
                 }
-                return true
+            } else {
+                // For arrival stops: only show stops after the selected departure stop
+                filtered = filtered.filter { stop in
+                    if let stopIndex = lineStops.firstIndex(where: { $0.id == stop.id }) {
+                        return stopIndex > excludeIndex
+                    }
+                    return false
+                }
             }
         }
         
-        return lineStops.filter { stop in
-            // Exclude the stop if it's the same as the excludeStop
+        // Exclude the stop if it's the same as the excludeStop
+        filtered = filtered.filter { stop in
             if let excludeStop = excludeStop, stop.id == excludeStop.id {
                 return false
             }
-            
-            // Filter by name
-            return stop.displayName.localizedCaseInsensitiveContains(lineInput)
+            return true
         }
+        
+        // Filter by name if input is provided
+        if !lineInput.isEmpty {
+            filtered = filtered.filter { stop in
+                stop.displayName.localizedCaseInsensitiveContains(lineInput)
+            }
+        }
+        
+        return filtered
     }
     
     // Get stops information for the selected line (unified for both railway and bus)
@@ -520,10 +605,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 return stops
             } else {
-                // Fallback: Try to fetch bus stops from BusstopPole API if busstopPoleOrder is not available
-                Task {
-                    await fetchBusStopsFromAPI(for: selectedLine)
-                }
+                // lineBusStops is empty and busstopPoleOrder is not available
+                // Bus stops will be fetched in selectLine method, not here
+                // Return empty array to avoid duplicate fetching
+                return []
             }
         } else {
             // Handle railway lines - get stations from data files
@@ -569,11 +654,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         if let departureStop = selectedDepartureStop {
-            departureStopInput = departureStop.title?.getLocalizedName(fallbackTo: departureStop.name) ?? departureStop.name
+            departureStopInput = departureStop.displayName
         }
         
         if let arrivalStop = selectedArrivalStop {
-            arrivalStopInput = arrivalStop.title?.getLocalizedName(fallbackTo: arrivalStop.name) ?? arrivalStop.name
+            arrivalStopInput = arrivalStop.displayName
         }
     }
     
@@ -598,7 +683,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Data Validation
     // Check if line read from UserDefaults exists in current data
-    func checkSavedLineInData() async {
+    func checkSavedLineInData() async -> Bool {
         // Wait for data loading to complete before validation
         while all.isEmpty {
             try? await Task.sleep(nanoseconds: 100_000_000)
@@ -608,7 +693,10 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // This ensures station data is properly restored when switching routes
         if !lineInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             // Try to find and restore saved line if lineInput is not empty
-            if let foundLine = findSavedLineInData() {
+            // Don't fetch GTFS data here - it will be loaded when user starts typing in line input field
+            let foundLine = findSavedLineInData()
+            
+            if let foundLine = foundLine {
                 await MainActor.run {
                     selectedLine = foundLine
                     showStationSelection = true
@@ -623,6 +711,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     // Update transportation kind to match found line
                     selectedTransportationKind = foundLine.kind
                 }
+                // Always load station settings regardless of line status
+                // Station information is independent of line information
+                await MainActor.run {
+                    loadStationSettings()
+                }
+                return true
             } else {
                 // Keep user input even if saved line not found in current data
                 await MainActor.run {
@@ -643,6 +737,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Station information is now loaded directly from UserDefaults
         // No need for complex station object restoration
+        return false
     }
     
     // Helper method to find saved line in current data
@@ -699,14 +794,56 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     )
                 }
                 self.lineStations = busStops
+                self.lineStops = getStopsForSelectedLine()
             } else {
+                // For GTFS routes, don't fetch bus stops here - they will be loaded when needed
+                // (e.g., when user starts typing in departure/arrival stop fields)
                 self.lineBusStops = []
                 self.lineStations = []
+                self.lineStops = getStopsForSelectedLine()
             }
         } else {
             self.lineBusStops = []
+            self.lineStops = getStopsForSelectedLine()
         }
-        self.lineStops = getStopsForSelectedLine()
+    }
+    
+    // MARK: - Operator Line List Persistence
+    // Save operator line list to UserDefaults after operator selection
+    func saveOperatorLineList(_ lines: [TransportationLine], goorback: String, num: Int) {
+        let operatorLineListKey = goorback.operatorLineListKey(num)
+        if let encoded = try? JSONEncoder().encode(lines) {
+            UserDefaults.standard.set(encoded, forKey: operatorLineListKey)
+        }
+    }
+    
+    // Load operator line list from UserDefaults
+    func loadOperatorLineList(goorback: String, num: Int) -> [TransportationLine]? {
+        let operatorLineListKey = goorback.operatorLineListKey(num)
+        guard let data = UserDefaults.standard.data(forKey: operatorLineListKey),
+              let lines = try? JSONDecoder().decode([TransportationLine].self, from: data) else {
+            return nil
+        }
+        return lines
+    }
+    
+    // MARK: - Line Stop List Persistence
+    // Save line stop list to UserDefaults after line selection
+    func saveLineStopList(_ stops: [TransportationStop], goorback: String, num: Int) {
+        let lineStopListKey = goorback.lineStopListKey(num)
+        if let encoded = try? JSONEncoder().encode(stops) {
+            UserDefaults.standard.set(encoded, forKey: lineStopListKey)
+        }
+    }
+    
+    // Load line stop list from UserDefaults
+    func loadLineStopList(goorback: String, num: Int) -> [TransportationStop]? {
+        let lineStopListKey = goorback.lineStopListKey(num)
+        guard let data = UserDefaults.standard.data(forKey: lineStopListKey),
+              let stops = try? JSONDecoder().decode([TransportationStop].self, from: data) else {
+            return nil
+        }
+        return stops
     }
     
     // MARK: - Data Persistence
@@ -867,22 +1004,37 @@ final class SettingsLineSheetViewModel: ObservableObject {
             let route2DisplayKey = selectedGoorback.isShowRoute2Key
             UserDefaults.standard.set(true, forKey: route2DisplayKey)
         }
+        
+        // Save operator line list to UserDefaults
+        if !lineSuggestions.isEmpty {
+            saveOperatorLineList(lineSuggestions, goorback: selectedGoorback, num: lineIndex)
+        }
+        
+        // Save line stop list to UserDefaults
+        if !lineStops.isEmpty {
+            saveLineStopList(lineStops, goorback: selectedGoorback, num: lineIndex)
+        }
     }
     
     // Load station settings from UserDefaults
+    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
     private func loadStationSettings() {
         let currentLineIndex = selectedLineNumber - 1
         
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            self.departureStopInput = savedDeparture
+            // Split by ":" and return first component for ODPT format
+            let components = savedDeparture.components(separatedBy: ":")
+            self.departureStopInput = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedDeparture
         } else {
             self.departureStopInput = ""
         }
         
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            self.arrivalStopInput = savedArrival
+            // Split by ":" and return first component for ODPT format
+            let components = savedArrival.components(separatedBy: ":")
+            self.arrivalStopInput = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedArrival
         } else {
             self.arrivalStopInput = ""
         }
@@ -957,6 +1109,67 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }) {
                 self.selectedOperatorCode = dataSource.operatorCode
                 self.operatorSelected = true
+                
+                // Load operator line list from UserDefaults only for GTFS bus routes
+                // (for display only, no GTFS ZIP access)
+                // Don't show suggestions when sheet is opened - only show when user starts typing
+                if selectedTransportationKind == .bus && dataSource.apiType == .gtfs {
+                    if let savedLineList = loadOperatorLineList(goorback: selectedGoorback, num: currentLineIndex) {
+                        self.lineSuggestions = savedLineList
+                        self.showLineSuggestions = false  // Don't show suggestions when sheet is opened
+                    }
+                }
+                
+                // Load line name and restore line object from line name for filtering
+                let lineNameKey = selectedGoorback.lineNameKey(currentLineIndex)
+                if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
+                    self.lineInput = savedLineName
+                    
+                    // Restore line object from line name if data is available
+                    if !all.isEmpty {
+                        if let foundLine = findSavedLineInData() {
+                            self.selectedLine = foundLine
+                            self.lineSelected = true
+                            
+                            // Load line stop list from UserDefaults only for GTFS bus routes
+                            if selectedTransportationKind == .bus && dataSource.apiType == .gtfs {
+                                if let savedStopList = loadLineStopList(goorback: selectedGoorback, num: currentLineIndex) {
+                                    self.lineStops = savedStopList
+                                    // Also update lineBusStops based on loaded stops
+                                    self.lineBusStops = savedStopList.map { BusStop(from: $0) }
+                                } else {
+                                    // If no saved stop list, set up line stops from line data
+                                    setupLineStops(for: foundLine)
+                                }
+                            } else {
+                                // If not GTFS bus, set up line stops from line data
+                                setupLineStops(for: foundLine)
+                            }
+                        } else {
+                            self.selectedLine = nil
+                            self.lineStations = []
+                            self.lineBusStops = []
+                            self.lineStops = []
+                            self.lineSelected = false
+                        }
+                    } else {
+                        // If all data is not loaded yet, try to load line stop list from UserDefaults only for GTFS bus routes
+                        if selectedTransportationKind == .bus && dataSource.apiType == .gtfs {
+                            if let savedStopList = loadLineStopList(goorback: selectedGoorback, num: currentLineIndex) {
+                                self.lineStops = savedStopList
+                                // Also update lineBusStops based on loaded stops
+                                self.lineBusStops = savedStopList.map { BusStop(from: $0) }
+                            }
+                        }
+                    }
+                } else {
+                    self.lineInput = ""
+                    self.selectedLine = nil
+                    self.lineStations = []
+                    self.lineBusStops = []
+                    self.lineStops = []
+                    self.lineSelected = false
+                }
             } else {
                 self.selectedOperatorCode = nil
                 self.operatorSelected = false
@@ -967,25 +1180,26 @@ final class SettingsLineSheetViewModel: ObservableObject {
             self.operatorSelected = false
         }
         
-        // Load line name and restore line object from line name for filtering
+        // Load line name and restore line object from line name for filtering (when operator is not saved)
         let lineNameKey = selectedGoorback.lineNameKey(currentLineIndex)
         if let savedLineName = UserDefaults.standard.string(forKey: lineNameKey) {
-            self.lineInput = savedLineName
-            
-            // Restore line object from line name if data is available
-            if !all.isEmpty {
-                if let foundLine = findSavedLineInData() {
-                    self.selectedLine = foundLine
-                    self.lineSelected = true
-                    
-                    // Set up line stops (bus stops, stations, etc.)
-                    setupLineStops(for: foundLine)
-                } else {
-                    self.selectedLine = nil
-                    self.lineStations = []
-                    self.lineBusStops = []
-                    self.lineStops = []
-                    self.lineSelected = false
+            // Only process if operator was not found (to avoid duplicate processing)
+            if selectedOperatorCode == nil {
+                self.lineInput = savedLineName
+                
+                // Restore line object from line name if data is available
+                if !all.isEmpty {
+                    if let foundLine = findSavedLineInData() {
+                        self.selectedLine = foundLine
+                        self.lineSelected = true
+                        setupLineStops(for: foundLine)
+                    } else {
+                        self.selectedLine = nil
+                        self.lineStations = []
+                        self.lineBusStops = []
+                        self.lineStops = []
+                        self.lineSelected = false
+                    }
                 }
             }
         } else {
@@ -1006,16 +1220,24 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
 
         // Load departure station name and restore station object from station name
+        // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
-            self.departureStopInput = savedDeparture
+            // Split by ":" and return first component for ODPT format
+            let components = savedDeparture.components(separatedBy: ":")
+            let displayDeparture = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedDeparture
+            self.departureStopInput = displayDeparture
             
             // Restore departure station object from station name if line stops are available
             if !self.lineStops.isEmpty {
                 if let foundStop = self.lineStops.first(where: { stop in
                     stop.name == savedDeparture ||
+                    stop.name == displayDeparture ||
                     stop.title?.ja == savedDeparture ||
-                    stop.title?.en == savedDeparture
+                    stop.title?.ja == displayDeparture ||
+                    stop.title?.en == savedDeparture ||
+                    stop.title?.en == displayDeparture ||
+                    stop.displayName == displayDeparture
                 }) {
                     self.selectedDepartureStop = foundStop
                 } else {
@@ -1030,16 +1252,24 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Load arrival station name and restore station object from station name
+        // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
-            self.arrivalStopInput = savedArrival
+            // Split by ":" and return first component for ODPT format
+            let components = savedArrival.components(separatedBy: ":")
+            let displayArrival = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedArrival
+            self.arrivalStopInput = displayArrival
             
             // Restore arrival station object from station name if line stops are available
             if !self.lineStops.isEmpty {
                 if let foundStop = self.lineStops.first(where: { stop in
                     stop.name == savedArrival ||
+                    stop.name == displayArrival ||
                     stop.title?.ja == savedArrival ||
-                    stop.title?.en == savedArrival
+                    stop.title?.ja == displayArrival ||
+                    stop.title?.en == savedArrival ||
+                    stop.title?.en == displayArrival ||
+                    stop.displayName == displayArrival
                 }) {
                     self.selectedArrivalStop = foundStop
                 } else {
@@ -1111,6 +1341,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
             return [:]
         }
         
+        isLoadingTimetable = true
+        loadingMessage = "Generating timetable...".localized
+        defer {
+            isLoadingTimetable = false
+            loadingMessage = nil
+        }
+        
         // Clear existing timetable data for all calendar types before generating new data
         await clearAllTimetableData()
         
@@ -1120,15 +1357,45 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Process data for each calendar type first (create timetables individually)
         var allTimes: [ODPTCalendarType: [any TransportationTime]] = [:]
         
-        for calendarType in availableCalendarTypes {
-            
-            let times: [any TransportationTime] = (selectedLine.kind == .bus) ? 
-                await processBusTimetableData(calendarType: calendarType): 
-                await processTrainTimetableData(calendarType: calendarType)
-            
-            // Save times for this specific calendar type
-            allTimes[calendarType] = times
-            
+        // For GTFS routes, fetch all calendar types at once for better performance
+        if selectedLine.kind == .bus,
+           let operatorCode = selectedLine.operatorCode,
+           let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+           selectedOperator.apiType == .gtfs,
+           let departureStop = selectedDepartureStop,
+           let arrivalStop = selectedArrivalStop {
+            // Fetch all calendar types at once
+            do {
+                let allBusTimes = try await gtfsService.fetchGTFSBusTimetableForAllCalendarTypes(
+                    routeId: selectedLine.code,
+                    departureStop: departureStop,
+                    arrivalStop: arrivalStop,
+                    calendarTypes: availableCalendarTypes,
+                    transportOperator: selectedOperator,
+                    consumerKey: consumerKey
+                )
+                // Convert to [ODPTCalendarType: [any TransportationTime]]
+                for (calendarType, busTimes) in allBusTimes {
+                    allTimes[calendarType] = busTimes
+                }
+            } catch {
+                print("❌ Failed to fetch GTFS bus timetable for all calendar types: \(error)")
+                // Fallback to individual processing
+                for calendarType in availableCalendarTypes {
+                    let times = await processBusTimetableData(calendarType: calendarType)
+                    allTimes[calendarType] = times
+                }
+            }
+        } else {
+            // For non-GTFS routes, process each calendar type individually
+            for calendarType in availableCalendarTypes {
+                let times: [any TransportationTime] = (selectedLine.kind == .bus) ? 
+                    await processBusTimetableData(calendarType: calendarType): 
+                    await processTrainTimetableData(calendarType: calendarType)
+                
+                // Save times for this specific calendar type
+                allTimes[calendarType] = times
+            }
         }
         
         // After creating all timetables, check and merge timetables with same displayCalendarType
@@ -1209,6 +1476,15 @@ final class SettingsLineSheetViewModel: ObservableObject {
         let typeStrings = mergedRepresentativeTypes.map { $0.rawValue }
         UserDefaults.standard.set(typeStrings, forKey: lineCacheKey)
         
+        // Save operator line list and line stop list to UserDefaults after timetable generation
+        let lineIndex = selectedLineNumber - 1
+        if !lineSuggestions.isEmpty {
+            saveOperatorLineList(lineSuggestions, goorback: selectedGoorback, num: lineIndex)
+        }
+        if !lineStops.isEmpty {
+            saveLineStopList(lineStops, goorback: selectedGoorback, num: lineIndex)
+        }
+        
         return mergedTimes        
     }
     
@@ -1261,6 +1537,27 @@ final class SettingsLineSheetViewModel: ObservableObject {
         guard let selectedLine = selectedLine else { return [] }
         
         let apiTypeName: String = selectedLine.kind == .bus ? "BusTimetable" : "StationTimetable"
+        
+        // Check if this is a GTFS route - GTFS routes don't use ODPT API
+        if dataSource.apiType == .gtfs {
+            // For GTFS routes, fetch calendar types from GTFS data for the specific route
+            let routeId = selectedLine.code
+            
+            guard !routeId.isEmpty else {
+                print("⚠️ GTFS: Missing routeId for calendar type fetch")
+                return [.weekday, .holiday]
+            }
+            
+            do {
+                let calendarTypes = try await gtfsService.fetchGTFSCalendarTypes(routeId: routeId, transportOperator: dataSource, consumerKey: consumerKey)
+                print("📅 GTFS Calendar Types: \(calendarTypes.map { $0.displayName }.joined(separator: ", "))")
+                return calendarTypes.isEmpty ? [.weekday, .holiday] : calendarTypes
+            } catch {
+                print("❌ Failed to fetch GTFS calendar types: \(error)")
+                // Fallback to default calendar types
+                return [.weekday, .holiday]
+            }
+        }
         
         // For bus, use title-based API link
         if selectedLine.kind == .bus {
@@ -1428,6 +1725,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // Test if a specific calendar type has data available
     private func testCalendarTypeAvailability(calendarType: ODPTCalendarType, dataSource: LocalDataSource) async -> Bool {
+        // Check if this is a GTFS route - GTFS routes don't use ODPT API
+        if dataSource.apiType == .gtfs {
+            // For GTFS routes, always return true (calendar data will be parsed from GTFS files)
+            return true
+        }
+        
         do {
             let apiLink: String
             if selectedLine?.kind == .bus {
@@ -1477,7 +1780,38 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Timetable Data Processing
     // Process bus timetable data for specific day type
     private func processBusTimetableData(calendarType: ODPTCalendarType) async -> [any TransportationTime] {
+        // Check if this is a GTFS route
+        guard let selectedLine = selectedLine,
+              let operatorCode = selectedLine.operatorCode,
+              let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else {
+            return []
+        }
         
+        // For GTFS routes, fetch timetable data from GTFS files
+        if selectedOperator.apiType == .gtfs {
+            guard let departureStop = selectedDepartureStop,
+                  let arrivalStop = selectedArrivalStop else {
+                return []
+            }
+            
+            do {
+                let busTimes = try await gtfsService.fetchGTFSBusTimetable(
+                    routeId: selectedLine.code,
+                    departureStop: departureStop,
+                    arrivalStop: arrivalStop,
+                    calendarType: calendarType,
+                    transportOperator: selectedOperator,
+                    consumerKey: consumerKey
+                )
+                print("✅ Fetched \(busTimes.count) GTFS bus times for \(calendarType.displayName)")
+                return busTimes
+            } catch {
+                print("❌ Failed to fetch GTFS bus timetable: \(error)")
+                return []
+            }
+        }
+        
+        // For ODPT routes, use existing API-based processing
         // Fetch bus timetable data from API
         let busTimetableData = await fetchBusTimetableData(calendarType: calendarType)
         
@@ -1560,6 +1894,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
               let selectedLineTitle = selectedLine?.title,
               let selectedOperator = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return [] }
         
+        // Check if this is a GTFS route - GTFS routes don't use ODPT API
+        if selectedOperator.apiType == .gtfs {
+            // For GTFS routes, return empty array
+            // GTFS timetable data will be fetched separately using GTFS files
+            print("⚠️ GTFS routes don't use ODPT API for timetable data")
+            return []
+        }
         
         // Use bus-specific timetable API (force bus API regardless of transportationType)
         let apiLink = "\(selectedOperator.apiLink(for: .timetable, transportationKind: .bus))&dc:title=\(selectedLineTitle)&odpt:calendar=\(calendarType.rawValue)"
@@ -1722,6 +2063,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Skip timetable generation if not all required fields are filled
         guard isAllNotEmpty else {
             return [:]
+        }
+        
+        isLoadingTimetable = true
+        loadingMessage = "Generating timetable...".localized
+        defer {
+            isLoadingTimetable = false
+            loadingMessage = nil
         }
         
         // Clear existing timetable data for all calendar types before generating new data
@@ -2279,7 +2627,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             // Re-filter existing data if line input exists
             if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
-                await filter(lineInput)
+                await filterLine(lineInput)
             }
             
             // Re-filter operator suggestions if operator input exists
@@ -2365,7 +2713,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             // Re-filter lines without operator filter
             if !lineInput.isEmpty {
-                Task { await filter(lineInput) }
+                Task { await filterLine(lineInput) }
             }
         } else if operatorSelected {
             // Only reset selection flag if input changes to a different value
@@ -2381,7 +2729,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 
                 // Re-filter lines without operator filter
                 if !lineInput.isEmpty {
-                    Task { await filter(lineInput) }
+                    Task { await filterLine(lineInput) }
                 }
             }
         }
@@ -2401,7 +2749,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Trigger filtering when lineInput changes
         // Only show suggestions if operator is selected from dropdown
-        Task { await filter(newValue) }
+        Task { await filterLine(newValue) }
         
         // Reset station selection when lineInput changes
         let currentLineName = selectedLine?.name ?? ""
@@ -2444,6 +2792,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
         // Update display name with operator information on selection
         lineInput = lineDisplayName(for: line)
         
+        // Clear departure and arrival stop inputs when line is selected
+        departureStopInput = ""
+        arrivalStopInput = ""
+        selectedDepartureStop = nil
+        selectedArrivalStop = nil
+        
         // Initialize lineBusStops for bus routes
         if line.kind == .bus {
             if let busstopPoleOrder = line.busstopPoleOrder {
@@ -2457,14 +2811,50 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 
                 if needsJapaneseNames {
                     Task {
+                        isLoadingBusStops = true
+                        loadingMessage = "Loading bus stops...".localized
+                        defer {
+                            isLoadingBusStops = false
+                            loadingMessage = nil
+                        }
                         await fetchJapaneseNamesForAllBusStops()
                     }
                 }
             } else {
-                lineBusStops = []
+                // For GTFS routes, fetch bus stops from GTFS data
+                if let operatorCode = line.operatorCode,
+                   let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+                   dataSource.apiType == .gtfs {
+                    // Clear line bus stops first to avoid showing old data while loading
+                    // lineStops will be updated automatically when fetchGTFSStopsForRoute completes
+                    lineBusStops = []
+                    
+                    Task {
+                        isLoadingBusStops = true
+                        loadingMessage = "Loading bus stops...".localized
+                        defer {
+                            isLoadingBusStops = false
+                            loadingMessage = nil
+                        }
+                        await fetchGTFSStopsForRoute(line.code, transportOperator: dataSource)
+                    }
+                } else {
+                    lineBusStops = []
+                }
             }
         } else {
+            // For railway lines, show loading message while loading stations
             lineBusStops = []
+            Task {
+                isLoadingBusStops = true
+                loadingMessage = "Loading stations...".localized
+                defer {
+                    isLoadingBusStops = false
+                    loadingMessage = nil
+                }
+                // Small delay to show loading message (stations are loaded synchronously)
+                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+            }
         }
         
         // Update line stops immediately based on line type
@@ -2633,9 +3023,106 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             await MainActor.run {
                 self.lineBusStops = transportationStops.map { BusStop(from: $0) }
+                self.lineStops = self.getStopsForSelectedLine()
             }
         } catch {
             print("❌ fetchBusStopsFromAPI: Failed to fetch bus stops: \(error)")
+        }
+    }
+    
+    // MARK: - GTFS Lines Fetching
+    // Fetch GTFS lines from ZIP cache for selected operator
+    func fetchGTFSLinesForOperator(_ dataSource: LocalDataSource) async {
+        // Clear line suggestions immediately to prevent showing old data
+        await MainActor.run {
+            lineSuggestions = []
+            showLineSuggestions = false
+            isLoadingLines = true
+            loadingMessage = "Loading lines...".localized
+        }
+        
+        do {
+            // Fetch GTFS lines from ZIP cache
+            let gtfsLines = try await gtfsService.fetchGTFSData(dataSource, consumerKey: consumerKey)
+            
+            await MainActor.run {
+                // Update busLines with fetched GTFS lines
+                // Remove existing lines for this operator first to avoid duplicates
+                busLines.removeAll { $0.operatorCode == dataSource.operatorCode }
+                busLines.append(contentsOf: gtfsLines)
+                
+                // Also update all arrays to prevent duplicate loading
+                all.removeAll { $0.operatorCode == dataSource.operatorCode }
+                all.append(contentsOf: gtfsLines)
+                allData.removeAll { $0.operatorCode == dataSource.operatorCode }
+                allData.append(contentsOf: gtfsLines)
+                
+                // Update lineSuggestions with fetched lines
+                // Filter by selected operator
+                let filteredLines = gtfsLines.filter { $0.operatorCode == dataSource.operatorCode }
+                
+                // Group by lineCode (route_short_name) to avoid duplicates
+                var uniqueResults: [TransportationLine] = []
+                var seenLineCodes: Set<String> = []
+                var seenDisplayNames: Set<String> = []
+                
+                for line in filteredLines {
+                    // For GTFS routes, use lineCode (route_short_name) for grouping
+                    if let lineCode = line.lineCode, !lineCode.isEmpty {
+                        if !seenLineCodes.contains(lineCode) {
+                            seenLineCodes.insert(lineCode)
+                            uniqueResults.append(line)
+                        }
+                    } else {
+                        // For routes without lineCode, use displayName for grouping
+                        let displayName = lineDisplayName(for: line)
+                        if !seenDisplayNames.contains(displayName) {
+                            seenDisplayNames.insert(displayName)
+                            uniqueResults.append(line)
+                        }
+                    }
+                }
+                
+                lineSuggestions = uniqueResults
+                showLineSuggestions = !lineSuggestions.isEmpty
+                isLoadingLines = false
+                loadingMessage = nil
+            }
+        } catch {
+            print("❌ fetchGTFSLinesForOperator: Failed to fetch GTFS lines for \(dataSource.operatorDisplayName): \(error)")
+            await MainActor.run {
+                isLoadingLines = false
+                loadingMessage = nil
+            }
+        }
+    }
+    
+    // MARK: - GTFS Bus Stops Fetching
+    // Fetch bus stops for a GTFS route from GTFS data
+    private func fetchGTFSStopsForRoute(_ routeId: String, transportOperator: LocalDataSource) async {
+        print("🔍 fetchGTFSStopsForRoute: routeId=\(routeId), transportOperator=\(transportOperator.operatorDisplayName)")
+        do {
+            let stops = try await gtfsService.fetchGTFSStopsForRoute(routeId, transportOperator: transportOperator, consumerKey: consumerKey)
+            print("✅ fetchGTFSStopsForRoute: Found \(stops.count) stops for route \(routeId)")
+            
+            await MainActor.run {
+                // Convert TransportationStop to BusStop
+                self.lineBusStops = stops.map { stop in
+                    BusStop(
+                        name: stop.name,
+                        code: stop.code,
+                        index: stop.index,
+                        lineCode: stop.lineCode,
+                        title: stop.title,
+                        note: stop.note,
+                        busstopPole: stop.busstopPole
+                    )
+                }
+                // Update lineStops to reflect the fetched bus stops
+                self.lineStops = self.getStopsForSelectedLine()
+            }
+        } catch {
+            print("❌ fetchGTFSStopsForRoute: Failed to fetch GTFS stops for route \(routeId): \(error)")
         }
     }
 }

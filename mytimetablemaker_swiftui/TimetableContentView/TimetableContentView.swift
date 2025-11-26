@@ -46,6 +46,57 @@ struct TimetableContentView: View {
         }
     }
     
+    // MARK: - Helper Functions
+    /// Get display name (split by ":" and return first component for ODPT format)
+    private func getDisplayName(from name: String) -> String {
+        let components = name.components(separatedBy: ":")
+        return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? name
+    }
+    
+    /// Sort calendar types according to enum definition order
+    /// Order: weekday, holiday, saturdayHoliday, sunday, monday, tuesday, wednesday, thursday, friday, saturday, specific(String)
+    private func sortCalendarTypesByEnumOrder(_ types: [ODPTCalendarType]) -> [ODPTCalendarType] {
+        // Define enum order (excluding specific which has associated value)
+        let enumOrder: [ODPTCalendarType] = [
+            .weekday,
+            .holiday,
+            .saturdayHoliday,
+            .sunday,
+            .monday,
+            .tuesday,
+            .wednesday,
+            .thursday,
+            .friday,
+            .saturday
+        ]
+        
+        // Separate specific types and regular types
+        let specificTypes = types.filter {
+            if case .specific = $0 { return true }
+            return false
+        }
+        let regularTypes = types.filter {
+            if case .specific = $0 { return false }
+            return true
+        }
+        
+        // Sort regular types by enum order
+        let sortedRegularTypes = regularTypes.sorted { type1, type2 in
+            let index1 = enumOrder.firstIndex(of: type1) ?? Int.max
+            let index2 = enumOrder.firstIndex(of: type2) ?? Int.max
+            return index1 < index2
+        }
+        
+        // Append specific types at the end (sorted alphabetically by rawValue)
+        let sortedSpecificTypes = specificTypes.sorted { type1, type2 in
+            let rawValue1 = type1.rawValue
+            let rawValue2 = type2.rawValue
+            return rawValue1 < rawValue2
+        }
+        
+        return sortedRegularTypes + sortedSpecificTypes
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .top) {
@@ -59,7 +110,7 @@ struct TimetableContentView: View {
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
 
-                    Text("\(goorback.stationArray[2 * num])\(" > ".localized)\(goorback.stationArray[2 * num + 1])")
+                    Text("\(getDisplayName(from: goorback.stationArray[2 * num]))\(" > ".localized)\(getDisplayName(from: goorback.stationArray[2 * num + 1]))")
                         .font(.system(size: screen.settingsSheetTitleFontSize, weight: .semibold))
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
@@ -150,7 +201,9 @@ struct TimetableContentView: View {
             }
             .onAppear {
                 // Load available calendar types from cache or use default
-                availableCalendarTypes = goorback.loadAvailableCalendarTypes(num: num)
+                let loadedTypes = goorback.loadAvailableCalendarTypes(num: num)
+                // Sort calendar types according to enum definition order
+                availableCalendarTypes = sortCalendarTypesByEnumOrder(loadedTypes)
                 
                 // Set selectedCalendarType based on current date with fallback to available types
                 selectedCalendarType = Date().odpTCalendarType(fallbackTo: availableCalendarTypes)

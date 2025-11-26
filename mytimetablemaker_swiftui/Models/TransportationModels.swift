@@ -14,8 +14,8 @@ import SwiftUI
 
 // MARK: - Transportation Stop Model
 // Unified model for both railway stations and bus stops
-struct TransportationStop: Identifiable, Hashable {
-    let id = UUID()
+struct TransportationStop: Identifiable, Hashable, Codable {
+    var id: String { code ?? name }
     let kind: TransportationLine.Kind
     let name: String
     let code: String?
@@ -28,29 +28,42 @@ struct TransportationStop: Identifiable, Hashable {
     let busstopPole: String?           // odpt:busstopPole - bus stop identifier
     
     // Computed property for display name
+    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
     var displayName: String {
         // Use localized name based on current language setting
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         
+        var baseName: String
+        
         if let title = title {
             let localizedName = title.getLocalizedName()
             if !localizedName.isEmpty {
-                return localizedName
+                baseName = localizedName
+            } else {
+                baseName = name
             }
-        }
-        
-        // For bus stops, try to extract English from busstopPole for English locale
-        if kind == .bus && currentLanguage != "ja" {
-            if let busstopPole = busstopPole {
-                let components = busstopPole.components(separatedBy: ".")
-                if components.count > 2 {
-                    let englishName = components[2].trimmingCharacters(in: .whitespacesAndNewlines)
-                    return englishName
+        } else {
+            // For bus stops, try to extract English from busstopPole for English locale
+            if kind == .bus && currentLanguage != "ja" {
+                if let busstopPole = busstopPole {
+                    let components = busstopPole.components(separatedBy: ".")
+                    if components.count > 2 {
+                        let englishName = components[2].trimmingCharacters(in: .whitespacesAndNewlines)
+                        baseName = englishName
+                    } else {
+                        baseName = name
+                    }
+                } else {
+                    baseName = name
                 }
+            } else {
+                baseName = name
             }
         }
         
-        return name
+        // Split by ":" and return first component for ODPT format
+        let components = baseName.components(separatedBy: ":")
+        return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? baseName
     }
     
     // Computed property for cleaned name (for bus stops)
@@ -120,13 +133,15 @@ struct TransportationStop: Identifiable, Hashable {
         self.note = note
         self.busstopPole = busstopPole
     }
+    
 }
 
 // MARK: - Transportation Line Model
 // Core data structure representing a railway and bus line or transportation route.
 // Contains all necessary information for line identification, display, and configuration.
-struct TransportationLine: Identifiable, Hashable {
-    enum Kind: String, CaseIterable { 
+struct TransportationLine: Identifiable, Hashable, Codable {
+    var id: String { code }
+    enum Kind: String, CaseIterable, Codable { 
         case railway = "Railway"
         case bus = "Bus"
         
@@ -140,7 +155,6 @@ struct TransportationLine: Identifiable, Hashable {
         }
     }
     
-    let id = UUID()
     let kind: Kind
     let name: String
     let code: String                     // owl:sameAs - unique identifier from ODPT
@@ -201,8 +215,7 @@ struct LocalizedTitle: Codable, Hashable {
 // MARK: - Station Information Model
 // Data structure representing a railway station.
 // Includes station identification, localization, and metadata.
-struct Station: Identifiable, Hashable, Codable {
-    let id = UUID()
+struct Station: Hashable, Codable {
     let name: String
     let code: String?
     let index: Int?                    // odpt:index - station order in the line
@@ -210,8 +223,12 @@ struct Station: Identifiable, Hashable, Codable {
     let title: LocalizedTitle?
     
     // Computed properties
+    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
     var displayName: String {
-        return title?.getLocalizedName(fallbackTo: name) ?? name
+        let baseName = title?.getLocalizedName(fallbackTo: name) ?? name
+        // Split by ":" and return first component for ODPT format
+        let components = baseName.components(separatedBy: ":")
+        return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? baseName
     }
     
     var cleanedName: String {
@@ -248,8 +265,7 @@ struct Station: Identifiable, Hashable, Codable {
 // MARK: - Bus Stop Information Model
 // Data structure representing a bus stop.
 // Includes bus stop identification, localization, and metadata.
-struct BusStop: Identifiable, Hashable, Codable {
-    let id = UUID()
+struct BusStop: Hashable, Codable {
     let name: String
     let code: String?
     let index: Int?                    // odpt:index - bus stop order in the route
@@ -261,30 +277,42 @@ struct BusStop: Identifiable, Hashable, Codable {
     let busstopPole: String?           // odpt:busstopPole - bus stop identifier
     
     // Computed properties
+    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
     var displayName: String {
         // Use localized name based on current language setting
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         
+        var baseName: String
+        
         if let title = title {
             let localizedName = title.getLocalizedName()
             if !localizedName.isEmpty {
-                return localizedName
+                baseName = localizedName
+            } else {
+                baseName = cleanedName
+            }
+        } else {
+            // Fallback: use note (Japanese) for Japanese locale, or try to extract English from busstopPole
+            if currentLanguage == "ja" {
+                baseName = cleanedName
+            } else {
+                // For English, try to get English name from busstopPole
+                if let busstopPole = busstopPole {
+                    let components = busstopPole.components(separatedBy: ".")
+                    if components.count > 2 {
+                        baseName = components[2].trimmingCharacters(in: .whitespacesAndNewlines)
+                    } else {
+                        baseName = cleanedName
+                    }
+                } else {
+                    baseName = cleanedName
+                }
             }
         }
         
-        // Fallback: use note (Japanese) for Japanese locale, or try to extract English from busstopPole
-        if currentLanguage == "ja" {
-            return cleanedName
-        } else {
-            // For English, try to get English name from busstopPole
-            if let busstopPole = busstopPole {
-                let components = busstopPole.components(separatedBy: ".")
-                if components.count > 2 {
-                    return components[2].trimmingCharacters(in: .whitespacesAndNewlines)
-                }
-            }
-            return cleanedName
-        }
+        // Split by ":" and return first component for ODPT format
+        let components = baseName.components(separatedBy: ":")
+        return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? baseName
     }
     
     enum CodingKeys: String, CodingKey {

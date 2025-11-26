@@ -71,7 +71,7 @@ struct SplashContentView: View {
                     Color.black.opacity(0.7)
                         .ignoresSafeArea()
                     
-                    VStack(spacing: 20) {
+                    VStack(spacing: screen.splashLoadingSpacing) {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             .scaleEffect(1.5)

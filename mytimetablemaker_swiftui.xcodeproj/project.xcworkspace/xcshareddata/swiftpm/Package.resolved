@@ -1,5 +1,5 @@
 {
-  "originHash" : "c98af2ad566f5a4f1a70aa8e29ee29eafe8f54e3e705eb1813ef52a2b9f293f0",
+  "originHash" : "164bc8ed805ef8c3d0d9d79bab6c74ffdedc29b0b0d310fa7d39b2429bf3490d",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -152,6 +152,15 @@
       "state" : {
         "revision" : "102a647b573f60f73afdce5613a51d71349fe507",
         "version" : "1.30.0"
+      }
+    },
+    {
+      "identity" : "ziparchive",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ZipArchive/ZipArchive.git",
+      "state" : {
+        "revision" : "df35718ea19a94e015b91dc4881dee028ce4cdba",
+        "version" : "2.6.0"
       }
     }
   ],

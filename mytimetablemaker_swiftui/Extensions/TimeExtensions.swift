@@ -475,7 +475,13 @@ extension String {
     
     // MARK: - Route Titles
     // Generate localized route and timetable titles
-    func timetableLineTitle(_ num: Int) -> String { "\(lineNameArray[num])\(" for ".localized)\(stationArray[2 * num + 1])\("houmen".localized)" }
+    // Split station name by ":" and return first component for ODPT format
+    func timetableLineTitle(_ num: Int) -> String {
+        let stationName = stationArray[2 * num + 1]
+        let components = stationName.components(separatedBy: ":")
+        let displayStationName = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? stationName
+        return "\(lineNameArray[num])\(" for ".localized)\(displayStationName)\("houmen".localized)"
+    }
     var routeTitle: String {
         (self == "back1") ? "Setting Return Route 1".localized:
         (self == "back2") ? "Setting Return Route 2".localized:

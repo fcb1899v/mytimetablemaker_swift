@@ -179,6 +179,8 @@ extension String{
     func timetableRideTimeKey(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(calendarType.calendarTag)\(hour.addZeroTime)ridetime" }
     func timetableTrainTypeKey(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return "\(lineNameKey(num))\(calendarType.calendarTag)\(hour.addZeroTime)traintype" }
     func trainTypeListKey(_ calendarType: ODPTCalendarType, _ num: Int) -> String { return "\(lineNameKey(num))\(calendarType.calendarTag)traintypelist" }
+    func operatorLineListKey(_ num: Int) -> String { return "\(self)operatorlinelist\(num + 1)" }
+    func lineStopListKey(_ num: Int) -> String { return "\(self)linestoplist\(num + 1)" }
     func choiceCopyTimeKeyArray(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> [String] {
         let oppositeCalendarType: ODPTCalendarType = (calendarType.calendarTag == "weekday") ? .holiday : .weekday
         return [
@@ -261,13 +263,6 @@ extension String{
     func transferToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transferArriveStation(num))\("he".localized)" }
     func transportationLabel(_ num: Int) -> String { return (num == 1) ? transferFromDepartStation(num): transferToArriveStation(num) }
     
-    // MARK: - ODPT API URL Generation
-    // Generate ODPT API URLs for different data types and API endpoints
-    func odptURL(dataType: ODPTDataType, apiType: ODPTAPIType = .standard) -> String {
-        return (apiType == .publicAPI) ? "https://api-public.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)":
-               (apiType == .standard) ? "https://api.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)&acl:consumerKey=\(odptAccessKey)":
-               "https://api-challenge.odpt.org/api/v4/\(dataType.apiEndpoint)?odpt:operator=\(self)&acl:consumerKey=\(odptChallengeKey)"
-    }
 }
 
 // MARK: - Boolean Extensions
@@ -548,8 +543,16 @@ extension SettingsLineSheetViewModel {
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         
         if line.kind == .bus {
-            return currentLanguage == "ja" ? line.title! :
-            (line.busRouteEnglishName ?? line.railwayTitle?.en ?? line.name)
+            // For GTFS routes, use railwayTitle if available (it contains localized name)
+            if let railwayTitle = line.railwayTitle {
+                return railwayTitle.getLocalizedName(fallbackTo: line.name)
+            }
+            // For ODPT bus routes, use title or fallback to name
+            if currentLanguage == "ja" {
+                return line.title ?? line.name
+            } else {
+                return line.busRouteEnglishName ?? line.railwayTitle?.en ?? line.name
+            }
         }
         
         guard let railwayTitle = line.railwayTitle else { return line.name }

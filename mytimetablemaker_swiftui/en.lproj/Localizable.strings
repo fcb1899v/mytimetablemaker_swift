@@ -19,6 +19,12 @@
 "OK" = "OK";
 "Cancel" = "Cancel";
 "Loading data..." = "Loading data...";
+"Loading lines..." = "Loading lines...";
+"Loading stations..." = "Loading stations...";
+"Loading bus stops..." = "Loading bus stops...";
+"Generating timetable..." = "Generating timetable...";
+"Route destination prefix" = " for ";
+"Route destination suffix" = "";
 
 // MARK: - Route Data
 // Default locations and station labels
@@ -193,6 +199,7 @@
 "walking" = "Walking";
 "none" = "None";
 
+"RED" = "RED";
 "DARK RED" = "DARK RED";
 "ORANGE" = "ORANGE";
 "BROWN" = "BROWN";
@@ -229,20 +236,24 @@
 "Seibu" = "Seibu";
 "Sotetsu" = "Sotetsu";
 "YokohamaMetro" = "Yokohama";
-"TWR" = "TWR";
+"TokyoWaterfrontAreaRapidTransit" = "TWR";
 "Yurikamome" = "Yurikamome";
-"MIR" = "MIR";
+"MetropolitanIntercityRailway" = "MIR";
 "TamaMonorail" = "Tama";
-"Toei" = "Toei";
-"Yokohama" = "Yokohama";
+"ToeiBus" = "Toei Bus";
+"YokohamaBus" = "Yokohama Bus";
 "Kanachu" = "Kanachu";
 "SotetsuBus" = "Sotetsu";
 "KokusaiKogyo" = "KokusaiKogyo";
-"OdakyuBus" = "Odakyu";
 "SeibuBus" = "Seibu";
 "TokyuBus" = "Tokyu";
-"Keio" = "Keio";
+"KeioBus" = "Keio";
 "NishitokyoBus" = "Nishitokyo";
+"KawasakiBus" = "Kawasaki Bus";
+"KawasakiTsurumiRinkoBus" = "Kawasaki Tsurumi Rinko";
+"KantoBus" = "Kanto Bus";
+"IzuhakoneBus" = "Izuhakone";
+"KeiseiTransitBus" = "Keisei Transit";
 "JR-E" = "JR-E";
 "Metro" = "Metro";
 "Toei" = "Toei";
@@ -259,6 +270,13 @@
 "Tama" = "Tama";
 "Kanachu" = "Kanachu";
 "KokusaiKogyo" = "KokusaiKogyo";
+"Keio" = "Keio";
+"Nishitokyo" = "Nishitokyo";
+"Kawasaki" = "Kawasaki";
+"Rinko" = "Rinko";
+"Kanto" = "Kanto";
+"Izuhakone" = "Izuhakone";
+"KeiseiTransit" = "Keisei Transit";
 
 // MARK: - Settings Line Sheet
 // Route and line configuration labels

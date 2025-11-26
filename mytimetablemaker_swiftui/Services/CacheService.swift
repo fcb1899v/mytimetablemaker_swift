@@ -40,6 +40,45 @@ final class CacheStore {
         let url = path(for: file)
         try? data.write(to: url, options: [.atomic])
     }   
+    
+    // MARK: - Directory Operations
+    // Get directory path for a given directory name in the cache directory.
+    func directoryPath(for dirName: String) -> URL {
+        return dir.appendingPathComponent(dirName, isDirectory: true)
+    }
+    
+    // Check if cached directory exists.
+    func directoryExists(for dirName: String) -> Bool {
+        let url = directoryPath(for: dirName)
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
+    }
+    
+    // Copy directory to cache.
+    func saveDirectory(from sourceDir: URL, for dirName: String) throws {
+        let destDir = directoryPath(for: dirName)
+        let fileManager = FileManager.default
+        
+        // Remove existing directory if it exists
+        if fileManager.fileExists(atPath: destDir.path) {
+            try fileManager.removeItem(at: destDir)
+        }
+        
+        // Create parent directory if needed
+        try fileManager.createDirectory(at: destDir.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
+        
+        // Copy directory
+        try fileManager.copyItem(at: sourceDir, to: destDir)
+    }
+    
+    // Load cached directory path.
+    func loadDirectoryPath(for dirName: String) -> URL? {
+        let url = directoryPath(for: dirName)
+        if directoryExists(for: dirName) {
+            return url
+        }
+        return nil
+    }
 }
 
 
@@ -65,7 +104,8 @@ final class SharedDataManager: ObservableObject {
     private var initializationTask: Task<Void, Never>?
     private var initializedKinds: Set<TransportationLine.Kind> = []
     private let cache = CacheStore()
-    private let net = ODPTNetworkClient()
+    private let odptService = ODPTDataService()
+    private let gtfsService = GTFSDataService()
     private let consumerKey: String
     
     // MARK: - Initialization
@@ -94,6 +134,31 @@ final class SharedDataManager: ObservableObject {
         // Process each operator's cached data and parse into transportation lines
         // Filter by kind to ensure only relevant data is loaded
         for transportOperator in operators {
+            // Handle GTFS operators separately
+            // For GTFS, don't fetch lines at startup - only ensure ZIP cache exists
+            // Lines will be fetched lazily when user selects the operator
+            if transportOperator.apiType == .gtfs {
+                // Check if ZIP cache exists, download if not (but don't extract)
+                let date = GTFSDates.date(for: transportOperator) ?? ""
+                let gtfsFileName = transportOperator.gtfsFileName
+                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                
+                if cache.loadData(for: cacheKey) == nil {
+                    // Download ZIP file for caching (without extracting)
+                do {
+                        let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                        if !gtfsURL.isEmpty {
+                            _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                        }
+                } catch {
+                        print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
+                    }
+                }
+                // Don't fetch lines at startup - return empty array
+                // Lines will be fetched when user selects this operator
+                continue
+            }
+            
             let cacheKey = transportOperator.fileName
             guard let cachedData = cache.loadData(for: cacheKey) else { 
                 continue 
@@ -115,7 +180,15 @@ final class SharedDataManager: ObservableObject {
         
         // Check if all operators for this kind have cache
         let allHaveCache = operators.allSatisfy { transportOperator in
-            cache.loadData(for: transportOperator.fileName) != nil
+            // For GTFS operators, check GTFS cache key instead of fileName
+            if transportOperator.apiType == .gtfs {
+                let date = GTFSDates.date(for: transportOperator) ?? ""
+                let gtfsFileName = transportOperator.gtfsFileName
+                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                return cache.loadData(for: cacheKey) != nil
+            } else {
+                return cache.loadData(for: transportOperator.fileName) != nil
+            }
         }
         
         if !allHaveCache {
@@ -129,23 +202,39 @@ final class SharedDataManager: ObservableObject {
         let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
         
         for transportOperator in operators {
-            // Check if cache exists
-            let cacheKey = transportOperator.fileName
-            if cache.loadData(for: cacheKey) != nil {
-                continue
-            }
-            
             // Fetch data
             do {
-                let data = try await net.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
-                
-                // Write to file
-                try await net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
-                
-                // Don't save to cache here - only load from cache
-                // Cache will be saved when user presses save button
-                
-                print("✅ Fetched: \(transportOperator.operatorDisplayName)")
+                // Handle GTFS operators separately
+                if transportOperator.apiType == .gtfs {
+                    // For GTFS, download ZIP file and extract for caching at startup
+                    // Check for updates: date-based operators check date, Toei Bus uses ETag/Last-Modified
+                    let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                    if !gtfsURL.isEmpty {
+                        // downloadGTFSZip() handles:
+                        // - Date-based operators: cache key includes date, so date change = new cache key = new download
+                        // - Toei Bus: checks for updates using ETag/Last-Modified via checkForToeiBusGTFSUpdate()
+                        _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                        print("✅ Downloaded and extracted GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
+                    }
+                } else {
+                    // Check if cache exists for non-GTFS operators
+                    let cacheKey = transportOperator.fileName
+                    let hasCache = cache.loadData(for: cacheKey) != nil
+                    
+                    if hasCache {
+                        continue
+                    }
+                    
+                    let data = try await odptService.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
+                    
+                    // Write to file
+                    try await odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                    
+                    // Don't save to cache here - only load from cache
+                    // Cache will be saved when user presses save button
+                    
+                    print("✅ Fetched: \(transportOperator.operatorDisplayName)")
+                }
             } catch {
                 print("❌ Failed to initialize \(transportOperator.operatorDisplayName): \(error)")
             }
@@ -259,17 +348,44 @@ final class SharedDataManager: ObservableObject {
         var cacheLines: [TransportationLine] = []
         
         // MARK: - Cache Loading using map and reduce
-        let cacheResults = LocalDataSource.allCases.compactMap { transportOperator -> (LocalDataSource, [TransportationLine])? in
+        var cacheResults: [(LocalDataSource, [TransportationLine])] = []
+        
+        for transportOperator in LocalDataSource.allCases {
+            // Handle GTFS operators separately
+            // For GTFS, download ZIP file for caching if not exists (but don't extract)
+            // Lines will be fetched lazily when user selects the operator
+            if transportOperator.apiType == .gtfs {
+                // Check if ZIP cache exists, download if not (but don't extract)
+                let date = GTFSDates.date(for: transportOperator) ?? ""
+                let gtfsFileName = transportOperator.gtfsFileName
+                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                
+                if cache.loadData(for: cacheKey) == nil {
+                    // Download ZIP file for caching (without extracting)
+                    do {
+                        let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                        if !gtfsURL.isEmpty {
+                            _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                        }
+                } catch {
+                        print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
+                    }
+                }
+                // Don't fetch lines at startup - return empty array
+                // Lines will be fetched when user selects this operator
+                continue
+            }
+            
             let cacheKey = transportOperator.fileName
             guard let cachedData = cache.loadData(for: cacheKey) else { 
-                return nil 
+                continue 
             }
             
             let lines: [TransportationLine] = transportOperator.transportationType == .railway 
                 ? (try? ODPTParser.parseRailwayRoutes(cachedData)) ?? []
                 : (try? ODPTParser.parseBusRoutes(cachedData)) ?? []
             
-            return (transportOperator, lines)
+            cacheResults.append((transportOperator, lines))
         }
         
         // Process results
@@ -287,14 +403,27 @@ final class SharedDataManager: ObservableObject {
             for transportOperator in LocalDataSource.allCases {
                 group.addTask {
                     do {
-                        let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
+                        // Handle GTFS operators separately
+                        if transportOperator.apiType == .gtfs {
+                            // For GTFS, only download ZIP file for caching (don't extract at startup)
+                            // Lines will be fetched lazily when user selects the operator
+                            let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                            if !gtfsURL.isEmpty {
+                                _ = try await self.gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: self.consumerKey, transportOperator: transportOperator)
+                                print("✅ Downloaded GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
+                            }
+                            // Return empty array - lines will be fetched when user selects this operator
+                            return (transportOperator, [], nil)
+                        }
+                        
+                        let data = try await self.odptService.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
                         
                         let lines: [TransportationLine] = transportOperator.transportationType == .railway 
                             ? (try? ODPTParser.parseRailwayRoutes(data)) ?? []
                             : (try? ODPTParser.parseBusRoutes(data)) ?? []
                         
                         // Write data to file for persistence
-                        try? await self.net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                        try? await self.odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
                         
                         // Save data to cache (must be on MainActor)
                         let cacheKey = transportOperator.fileName
@@ -419,7 +548,7 @@ final class SharedDataManager: ObservableObject {
             updateType: "railway",
             parser: { try ODPTParser.parseRailwayRoutes($0) }
         ) { transportOperator in
-            await self.net.updateIndividualOperator(transportOperator, consumerKey: self.consumerKey)
+            await self.odptService.updateIndividualOperator(transportOperator, consumerKey: self.consumerKey)
         }
         
         // Update data on main actor
@@ -446,17 +575,34 @@ final class SharedDataManager: ObservableObject {
             }
         }
         
+        // Separate GTFS and non-GTFS operators
+        let gtfsOperators = busOperators.filter { $0.apiType == .gtfs }
+        let nonGtfsOperators = busOperators.filter { $0.apiType != .gtfs }
+        
+        // Process GTFS operators separately
+        var gtfsUpdatedData: [TransportationLine] = []
+        for transportOperator in gtfsOperators {
+            do {
+                let lines = try await gtfsService.fetchGTFSData(transportOperator, consumerKey: consumerKey)
+                gtfsUpdatedData.append(contentsOf: lines)
+                print("✅ Updated GTFS: \(transportOperator.operatorDisplayName) (\(lines.count) lines)")
+            } catch {
+                print("❌ Failed to update GTFS \(transportOperator.operatorDisplayName): \(error)")
+            }
+        }
+        
+        // Process non-GTFS operators using existing processUpdate
         let updatedData = await processUpdate(
-            for: busOperators,
+            for: nonGtfsOperators,
             updateType: "bus",
             parser: { try ODPTParser.parseBusRoutes($0) }
         ) { transportOperator in
             do {
                 // Force update by bypassing conditional GET
-                let data = try await self.net.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
+                let data = try await self.odptService.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
                 
                 // Write updated data to JSON file
-                try await self.net.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                try await self.odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
                 
                 // Update cache with new data
                 let cacheKey = transportOperator.fileName
@@ -469,9 +615,12 @@ final class SharedDataManager: ObservableObject {
             }
         }
         
+        // Combine GTFS and non-GTFS updated data
+        let allUpdatedData = updatedData + gtfsUpdatedData
+        
         // Update data on main actor
-        if !updatedData.isEmpty {
-            await self.mergeUpdatedData(updatedData, updateType: "Bus")
+        if !allUpdatedData.isEmpty {
+            await self.mergeUpdatedData(allUpdatedData, updateType: "Bus")
         } else {
             print("ℹ️ Bus manual update: No data changes detected")
         }

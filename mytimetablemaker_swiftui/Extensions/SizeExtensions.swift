@@ -29,6 +29,7 @@ extension UIScreen {
     var splashTitleFontSize: CGFloat { customWidth * 0.08 }
     var splashIconSize: CGFloat { customWidth * 0.3 }
     var splashLoadingFontSize: CGFloat { customWidth * 0.06 }
+    var splashLoadingSpacing: CGFloat { screenHeight * 0.02 }
 
     // MARK: - Header & Navigation
     var headerTopMargin: CGFloat { statusBarHeight + 5 }
@@ -147,10 +148,12 @@ extension UIScreen {
     var settingsLineSheetTitleSpacing: CGFloat { screenHeight * 0.012 }
     var settingsLineSheetGridSpacing: CGFloat { screenHeight * 0.02 }
     var settingsLineSheetColorVerticalPadding: CGFloat { screenHeight * 0.008 }
-    var settingsLineSheetSuggestionItemHeight: CGFloat { screenHeight * 0.056 }
-    var settingsLineSheetMaxSuggestionHeight: CGFloat { screenHeight * 0.264 }
+    var settingsLineSheetSuggestionItemHeight: CGFloat { screenHeight * 0.046 }
+    var settingsLineSheetMaxSuggestionHeight: CGFloat { screenHeight * 0.280 }
     var settingsLineSheetStopMaxSuggestionHeight: CGFloat { screenHeight * 0.234 }
     var settingsLineSheetTagPaddingVertical: CGFloat { screenHeight * 0.003 }
+    var settingsLineSheetSuggestionSpacing: CGFloat { screenHeight * 0.002 }
+    var settingsLineSheetSuggestionPaddingVertical: CGFloat { screenHeight * 0.004 }
     var settingsLineSheetOperatorOffset: CGFloat { screenHeight * 0.13 }
     var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.18 }
     var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.25 }

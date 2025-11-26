@@ -210,10 +210,10 @@ struct ODPTParser {
     }
 }
 
-// MARK: - ODPT Network Client
+// MARK: - ODPT Data Service
 // Handles HTTP communication with the ODPT API.
 // Manages authentication, caching, and data retrieval.
-final class ODPTNetworkClient: NSObject, URLSessionDelegate {
+final class ODPTDataService: NSObject, URLSessionDelegate {
     private var session: URLSession!
     private let cache = CacheStore()
     

@@ -70,6 +70,8 @@
 		02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0262C261C94E600655E54 /* LoginContentView.swift */; };
 		02F02640261C95E400655E54 /* SignUpContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F0263F261C95E400655E54 /* SignUpContentView.swift */; };
 		02F026C9261D38F900655E54 /* MainContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F026C8261D38F900655E54 /* MainContentView.swift */; };
+		02F71D562ED2C45E006F5833 /* ZipArchive in Frameworks */ = {isa = PBXBuildFile; productRef = 02F71D4D2ED1C45F006F5833 /* ZipArchive */; };
+		02F71D582ED2DDEF006F5833 /* GTFSDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F71D572ED2DDE6006F5833 /* GTFSDataService.swift */; };
 		E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */; };
 /* End PBXBuildFile section */
 
@@ -144,6 +146,7 @@
 		02F026C8261D38F900655E54 /* MainContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentView.swift; sourceTree = "<group>"; };
 		02F026F1261DED0500655E54 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Debug.xcconfig; sourceTree = "<group>"; };
 		02F026F2261DED0600655E54 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfiguration; path = Release.xcconfig; sourceTree = "<group>"; };
+		02F71D572ED2DDE6006F5833 /* GTFSDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GTFSDataService.swift; sourceTree = "<group>"; };
 		E06EA9793B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsLineSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -152,6 +155,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				02F71D562ED2C45E006F5833 /* ZipArchive in Frameworks */,
 				02D3F5C02E3A485100C33E15 /* GoogleMobileAds in Frameworks */,
 				02D3F5BF2E3A485100C33E15 /* FirebaseFirestore in Frameworks */,
 				02D3F5BE2E3A485100C33E15 /* FirebaseAuth in Frameworks */,
@@ -217,6 +221,7 @@
 			children = (
 				02EBD4B92E5B088200450D16 /* CacheService.swift */,
 				02EBD4B72E5B087200450D16 /* ODPTDataService.swift */,
+				02F71D572ED2DDE6006F5833 /* GTFSDataService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -376,6 +381,7 @@
 				023F304029DB2CBB00ECE4CF /* FirebaseFirestore */,
 				023F307529DB2E7300ECE4CF /* GoogleMobileAds */,
 				0298F55D2E3A52B100271243 /* Algorithms */,
+				02F71D4D2ED1C45F006F5833 /* ZipArchive */,
 			);
 			productName = mytimetablemaker_swiftui;
 			productReference = 02F02578261BDD7E00655E54 /* mytimetablemaker_swiftui.app */;
@@ -454,6 +460,7 @@
 				023F303D29DB2CBB00ECE4CF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				023F307429DB2E7300ECE4CF /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				0298F55C2E3A52B100271243 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				02F71D4C2ED1C45F006F5833 /* XCRemoteSwiftPackageReference "ZipArchive" */,
 			);
 			productRefGroup = 02F02579261BDD7E00655E54 /* Products */;
 			projectDirPath = "";
@@ -550,6 +557,7 @@
 				E06EA97A3B2C45BBA52A0A859DCE682A /* SettingsLineSheet.swift in Sources */,
 				02F0262D261C94E600655E54 /* LoginContentView.swift in Sources */,
 				02F025C5261BDED100655E54 /* Enums.swift in Sources */,
+				02F71D582ED2DDEF006F5833 /* GTFSDataService.swift in Sources */,
 				02F0257C261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift in Sources */,
 				02F025ED261BE5A500655E54 /* MainViewModel.swift in Sources */,
 			);
@@ -935,6 +943,14 @@
 				minimumVersion = 1.2.1;
 			};
 		};
+		02F71D4C2ED1C45F006F5833 /* XCRemoteSwiftPackageReference "ZipArchive" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ZipArchive/ZipArchive.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -957,6 +973,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0298F55C2E3A52B100271243 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		02F71D4D2ED1C45F006F5833 /* ZipArchive */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 02F71D4C2ED1C45F006F5833 /* XCRemoteSwiftPackageReference "ZipArchive" */;
+			productName = ZipArchive;
 		};
 /* End XCSwiftPackageProductDependency section */
 

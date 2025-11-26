@@ -401,6 +401,13 @@ struct MainContentView: View {
         .frame(height: screen.transferHeight)
     }
 
+    // MARK: - Helper Functions
+    /// Get display name (split by ":" and return first component for ODPT format)
+    private func getDisplayName(from name: String) -> String {
+        let components = name.components(separatedBy: ":")
+        return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? name
+    }
+    
     // MARK: - StationLine View (func)
     @ViewBuilder
     func StationLineView(_ goorback: String, _ num: Int) -> some View {
@@ -416,7 +423,7 @@ struct MainContentView: View {
 
         VStack(alignment: .leading) {
             HStack {
-                Text(stationArray[2 * num])
+                Text(getDisplayName(from: stationArray[2 * num]))
                     .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
                 Spacer()
@@ -448,7 +455,7 @@ struct MainContentView: View {
             .frame(height: screen.lineNameHeight)
 
             HStack {
-                Text(stationArray[2 * num + 1])
+                Text(getDisplayName(from: stationArray[2 * num + 1]))
                     .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
                 Spacer()

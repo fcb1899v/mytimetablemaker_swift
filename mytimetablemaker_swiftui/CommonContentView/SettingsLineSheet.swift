@@ -121,10 +121,40 @@ struct SettingsLineSheet: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                CustomBackButton(foregroundColor: .black, action: { dismiss() })
+                CustomBackButton(
+                    foregroundColor: vm.isLoadingBusStops || vm.isLoadingTimetable || vm.isLoadingLines ? .white: .black,
+                    action: { dismiss() }
+                )
+                .disabled(vm.isLoadingBusStops || vm.isLoadingTimetable || vm.isLoadingLines)
+            }
+        }
+        .overlay {
+            // MARK: - Loading Overlay
+            // Dark overlay with progress bar when loading bus stops, generating timetable, or fetching line list
+            // Displayed on top of all other views including navigation bar
+            if vm.isLoadingBusStops || vm.isLoadingTimetable || vm.isLoadingLines {
+                ZStack {
+                    Color.black.opacity(0.7)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: screen.splashLoadingSpacing) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                        
+                        if let message = vm.loadingMessage {
+                            Text(message)
+                                .font(.system(size: screen.splashLoadingFontSize))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
             }
         }
         .onAppear {
+            // Reset isChangedOperator flag on appear (load from UserDefaults)
+            vm.isChangedOperator = false
+            
             // Ensure selectedGoorback matches the specified goorback parameter
             if vm.selectedGoorback != goorback {
                 vm.selectGoorback(goorback)
@@ -266,7 +296,7 @@ struct SettingsLineSheet: View {
     // MARK: - Operator Suggestions View
     // Dropdown list showing suggested operators based on search input
     private var operatorSuggestionsView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSuggestionSpacing) {
             ScrollView {
                 ForEach(Array(vm.operatorSuggestions.enumerated()), id: \.offset) { index, operatorName in
                     if index == 0 {
@@ -283,12 +313,40 @@ struct SettingsLineSheet: View {
                             $0.transportationType == vm.selectedTransportationKind &&
                             $0.operatorDisplayName == operatorName
                         }) {
+                            // Check if operator has changed from saved value
+                            let previousOperatorCode = vm.selectedOperatorCode
+                            if previousOperatorCode != dataSource.operatorCode {
+                                vm.isChangedOperator = true
+                            }
+                            
                             vm.selectedOperatorCode = dataSource.operatorCode
-                        }
-                        
-                        // Show line suggestions when operator is selected (even if line input is empty)
-                        Task {
-                            await vm.filter(vm.lineInput)
+                            
+                            // Clear line input when operator is selected
+                            vm.lineInput = ""
+                            vm.selectedLine = nil
+                            vm.lineSelected = false
+                            
+                            // Focus on line input field after operator is selected
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                focused = true
+                            }
+                            
+                            // For GTFS operators, fetch lines from ZIP cache
+                            if dataSource.apiType == .gtfs {
+                                // Clear line suggestions immediately to prevent showing old data
+                                vm.lineSuggestions = []
+                                vm.showLineSuggestions = false
+                                
+                                Task {
+                                    await vm.fetchGTFSLinesForOperator(dataSource)
+                                }
+                                vm.showLineSuggestions = false
+                            } else {
+                                // For non-GTFS operators, use filter to show line suggestions
+                                Task {
+                                    await vm.filterLine(vm.lineInput)
+                                }
+                            }
                         }
                         
                         // Reset flag after a short delay to allow UI updates
@@ -311,7 +369,7 @@ struct SettingsLineSheet: View {
                             Spacer()
                         }
                         .contentShape(Rectangle())
-                        .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                        .padding(.vertical, screen.settingsLineSheetSuggestionPaddingVertical)
                         .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                     }
                     .buttonStyle(.plain)
@@ -362,7 +420,7 @@ struct SettingsLineSheet: View {
                         // Reset lineSelected flag to allow suggestions to show when field is focused
                         vm.lineSelected = false
                         Task {
-                            await vm.filter("")
+                            await vm.filterLine("")
                         }
                     }
                 } else {
@@ -387,7 +445,7 @@ struct SettingsLineSheet: View {
     // MARK: - Line Suggestions View
     // Dropdown list showing suggested lines based on search input
     private var lineSuggestionsView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSuggestionSpacing) {
             ScrollView {
                 let uniqueLines = vm.removeDuplicates(from: vm.lineSuggestions)
                 let enumeratedLines = Array(uniqueLines.enumerated())
@@ -405,8 +463,12 @@ struct SettingsLineSheet: View {
                         vm.showLineSuggestions = false
                         vm.lineSelected = true
                         
-                        // Reset flag after a short delay to allow UI updates
+                        // Remove focus from all fields after line is selected
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            focused = false
+                            operatorFocused = false
+                            departureFocused = false
+                            arrivalFocused = false
                             vm.isLineNumberChanging = false
                         }
 
@@ -441,7 +503,7 @@ struct SettingsLineSheet: View {
                              Spacer()
                          }
                          .contentShape(Rectangle())
-                         .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                         .padding(.vertical, screen.settingsLineSheetSuggestionPaddingVertical)
                          .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
                      }
                     .buttonStyle(.plain)
@@ -573,6 +635,7 @@ struct SettingsLineSheet: View {
     
     // MARK: - Station Header Text
     /// Station header with dynamic station information
+    /// For GTFS routes, displays "出発停〜行き先" format
     private var stationHeaderText: some View {
         let headerText = vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized
         
@@ -581,7 +644,15 @@ struct SettingsLineSheet: View {
             let firstStop = vm.lineStops.first?.displayName ?? ""
             let lastStop = vm.lineStops.last?.displayName ?? ""
             
-            stationInfo = ": ".localized + firstStop + " to ".localized + lastStop
+            // For GTFS routes, use "〜" separator (出発停〜行き先)
+            if vm.selectedTransportationKind == .bus,
+               let operatorCode = vm.selectedLine?.operatorCode,
+               let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
+               dataSource.apiType == .gtfs {
+                stationInfo = ": ".localized + firstStop + " to ".localized  + lastStop
+            } else {
+                stationInfo = ": ".localized + firstStop + " to ".localized + lastStop
+            }
         } else {
             stationInfo = ""
         }
@@ -644,7 +715,7 @@ struct SettingsLineSheet: View {
     // MARK: - Departure Stop Suggestions
     // Dropdown list showing suggested departure stops based on search input
     private var departureStopSuggestionsView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSuggestionSpacing) {
             ScrollView {
                 ForEach(vm.departureSuggestions, id: \.id) { stop in
                     if stop == vm.departureSuggestions.first {
@@ -724,7 +795,7 @@ struct SettingsLineSheet: View {
     // MARK: - Arrival Stop Suggestions
     // Dropdown list showing suggested arrival stops based on search input
     private var arrivalStopSuggestionsView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: screen.settingsLineSheetSuggestionSpacing) {
             ScrollView {
                 ForEach(vm.arrivalSuggestions, id: \.id) { stop in
                     if stop == vm.arrivalSuggestions.first {
@@ -803,7 +874,7 @@ struct SettingsLineSheet: View {
                     Spacer()
                 }
                 .contentShape(Rectangle())
-                .padding(.vertical, screen.settingsSheetInputPaddingVertical)
+                .padding(.vertical, screen.settingsLineSheetSuggestionPaddingVertical)
                 .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
             }
             .buttonStyle(.plain)
