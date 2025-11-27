@@ -11,6 +11,7 @@
 		0220F1B2263FE1120007EDC8 /* SizeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0220F1B1263FE1120007EDC8 /* SizeExtensions.swift */; };
 		022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 022E53442633B3C0007921D9 /* InfoPlist.strings */; };
 		0257E432263E1B3D00D45CFB /* ColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0257E431263E1B3D00D45CFB /* ColorExtensions.swift */; };
+		025A49EC2ED8898C00FCFACC /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 025A49EB2ED8897A00FCFACC /* README.md */; };
 		02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723E5C2E688CB000F1528E /* AccountExtensions.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
@@ -98,6 +99,7 @@
 		022E53432633B3C0007921D9 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mytimetablemaker_swiftuiRelease.entitlements; sourceTree = "<group>"; };
 		0257E431263E1B3D00D45CFB /* ColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensions.swift; sourceTree = "<group>"; };
+		025A49EB2ED8897A00FCFACC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		02723E5C2E688CB000F1528E /* AccountExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExtensions.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 			children = (
 				022E53512633EEE2007921D9 /* mytimetablemaker_swiftuiRelease.entitlements */,
 				02F026F1261DED0500655E54 /* Debug.xcconfig */,
+				025A49EB2ED8897A00FCFACC /* README.md */,
 				02F026F2261DED0600655E54 /* Release.xcconfig */,
 				02F0257B261BDD7E00655E54 /* mytimetablemaker_swiftuiApp.swift */,
 				02F02586261BDD7F00655E54 /* mytimetablemaker_swiftui.xcdatamodeld */,
@@ -488,6 +491,7 @@
 				027F24222ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */,
 				027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */,
 				027F24132ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
+				025A49EC2ED8898C00FCFACC /* README.md in Resources */,
 				027F240D2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
 				022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */,
 				021A12022C70391A00B12BF1 /* GoogleService-Info.plist in Resources */,
