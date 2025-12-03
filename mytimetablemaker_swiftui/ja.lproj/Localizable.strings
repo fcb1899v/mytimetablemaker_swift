@@ -348,8 +348,10 @@
 "TH-LINER" = "THライナー";
 "TJLiner" = "TJライナー";
 "Edit Timetable" = "時刻表設定";
+"Register Timetable" = "時刻表の登録";
 "Select Type" = "列車種別";
 
+"defaultLocal" = "普通";
 "defaultExpress" = "急行";
 "defaultRapid" = "快速";
 "defaultSpecialRapid" = "特別快速";

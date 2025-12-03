@@ -350,8 +350,10 @@
 "TH-LINER" = "TH LINER";
 "TJLiner" = "TJ Liner";
 "Edit Timetable" = "Edit Timetable";
+"Register Timetable" = "Register Timetable";
 "Select Type" = "Train Type";
 
+"defaultLocal" = "Local";
 "defaultExpress" = "Express";
 "defaultRapid" = "Rapid";
 "defaultSpecialRapid" = "Special Rapid";

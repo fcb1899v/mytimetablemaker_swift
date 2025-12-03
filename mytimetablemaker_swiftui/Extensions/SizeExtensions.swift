@@ -99,9 +99,9 @@ extension UIScreen {
     var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
     var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
     var timetablePickerSpacing:   CGFloat { screenHeight * 0.02 }
-    var timetableTypeMenuOffsetY: CGFloat { screenHeight * 0.12 }
-    var timetableCopyMenuOffsetY: CGFloat { screenHeight * 0.005 }
-    var timetableCalendarMenuOffsetY: CGFloat { screenHeight * -0.200 }
+    var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.045 }
+    var timetableCopyMenuOffsetY: CGFloat { screenHeight * 0.13 }
+    var timetableCalendarMenuOffsetY: CGFloat { screenHeight * -0.34 }
     var timetableContentViewMenuOffsetY: CGFloat { screenHeight * 0.13 }
     var timetablePickerTopPadding:    CGFloat { screenHeight * -0.036 }
     var timetablePickerBottomPadding: CGFloat { screenHeight * -0.012 }
@@ -157,8 +157,8 @@ extension UIScreen {
     var settingsLineSheetOperatorOffset: CGFloat { screenHeight * 0.13 }
     var settingsLineSheetLineOffset: CGFloat { screenHeight * 0.18 }
     var settingsLineSheetColorOffset: CGFloat { screenHeight * 0.25 }
-    func settingsLineSheetDepartureOffset(isEmpty: Bool) -> CGFloat { screenHeight * (isEmpty ? 0.18: 0.32) }
-    func settingsLineSheetArrivalOffset(isEmpty: Bool) -> CGFloat { screenHeight * (isEmpty ? 0.18: 0.37) }
+    var settingsLineSheetDepartureOffset: CGFloat { screenHeight * 0.32 }
+    var settingsLineSheetArrivalOffset: CGFloat { screenHeight * 0.37 }
     var settingsLineSheetCaptionFontSize: CGFloat { customWidth * 0.024 }
     var settingsLineSheetColorSettingWidth: CGFloat { customWidth * 0.80 }
     var settingsLineSheetColorHorizontalPadding: CGFloat { customWidth * 0.04 }

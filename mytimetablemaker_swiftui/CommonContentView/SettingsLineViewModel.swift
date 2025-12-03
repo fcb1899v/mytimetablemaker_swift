@@ -333,12 +333,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 
                 lineSuggestions = uniqueResults
-                showLineSuggestions = !lineSuggestions.isEmpty
+                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
                 nameCounts = [:]
             } else {
                 let uniqueResults = removeDuplicates(from: searchData)
                 lineSuggestions = uniqueResults
-                showLineSuggestions = !lineSuggestions.isEmpty
+                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
                 nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
                     .mapValues { $0.count }
             }
@@ -386,7 +386,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
             
             lineSuggestions = uniqueResults
-            showLineSuggestions = !lineSuggestions.isEmpty
+            showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
             nameCounts = [:]
             return
         }
@@ -437,7 +437,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Create array of (dataSource, operatorDisplayName) tuples to maintain enum order
         let availableOperatorsWithSource = availableDataSources.compactMap { dataSource -> (LocalDataSource, String)? in
-            guard let operatorCode = dataSource.operatorCode else { return nil }
+            guard dataSource.operatorCode != nil else { return nil }
             return (dataSource, dataSource.operatorDisplayName)
         }
         
@@ -519,9 +519,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
         var filtered = lineStops
         
         // Filter by order: if excludeStop is selected, apply order constraint
-        if let excludeStop = excludeStop, let excludeIndex = lineStops.firstIndex(where: { $0.id == excludeStop.id }) {
+        // Railway lines: skip order constraint (allow any station selection)
+        // Bus lines: apply order constraint (departure must be before arrival)
+        let isRailway = selectedLine?.kind == .railway || selectedTransportationKind == .railway
+        if !isRailway, let excludeStop = excludeStop, let excludeIndex = lineStops.firstIndex(where: { $0.id == excludeStop.id }) {
             if isDeparture {
-                // For departure stops: only show stops before the selected arrival stop
+                // For departure stops (bus only): only show stops before the selected arrival stop
                 filtered = filtered.filter { stop in
                     if let stopIndex = lineStops.firstIndex(where: { $0.id == stop.id }) {
                         return stopIndex < excludeIndex
@@ -529,7 +532,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     return false
                 }
             } else {
-                // For arrival stops: only show stops after the selected departure stop
+                // For arrival stops (bus only): only show stops after the selected departure stop
                 filtered = filtered.filter { stop in
                     if let stopIndex = lineStops.firstIndex(where: { $0.id == stop.id }) {
                         return stopIndex > excludeIndex
@@ -620,8 +623,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
             
             return stations
         }
-        
-        return []
     }
     
     
@@ -683,7 +684,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Data Validation
     // Check if line read from UserDefaults exists in current data
-    func checkSavedLineInData() async -> Bool {
+    func checkSavedLineInData() async {
         // Wait for data loading to complete before validation
         while all.isEmpty {
             try? await Task.sleep(nanoseconds: 100_000_000)
@@ -716,7 +717,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 await MainActor.run {
                     loadStationSettings()
                 }
-                return true
             } else {
                 // Keep user input even if saved line not found in current data
                 await MainActor.run {
@@ -737,7 +737,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Station information is now loaded directly from UserDefaults
         // No need for complex station object restoration
-        return false
     }
     
     // Helper method to find saved line in current data
@@ -2875,6 +2874,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Form Data Management
     /// Clears all form data and resets to initial state
+    /// Also resets all focus states
     func clearAllFormData() {
         // Clear operator name
         operatorInput = ""
@@ -2886,13 +2886,26 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Clear line name
         lineInput = ""
+        lineSuggestions = []
+        showLineSuggestions = false
+        lineSelected = false
+        selectedLine = nil
         
-        // Reset station selection
+        // Reset station selection (includes departure/arrival focus flags)
         resetStationSelection()
         
         // Clear departure and arrival station input fields
         departureStopInput = ""
+        departureSuggestions = []
+        showDepartureSuggestions = false
+        departureStopSelected = false
+        selectedDepartureStop = nil
+        
         arrivalStopInput = ""
+        arrivalSuggestions = []
+        showArrivalSuggestions = false
+        arrivalStopSelected = false
+        selectedArrivalStop = nil
         
         // Reset ride time to 0 minutes
         selectedRideTime = 0
@@ -2904,8 +2917,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         selectedTransportation = "none"
         selectedTransferTime = 0
         
-        // Hide color selection UI
+        // Hide all dropdowns and selection UIs
         showColorSelection = false
+        
+        // Reset all focus states
+        isOperatorFieldFocused = false
+        isLineFieldFocused = false
+        // isDepartureFieldFocused and isArrivalFieldFocused are reset in resetStationSelection()
     }
     
     // MARK: - Helper Functions

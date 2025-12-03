@@ -46,6 +46,16 @@ struct SettingsLineSheet: View {
         self._vm = StateObject(wrappedValue: SettingsLineSheetViewModel(goorback: validGoorback, lineIndex: lineIndex))
     }
     
+    // MARK: - Helper Functions
+    /// Resets focus from all text fields (View-level focus states only)
+    /// ViewModel-level focus states are reset in clearAllFormData()
+    private func clearAllFocus() {
+        focused = false
+        operatorFocused = false
+        departureFocused = false
+        arrivalFocused = false
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
@@ -84,12 +94,12 @@ struct SettingsLineSheet: View {
                 }
 
                 // MARK: - Operator Suggestions
-                if vm.showOperatorSuggestions && !vm.operatorSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.operatorSelected {
+                if vm.showOperatorSuggestions && !vm.operatorSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.operatorSelected && vm.isOperatorFieldFocused {
                     operatorSuggestionsView
                 }
 
                 // MARK: - Line Suggestions
-                if vm.showLineSuggestions && !vm.lineSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.lineSelected {
+                if vm.showLineSuggestions && !vm.lineSuggestions.isEmpty && !vm.isLineNumberChanging && !vm.lineSelected && vm.isLineFieldFocused {
                     lineSuggestionsView
                 }
                 // MARK: - Color Selection Section
@@ -98,12 +108,12 @@ struct SettingsLineSheet: View {
                 }
 
                 // MARK: - Departure Station Suggestions
-                if vm.showDepartureSuggestions && !vm.departureSuggestions.isEmpty && vm.lineSelected {
+                if vm.showDepartureSuggestions && !vm.departureSuggestions.isEmpty && vm.lineSelected && vm.isDepartureFieldFocused {
                     departureStopSuggestionsView
                 }
                 
                 // MARK: - Arrival Station Suggestions
-                if vm.showArrivalSuggestions && !vm.arrivalSuggestions.isEmpty && vm.lineSelected {
+                if vm.showArrivalSuggestions && !vm.arrivalSuggestions.isEmpty && vm.lineSelected && vm.isArrivalFieldFocused {
                     arrivalStopSuggestionsView
                 }
             }
@@ -160,6 +170,12 @@ struct SettingsLineSheet: View {
                 vm.selectGoorback(goorback)
             }
         }
+        .onChange(of: vm.showColorSelection) { isShowing in
+            // Clear all focus when color selection is opened
+            if isShowing {
+                clearAllFocus()
+            }
+        }
     }
     
     // MARK: - Route Header Menu
@@ -195,8 +211,17 @@ struct SettingsLineSheet: View {
                 icon: "xmark.circle.fill",
                 tintColor: .red,
                 action: {
+                    clearAllFocus()
                     vm.clearAllFormData()
                     selected = nil
+                    // Focus on operator field and show all operator suggestions after clearing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        operatorFocused = true
+                        vm.isOperatorFieldFocused = true
+                        Task {
+                            await vm.filterOperators("")
+                        }
+                    }
                 }
             )
         }
@@ -230,6 +255,7 @@ struct SettingsLineSheet: View {
                 isLeftSelected: Binding(
                     get: { vm.selectedTransportationKind == .railway },
                     set: { isRailway in
+                        clearAllFocus()
                         vm.switchTransportationKind(isRailway)
                     }
                 ),
@@ -284,6 +310,7 @@ struct SettingsLineSheet: View {
                 // Ensure focus is maintained when typing and show operator selection UI
                 if !newValue.isEmpty {
                     operatorFocused = true
+                    vm.isOperatorFieldFocused = true
                     vm.showOperatorSelection = true
                 }
             }
@@ -329,6 +356,7 @@ struct SettingsLineSheet: View {
                             // Focus on line input field after operator is selected
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 focused = true
+                                vm.isLineFieldFocused = true
                             }
                             
                             // For GTFS operators, fetch lines from ZIP cache
@@ -433,6 +461,7 @@ struct SettingsLineSheet: View {
                 // Ensure focus is maintained when typing and show station selection UI
                 if !newValue.isEmpty {
                     focused = true
+                    vm.isLineFieldFocused = true
                     vm.showStationSelection = true
                 }
             }
@@ -559,6 +588,7 @@ struct SettingsLineSheet: View {
                         .stroke(Color(.separator), lineWidth: screen.settingsSheetStrokeLineWidth)
                 )
                 .onTapGesture {
+                    clearAllFocus()
                     vm.showColorSelection = true
                 }
             
@@ -567,7 +597,10 @@ struct SettingsLineSheet: View {
                 title: "Select".localized,
                 icon: "paintpalette.fill",
                 tintColor: .primary,
-                action: { vm.showColorSelection = true }
+                action: {
+                    clearAllFocus()
+                    vm.showColorSelection = true
+                }
             )
             
             Spacer(minLength: 0)
@@ -589,6 +622,7 @@ struct SettingsLineSheet: View {
                     // Cancel button (only shown during manual color selection)
                     if vm.showColorSelection {
                         Button("Cancel".localized) {
+                            clearAllFocus()
                             vm.showColorSelection = false
                         }
                         .tint(.black)
@@ -605,6 +639,12 @@ struct SettingsLineSheet: View {
                             // Set selected color and hide color selection UI
                             vm.setLineColor(color.RGB)
                             vm.showColorSelection = false
+                            // Focus on departure station field after color selection
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                clearAllFocus()
+                                departureFocused = true
+                                vm.isDepartureFieldFocused = true
+                            }
                         }) {
                             VStack {
                                 // Color circle with border
@@ -721,7 +761,7 @@ struct SettingsLineSheet: View {
                     if stop == vm.departureSuggestions.first {
                         Color.clear.frame(height: 0)
                     }
-                    StopRowView(stop: stop, isDeparture: true, vm: vm)
+                    StopRowView(stop: stop, isDeparture: true, vm: vm, clearAllFocus: clearAllFocus)
                 }
             }
         }
@@ -735,7 +775,7 @@ struct SettingsLineSheet: View {
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: screen.settingsLineSheetDepartureOffset(isEmpty: vm.departureStopInput.isEmpty))
+        .offset(y: screen.settingsLineSheetDepartureOffset)
         .zIndex(100)
     }
     
@@ -801,7 +841,7 @@ struct SettingsLineSheet: View {
                     if stop == vm.arrivalSuggestions.first {
                         Color.clear.frame(height: 0)
                     }
-                    StopRowView(stop: stop, isDeparture: false, vm: vm)
+                    StopRowView(stop: stop, isDeparture: false, vm: vm, clearAllFocus: clearAllFocus)
                 }
             }
         }
@@ -812,7 +852,7 @@ struct SettingsLineSheet: View {
         .shadow(radius: screen.settingsLineSheetShadowRadius)
         .transition(.opacity.combined(with: .move(edge: .top)))
         .padding()
-        .offset(y: screen.settingsLineSheetArrivalOffset(isEmpty: vm.arrivalStopInput.isEmpty))
+        .offset(y: screen.settingsLineSheetArrivalOffset)
         .zIndex(100)
     }
 
@@ -827,6 +867,9 @@ struct SettingsLineSheet: View {
         
         // View model reference for updating state context
         @ObservedObject var vm: SettingsLineSheetViewModel
+        
+        // Closure to clear all focus states
+        let clearAllFocus: () -> Void
         
         var body: some View {
             Button {
@@ -859,6 +902,14 @@ struct SettingsLineSheet: View {
                     vm.arrivalSuggestions = []
                     // Set a flag to prevent re-display
                     vm.arrivalStopSelected = true
+                    
+                    // Clear focus after arrival stop selection to allow user to interact with transportation menu
+                    // Only for lines 1 and 2 (line 3 doesn't have transportation settings)
+                    if vm.selectedLineNumber < 3 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            clearAllFocus()
+                        }
+                    }
                 }
                 
                 // Reset flag after a short delay to allow UI updates
@@ -921,7 +972,16 @@ struct SettingsLineSheet: View {
                 HStack {
                     Spacer()
                     
-                    Custom2DigitPicker(value: $vm.selectedRideTime, isZeroToFive: false)
+                    Custom2DigitPicker(
+                        value: Binding(
+                            get: { vm.selectedRideTime },
+                            set: { newValue in
+                                clearAllFocus()
+                                vm.selectedRideTime = newValue
+                            }
+                        ),
+                        isZeroToFive: false
+                    )
                 }
             }
 
@@ -954,6 +1014,7 @@ struct SettingsLineSheet: View {
                 Menu {
                     ForEach(TransferType.allCases.reversed(), id: \.self) { type in
                         Button(action: {
+                            clearAllFocus()
                             vm.selectedTransportation = type.rawValue
                         }) {
                             HStack {
@@ -971,6 +1032,11 @@ struct SettingsLineSheet: View {
                         .font(.system(size: screen.settingsSheetInputFontSize, weight: .medium))
                         .foregroundColor(.black)
                 }
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+                        clearAllFocus()
+                    }
+                )
             }
             .padding(.vertical, screen.settingsSheetInputPaddingVertical)
             .padding(.horizontal, screen.settingsSheetInputPaddingHorizontal)
@@ -1018,7 +1084,16 @@ struct SettingsLineSheet: View {
                 HStack {
                     Spacer()
                     // Custom2DigitPicker for transfer time selection (0-99 minutes)
-                    Custom2DigitPicker(value: $vm.selectedTransferTime, isZeroToFive: false)
+                    Custom2DigitPicker(
+                        value: Binding(
+                            get: { vm.selectedTransferTime },
+                            set: { newValue in
+                                clearAllFocus()
+                                vm.selectedTransferTime = newValue
+                            }
+                        ),
+                        isZeroToFive: false
+                    )
                 }
             }
             

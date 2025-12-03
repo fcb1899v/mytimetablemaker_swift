@@ -381,7 +381,7 @@ struct CustomBackground: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: screen.settingsSheetCornerRadius)
-            .fill(backgroundColor)
+            .fill(backgroundColor.opacity(0.95))
     }
 }
 

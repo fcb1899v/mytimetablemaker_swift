@@ -113,7 +113,7 @@ struct SettingsTimetableSheet: View {
                 }
             }
         }
-        .presentationDetents([.large])
+        .presentationDetents([.height(screen.settingsTimetableSheetHeight)])
         .presentationDragIndicator(.hidden)
     }
 
@@ -148,9 +148,7 @@ struct SettingsTimetableSheet: View {
             Spacer()
         }
         .onAppear {
-            let loadedTypes = goorback.loadAvailableCalendarTypes(num: num)
-            // Sort calendar types according to enum definition order
-            availableOdptCalendar = sortCalendarTypesByEnumOrder(loadedTypes)
+            availableOdptCalendar = goorback.loadAvailableCalendarTypes(num: num)
         }
     }
     
@@ -822,51 +820,6 @@ struct SettingsTimetableSheet: View {
     }
     
     // MARK: - Helper Methods
-    
-    /// Sort calendar types according to enum definition order
-    /// Order: weekday, holiday, saturdayHoliday, sunday, monday, tuesday, wednesday, thursday, friday, saturday, specific(String)
-    private func sortCalendarTypesByEnumOrder(_ types: [ODPTCalendarType]) -> [ODPTCalendarType] {
-        // Define enum order (excluding specific which has associated value)
-        let enumOrder: [ODPTCalendarType] = [
-            .weekday,
-            .holiday,
-            .saturdayHoliday,
-            .sunday,
-            .monday,
-            .tuesday,
-            .wednesday,
-            .thursday,
-            .friday,
-            .saturday
-        ]
-        
-        // Separate specific types and regular types
-        let specificTypes = types.filter {
-            if case .specific = $0 { return true }
-            return false
-        }
-        let regularTypes = types.filter {
-            if case .specific = $0 { return false }
-            return true
-        }
-        
-        // Sort regular types by enum order
-        let sortedRegularTypes = regularTypes.sorted { type1, type2 in
-            let index1 = enumOrder.firstIndex(of: type1) ?? Int.max
-            let index2 = enumOrder.firstIndex(of: type2) ?? Int.max
-            return index1 < index2
-        }
-        
-        // Append specific types at the end (sorted alphabetically by rawValue)
-        let sortedSpecificTypes = specificTypes.sorted { type1, type2 in
-            let rawValue1 = type1.rawValue
-            let rawValue2 = type2.rawValue
-            return rawValue1 < rawValue2
-        }
-        
-        return sortedRegularTypes + sortedSpecificTypes
-    }
-    
     // Copy timetable times from another hour or route based on selection index
     private func copyTime(from index: Int) {
         UserDefaults.standard.set(

@@ -23,6 +23,8 @@ struct TimetableContentView: View {
     @State private var isCalendarTypeDropdownOpen = false
     // State for timetable grid views (hour-based sheet presentation)
     @State private var showingTimetableSheet: [Int: Bool] = [:]
+    // Valid hours for current calendar type (cached to prevent sheet dismissal on first data add)
+    @State private var validHours: [Int] = []
     @Environment(\.dismiss) private var dismiss
 
     private let goorback: String
@@ -51,6 +53,12 @@ struct TimetableContentView: View {
     private func getDisplayName(from name: String) -> String {
         let components = name.components(separatedBy: ":")
         return components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? name
+    }
+    
+    /// Update valid hours for current calendar type
+    /// This is called when calendar type changes or timetable data is updated
+    private func updateValidHours() {
+        validHours = goorback.validHourRange(calendarType: selectedCalendarType, num: num)
     }
     
     /// Sort calendar types according to enum definition order
@@ -157,13 +165,19 @@ struct TimetableContentView: View {
                         
                         ScrollView {
                             VStack(spacing: 0) {
-                                ForEach(goorback.validHourRange(calendarType: selectedCalendarType, num: num), id: \.self) { hour in
+                                ForEach(validHours, id: \.self) { hour in
                                     timetableGridView(hour: hour)
                                     Color.white.frame(width: screen.customWidth, height: 1)
                                 }
                             }
                         }
                         .frame(minHeight: 0.0, maxHeight: screen.timetableMaxHeight)
+
+                        // Check if timetable data exists
+                        if validHours.isEmpty {
+                            // Show register button when no timetable data exists
+                            registerTimetableButton
+                        }
                     }
                 }
                 
@@ -217,13 +231,22 @@ struct TimetableContentView: View {
                         }
                     }
                 }
+                
+                // Initialize valid hours
+                updateValidHours()
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CalendarTypeChanged"))) { notification in
                 if let userInfo = notification.userInfo,
                    let calendarTypeRawValue = userInfo["calendarType"] as? String,
                    let calendarType = ODPTCalendarType(rawValue: calendarTypeRawValue) {
                     selectedCalendarType = calendarType
+                    updateValidHours()
                 }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("TimetableDataUpdated"))) { _ in
+                // Update valid hours when timetable data changes
+                // This ensures the view updates but doesn't close the sheet
+                updateValidHours()
             }
         }
     }
@@ -271,6 +294,43 @@ struct TimetableContentView: View {
             x: screen.timetableTypeMenuOffsetX,
             y: screen.timetableContentViewMenuOffsetY,
         )
+    }
+    
+    // MARK: - Register Timetable Button
+    // Button to register timetable when no data exists
+    @ViewBuilder
+    private var registerTimetableButton: some View {
+        // Initialize state for first hour (4:00) if not exists
+        let hour = 18
+        let binding = Binding(
+            get: { showingTimetableSheet[hour] ?? false },
+            set: { showingTimetableSheet[hour] = $0 }
+        )
+        
+        HStack(alignment: .top) {
+            Spacer()
+            
+            CustomButton(
+                title: "Register Timetable".localized,
+                icon: "plus.circle.fill",
+                backgroundColor: .accent,
+                textColor: .white,
+                action: {
+                    binding.wrappedValue = true
+                }
+            )
+
+            Spacer()
+        }
+        .frame(width: screen.loginButtonWidth)
+        .adaptiveSheet(isPresented: binding) {
+            SettingsTimetableSheet(
+                goorback: goorback,
+                selectedCalendarType: selectedCalendarType,
+                num: num,
+                hour: hour
+            )
+        }
     }
     
     // MARK: - Color Legend View Function

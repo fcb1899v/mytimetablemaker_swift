@@ -45,101 +45,7 @@ struct SettingsContentView: View {
     
     var body: some View {
         ZStack {
-            Form {
-                // MARK: - Direction Settings
-                Section(
-                    header: Text("Various settings".localized)
-                        .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                        .foregroundColor(.gray)
-                        .padding(.top, screen.settingsHeaderFontSize)
-                ) {
-                    // Home and Destination button
-                    createSettingsButton(
-                        title: "Home & Destination Settings".localized,
-                        action: { showTransferSheet = true }
-                    )
-                    // Settings route
-                    createSettingsButton(
-                        title: "Route Settings".localized,
-                        action: {
-                            selectedRoute = "back1"
-                            showLineSheet = true
-                        }
-                    )
-
-                    // Route 2 display toggle
-                    HStack {
-                        Text("Another route".localized)
-                            .font(.system(size: screen.settingsFontSize))
-                            .foregroundColor(.black)
-                        Spacer()
-                        CustomToggle(
-                            isLeftSelected: Binding(
-                                get: { !showRoute2 },
-                                set: { newValue in
-                                    showRoute2 = !newValue
-                                    saveRoute2Setting(!newValue)
-                                }
-                            ),
-                            leftText: "Hide".localized,
-                            leftColor: .gray,
-                            rightText: "Display".localized,
-                            rightColor: .primary,
-                            circleColor: .white,
-                            offColor: .gray
-                        )
-                    }
-
-                    // Firestore data management buttons (only shown when logged in)
-                    if myLogin.isLoginSuccess {
-                        firestoreButton(isSaveFirestore: false)
-                        firestoreButton(isSaveFirestore: true)
-                    }
-                }
-                
-                // MARK: - Account Management
-                Section(
-                    header: Text("Account".localized)
-                        .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                ) {
-                    if myLogin.isLoginSuccess {
-                        accountButton(isDeleteAccount: false)
-                        accountButton(isDeleteAccount: true)
-                    } else {
-                        NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
-                            Text("Manage your data after login".localized)
-                                .font(.system(size: screen.settingsFontSize))
-                        }
-                    }
-                }
-                
-                // MARK: - About Section
-                Section(
-                    header: Text("About".localized).fontWeight(.bold)
-                        .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-                ) {
-                    // Version information
-                    HStack {
-                        Text("Version".localized)
-                            .font(.system(size: screen.settingsFontSize))
-                            .foregroundColor(.black)
-                        Spacer()
-                        Text(version)
-                            .font(.system(size: screen.settingsFontSize))
-                            .foregroundColor(.gray)
-                    }
-                    // Privacy Policy link
-                    Button(action: {
-                        if let yourURL = URL(string: termslink) {
-                            UIApplication.shared.open(yourURL, options: [:], completionHandler: nil)
-                        }
-                    }) {
-                       Text("Terms and privacy policy".localized)
-                            .font(.system(size: screen.settingsFontSize))
-                            .foregroundColor(.black)
-                    }
-                }
-            }
+            mainContent
             
             // MARK: - Loading Indicator
             if myFirestore.isLoading {
@@ -274,6 +180,134 @@ struct SettingsContentView: View {
         .onAppear {
             loadRoute2Setting()
         }
+    }
+    
+    // MARK: - View Components
+    // Main content view with form and ad banner
+    private var mainContent: some View {
+        VStack(spacing: 0) {
+            settingsForm
+            
+            Spacer()
+            
+            adBannerView
+        }
+        .background(.white)
+        .edgesIgnoringSafeArea(.bottom)
+    }
+    
+    // Settings form with all sections
+    private var settingsForm: some View {
+        Form {
+            // MARK: - Direction Settings
+            Section(
+                header: Text("Various settings".localized)
+                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+                    .foregroundColor(.gray)
+                    .padding(.top, screen.settingsHeaderFontSize)
+            ) {
+                // Home and Destination button
+                createSettingsButton(
+                    title: "Home & Destination Settings".localized,
+                    action: { showTransferSheet = true }
+                )
+                // Settings route
+                createSettingsButton(
+                    title: "Route Settings".localized,
+                    action: {
+                        selectedRoute = "back1"
+                        showLineSheet = true
+                    }
+                )
+
+                // Route 2 display toggle
+                HStack {
+                    Text("Another route".localized)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.black)
+                    Spacer()
+                    CustomToggle(
+                        isLeftSelected: Binding(
+                            get: { !showRoute2 },
+                            set: { newValue in
+                                showRoute2 = !newValue
+                                saveRoute2Setting(!newValue)
+                            }
+                        ),
+                        leftText: "Hide".localized,
+                        leftColor: .gray,
+                        rightText: "Display".localized,
+                        rightColor: .primary,
+                        circleColor: .white,
+                        offColor: .gray
+                    )
+                }
+
+                // Firestore data management buttons (only shown when logged in)
+                if myLogin.isLoginSuccess {
+                    firestoreButton(isSaveFirestore: false)
+                    firestoreButton(isSaveFirestore: true)
+                }
+            }
+            
+            // MARK: - Account Management
+            Section(
+                header: Text("Account".localized)
+                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+            ) {
+                if myLogin.isLoginSuccess {
+                    accountButton(isDeleteAccount: false)
+                    accountButton(isDeleteAccount: true)
+                } else {
+                    NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
+                        Text("Manage your data after login".localized)
+                            .font(.system(size: screen.settingsFontSize))
+                    }
+                }
+            }
+            
+            // MARK: - About Section
+            Section(
+                header: Text("About".localized).fontWeight(.bold)
+                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+            ) {
+                // Version information
+                HStack {
+                    Text("Version".localized)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text(version)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.gray)
+                }
+                // Privacy Policy link
+                Button(action: {
+                    if let yourURL = URL(string: termslink) {
+                        UIApplication.shared.open(yourURL, options: [:], completionHandler: nil)
+                    }
+                }) {
+                   Text("Terms and privacy policy".localized)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.black)
+                }
+            }
+        }
+    }
+    
+    // Ad banner view at bottom
+    private var adBannerView: some View {
+        ZStack {
+            Color.primary
+                .frame(maxWidth: .infinity)
+                .frame(height: screen.admobBannerHeight)
+
+            AdMobBannerView()
+                .frame(minWidth: screen.admobBannerMinWidth)
+                .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
+                .background(Color.primary)
+        }
+        .frame(maxWidth: .infinity)
     }
     
     // MARK: - Helper Functions

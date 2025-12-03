@@ -1011,7 +1011,7 @@ final class GTFSDataService {
                 // Get the first component as departure stop
                 departureStop = components.first?.trimmingCharacters(in: .whitespaces)
                 // Get the last component as destination stop
-                var rawDestination = components.last?.trimmingCharacters(in: .whitespaces)
+                let rawDestination = components.last?.trimmingCharacters(in: .whitespaces)
                 
                 // Clean destination: remove parentheses and extra info
                 if let dest = rawDestination {
@@ -1146,7 +1146,7 @@ final class GTFSDataService {
         guard !trips.isEmpty else {
             // Don't remove tempDir - it may be reused by other functions
             print("⚠️ No trips found for routeId: \(routeId)")
-            return [.weekday, .holiday]
+            return [.weekday, .saturday, .holiday]
         }
         
         // Get unique service_ids for this route
@@ -1154,10 +1154,8 @@ final class GTFSDataService {
         print("🔍 GTFS Calendar Types Debug - routeId: \(routeId), found \(routeServiceIds.count) unique service_ids: \(routeServiceIds)")
         
         let calendarFileURL = extractedDir.appendingPathComponent("calendar.txt")
-        let calendarDatesFileURL = extractedDir.appendingPathComponent("calendar_dates.txt")
         
         let calendarExists = FileManager.default.fileExists(atPath: calendarFileURL.path)
-        let calendarDatesExists = FileManager.default.fileExists(atPath: calendarDatesFileURL.path)
         
         var calendarTypes: Set<ODPTCalendarType> = []
         
