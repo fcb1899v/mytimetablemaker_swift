@@ -25,8 +25,8 @@ struct MainContentView: View {
     @State private var isShowingLineSheet: Bool = false
     @State private var isShowingTransferSheet: Bool = false
     // Computed values for sheet initialization to ensure correct values are captured
-    @State private var sheetGoorback: String = ""
-    @State private var sheetLineIndex: Int = 0
+    @State private var sheetGoorback: String? = nil
+    @State private var sheetLineIndex: Int? = nil
 
     init(
         _ myTransit: TransitViewModel,
@@ -239,12 +239,24 @@ struct MainContentView: View {
         .navigationBarBackButtonHidden(true)
         // Centralized sheets: content uses activeGoorback/activeTransferNum.
         // Avoid closing due to row identity changes by owning sheets here.
-        .adaptiveSheet(isPresented: $isShowingLineSheet) {
+        .adaptiveSheet(isPresented: Binding(
+            get: { isShowingLineSheet && sheetGoorback != nil && sheetLineIndex != nil },
+            set: { newValue in
+                isShowingLineSheet = newValue
+                if !newValue {
+                    // Reset values when sheet is closed
+                    sheetGoorback = nil
+                    sheetLineIndex = nil
+                }
+            }
+        )) {
             NavigationStack {
-                SettingsLineSheet(
-                    goorback: sheetGoorback,
-                    lineIndex: sheetLineIndex
-                )
+                if let goorback = sheetGoorback, let lineIndex = sheetLineIndex {
+                    SettingsLineSheet(
+                        goorback: goorback,
+                        lineIndex: lineIndex
+                    )
+                }
             }
         }
         .adaptiveSheet(isPresented: $isShowingTransferSheet) {
@@ -379,18 +391,21 @@ struct MainContentView: View {
             Button(action: {
                 activeTransferNum = num
                 activeGoorback = goorback
-                // Calculate and store values for sheet initialization when showing line sheet
-                if num >= 2 {
-                    sheetGoorback = goorback
-                    sheetLineIndex = max(num - 2, 0)
-                }
                 // Ensure state updates are applied before showing sheet
-                // Use Task to ensure state is updated on MainActor before showing sheet
-                Task { @MainActor in
-                    if num < 2 {
-                        isShowingTransferSheet = true
-                    } else {
-                        isShowingLineSheet = true
+                if num < 2 {
+                    isShowingTransferSheet = true
+                } else {
+                    // Calculate and store values for sheet initialization when showing line sheet
+                    // num - 2: Convert transfer num to line index (0-based)
+                    // Offset 2 skips departure transfer (num=1) and arrival transfer (num=0)
+                    // Use DispatchQueue to ensure state is updated before showing sheet
+                    DispatchQueue.main.async {
+                        sheetGoorback = goorback
+                        sheetLineIndex = max(num - 2, 0)
+                        // Small delay to ensure state updates are applied
+                        DispatchQueue.main.async {
+                            isShowingLineSheet = true
+                        }
                     }
                 }
             }) {
@@ -435,13 +450,18 @@ struct MainContentView: View {
             Button(action: {
                 activeTransferNum = num + 2 // Convert line num to Settings' lineIndex.
                 activeGoorback = goorback
-                // Calculate and store values for sheet initialization
-                sheetGoorback = goorback
-                sheetLineIndex = max((num + 2) - 2, 0)
                 // Ensure state updates are applied before showing sheet
-                // Use Task to ensure state is updated on MainActor before showing sheet
-                Task { @MainActor in
-                    isShowingLineSheet = true
+                // Use DispatchQueue to ensure state is updated before showing sheet
+                DispatchQueue.main.async {
+                    // Calculate and store values for sheet initialization
+                    // num is already line index (0-based), so (num + 2) - 2 = num
+                    // The +2 converts to transfer num, then -2 converts back to line index
+                    sheetGoorback = goorback
+                    sheetLineIndex = max((num + 2) - 2, 0)
+                    // Small delay to ensure state updates are applied
+                    DispatchQueue.main.async {
+                        isShowingLineSheet = true
+                    }
                 }
             }) {
                 HStack {
