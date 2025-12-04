@@ -102,7 +102,7 @@ extension UIScreen {
     var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.045 }
     var timetableCopyMenuOffsetY: CGFloat { screenHeight * 0.13 }
     var timetableCalendarMenuOffsetY: CGFloat { screenHeight * -0.34 }
-    var timetableContentViewMenuOffsetY: CGFloat { screenHeight * 0.13 }
+    var timetableContentViewMenuOffsetY: CGFloat { screenHeight * 0.10 }
     var timetablePickerTopPadding:    CGFloat { screenHeight * -0.036 }
     var timetablePickerBottomPadding: CGFloat { screenHeight * -0.012 }
     var timetableScrollViewMaxHeight: CGFloat { screenHeight * 0.6 }

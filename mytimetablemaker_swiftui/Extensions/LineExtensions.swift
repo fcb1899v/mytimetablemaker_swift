@@ -400,8 +400,6 @@ extension String {
     func saveTrainTypeList(_ transportationTimes: [any TransportationTime], _ calendarType: ODPTCalendarType, _ num: Int) {
         let trainTypeListKey = self.trainTypeListKey(calendarType, num)
         
-        print("💾 saveTrainTypeList: Saving train type list for (\(calendarType.displayName))")
-        
         // Extract all train types from all transportation times
         let allTrainTypes = transportationTimes.compactMap { transportationTime -> String? in
             if let trainTime = transportationTime as? TrainTime {
@@ -420,16 +418,18 @@ extension String {
         let trainTypeListString = Array(uniqueTrainTypes).sorted().joined(separator: " ")
         
         UserDefaults.standard.set(trainTypeListString, forKey: trainTypeListKey)
+        UserDefaults.standard.synchronize()
         
-        print("📋 saveTrainTypeList: Saved train type list: '\(trainTypeListString)'")
-        print("📋 saveTrainTypeList: All train types found: \(Array(uniqueTrainTypes).sorted())")
+        print("📋 Train type list saved: \(Array(uniqueTrainTypes).sorted())")
     }
     
     // MARK: - Load Train Type List
     // Load existing train types from UserDefaults with color-based sorting
+    // If trainTypeListKey doesn't exist, collect train types from individual hour data
     func loadTrainTypeList(_ calendarType: ODPTCalendarType, _ num: Int) -> [String] {
         let trainTypeListKey = self.trainTypeListKey(calendarType, num)
         
+        // First, try to load from trainTypeListKey
         if let trainTypeListString = UserDefaults.standard.string(forKey: trainTypeListKey),
            !trainTypeListString.isEmpty {
             let trainTypes = Array(Set(trainTypeListString.components(separatedBy: " ")
@@ -446,7 +446,48 @@ extension String {
             return trainTypes
         }
         
-        return []
+        // If trainTypeListKey doesn't exist, collect from individual hour data
+        let validHours = self.validHourRange(calendarType: calendarType, num: num)
+        var allTransportationTimes: [any TransportationTime] = []
+        for hour in validHours {
+            let times = self.loadTransportationTimes(calendarType, num, hour)
+            allTransportationTimes.append(contentsOf: times)
+        }
+        
+        // Extract train types from transportation times
+        let allTrainTypes = allTransportationTimes.compactMap { transportationTime -> String? in
+            if let trainTime = transportationTime as? TrainTime {
+                return trainTime.trainType
+            } else {
+                return nil // Bus doesn't have trainType
+            }
+        }.compactMap { (trainType: String) -> String? in
+            guard !trainType.isEmpty else { return nil }
+            let components = trainType.components(separatedBy: ".")
+            return components.last ?? trainType
+        }
+        
+        // Remove duplicates and sort
+        let uniqueTrainTypes = Array(Set(allTrainTypes))
+            .sorted { trainType1, trainType2 in
+                let priority1 = Color.colorForTrainType(trainType1).priorityValue
+                let priority2 = Color.colorForTrainType(trainType2).priorityValue
+                if priority1 != priority2 {
+                    return priority1 < priority2
+                } else {
+                    return trainType1 < trainType2
+                }
+            }
+        
+        // Save the collected train types to trainTypeListKey for future use
+        if !uniqueTrainTypes.isEmpty {
+            let trainTypeListString = uniqueTrainTypes.joined(separator: " ")
+            UserDefaults.standard.set(trainTypeListString, forKey: trainTypeListKey)
+            UserDefaults.standard.synchronize()
+        }
+        
+        print("📋 Train types loaded: \(uniqueTrainTypes.count) types")
+        return uniqueTrainTypes
     }
 }
 

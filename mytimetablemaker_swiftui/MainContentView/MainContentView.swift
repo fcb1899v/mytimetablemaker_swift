@@ -252,10 +252,10 @@ struct MainContentView: View {
         )) {
             NavigationStack {
                 if let goorback = sheetGoorback, let lineIndex = sheetLineIndex {
-                    SettingsLineSheet(
+                SettingsLineSheet(
                         goorback: goorback,
                         lineIndex: lineIndex
-                    )
+                )
                 }
             }
         }
@@ -392,9 +392,9 @@ struct MainContentView: View {
                 activeTransferNum = num
                 activeGoorback = goorback
                 // Ensure state updates are applied before showing sheet
-                if num < 2 {
-                    isShowingTransferSheet = true
-                } else {
+                    if num < 2 {
+                        isShowingTransferSheet = true
+                    } else {
                     // Calculate and store values for sheet initialization when showing line sheet
                     // num - 2: Convert transfer num to line index (0-based)
                     // Offset 2 skips departure transfer (num=1) and arrival transfer (num=0)
@@ -404,7 +404,7 @@ struct MainContentView: View {
                         sheetLineIndex = max(num - 2, 0)
                         // Small delay to ensure state updates are applied
                         DispatchQueue.main.async {
-                            isShowingLineSheet = true
+                        isShowingLineSheet = true
                         }
                     }
                 }
@@ -460,7 +460,7 @@ struct MainContentView: View {
                     sheetLineIndex = max((num + 2) - 2, 0)
                     // Small delay to ensure state updates are applied
                     DispatchQueue.main.async {
-                        isShowingLineSheet = true
+                    isShowingLineSheet = true
                     }
                 }
             }) {

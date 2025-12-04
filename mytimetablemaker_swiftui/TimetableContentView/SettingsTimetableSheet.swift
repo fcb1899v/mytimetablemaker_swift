@@ -14,7 +14,7 @@ struct SettingsTimetableSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var departureTime: Int? = nil
     @State private var displayDepartureTime: Int? = nil  // Display value that persists after add
-    @State private var rideTime: Int = 0
+    @State private var rideTime: Int? = nil
     @State private var selectedTrainType: String?
     // Controls visibility of train type dropdown menu
     @State private var isTrainTypeDropdownOpen = false
@@ -51,7 +51,7 @@ struct SettingsTimetableSheet: View {
         let rideTimeKey = goorback.rideTimeKey(num)
         let savedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
         print("🔍 SettingsTimetableSheet init: rideTimeKey='\(rideTimeKey)', savedRideTime=\(savedRideTime)")
-        self._rideTime = State(initialValue: savedRideTime)
+        self._rideTime = State(initialValue: savedRideTime == 0 ? nil : savedRideTime)
     }
     
     var body: some View {
@@ -430,8 +430,8 @@ struct SettingsTimetableSheet: View {
                                                     // Checkmark indicator
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundColor(
-                        (rideTime != 0 && !isTimeExistsForDeletion()) ? .accent:
-                        (rideTime != 0 && isTimeExistsForDeletion()) ? .primary:
+                        (rideTime != nil && !isTimeExistsForDeletion()) ? .accent:
+                        (rideTime != nil && isTimeExistsForDeletion()) ? .primary:
                         .red
                     )
             }
@@ -439,7 +439,7 @@ struct SettingsTimetableSheet: View {
             // Ride time picker (0-99 minutes)
             ZStack {
                 HStack {
-                    Text(rideTime == 0 ? "-" : "\(rideTime)\(" min".localized)")
+                    Text(rideTime == nil ? "-" : "\(rideTime ?? 0)\(" min".localized)")
                         .font(.system(size: screen.settingsSheetInputFontSize))
                         .foregroundColor(.black)
                     Spacer()
@@ -454,9 +454,9 @@ struct SettingsTimetableSheet: View {
                     Spacer()
                     Custom2DigitPicker(
                         value: Binding(
-                            get: { rideTime },
+                            get: { rideTime ?? 0 },
                             set: {
-                                rideTime = $0
+                                rideTime = $0 == 0 ? nil : $0
                                 isTrainTypeDropdownOpen = false
                             }
                         ),
@@ -477,19 +477,24 @@ struct SettingsTimetableSheet: View {
             CustomButton(
                 title: isTimeExistsForDeletion() ? "Update".localized: "Add".localized,
                 icon: isTimeExistsForDeletion() ? "arrow.clockwise.circle.fill" : "plus.circle.fill",
-                backgroundColor: (
-                    departureTime == nil ? Color.gray: 
-                    goorback.lineKind(num) != .railway && !isTimeExistsForDeletion() ? Color.accent: 
-                    goorback.lineKind(num) != .railway && isTimeExistsForDeletion() ? Color.primary: 
-                    selectedTrainType != nil && !isTimeExistsForDeletion() ? Color.accent: 
-                    selectedTrainType != nil && isTimeExistsForDeletion() ? Color.primary: 
-                    Color.gray
-                ),
+                backgroundColor: {
+                    let isEnabled = rideTime != nil &&
+                        departureTime != nil &&
+                        (goorback.lineKind(num) == .railway && selectedTrainType != nil || goorback.lineKind(num) == .bus) &&
+                        !isExactSameEntryExists()
+                    if isTimeExistsForDeletion() {
+                        // Update button: primary when enabled, gray when disabled
+                        return isEnabled ? Color.primary : Color.gray
+                    } else {
+                        // Add button: accent color
+                        return Color.accent
+                    }
+                }(),
                 isEnabled: 
-                    rideTime != 0 &&
+                    rideTime != nil &&
                     departureTime != nil &&
                     (goorback.lineKind(num) == .railway && selectedTrainType != nil || goorback.lineKind(num) == .bus) &&
-                    !isTimeExistsForDeletion(),
+                    !isExactSameEntryExists(),
                 action: {
                     addTime()
                 }
@@ -593,7 +598,7 @@ struct SettingsTimetableSheet: View {
     // MARK: - Time Management
     // Add or update time entry in timetable with train type and ride time, then notify view update
     private func addTime() {
-        guard let departureTime = departureTime else { return }
+        guard let departureTime = departureTime, let rideTime = rideTime else { return }
         
         // Add time, train type, and ride time as a triplet, then sort all together
         addTimeAndTrainTypePair(departureTime: departureTime, trainType: selectedTrainType, rideTime: rideTime)
@@ -601,13 +606,15 @@ struct SettingsTimetableSheet: View {
         // Update trainTimes array with fresh data from UserDefaults
         transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
         
+        // Save train type list for all hours
+        saveTrainTypeListForAllHours()
+        
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         
-        // Save display value before resetting internal state
+        // Save display value
         displayDepartureTime = departureTime
-        self.departureTime = nil
-        // Keep ride time and train type unchanged
+        // Keep departure time, ride time and train type unchanged
     }
     
     // Delete time entry from timetable along with train type and ride time, then notify view update
@@ -619,13 +626,15 @@ struct SettingsTimetableSheet: View {
         // Update trainTimes array with fresh data from UserDefaults
         transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
         
+        // Save train type list for all hours
+        saveTrainTypeListForAllHours()
+        
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         
-        // Save display value before resetting internal state
+        // Save display value
         displayDepartureTime = departureTime
-        self.departureTime = nil
-        // Keep ride time and train type unchanged
+        // Keep departure time, ride time and train type unchanged
     }
     
     // MARK: - Time Validation
@@ -637,6 +646,50 @@ struct SettingsTimetableSheet: View {
         guard let timetableString = UserDefaults.standard.string(forKey: timetableKey) else { return false }
         
         return timetableString.containsTimeInAnyFormat(departureTime)
+    }
+    
+    /// Checks if the exact same entry (departure time, ride time, and train type) already exists
+    private func isExactSameEntryExists() -> Bool {
+        guard let departureTime = departureTime, let rideTime = rideTime else { return false }
+        
+        let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
+        let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)
+        let timetableRideTimeKey = goorback.timetableRideTimeKey(selectedCalendarType, num, hour)
+        
+        let currentTimetableString = UserDefaults.standard.string(forKey: timetableKey) ?? ""
+        let currentTrainTypeString = UserDefaults.standard.string(forKey: timetableTrainTypeKey) ?? ""
+        let currentRideTimeString = UserDefaults.standard.string(forKey: timetableRideTimeKey) ?? ""
+        
+        let departureTimes = currentTimetableString.timetableComponents
+        let trainTypes = currentTrainTypeString.timetableComponents
+        let rideTimes = currentRideTimeString.timetableComponents
+        
+        let newTimeString = departureTime.addZeroTime
+        let newTrainType = selectedTrainType ?? ""
+        let newRideTimeString = rideTime.addZeroTime
+        
+        let isRailway = goorback.lineKind(num) == .railway
+        
+        // Check if exact same entry exists
+        for (index, time) in departureTimes.enumerated() {
+            let matchesTime = time == newTimeString || time == String(departureTime)
+            let matchesRideTime = index < rideTimes.count ? rideTimes[index] == newRideTimeString : false
+            
+            // For railway, also check train type; for bus, skip train type check
+            let matchesType: Bool
+            if isRailway {
+                let existingType = index < trainTypes.count ? trainTypes[index] : ""
+                matchesType = existingType == newTrainType
+            } else {
+                matchesType = true // Bus doesn't have train type
+            }
+            
+            if matchesTime && matchesType && matchesRideTime {
+                return true
+            }
+        }
+        
+        return false
     }
     
     // Get available train types for selection (default types or custom types from line)
@@ -829,9 +882,27 @@ struct SettingsTimetableSheet: View {
         // Update trainTimes when time is copied
         transportationTimes = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
         
+        // Save train type list for all hours
+        saveTrainTypeListForAllHours()
+        
         // Notify TimetableGridView to update
         NotificationCenter.default.post(name: NSNotification.Name("TimetableDataUpdated"), object: nil)
         // Keep sheet open after copying
+    }
+    
+    // Save train type list by collecting all transportation times from all valid hours
+    private func saveTrainTypeListForAllHours() {
+        let validHours = goorback.validHourRange(calendarType: selectedCalendarType, num: num)
+        var allTransportationTimes: [any TransportationTime] = []
+        
+        // Collect all transportation times from all valid hours
+        for hour in validHours {
+            let times = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
+            allTransportationTimes.append(contentsOf: times)
+        }
+        
+        // Save train type list
+        goorback.saveTrainTypeList(allTransportationTimes, selectedCalendarType, num)
     }
 }
 

@@ -61,6 +61,30 @@ struct TimetableContentView: View {
         validHours = goorback.validHourRange(calendarType: selectedCalendarType, num: num)
     }
     
+    /// Rebuild train type list from existing timetable data if not exists
+    /// This ensures the train type list is always up to date
+    private func rebuildTrainTypeListIfNeeded() {
+        // Check if train type list already exists
+        let existingTrainTypes = goorback.loadTrainTypeList(selectedCalendarType, num)
+        if !existingTrainTypes.isEmpty {
+            return
+        }
+        
+        let validHours = goorback.validHourRange(calendarType: selectedCalendarType, num: num)
+        var allTransportationTimes: [any TransportationTime] = []
+        
+        // Collect all transportation times from all valid hours
+        for hour in validHours {
+            let times = goorback.loadTransportationTimes(selectedCalendarType, num, hour)
+            allTransportationTimes.append(contentsOf: times)
+        }
+        
+        // Save train type list if we have data
+        if !allTransportationTimes.isEmpty {
+            goorback.saveTrainTypeList(allTransportationTimes, selectedCalendarType, num)
+        }
+    }
+    
     /// Sort calendar types according to enum definition order
     /// Order: weekday, holiday, saturdayHoliday, sunday, monday, tuesday, wednesday, thursday, friday, saturday, specific(String)
     private func sortCalendarTypesByEnumOrder(_ types: [ODPTCalendarType]) -> [ODPTCalendarType] {
@@ -123,12 +147,6 @@ struct TimetableContentView: View {
                         .foregroundColor(.white)
                         .padding(.leading, screen.timetableHorizontalSpacing)
 
-                    // Show color legend only when there are 2 or more train types
-                    let trainTypes = goorback.loadTrainTypeList(selectedCalendarType, num)
-                    if trainTypes.count > 1 {
-                        colorLegendView(trainTypes: trainTypes)
-                    }
-                                        
                     // MARK: - Timetable Grid
                     VStack(spacing: 0) {
                         Color.white.frame(width: screen.customWidth, height: 1)
@@ -170,15 +188,32 @@ struct TimetableContentView: View {
                                     Color.white.frame(width: screen.customWidth, height: 1)
                                 }
                             }
+                            .background(
+                                GeometryReader { geometry in
+                                    Color.clear
+                                        .onAppear {
+                                            scrollViewHeight = geometry.size.height
+                                        }
+                                        .onChange(of: geometry.size.height) { newHeight in
+                                            scrollViewHeight = newHeight
+                                        }
+                                }
+                            )
                         }
-                        .frame(minHeight: 0.0, maxHeight: screen.timetableMaxHeight)
-
+                        .frame(height: scrollViewHeight > 0 ? min(scrollViewHeight, screen.timetableMaxHeight) : screen.timetableMaxHeight)
+                        
+                        // Show color legend only when there are 2 or more train types
+                        let trainTypes = goorback.loadTrainTypeList(selectedCalendarType, num)
+                        if trainTypes.count > 1 {
+                            colorLegendView(trainTypes: trainTypes)
+                        }
+ 
                         // Check if timetable data exists
                         if validHours.isEmpty {
                             // Show register button when no timetable data exists
                             registerTimetableButton
                         }
-                    }
+                   }
                 }
                 
                 // Dropdown options overlay
@@ -234,6 +269,9 @@ struct TimetableContentView: View {
                 
                 // Initialize valid hours
                 updateValidHours()
+                
+                // Rebuild train type list from existing data if not exists
+                rebuildTrainTypeListIfNeeded()
             }
             .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("CalendarTypeChanged"))) { notification in
                 if let userInfo = notification.userInfo,
@@ -247,6 +285,8 @@ struct TimetableContentView: View {
                 // Update valid hours when timetable data changes
                 // This ensures the view updates but doesn't close the sheet
                 updateValidHours()
+                // Rebuild train type list from existing data
+                rebuildTrainTypeListIfNeeded()
             }
         }
     }
@@ -353,14 +393,21 @@ struct TimetableContentView: View {
             return group1.color.priorityValue < group2.color.priorityValue
         }
         
-        HStack {
-            Spacer()
-            VStack(spacing: screen.timetableVerticalSpacing) {
-                ForEach(0..<((colorGroups.count + 1) / 2), id: \.self) { rowIndex in
+        GeometryReader { geometry in
+
+            // Create rows by grouping colorGroups that fit in each row
+            let rows = createRows(
+                colorGroups: colorGroups,
+                availableWidth: geometry.size.width - screen.timetableHorizontalSpacing * 2,
+                itemSpacing: screen.timetableHorizontalSpacing
+            )
+        
+            VStack(alignment: .center, spacing: screen.timetableVerticalSpacing) {
+                ForEach(0..<rows.count, id: \.self) { rowIndex in
                     HStack(spacing: screen.timetableHorizontalSpacing) {
-                        ForEach(0..<min(2, colorGroups.count - rowIndex * 2), id: \.self) { colIndex in
-                            let groupIndex = rowIndex * 2 + colIndex
-                            let colorGroup = colorGroups[groupIndex]
+                        Spacer()
+                        ForEach(rows[rowIndex], id: \.index) { groupInfo in
+                            let colorGroup = groupInfo.group
                             
                             // Create combined display text
                             let displayTexts = colorGroup.trainTypes.map { trainType in
@@ -370,7 +417,7 @@ struct TimetableContentView: View {
                             let separator = Locale.current.language.languageCode?.identifier == "ja" ? "・" : ", "
                             let combinedText = displayTexts.joined(separator: separator)
                             
-                            HStack {
+                            HStack(spacing: screen.timetableHorizontalSpacing) {
                                 Image(systemName: "circle.fill")
                                     .foregroundColor(colorGroup.color)
                                     .font(.system(size: screen.settingsSheetInputFontSize))
@@ -378,16 +425,103 @@ struct TimetableContentView: View {
                                     .font(.system(size: screen.settingsSheetInputFontSize, weight: .bold))
                                     .foregroundColor(colorGroup.color)
                                     .lineLimit(1)
-                                    .scaledToFit()
+                                    .fixedSize()
                             }
-                            .padding(.horizontal, screen.timetableHorizontalSpacing)
                         }
+                        Spacer()
                     }
                 }
             }
             .padding(.horizontal, screen.timetableHorizontalSpacing)
-            Spacer()
+            .padding(.top, screen.timetableVerticalSpacing)
         }
+        .frame(height: estimateHeight(colorGroups: colorGroups, availableWidth: screen.customWidth - screen.timetableHorizontalSpacing * 2))
+    }
+    
+    // Helper function to create rows of colorGroups that fit within available width
+    private func createRows(
+        colorGroups: [(color: Color, trainTypes: [String])],
+        availableWidth: CGFloat,
+        itemSpacing: CGFloat
+    ) -> [[(index: Int, group: (color: Color, trainTypes: [String]))]] {
+        var rows: [[(index: Int, group: (color: Color, trainTypes: [String]))]] = []
+        var currentRow: [(index: Int, group: (color: Color, trainTypes: [String]))] = []
+        var currentRowWidth: CGFloat = 0
+        
+        for (index, colorGroup) in colorGroups.enumerated() {
+            // Create combined display text
+            let displayTexts = colorGroup.trainTypes.map { trainType in
+                trainType.components(separatedBy: ".").last ?? trainType
+            }.map { $0.localized }
+            
+            let separator = Locale.current.language.languageCode?.identifier == "ja" ? "・" : ", "
+            let combinedText = displayTexts.joined(separator: separator)
+            
+            // Estimate width: icon + spacing + text + padding
+            let iconWidth: CGFloat = screen.settingsSheetInputFontSize
+            let textWidth = estimateTextWidth(
+                text: combinedText,
+                fontSize: screen.settingsSheetInputFontSize,
+                fontWeight: .bold
+            )
+            let horizontalPadding = screen.timetableHorizontalSpacing * 2
+            let itemWidth = iconWidth + 4 + textWidth + horizontalPadding
+            
+            // Check if this item fits in current row
+            let spacingNeeded = currentRow.isEmpty ? 0 : itemSpacing
+            let totalWidth = currentRowWidth + spacingNeeded + itemWidth
+            
+            if totalWidth <= availableWidth || currentRow.isEmpty {
+                // Add to current row
+                currentRow.append((index: index, group: colorGroup))
+                currentRowWidth = totalWidth
+            } else {
+                // Start new row
+                rows.append(currentRow)
+                currentRow = [(index: index, group: colorGroup)]
+                currentRowWidth = itemWidth
+            }
+        }
+        
+        // Add last row if not empty
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+        
+        return rows
+    }
+    
+    // Estimate text width
+    private func estimateTextWidth(text: String, fontSize: CGFloat, fontWeight: Font.Weight) -> CGFloat {
+        let uiFontWeight: UIFont.Weight
+        switch fontWeight {
+        case .bold:
+            uiFontWeight = .bold
+        case .semibold:
+            uiFontWeight = .semibold
+        case .medium:
+            uiFontWeight = .medium
+        case .regular:
+            uiFontWeight = .regular
+        default:
+            uiFontWeight = .bold
+        }
+        let font = UIFont.systemFont(ofSize: fontSize, weight: uiFontWeight)
+        let attributes = [NSAttributedString.Key.font: font]
+        let size = (text as NSString).size(withAttributes: attributes)
+        return size.width
+    }
+    
+    // Estimate total height needed
+    private func estimateHeight(colorGroups: [(color: Color, trainTypes: [String])], availableWidth: CGFloat) -> CGFloat {
+        let rows = createRows(
+            colorGroups: colorGroups,
+            availableWidth: availableWidth,
+            itemSpacing: screen.timetableHorizontalSpacing
+        )
+        let rowHeight = screen.settingsSheetInputFontSize + screen.timetableVerticalSpacing
+        let verticalSpacing = screen.timetableVerticalSpacing * CGFloat(max(0, rows.count - 1))
+        return CGFloat(rows.count) * rowHeight + verticalSpacing + screen.timetableVerticalSpacing
     }
     
     // MARK: - Timetable Grid View
