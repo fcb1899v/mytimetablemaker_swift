@@ -692,9 +692,8 @@ struct SettingsTimetableSheet: View {
         return false
     }
     
-    // Get available train types for selection (default types or custom types from line)
+    // Get available train types for dropdown (Jetpack-aligned: auto-generated lines show only types from saved list)
     private func getAvailableTrainTypes() -> [String] {
-        
         let defaultTypeList = [
             DisplayTrainType.defaultLocal.rawValue,
             DisplayTrainType.defaultExpress.rawValue,
@@ -702,23 +701,26 @@ struct SettingsTimetableSheet: View {
             DisplayTrainType.defaultSpecialRapid.rawValue,
             DisplayTrainType.defaultLimitedExpress.rawValue,
         ]
-        
-        // First, try to get existing train types from the current line
+
+        // Manual input mode: show only the five default types.
+        // Fetched mode: lineSelected + operatorCode + lineCode (all persisted when saving in SettingsLineSheet).
+        let isLineSelected = goorback.lineSelected(num)
+        let hasOperatorCode = !goorback.operatorCode(num).isEmpty
+        let hasLineCode = !goorback.lineCode(num).isEmpty
+        let isFetchedMode = isLineSelected && hasOperatorCode && hasLineCode
+        if !isFetchedMode {
+            return defaultTypeList
+        }
+
+        // Fetched/auto-generated mode: use only train types from saved list (from auto-gen).
         let existingTrainTypes = goorback.loadTrainTypeList(selectedCalendarType, num)
-        
-        // If no existing train types are found, return default list
         if existingTrainTypes.isEmpty {
             return defaultTypeList
         }
-        
-        // Check if existingTrainTypes contains only default types
-        let hasOnlyDefaultTypes = existingTrainTypes.allSatisfy { trainType in
-            defaultTypeList.contains(trainType)
-        }
-        
-        // If existingTrainTypes has only default types, return defaultTypeList
-        // Otherwise, return existingTrainTypes (which includes custom types)
-        return hasOnlyDefaultTypes ? defaultTypeList : existingTrainTypes
+
+        // In fetched mode, show only operator-derived types (exclude the five defaults).
+        let operatorTypes = existingTrainTypes.filter { !defaultTypeList.contains($0) }
+        return operatorTypes
     }
     
     // Update train type list for the line by adding new type if not exists

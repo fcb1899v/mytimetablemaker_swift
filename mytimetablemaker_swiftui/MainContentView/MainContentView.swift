@@ -223,11 +223,10 @@ struct MainContentView: View {
                 ZStack {
                     Color.primary
                         .frame(width: screen.screenWidth, height: screen.admobBannerHeight)
-
-                    AdMobBannerView()
-                        .frame(minWidth: screen.admobBannerMinWidth)
-                        .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
-                        .background(Color.primary)
+//                    AdMobBannerView()
+//                        .frame(minWidth: screen.admobBannerMinWidth)
+//                        .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
+//                        .background(Color.primary)
                 }
             }
             .background(.white)
@@ -309,12 +308,13 @@ struct MainContentView: View {
             Text(num == 0 ? goorback.destination: goorback.departurePoint)
                 .font(.system(size: screen.stationFontSize))
                 .lineLimit(1)
+                .foregroundColor(.black)
             Spacer()
             // MARK: - Time Display
             Text(time)
                 .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+                .foregroundColor(.primary)
         }
-        .foregroundColor(.primary)
     }
 
     // MARK: - Line Time Image (func)
@@ -441,11 +441,12 @@ struct MainContentView: View {
                 Text(getDisplayName(from: stationArray[2 * num]))
                     .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
+                    .foregroundColor(.black)
                 Spacer()
                 Text(departureTime)
                     .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+                    .foregroundColor(.primary)
             }
-            .foregroundColor(.primary)
 
             Button(action: {
                 activeTransferNum = num + 2 // Convert line num to Settings' lineIndex.
@@ -478,11 +479,12 @@ struct MainContentView: View {
                 Text(getDisplayName(from: stationArray[2 * num + 1]))
                     .font(.system(size: screen.stationFontSize))
                     .lineLimit(1)
+                    .foregroundColor(.black)
                 Spacer()
                 Text(arrivalTime)
                     .font(.custom("GenEiGothicN-Regular", size: screen.timeFontSize))
+                    .foregroundColor(.primary)
             }
-            .foregroundColor(.primary)
         }
     }
 }

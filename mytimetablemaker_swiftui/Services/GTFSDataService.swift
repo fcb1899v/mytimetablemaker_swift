@@ -2,7 +2,7 @@
 //  GTFSDataService.swift
 //  mytimetablemaker_swiftui
 //
-//  Created by 中島正雄 on 2025/11/23.
+//  Created by Nakajima Masao on 2025/11/23.
 //
 //  MARK: - Overview
 //  Service for managing GTFS data processing and parsing.
@@ -431,7 +431,7 @@ final class GTFSDataService {
             if !cache.directoryExists(for: extractedCacheDirName) {
                 // ZIP is cached but extracted directory is not, extract it now
                 print("📦 ZIP cached but extracted directory not found, extracting...")
-                try await extractAndCacheGTFSZip(data: cachedData, transportOperator: transportOp, cacheKey: cacheKey)
+                try await extractAndCacheGTFSZip(data: cachedData, cacheKey: cacheKey)
             }
             
             // For Toei Bus, check if server has updated file using conditional GET
@@ -523,7 +523,7 @@ final class GTFSDataService {
         print("✅ Downloaded and cached updated GTFS ZIP: \(data.count) bytes")
         
         // Extract and cache the extracted directory
-        try await extractAndCacheGTFSZip(data: data, transportOperator: .toeiBus, cacheKey: cacheKey)
+        try await extractAndCacheGTFSZip(data: data, cacheKey: cacheKey)
         
         return data
     }
@@ -575,7 +575,7 @@ final class GTFSDataService {
                 print("✅ Downloaded and cached GTFS ZIP: \(redirectData.count) bytes")
                 
                 // Extract and cache the extracted directory
-                try await extractAndCacheGTFSZip(data: redirectData, transportOperator: transportOperator, cacheKey: cacheKey)
+                try await extractAndCacheGTFSZip(data: redirectData, cacheKey: cacheKey)
                 
                 return redirectData
             }
@@ -600,14 +600,14 @@ final class GTFSDataService {
         print("✅ Downloaded and cached GTFS ZIP: \(data.count) bytes")
         
         // Extract and cache the extracted directory
-        try await extractAndCacheGTFSZip(data: data, transportOperator: transportOperator, cacheKey: cacheKey)
+        try await extractAndCacheGTFSZip(data: data, cacheKey: cacheKey)
         
         return data
     }
     
     // MARK: - Extract and Cache GTFS ZIP
     // Extract GTFS ZIP file and save the extracted directory to cache.
-    private func extractAndCacheGTFSZip(data: Data, transportOperator: LocalDataSource, cacheKey: String) async throws {
+    private func extractAndCacheGTFSZip(data: Data, cacheKey: String) async throws {
         // Generate cache directory name from cache key
         let extractedCacheDirName = cacheKey.replacingOccurrences(of: ".zip", with: "_extracted")
         
@@ -1005,7 +1005,7 @@ final class GTFSDataService {
             // Use trip_headsign as destination
             destinationStop = headsign
         } else if let longName = routeLongName, longName.contains("〜") {
-            // Extract destination stop from route_long_name (format: "発車停〜到着停")
+            // Extract destination stop from route_long_name (format: "departure_stop~arrival_stop")
             let components = longName.components(separatedBy: "〜")
             if components.count >= 2 {
                 // Get the first component as departure stop

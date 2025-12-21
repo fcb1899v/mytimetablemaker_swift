@@ -28,6 +28,9 @@ struct SettingsContentView: View {
     @State private var isShowDeleteAlert = false
     @State private var isShowGetFirestoreAlert = false
     @State private var isShowSaveFirestoreAlert = false
+    @State private var getFirestorePassword = ""
+    @State private var saveFirestorePassword = ""
+    @State private var deleteAccountPassword = ""
     // Route 2 display setting (controls both back2 and go2)
     @State private var showRoute2: Bool = false
 
@@ -44,6 +47,12 @@ struct SettingsContentView: View {
     }
     
     var body: some View {
+        contentWithAlerts
+    }
+
+    // Split large view composition into smaller chunks
+    // to avoid Swift compiler type-check timeouts.
+    private var navigationConfiguredContent: some View {
         ZStack {
             mainContent
             
@@ -93,6 +102,10 @@ struct SettingsContentView: View {
         .navigationDestination(isPresented: $isNavigateToMain) {
             MainContentView(myTransit, myLogin, myFirestore)
         }
+    }
+
+    private var contentWithStatusAlerts: some View {
+        navigationConfiguredContent
         // MARK: - Logout Result Alert
         .alert(myLogin.alertTitle, isPresented: $myLogin.isShowMessage) {
             Button("OK".localized, role: .none) {
@@ -107,7 +120,6 @@ struct SettingsContentView: View {
         } message: {
             Text(myLogin.alertMessage)
         }
-        .tint(.primary)
         
         // MARK: - Firestore Result Alert
         .alert(myFirestore.title, isPresented: $myFirestore.isShowMessage) {
@@ -127,8 +139,11 @@ struct SettingsContentView: View {
             Text(myFirestore.message)
         }
         .tint(.primary)
+    }
+
+    private var contentWithAlerts: some View {
+        contentWithStatusAlerts
         // MARK: - Confirmation Alerts
-        // Alert dialogs for logout, account deletion, and Firestore operations
         .alert("Logout".localized, isPresented: $isShowLogoutAlert) {
             Button("OK".localized, role: .none) {
                 isShowLogoutAlert = false
@@ -140,42 +155,49 @@ struct SettingsContentView: View {
         } message: {
             Text("Logout your account?".localized)
         }
-        // MARK: - Delete Account Alert
-        .alert("Delete Account".localized, isPresented: $isShowDeleteAlert) {
-            Button("OK".localized, role: .destructive) {
-                isShowDeleteAlert = false
+        .alert("⚠️ \("Delete Account".localized)", isPresented: $isShowDeleteAlert) {
+            SecureField("Enter your password".localized, text: $deleteAccountPassword)
+            Button("Delete".localized, role: .destructive) {
                 myLogin.delete()
+                isShowDeleteAlert = false
+                deleteAccountPassword = ""
             }
             Button("Cancel".localized, role: .cancel) {
                 isShowDeleteAlert = false
+                deleteAccountPassword = ""
             }
         } message: {
-            Text("⚠️ " + "Delete your account?".localized)
+            Text("Delete your account?".localized)
         }
-        // MARK: - Get Firestore Alert
-        .alert("Get saved data".localized, isPresented: $isShowGetFirestoreAlert) {
-            Button("OK".localized, role: .destructive) {
+        .alert("⚠️ \("Get saved data".localized)", isPresented: $isShowGetFirestoreAlert) {
+            SecureField("Enter your password".localized, text: $getFirestorePassword)
+            Button("OK".localized, role: .none) {
                 myFirestore.getFirestore()
                 isShowGetFirestoreAlert = false
+                getFirestorePassword = ""
             }
             Button("Cancel".localized, role: .cancel) {
                 isShowGetFirestoreAlert = false
+                getFirestorePassword = ""
             }
         } message: {
-            Text("⚠️ " + "Overwritten current data?".localized)
+            Text("Overwritten current data?".localized)
         }
-        // MARK: - Save Firestore Alert
-        .alert("Save current data".localized, isPresented: $isShowSaveFirestoreAlert) {
-            Button("OK".localized, role: .destructive) {
+        .alert("⚠️ \("Save current data".localized)", isPresented: $isShowSaveFirestoreAlert) {
+            SecureField("Enter your password".localized, text: $saveFirestorePassword)
+            Button("OK".localized, role: .none) {
                 myFirestore.setFirestore()
                 isShowSaveFirestoreAlert = false
+                saveFirestorePassword = ""
             }
             Button("Cancel".localized, role: .cancel) {
                 isShowSaveFirestoreAlert = false
+                saveFirestorePassword = ""
             }
         } message: {
-            Text("⚠️ " + "Overwritten saved data?".localized)
+            Text("Overwritten saved data?".localized)
         }
+        .tint(.primary)
         // MARK: - Load Route 2 Setting
         .onAppear {
             loadRoute2Setting()
@@ -271,15 +293,15 @@ struct SettingsContentView: View {
                 header: Text("About".localized).fontWeight(.bold)
                     .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
             ) {
-                // Version information
-                HStack {
-                    Text("Version".localized)
+                // Contact form link
+                Button(action: {
+                    if let contactURL = URL(string: contactlink) {
+                        UIApplication.shared.open(contactURL, options: [:], completionHandler: nil)
+                    }
+                }) {
+                    Text("Contact".localized)
                         .font(.system(size: screen.settingsFontSize))
                         .foregroundColor(.black)
-                    Spacer()
-                    Text(version)
-                        .font(.system(size: screen.settingsFontSize))
-                        .foregroundColor(.gray)
                 }
                 // Privacy Policy link
                 Button(action: {
@@ -291,6 +313,16 @@ struct SettingsContentView: View {
                         .font(.system(size: screen.settingsFontSize))
                         .foregroundColor(.black)
                 }
+                // Version information
+                HStack {
+                    Text("Version".localized)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text(version)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.gray)
+                }
             }
         }
     }
@@ -301,11 +333,10 @@ struct SettingsContentView: View {
             Color.primary
                 .frame(maxWidth: .infinity)
                 .frame(height: screen.admobBannerHeight)
-
-            AdMobBannerView()
-                .frame(minWidth: screen.admobBannerMinWidth)
-                .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
-                .background(Color.primary)
+//            AdMobBannerView()
+//                .frame(minWidth: screen.admobBannerMinWidth)
+//                .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
+//                .background(Color.primary)
         }
         .frame(maxWidth: .infinity)
     }

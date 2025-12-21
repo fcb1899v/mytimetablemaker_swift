@@ -138,24 +138,21 @@ final class SharedDataManager: ObservableObject {
             // For GTFS, don't fetch lines at startup - only ensure ZIP cache exists
             // Lines will be fetched lazily when user selects the operator
             if transportOperator.apiType == .gtfs {
-                // Check if ZIP cache exists, download if not (but don't extract)
-                let date = GTFSDates.date(for: transportOperator) ?? ""
-                let gtfsFileName = transportOperator.gtfsFileName
-                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
-                
-                if cache.loadData(for: cacheKey) == nil {
-                    // Download ZIP file for caching (without extracting)
-                do {
-                        let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
-                        if !gtfsURL.isEmpty {
-                            _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
-                        }
-                } catch {
-                        print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
-                    }
-                }
-                // Don't fetch lines at startup - return empty array
-                // Lines will be fetched when user selects this operator
+                // GTFS is paused for now.
+                // Restore by uncommenting this block:
+                // let date = GTFSDates.date(for: transportOperator) ?? ""
+                // let gtfsFileName = transportOperator.gtfsFileName
+                // let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                // if cache.loadData(for: cacheKey) == nil {
+                //     do {
+                //         let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                //         if !gtfsURL.isEmpty {
+                //             _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                //         }
+                //     } catch {
+                //         print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
+                //     }
+                // }
                 continue
             }
             
@@ -182,10 +179,13 @@ final class SharedDataManager: ObservableObject {
         let allHaveCache = operators.allSatisfy { transportOperator in
             // For GTFS operators, check GTFS cache key instead of fileName
             if transportOperator.apiType == .gtfs {
-                let date = GTFSDates.date(for: transportOperator) ?? ""
-                let gtfsFileName = transportOperator.gtfsFileName
-                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
-                return cache.loadData(for: cacheKey) != nil
+                // GTFS is paused for now.
+                // Restore by uncommenting this block:
+                // let date = GTFSDates.date(for: transportOperator) ?? ""
+                // let gtfsFileName = transportOperator.gtfsFileName
+                // let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                // return cache.loadData(for: cacheKey) != nil
+                return true
             } else {
                 return cache.loadData(for: transportOperator.fileName) != nil
             }
@@ -206,35 +206,33 @@ final class SharedDataManager: ObservableObject {
             do {
                 // Handle GTFS operators separately
                 if transportOperator.apiType == .gtfs {
-                    // For GTFS, download ZIP file and extract for caching at startup
-                    // Check for updates: date-based operators check date, Toei Bus uses ETag/Last-Modified
-                    let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
-                    if !gtfsURL.isEmpty {
-                        // downloadGTFSZip() handles:
-                        // - Date-based operators: cache key includes date, so date change = new cache key = new download
-                        // - Toei Bus: checks for updates using ETag/Last-Modified via checkForToeiBusGTFSUpdate()
-                        _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
-                        print("✅ Downloaded and extracted GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
-                    }
-                } else {
-                    // Check if cache exists for non-GTFS operators
-                    let cacheKey = transportOperator.fileName
-                    let hasCache = cache.loadData(for: cacheKey) != nil
-                    
-                    if hasCache {
-                        continue
-                    }
-                    
-                    let data = try await odptService.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
-                    
-                    // Write to file
-                    try await odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
-                    
-                    // Don't save to cache here - only load from cache
-                    // Cache will be saved when user presses save button
-                    
-                    print("✅ Fetched: \(transportOperator.operatorDisplayName)")
+                    // GTFS is paused for now.
+                    // Restore by uncommenting this block:
+                    // let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                    // if !gtfsURL.isEmpty {
+                    //     _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                    //     print("✅ Downloaded and extracted GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
+                    // }
+                    continue
                 }
+
+                // Check if cache exists for non-GTFS operators
+                let cacheKey = transportOperator.fileName
+                let hasCache = cache.loadData(for: cacheKey) != nil
+                
+                if hasCache {
+                    continue
+                }
+                
+                let data = try await odptService.fetchIndividualOperatorData(transportOperator, consumerKey: consumerKey)
+                
+                // Write to file
+                try await odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
+                
+                // Don't save to cache here - only load from cache
+                // Cache will be saved when user presses save button
+                
+                print("✅ Fetched: \(transportOperator.operatorDisplayName)")
             } catch {
                 print("❌ Failed to initialize \(transportOperator.operatorDisplayName): \(error)")
             }
@@ -246,6 +244,12 @@ final class SharedDataManager: ObservableObject {
         let operators = LocalDataSource.allCases.filter { $0.transportationType == kind }
         
         for transportOperator in operators {
+            // GTFS is paused for now.
+            if transportOperator.apiType == .gtfs {
+                // Restore by uncommenting GTFS cache key handling.
+                continue
+            }
+
             let cacheKey = transportOperator.fileName
             
             // Load from file if exists
@@ -270,78 +274,6 @@ final class SharedDataManager: ObservableObject {
         return try? Data(contentsOf: fileURL)
     }
     
-    // MARK: - Data Initialization
-    // Initialize data with cache-first approach
-    private func initializeData() async {
-        // Prevent multiple simultaneous initializations
-        if let existingTask = initializationTask {
-            await existingTask.value
-            return
-        }
-        
-        initializationTask = Task {
-            await performInitialization()
-        }
-        
-        await initializationTask?.value
-    }
-    
-    // MARK: - Initialization Logic
-    // Perform actual data initialization
-    private func performInitialization() async {
-        guard !isInitialized else { return }
-        
-        isLoading = true
-        
-        // MARK: - Cache Availability Check using closure
-        let hasAnyCache = LocalDataSource.allCases.contains { transportOperator in
-            let cacheKey = transportOperator.fileName
-            return cache.loadData(for: cacheKey) != nil
-        }
-        
-        if !hasAnyCache {
-            // No cache available, perform initial fetch
-            await performInitialFetch()
-            
-            // After initial fetch, perform railway and bus updates
-            // Enable 24-hour rule to prevent unnecessary updates
-            if !consumerKey.isEmpty && shouldPerformRailwayUpdate() {
-                print("🔄 Performing railway auto update after initial fetch...")
-                await performRailwayUpdate()
-                
-                print("🔄 Performing bus manual update after initial fetch...")
-                await performBusUpdate()
-            }
-        } else {
-            // Load from cache
-            await loadFromCache()
-            
-            // Check for updates in background (both railway and bus)
-            // Enable 24-hour rule to prevent unnecessary updates
-            if !consumerKey.isEmpty && shouldPerformRailwayUpdate() {
-                Task.detached(priority: .background) { [weak self] in
-                    await self?.performRailwayUpdate()
-                }
-                
-                Task.detached(priority: .background) { [weak self] in
-                    await self?.performBusUpdate()
-                }
-            } else {
-                print("ℹ️ Railway and bus auto update skipped - less than 24 hours since last update")
-            }
-        }
-        
-        isLoading = false
-        isInitialized = true
-        
-        // Only set lastUpdated if we actually performed an update
-        // Don't set it just for loading from cache
-        if lastUpdated == nil {
-            // Set to a date in the past to indicate we have data but haven't updated yet
-            lastUpdated = Date().addingTimeInterval(-25 * 60 * 60) // 25 hours ago
-        }
-    }
-    
     // MARK: - Cache Loading
     // Load data from cache
     private func loadFromCache() async {
@@ -355,24 +287,21 @@ final class SharedDataManager: ObservableObject {
             // For GTFS, download ZIP file for caching if not exists (but don't extract)
             // Lines will be fetched lazily when user selects the operator
             if transportOperator.apiType == .gtfs {
-                // Check if ZIP cache exists, download if not (but don't extract)
-                let date = GTFSDates.date(for: transportOperator) ?? ""
-                let gtfsFileName = transportOperator.gtfsFileName
-                let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
-                
-                if cache.loadData(for: cacheKey) == nil {
-                    // Download ZIP file for caching (without extracting)
-                    do {
-                        let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
-                        if !gtfsURL.isEmpty {
-                            _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
-                        }
-                } catch {
-                        print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
-                    }
-                }
-                // Don't fetch lines at startup - return empty array
-                // Lines will be fetched when user selects this operator
+                // GTFS is paused for now.
+                // Restore by uncommenting this block:
+                // let date = GTFSDates.date(for: transportOperator) ?? ""
+                // let gtfsFileName = transportOperator.gtfsFileName
+                // let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
+                // if cache.loadData(for: cacheKey) == nil {
+                //     do {
+                //         let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                //         if !gtfsURL.isEmpty {
+                //             _ = try await gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
+                //         }
+                //     } catch {
+                //         print("⚠️ Failed to download GTFS ZIP for \(transportOperator.operatorDisplayName): \(error)")
+                //     }
+                // }
                 continue
             }
             
@@ -405,14 +334,13 @@ final class SharedDataManager: ObservableObject {
                     do {
                         // Handle GTFS operators separately
                         if transportOperator.apiType == .gtfs {
-                            // For GTFS, only download ZIP file for caching (don't extract at startup)
-                            // Lines will be fetched lazily when user selects the operator
-                            let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
-                            if !gtfsURL.isEmpty {
-                                _ = try await self.gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: self.consumerKey, transportOperator: transportOperator)
-                                print("✅ Downloaded GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
-                            }
-                            // Return empty array - lines will be fetched when user selects this operator
+                            // GTFS is paused for now.
+                            // Restore by uncommenting this block:
+                            // let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
+                            // if !gtfsURL.isEmpty {
+                            //     _ = try await self.gtfsService.downloadGTFSZipOnly(url: gtfsURL, consumerKey: self.consumerKey, transportOperator: transportOperator)
+                            //     print("✅ Downloaded GTFS ZIP for caching: \(transportOperator.operatorDisplayName)")
+                            // }
                             return (transportOperator, [], nil)
                         }
                         
@@ -462,235 +390,16 @@ final class SharedDataManager: ObservableObject {
         }
     }
     
-    // MARK: - Common Update Processing
-    // Common function to process updates for both railway and bus operators
-    // Only processes operators that have ETag/Last-Modified for conditional GET
-    private func processUpdate(
-        for operators: [LocalDataSource],
-        updateType: String,
-        parser: @escaping (Data) throws -> [TransportationLine],
-        updateHandler: @escaping (LocalDataSource) async -> Result<Void, Error>
-    ) async -> [TransportationLine] {
-        print("🔄 Performing \(updateType) update...")
-        
-        // Filter operators: only process those with ETag/Last-Modified
-        let operatorsToUpdate = operators.filter { transportOperator in
-            let cacheKey = transportOperator.fileName
-            // Check if ETag or Last-Modified exists
-            let etagKey = "\(cacheKey)_etag"
-            let lastModifiedKey = "\(cacheKey)_last_modified"
-            let hasETag = UserDefaults.standard.string(forKey: etagKey) != nil
-            let hasLastModified = UserDefaults.standard.string(forKey: lastModifiedKey) != nil
-            return hasETag || hasLastModified
-        }
-        
-        guard !operatorsToUpdate.isEmpty else {
-            print("ℹ️ \(updateType.capitalized) update: No operators with ETag/Last-Modified found")
-            return []
-        }
-        
-        // MARK: - Parallel Update Processing
-        // Process all operators in parallel for improved performance
-        let results = await withTaskGroup(of: (LocalDataSource, [TransportationLine]).self) { group in
-            for transportOperator in operatorsToUpdate {
-                group.addTask {
-                    let result = await updateHandler(transportOperator)
-                    
-                    switch result {
-                    case .success:
-                        // Check if data was actually updated by comparing with current data
-                        let cacheKey = transportOperator.fileName
-                        // Use MainActor.run to ensure we're on the main actor for cache access
-                        return await MainActor.run {
-                            if let cachedData = self.cache.loadData(for: cacheKey) {
-                                let newLines = (try? parser(cachedData)) ?? []
-                                
-                                // Get current lines for this operator
-                                let currentLines = self.allLines.filter { line in
-                                    guard let operatorCode = line.operatorCode else { return false }
-                                    return operatorCode == transportOperator.operatorCode && line.kind == transportOperator.transportationType
-                                }
-                                
-                                // Check if data has actually changed
-                                if newLines.count != currentLines.count || !newLines.elementsEqual(currentLines, by: { $0.code == $1.code }) {
-                                    print("🔄 \(transportOperator.operatorDisplayName): \(updateType) data updated (\(newLines.count) lines)")
-                                    return (transportOperator, newLines)
-                                } else {
-                                    return (transportOperator, []) // Return empty array for unchanged data
-                                }
-                            }
-                            return (transportOperator, [])
-                        }
-                    case .failure(let error):
-                        print("❌ Failed to update \(transportOperator.operatorDisplayName): \(error)")
-                        return (transportOperator, [])
-                    }
-                }
-            }
-            
-            var results: [TransportationLine] = []
-            for await result in group {
-                results.append(contentsOf: result.1)
-            }
-            return results
-        }
-        
-        return results
-    }
-    
-    // MARK: - Railway Update
-    // Perform railway data update (used for both auto and manual updates)
-    func performRailwayUpdate() async {
-        let railwayOperators = LocalDataSource.allCases.filter { $0.transportationType == .railway }
-        
-        let updatedData = await processUpdate(
-            for: railwayOperators,
-            updateType: "railway",
-            parser: { try ODPTParser.parseRailwayRoutes($0) }
-        ) { transportOperator in
-            await self.odptService.updateIndividualOperator(transportOperator, consumerKey: self.consumerKey)
-        }
-        
-        // Update data on main actor
-        if !updatedData.isEmpty {
-            await self.mergeUpdatedData(updatedData, updateType: "Railway")
-            self.updateRailwayLastUpdateTime() // Record the update time
-        } else {
-            print("ℹ️ Railway auto update: No data changes detected")
-        }
-    }
-    
-    // MARK: - Bus Update
-    // Perform bus data update (used for both auto and manual updates)
-    func performBusUpdate() async {
-        isLoading = true
-        
-        let busOperators = LocalDataSource.allCases.filter { $0.transportationType == .bus }
-        
-        // Clear old bus cache files first to force fresh fetch
-        for transportOperator in busOperators {
-            let cacheKey = transportOperator.fileName
-            if cache.loadData(for: cacheKey) != nil {
-                cache.saveData(Data(), for: cacheKey)
-            }
-        }
-        
-        // Separate GTFS and non-GTFS operators
-        let gtfsOperators = busOperators.filter { $0.apiType == .gtfs }
-        let nonGtfsOperators = busOperators.filter { $0.apiType != .gtfs }
-        
-        // Process GTFS operators separately
-        var gtfsUpdatedData: [TransportationLine] = []
-        for transportOperator in gtfsOperators {
-            do {
-                let lines = try await gtfsService.fetchGTFSData(transportOperator, consumerKey: consumerKey)
-                gtfsUpdatedData.append(contentsOf: lines)
-                print("✅ Updated GTFS: \(transportOperator.operatorDisplayName) (\(lines.count) lines)")
-            } catch {
-                print("❌ Failed to update GTFS \(transportOperator.operatorDisplayName): \(error)")
-            }
-        }
-        
-        // Process non-GTFS operators using existing processUpdate
-        let updatedData = await processUpdate(
-            for: nonGtfsOperators,
-            updateType: "bus",
-            parser: { try ODPTParser.parseBusRoutes($0) }
-        ) { transportOperator in
-            do {
-                // Force update by bypassing conditional GET
-                let data = try await self.odptService.fetchIndividualOperatorData(transportOperator, consumerKey: self.consumerKey)
-                
-                // Write updated data to JSON file
-                try await self.odptService.writeIndividualOperatorDataToFile(data: data, for: transportOperator)
-                
-                // Update cache with new data
-                let cacheKey = transportOperator.fileName
-                self.cache.saveData(data, for: cacheKey)
-
-                return .success(())
-            } catch {
-                print("❌ Failed to fetch \(transportOperator.operatorDisplayName): \(error)")
-                return .failure(error)
-            }
-        }
-        
-        // Combine GTFS and non-GTFS updated data
-        let allUpdatedData = updatedData + gtfsUpdatedData
-        
-        // Update data on main actor
-        if !allUpdatedData.isEmpty {
-            await self.mergeUpdatedData(allUpdatedData, updateType: "Bus")
-        } else {
-            print("ℹ️ Bus manual update: No data changes detected")
-        }
-        
-        isLoading = false
-    }
-    
-    // MARK: - Common Data Merging
-    // Merge updated data with existing data
-    private func mergeUpdatedData(_ updatedData: [TransportationLine], updateType: String) async {
-        // Merge updated data with existing data
-        var existingData = self.allLines
-        
-        // Remove old data for updated operators
-        // Use both operatorCode and transportation type to identify specific data
-        let updatedOperatorCodes = Set(updatedData.compactMap { $0.operatorCode })
-        existingData = existingData.filter { line in
-            guard let operatorCode = line.operatorCode else { return true }
-            // Only remove lines for updated operators with matching type
-            if updatedOperatorCodes.contains(operatorCode) && line.kind == updatedData.first?.kind {
-                return false // Remove this line
-            }
-            return true // Keep all other lines
-        }
-        
-        // Add updated data
-        existingData.append(contentsOf: updatedData)
-        
-        self.allLines = existingData
-        self.lastUpdated = Date()
-        print("✅ \(updateType) update completed: \(updatedData.count) lines")
-        print("📊 Total data after update: \(self.allLines.count) lines")
-    }
-    
-    // MARK: - Update Check
-    // Check if railway update is needed (24-hour rule)
-    private func shouldPerformRailwayUpdate() -> Bool {
-        // Check UserDefaults for last update time
-        let lastUpdateKey = "LastRailwayUpdate"
-        let lastUpdate = UserDefaults.standard.object(forKey: lastUpdateKey) as? Date
-        let currentTime = Date()
-        
-        // If no lastUpdate date, check if we have cached data
-        if lastUpdate == nil {
-            // Check if we have any cached data
-            let hasAnyCache = LocalDataSource.allCases.contains { transportOperator in
-                let cacheKey = transportOperator.fileName
-                return cache.loadData(for: cacheKey) != nil
-            }
-            return !hasAnyCache // Only update if no cache exists
-        }
-        
-        // Check if 24 hours have passed since last update
-        let timeSinceLastUpdate = currentTime.timeIntervalSince(lastUpdate!)
-        let twentyFourHours: TimeInterval = 24 * 60 * 60
-        return timeSinceLastUpdate >= twentyFourHours
-    }
-    
-    // MARK: - Update Last Update Time
-    // Record the time when railway update was performed
-    private func updateRailwayLastUpdateTime() {
-        let lastUpdateKey = "LastRailwayUpdate"
-        UserDefaults.standard.set(Date(), forKey: lastUpdateKey)
-    }
-    
     // MARK: - Cache Availability Check
     // Check if any cache exists to determine if we need to fetch data
     // Cache existence indicates that data has been fetched at least once
     func checkCacheAvailability() -> Bool {
         return LocalDataSource.allCases.contains { transportOperator in
+            if transportOperator.apiType == .gtfs {
+                // GTFS is paused for now.
+                // Restore by uncommenting GTFS cache key existence check.
+                return false
+            }
             let cacheKey = transportOperator.fileName
             return cache.loadData(for: cacheKey) != nil
         }
@@ -715,11 +424,6 @@ final class SharedDataManager: ObservableObject {
             print("📂 Cache found - loading from cache")
             await loadFromCache()
         }
-        
-        // Perform update check for operators with ETag/Last-Modified
-        // Only operators with ETag/Last-Modified will be checked
-        //        await performRailwayUpdate()
-        //        await performBusUpdate()
         
         // Ensure isLoading is false after all operations complete
         await MainActor.run {

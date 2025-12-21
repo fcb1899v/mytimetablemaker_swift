@@ -116,19 +116,6 @@ final class TransitViewModel: ObservableObject {
         transferTimeArray2 = goOrBack2.transferTimeArray
     }
  
-    // MARK: - UserDefaults Persistence
-    // Save route visibility settings to UserDefaults
-    func saveRoute2Settings() {
-        UserDefaults.standard.set(isShowBackRoute2, forKey: "back2".isShowRoute2Key)
-        UserDefaults.standard.set(isShowGoRoute2, forKey: "go2".isShowRoute2Key)
-    }
-    
-    // Save line change settings to UserDefaults
-    func saveChangeLineSettings() {
-        UserDefaults.standard.set(changeLine1, forKey: goOrBack1.changeLineKey)
-        UserDefaults.standard.set(changeLine2, forKey: goOrBack2.changeLineKey)
-    }
-    
     // MARK: - UserDefaults Data Update
     // Updates all data from UserDefaults when changes are detected
     func updateAllDataFromUserDefaults() {
@@ -191,53 +178,9 @@ final class TransitViewModel: ObservableObject {
     // Current date and time information
     var currentTime: Int { return timeLabel.currentTime }
     
-    // Calendar type based on current date for each line
-    // Each line may have different available calendar types
-    private func currentCalendarType(for route: String, lineNumber: Int) -> ODPTCalendarType {
-        // Use line-level cache key (structure: goorback -> line -> calendar types)
-        let lineCacheKey = "\(route)line\(lineNumber)_calendarTypes"
-        var availableTypes: [ODPTCalendarType] = []
-        
-        // Try to get cached calendar types for this specific line
-        if let cachedTypes = UserDefaults.standard.stringArray(forKey: lineCacheKey),
-           !cachedTypes.isEmpty {
-            availableTypes = cachedTypes.compactMap { ODPTCalendarType(rawValue: $0) }
-        }
-        
-        // If no line-specific cache, try to detect from actual data
-        if availableTypes.isEmpty {
-            availableTypes = route.loadAvailableCalendarTypes(num: lineNumber - 1)
-        }
-        
-        // Fallback to default types if no cache or data found
-        if availableTypes.isEmpty {
-            availableTypes = [.weekday, .holiday, .saturdayHoliday]
-        }
-        
-        // Determine calendar type from current date
-        return selectDate.odpTCalendarType(fallbackTo: availableTypes)
-    }
-    
-    // Calendar type for route 1, line 1 (first line in route 1)
-    var currentCalendarType1: ODPTCalendarType {
-        return currentCalendarType(for: goOrBack1, lineNumber: 1)
-    }
-    
-    // Calendar type for route 2, line 1 (first line in route 2)
-    var currentCalendarType2: ODPTCalendarType {
-        return currentCalendarType(for: goOrBack2, lineNumber: 1)
-    }
-    
     // Route visibility based on current direction
     var isShowRoute2: Bool { return isBack ? isShowBackRoute2: isShowGoRoute2 }
     var routeWidth: CGFloat { return isShowRoute2.routeWidth }
-    
-    // Timetable data for both routes using line-specific calendar types
-    // Note: timetableArray returns data for all lines (0-2) in the route
-    // For simplicity, we use the calendar type of the first line for all lines in the route
-    // If needed, this could be made more sophisticated to use different types per line
-    var timetableArray1: [[Int]] { return goOrBack1.timetableArray(selectDate) }
-    var timetableArray2: [[Int]] { return goOrBack2.timetableArray(selectDate) }
     
     // Current time-based schedule information using line-specific calendar types
     var timeArray1: [Int] { return goOrBack1.timeArray(selectDate, currentTime) }

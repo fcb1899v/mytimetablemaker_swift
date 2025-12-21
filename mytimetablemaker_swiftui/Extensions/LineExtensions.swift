@@ -40,17 +40,14 @@ let odptChallengeKey = Bundle.main.object(forInfoDictionaryKey: "ODPT_CHALLENGE_
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 // Terms of service URL
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized
+// Contact form URL
+let contactlink = "https://nakajimamasao-appstudio.web.app/contact".localized
 
 // MARK: - Localization Extension
 // Multi-language support for string localization
 extension String {
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
-    }
-    
-    /// Check if string contains hiragana characters
-    var containsHiragana: Bool {
-        return self.range(of: "[ぁ-ん]", options: .regularExpression) != nil
     }
     
     var normalizedForSearch: String {
@@ -61,13 +58,8 @@ extension String {
         return s.lowercased()
     }
 
-    /// Extract the last component from ODPT identifiers
-    /// Example: odpt:Operator:JR-East → JR-East
-    var odptTail: String { self.components(separatedBy: ":").last ?? self }
-    
     // MARK: - Bus English Name Extraction
     // Extract English names from ODPT bus identifiers (only for English locale)
-    
     /// Extract English name from bus route identifier
     /// Example: "odpt.Busroute:Toei.Mon33" → "Mon33"
     /// Validates format and ensures route code contains English characters
@@ -207,34 +199,24 @@ extension String{
     func departStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue(num.departStationDefault)! }
     func arriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue(num.arriveStationDefault)! }
     func operatorName(_ num: Int) -> String { return operatorNameKey(num).userDefaultsValue("")! }
+    func operatorCode(_ num: Int) -> String { return operatorCodeKey(num).userDefaultsValue("") ?? "" }
     func lineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue(num.lineNameDefault)! }
     func lineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(Color.accentString) }
     func lineCode(_ num: Int ) -> String { return lineCodeKey(num).userDefaultsValue("")! }
+    func lineSelected(_ num: Int) -> Bool { return lineSelectedKey(num).userDefaultsBool(false) }
     func lineKind(_ num: Int) -> TransportationLine.Kind { 
         let kindString = lineKindKey(num).userDefaultsValue("Railway")!
         return TransportationLine.Kind(rawValue: kindString) ?? .railway
     }
     func lineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(Color.accentString)! }
     func rideTime(_ num: Int) -> Int { return rideTimeKey(num).userDefaultsInt(0) }
+    /// Ride time checkmark color: gray when ride time is 0, otherwise line color for the index (Jetpack alignment).
+    func settingsRideTimeColor(_ num: Int) -> Color { return rideTime(num) == 0 ? Color.gray : lineColor(num) }
     func transportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue(TransferType.walking.rawValue)! }
     func transferTime(_ num: Int) -> Int { return transferTimeKey(num).userDefaultsInt(0) }
     func timetableTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return timetableKey(calendarType, num, hour).userDefaultsValue("")! }
     func timetableRideTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int) -> String { return timetableRideTimeKey(calendarType, num, hour).userDefaultsValue("")! }
     func choiceCopyTime(_ calendarType: ODPTCalendarType, _ num: Int, _ hour: Int, _ i: Int) -> String { return choiceCopyTimeKeyArray(calendarType, num, hour)[i].userDefaultsValue("")! }
-    
-    // MARK: - Settings View Data Access
-    // UserDefaults data retrieval for settings view display
-    var settingsDeparturePoint: String { return departurePointKey.userDefaultsValue("Not set".localized)! }
-    var settingsDestination: String { return destinationKey.userDefaultsValue("Not set".localized)! }
-    func settingsDepartStation(_ num: Int) -> String { return departStationKey(num).userDefaultsValue("Not set".localized)! }
-    func settingsArriveStation(_ num: Int) -> String { return arriveStationKey(num).userDefaultsValue("Not set".localized)! }
-    func settingsLineName(_ num: Int) -> String { return lineNameKey(num).userDefaultsValue("Not set".localized)! }
-    func settingsLineColor(_ num: Int ) -> Color { return lineColorKey(num).userDefaultsColor(Color.grayString) }
-    func settingsLineColorString(_ num: Int) -> String { return lineColorKey(num).userDefaultsValue(Color.grayString)! }
-    func settingsRideTime(_ num: Int) -> String { return (rideTime(num) == 0) ? "Not set".localized: "\(String(rideTime(num)))\("[min]".localized)"}
-    func settingsRideTimeColor(_ num: Int) -> Color { return (rideTime(num) == 0) ? .gray: lineColorArray[num] }
-    func settingsTransportation(_ num: Int) -> String { return transportationKey(num).userDefaultsValue("Not set".localized)! }
-    func settingsTransferTime(_ num: Int) -> String { return (transferTime(num) == 0) ? "Not set".localized: "\(transferTime(num))\("[min]".localized)"}
     
     // MARK: - Main View Data Arrays
     // Array generation for main view display
@@ -245,24 +227,13 @@ extension String{
     var lineNameArray: Array<String> { return (0..<3).map { i in lineName(i) } }
     var lineColorArray: Array<Color> { return (0..<3).map { i in lineColor(i)} }
     var lineCodeArray: Array<String> { return (0..<3).map { i in lineCode(i) } }
+    var lineSelectedArray: Array<Bool> { return (0..<3).map { i in lineSelected(i) } }
     var lineKindArray: Array<TransportationLine.Kind> { return (0..<3).map { i in lineKind(i) } }
     var lineColorStringArray: Array<String> { return (0..<3).map { i in lineColorString(i)} }
     var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
     var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }
     var transferTimeArray: Array<Int> { return (0..<4).map { i in transferTime(i) } }
-    
-    // MARK: - Label Generation
-    // Dynamic label generation for UI display
-    var departurePointLabel: String { return isBack ? "Destination".localized: "Departure place".localized }
-    var destinationLabel: String { return isBack ? "Departure place".localized: "Destination".localized }
-    var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [i.departStationDefault, i.arriveStationDefault] } }
-    func transferDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
-    func transferDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transferDepartNum(num)).localized }
-    func transferArriveStation(_ num: Int) -> String { return (num == 0) ? destination.localized: departStation(num - 1).localized }
-    func transferFromDepartStation(_ num: Int) -> String { return "\("From ".localized)\(transferDepartStation(num))\(" to ".localized)"}
-    func transferToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transferArriveStation(num))\("he".localized)" }
-    func transportationLabel(_ num: Int) -> String { return (num == 1) ? transferFromDepartStation(num): transferToArriveStation(num) }
-    
+        
 }
 
 // MARK: - Boolean Extensions
@@ -339,13 +310,16 @@ extension String {
     }
     
     // MARK: - Time Format Conversion
-    // Convert HH:MM format to minutes within the hour
+    // Convert HH:MM format or minutes-only format to minutes within the hour
+    // - "8:30" or "08:30" -> 30 (extract minutes from HH:MM)
+    // - "30" -> 30 (already minutes, used when loading from timetable storage "0 15 30 45")
     private func convertHHMMToMinutes(_ timeString: String) -> Int {
         let components = timeString.components(separatedBy: ":")
         if components.count == 2, let minute = Int(components[1]) {
             return minute  // Return only minutes within the hour
         }
-        return 0
+        // If no colon, treat as minutes directly (e.g. "30" from timetable storage)
+        return Int(timeString) ?? 0
     }
     
     // MARK: - TransportationTime Saving Methods

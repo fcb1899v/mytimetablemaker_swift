@@ -57,10 +57,7 @@ extension UIScreen {
     var lineNameHeight: CGFloat { screenHeight * 0.045 }
     var lineFontSize: CGFloat { customWidth / 27 }
     var lineImageForegroundSize: CGFloat { customWidth / 20 }
-    var lineImageForegroundPadding: CGFloat { customWidth / 80 }
     var lineImageBackgroundSize: CGFloat { customWidth / 15 }
-    var lineImageBackgroundPadding: CGFloat { customWidth / 200 }
-    var lineImagePadding: CGFloat { customWidth / 300 }
     var timeFontSize: CGFloat { customWidth / 18 }
     var admobBannerWidth: CGFloat { customWidth - 100 }
     var admobBannerMinWidth: CGFloat { 320 }
@@ -83,10 +80,8 @@ extension UIScreen {
     var timetableRideTimeFontSize: CGFloat { customWidth * 0.020 }
     var timetableMinuteSpacing:    CGFloat { customWidth * 0.008 }
     var timetableHorizontalSpacing: CGFloat { customWidth * 0.04 }
-    var timetableWeekToggleSpacing: CGFloat { customWidth * 0.016 }
     var timetableHourFrameWidth:   CGFloat { customWidth * 0.1 }
     var timetableMinuteFrameWidth: CGFloat { customWidth - timetableHourFrameWidth - 1 }
-    var timetableNumberWidth:      CGFloat { customWidth * 0.048 }
     var timetableTypeMenuWidth:    CGFloat { customWidth * 0.50 }
     var timetableEditButtonWidth:  CGFloat { customWidth * 0.44 }
     var timetablePickerWidth:      CGFloat { customWidth * 0.43 }
@@ -94,18 +89,14 @@ extension UIScreen {
     var timetableNumberHeight:    CGFloat { screenHeight * 0.018 }
     var timetableGridHeight:      CGFloat { screenHeight * 0.024 }
     var timetableDisplayHeight:   CGFloat { screenHeight * 0.06 }
-    var timetableEditTitleHeight: CGFloat { screenHeight * 0.06 }
     var timetableMaxHeight:       CGFloat { screenHeight * 0.64 }
     var timetableVerticalSpacing: CGFloat { screenHeight * 0.012 }
-    var timetableTypeMenuPadding: CGFloat { screenHeight * 0.16 }
-    var timetablePickerSpacing:   CGFloat { screenHeight * 0.02 }
     var timetableTypeMenuOffsetY: CGFloat { screenHeight * -0.045 }
     var timetableCopyMenuOffsetY: CGFloat { screenHeight * 0.13 }
     var timetableCalendarMenuOffsetY: CGFloat { screenHeight * -0.34 }
     var timetableContentViewMenuOffsetY: CGFloat { screenHeight * 0.10 }
     var timetablePickerTopPadding:    CGFloat { screenHeight * -0.036 }
     var timetablePickerBottomPadding: CGFloat { screenHeight * -0.012 }
-    var timetableScrollViewMaxHeight: CGFloat { screenHeight * 0.6 }
     var settingsTimetableSheetHeight: CGFloat { screenHeight * 0.6 }
     
     func calculateContentHeight(_ trainTimesCount: Int) -> CGFloat {
@@ -134,7 +125,6 @@ extension UIScreen {
     var settingsSheetPickerSpacing: CGFloat { customWidth * -0.030 }
     var settingsSheetIconSpacing: CGFloat { customWidth * 0.02 }
     var settingsSheetVerticalSpacing: CGFloat { screenHeight * 0.012 }
-    var settingsSheetSaveButtonSpacing: CGFloat { screenHeight * 0.03 }
     var settingsSheetInputPaddingVertical: CGFloat { screenHeight * 0.008 }
     var settingsSheetCornerRadius: CGFloat { screenHeight * 0.016 }
     var settingsSheetPickerSelectHeight: CGFloat { screenHeight * 0.10 }
@@ -145,7 +135,6 @@ extension UIScreen {
     // MARK: - Settings Line Sheet
     var settingsLineSheetPickerPadding: CGFloat { screenHeight * -0.032 }
     var settingsLineSheetShadowRadius: CGFloat { screenHeight * 0.006 }
-    var settingsLineSheetTitleSpacing: CGFloat { screenHeight * 0.012 }
     var settingsLineSheetGridSpacing: CGFloat { screenHeight * 0.02 }
     var settingsLineSheetColorVerticalPadding: CGFloat { screenHeight * 0.008 }
     var settingsLineSheetSuggestionItemHeight: CGFloat { screenHeight * 0.046 }

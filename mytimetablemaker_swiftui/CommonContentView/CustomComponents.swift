@@ -56,6 +56,9 @@ struct CustomToggle: View {
     
     // Color for unselected state
     let offColor: Color
+
+    // Interaction enabled/disabled state
+    let isEnabled: Bool
     
     // MARK: - Initializer
     init(
@@ -65,7 +68,8 @@ struct CustomToggle: View {
         rightText: String,
         rightColor: Color,
         circleColor: Color,
-        offColor: Color
+        offColor: Color,
+        isEnabled: Bool = true
     ) {
         self._isLeftSelected = isLeftSelected
         self.leftText = leftText
@@ -74,6 +78,7 @@ struct CustomToggle: View {
         self.rightColor = rightColor
         self.circleColor = circleColor
         self.offColor = offColor
+        self.isEnabled = isEnabled
     }
     
     var body: some View {
@@ -103,6 +108,7 @@ struct CustomToggle: View {
                     .animation(.easeInOut(duration: 0.2), value: isLeftSelected)
             }
             .onTapGesture {
+                guard isEnabled else { return }
                 isLeftSelected.toggle()
             }
             
@@ -117,6 +123,7 @@ struct CustomToggle: View {
         }
         .padding(.horizontal, screen.customTogglePaddingHorizontal)
         .fixedSize(horizontal: true, vertical: false)
+        .opacity(isEnabled ? 1.0 : 0.6)
     }
 }
 
@@ -130,6 +137,7 @@ extension CustomToggle {
         primaryColor: Color = .primary,
         secondaryColor: Color = .secondary,
         circleColor: Color = .white,
+        isEnabled: Bool = true
     ) {
         self.init(
             isLeftSelected: isLeftSelected,
@@ -138,7 +146,8 @@ extension CustomToggle {
             rightText: rightText,
             rightColor: secondaryColor,
             circleColor: circleColor,
-            offColor: secondaryColor
+            offColor: secondaryColor,
+            isEnabled: isEnabled
         )
     }
     
@@ -149,7 +158,8 @@ extension CustomToggle {
         offText: String,
         onColor: Color = .primary,
         offColor: Color = .secondary,
-        circleColor: Color = .white
+        circleColor: Color = .white,
+        isEnabled: Bool = true
     ) {
         self.init(
             isLeftSelected: isOn,
@@ -158,7 +168,8 @@ extension CustomToggle {
             rightText: offText,
             rightColor: offColor,
             circleColor: circleColor,
-            offColor: offColor
+            offColor: offColor,
+            isEnabled: isEnabled
         )
     }
 }
@@ -357,6 +368,7 @@ struct CustomRectangleButton: View {
                 }
                 Text(title)
                     .font(.system(size: screen.settingsSheetInputFontSize))
+                    .fontWeight(.medium)
                     .foregroundColor(.white)
             }
         }

@@ -70,6 +70,8 @@
 "Version" = "バージョン";
 "Terms and privacy policy" = "利用規約・プライバシーポリシー";
 "https://nakajimamasao-appstudio.web.app/terms" = "https://nakajimamasao-appstudio.web.app/terms/ja";
+"Contact" = "お問い合わせ";
+"https://nakajimamasao-appstudio.web.app/contact" = "https://nakajimamasao-appstudio.web.app/contact/ja";
 
 // MARK: - Settings Transfer Sheet
 // Home and destination transportation settings

@@ -276,10 +276,26 @@ final class ODPTDataService: NSObject, URLSessionDelegate {
 
     // MARK: - Common Request Configuration
     // Common function to configure request headers
-    // Sets authentication and conditional request headers for efficient caching
+    // Sets conditional request headers for efficient caching
+    // Note: ODPT API uses URL query parameter acl:consumerKey for authentication
     private func configureRequest(_ request: inout URLRequest, consumerKey: String, conditionalHeaders: (etag: String?, lastModified: String?)? = nil) {
-        request.setValue(consumerKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        if let url = request.url, var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+            if components.queryItems == nil {
+                components.queryItems = []
+            }
+
+            if let existingIndex = components.queryItems?.firstIndex(where: { $0.name == "acl:consumerKey" }) {
+                components.queryItems?[existingIndex].value = consumerKey
+            } else {
+                components.queryItems?.append(URLQueryItem(name: "acl:consumerKey", value: consumerKey))
+            }
+
+            if let newURL = components.url {
+                request.url = newURL
+            }
+        }
         
         if let headers = conditionalHeaders {
             if let etag = headers.etag {

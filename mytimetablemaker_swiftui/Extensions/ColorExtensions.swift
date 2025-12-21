@@ -86,8 +86,8 @@ extension Int {
     // Determine color based on countdown time ranges
     var countdownColor: Color { return (self % 2 == 1) ? .gray:
         (1000...9999 ~= self) ? .accent:
-        (500...999 ~= self) ? .yellow:
-        (0...499 ~= self) ? .red:
+        (100...499 ~= self) ? .yellow:
+        (0...99 ~= self) ? .red:
         .gray
     }
 }

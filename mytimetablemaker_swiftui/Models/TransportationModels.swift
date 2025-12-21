@@ -28,7 +28,7 @@ struct TransportationStop: Identifiable, Hashable, Codable {
     let busstopPole: String?           // odpt:busstopPole - bus stop identifier
     
     // Computed property for display name
-    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+    // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
     var displayName: String {
         // Use localized name based on current language setting
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
@@ -223,7 +223,7 @@ struct Station: Hashable, Codable {
     let title: LocalizedTitle?
     
     // Computed properties
-    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+    // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
     var displayName: String {
         let baseName = title?.getLocalizedName(fallbackTo: name) ?? name
         // Split by ":" and return first component for ODPT format
@@ -277,7 +277,7 @@ struct BusStop: Hashable, Codable {
     let busstopPole: String?           // odpt:busstopPole - bus stop identifier
     
     // Computed properties
-    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+    // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
     var displayName: String {
         // Use localized name based on current language setting
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
@@ -372,15 +372,7 @@ struct BusStop: Hashable, Codable {
         // Keep original Japanese name as base name (don't localize here)
         self.name = self.note ?? self.busstopPole ?? ""
     }
-    
-    
-    // MARK: - Bus Stop English Name
-    // Extract English name from bus stop pole identifier using LineExtensions
-    var busStopEnglishName: String? {
-        guard let busstopPole = busstopPole else { return nil }
-        return busstopPole.busStopEnglishName
-    }
-    
+        
     // MARK: - Cleaned Name
     // Get cleaned name from note field (entire note field)
     var cleanedName: String {

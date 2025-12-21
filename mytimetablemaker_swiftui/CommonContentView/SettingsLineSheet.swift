@@ -55,7 +55,7 @@ struct SettingsLineSheet: View {
         departureFocused = false
         arrivalFocused = false
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack(alignment: .topLeading) {
@@ -103,7 +103,8 @@ struct SettingsLineSheet: View {
                     lineSuggestionsView
                 }
                 // MARK: - Color Selection Section
-                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected) {
+                // Show color selection when manually triggered or when line input exists but not during input (field not focused)
+                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected && !vm.isLineFieldFocused) {
                     colorSelectionSection
                 }
 
@@ -316,7 +317,10 @@ struct SettingsLineSheet: View {
             }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.operatorInput.isEmpty ? .gray : .accent)
+                .foregroundColor(
+                    vm.operatorInput.isEmpty ? .gray :
+                    (vm.selectedTransportationKind == .bus ? vm.isOperatorCheckmarkSelected : (vm.isOperatorCheckmarkSelected && vm.hasTrainTimetableSupport())) ? .primary : .accent
+                )
         }
     }
     
@@ -359,21 +363,22 @@ struct SettingsLineSheet: View {
                                 vm.isLineFieldFocused = true
                             }
                             
-                            // For GTFS operators, fetch lines from ZIP cache
-                            if dataSource.apiType == .gtfs {
-                                // Clear line suggestions immediately to prevent showing old data
-                                vm.lineSuggestions = []
-                                vm.showLineSuggestions = false
-                                
-                                Task {
-                                    await vm.fetchGTFSLinesForOperator(dataSource)
-                                }
-                                vm.showLineSuggestions = false
-                            } else {
-                                // For non-GTFS operators, use filter to show line suggestions
-                                Task {
-                                    await vm.filterLine(vm.lineInput)
-                                }
+                            // GTFS is paused for now.
+                            // To restore GTFS behavior, uncomment the block below and remove the active branch.
+                            // if dataSource.apiType == .gtfs {
+                            //     vm.lineSuggestions = []
+                            //     vm.showLineSuggestions = false
+                            //     Task {
+                            //         await vm.fetchGTFSLinesForOperator(dataSource)
+                            //     }
+                            //     vm.showLineSuggestions = false
+                            // } else {
+                            //     Task {
+                            //         await vm.filterLine(vm.lineInput)
+                            //     }
+                            // }
+                            Task {
+                                await vm.filterLine(vm.lineInput)
                             }
                         }
                         
@@ -467,7 +472,10 @@ struct SettingsLineSheet: View {
             }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.lineInput.isEmpty ? .gray : .accent)
+                .foregroundColor(
+                    vm.lineInput.isEmpty ? .gray :
+                    (vm.selectedTransportationKind == .bus ? vm.isLineCheckmarkSelected : (vm.isLineCheckmarkSelected && vm.hasTrainTimetableSupport())) ? .primary : .accent
+                )
         }
     }
         
@@ -675,31 +683,8 @@ struct SettingsLineSheet: View {
     
     // MARK: - Station Header Text
     /// Station header with dynamic station information
-    /// For GTFS routes, displays "出発停〜行き先" format
     private var stationHeaderText: some View {
-        let headerText = vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized
-        
-        let stationInfo: String
-        if vm.hasSelectedLine && vm.hasStops {
-            let firstStop = vm.lineStops.first?.displayName ?? ""
-            let lastStop = vm.lineStops.last?.displayName ?? ""
-            
-            // For GTFS routes, use "〜" separator (出発停〜行き先)
-            if vm.selectedTransportationKind == .bus,
-               let operatorCode = vm.selectedLine?.operatorCode,
-               let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
-               dataSource.apiType == .gtfs {
-                stationInfo = ": ".localized + firstStop + " to ".localized  + lastStop
-            } else {
-                stationInfo = ": ".localized + firstStop + " to ".localized + lastStop
-            }
-        } else {
-            stationInfo = ""
-        }
-        
-        let finalText = headerText + stationInfo
-        
-        return Text(finalText)
+        return Text(vm.selectedTransportationKind == .bus ? "Bus Stop Input".localized : "Station Input".localized)
             .font(.system(size: screen.settingsSheetTitleFontSize, weight: .bold))
             .foregroundColor(.black)
             .padding(.top, screen.settingsSheetVerticalSpacing)
@@ -748,7 +733,10 @@ struct SettingsLineSheet: View {
                 }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.departureStopInput.isEmpty ? .gray : .accent)
+                .foregroundColor(
+                    vm.departureStopInput.isEmpty ? .gray :
+                    (vm.selectedTransportationKind == .bus ? vm.isDepartureCheckmarkSelected : (vm.isDepartureCheckmarkSelected && vm.hasTrainTimetableSupport())) ? .primary : .accent
+                )
         }
     }
 
@@ -828,7 +816,10 @@ struct SettingsLineSheet: View {
                 }
             
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.arrivalStopInput.isEmpty ? .gray : .accent)
+                .foregroundColor(
+                    vm.arrivalStopInput.isEmpty ? .gray :
+                    (vm.selectedTransportationKind == .bus ? vm.isArrivalCheckmarkSelected : (vm.isArrivalCheckmarkSelected && vm.hasTrainTimetableSupport())) ? .primary : .accent
+                )
         }
     }
     
@@ -985,10 +976,12 @@ struct SettingsLineSheet: View {
                 }
             }
 
-            // Checkmark indicator
-            // Gray if ride time is 0 and timetable support is not available
+            // Checkmark: Primary only when hasTimetableSupport for railway; bus ignores it. 0 min shows gray like unselected operator
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(vm.selectedRideTime == 0 && !vm.hasTimetableSupport() ? .gray : .accent)
+                .foregroundColor(
+                    (vm.selectedTransportationKind == .bus ? vm.isAllSelected : (vm.isAllSelected && vm.hasTimetableSupport())) ? .primary :
+                    (vm.selectedRideTime == 0 ? .gray : .accent)
+                )
         }
         .padding(.vertical, screen.settingsLineSheetPickerPadding)
     }
@@ -1097,21 +1090,22 @@ struct SettingsLineSheet: View {
                 }
             }
             
-            // Checkmark indicator (0 minutes is valid for direct connections)
+            // Checkmark: Primary only when hasTimetableSupport for railway; bus ignores it
             Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.accent)
+                .foregroundColor((vm.selectedTransportationKind == .bus ? vm.isAllSelected : (vm.isAllSelected && vm.hasTimetableSupport())) ? .primary : .accent)
         }
         .padding(.vertical, screen.settingsLineSheetPickerPadding)
     }
     
     // MARK: - Save Button Section
-    /// Save button for storing line configuration data
+    /// Save button for storing line configuration data (Jetpack: isEnabled = isAllNotEmpty || isAllSelected)
     private var saveButtonSection: some View {
-        CustomButton(
+        let saveEnabled = vm.isAllNotEmpty || vm.isAllSelected
+        return CustomButton(
             title: "Input Save".localized,
             icon: "square.and.arrow.down.on.square.fill",
             backgroundColor: Color.accent,
-            isEnabled: vm.isAllNotEmpty,
+            isEnabled: saveEnabled,
             action: {
                 Task {
                     await vm.handleLineSave()
@@ -1120,20 +1114,21 @@ struct SettingsLineSheet: View {
                 }
             }
         )
-        .disabled(!vm.isAllNotEmpty)
+        .disabled(!saveEnabled)
         .padding(.top, screen.settingsSheetVerticalSpacing)
     }
     
     // MARK: - Timetable Settings Button Section
-    // Button to open manual timetable configuration settings
+    // Button to open manual timetable configuration settings (Jetpack: isEnabled = isAllNotEmpty || isAllSelected)
     private var timetableSettingsButtonSection: some View {
-        CustomButton(
+        let timetableSettingsEnabled = vm.isAllNotEmpty || vm.isAllSelected
+        return CustomButton(
             title: "Timetable Settings".localized,
-            icon: vm.isAllNotEmpty ? "clock.badge.checkmark.fill": "clock.fill",
-            backgroundColor: vm.isAllNotEmpty ? Color.accent: Color.gray,
-            isEnabled: vm.isAllNotEmpty,
+            icon: timetableSettingsEnabled ? "clock.badge.checkmark.fill": "clock.fill",
+            backgroundColor: timetableSettingsEnabled ? Color.accent: Color.gray,
+            isEnabled: timetableSettingsEnabled,
             action: {
-                if vm.isAllNotEmpty {
+                if timetableSettingsEnabled {
                     // Save input data before opening timetable settings
                     Task {
                         await vm.handleLineSave()
@@ -1142,37 +1137,36 @@ struct SettingsLineSheet: View {
                 }
             }
         )
-        .disabled(!vm.isAllNotEmpty)
+        .disabled(!timetableSettingsEnabled)
     }
 
     // MARK: - Timetable Auto Settings Button Section
-    // Button to automatically generate timetable data using ODPT API
+    // Button to automatically generate timetable data using ODPT API (Jetpack: enabled only when isAllSelected)
     private var timetableAutoSettingsButtonSection: some View {
-        CustomButton(
+        // Enabled only when all checkmarks are Primary. Bus ignores hasTimetableSupport
+        let isAutoGenerateEnabled = vm.selectedTransportationKind == .bus ? vm.isAllSelected : (vm.isAllSelected && vm.hasTrainTimetableSupport())
+        return CustomButton(
             title: "Auto Generate Timetable".localized,
-            icon: (vm.isAllNotEmpty && vm.isAllSelected) ? "clock.badge.checkmark.fill" : "clock.fill",
-            backgroundColor: (vm.isAllNotEmpty && vm.isAllSelected) ? Color.primary : Color.gray,
-            isEnabled: vm.isAllNotEmpty && vm.isAllSelected,
+            icon: isAutoGenerateEnabled ? "clock.badge.checkmark.fill" : "clock.fill",
+            backgroundColor: isAutoGenerateEnabled ? Color.primary : Color.gray,
+            isEnabled: isAutoGenerateEnabled,
             action: {
-                // Auto mode: execute getStationTimetableData if all selected, otherwise just open settings
-                if vm.isAllNotEmpty && vm.isAllSelected {
-                    // Save input data before auto generating timetable
+                if isAutoGenerateEnabled {
                     Task {
                         await vm.handleLineSave()
                         if vm.hasTimetableSupport() {
                             let result: [ODPTCalendarType: [any TransportationTime]] = await vm.getTimeTableData()
-                            // Use new finalizeTimetableData method with individual calendar types
                             await vm.finalizeTimetableData(calendarTimes: result)
                         } else {
                             let result = await vm.getStationTimetableData()
                             await vm.finalizeTimetableData(calendarTimes: result)
                         }
                         showTimetableSettings = true
-                    } 
+                    }
                 }
             }
         )
-        .disabled(!vm.isAllNotEmpty)
+        .disabled(!isAutoGenerateEnabled)
     }
 }
 

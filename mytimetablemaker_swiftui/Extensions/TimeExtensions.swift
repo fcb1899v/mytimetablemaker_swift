@@ -24,15 +24,12 @@ extension Int {
     // MARK: - Time Arithmetic
     // Addition and subtraction operations for time format calculations
     func plusHHMM(_ time: Int) -> Int { (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }
-    func plusHHMMSS(_ time: Int) -> Int { (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }
-    func plusMMSS(_ time: Int) -> Int { (MMSStoSS + time.MMSStoSS).SStoMMSS }
     func minusHHMM(_ time: Int) -> Int { (HHMMtoMM < time.HHMMtoMM) ?
         ((self + 2400).HHMMtoMM - time.HHMMtoMM).MMtoHHMM:
         (HHMMtoMM - time.HHMMtoMM).MMtoHHMM }
     func minusHHMMSS(_ time: Int) -> Int { (self.HHMMSStoSS < time.HHMMSStoSS) ?
         ((self + 240000).HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS:
         (HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS }
-    func minusMMSS(_ time: Int) -> Int { (self.MMSStoSS - time.MMSStoSS).SStoMMSS }
     
     // MARK: - Time Display Formatting
     // Format time values for display with leading zeros and time conversion
@@ -732,6 +729,44 @@ extension String {
         
         // Final fallback to default calendar types
         return [.weekday, .saturdayHoliday]
+    }
+    
+    // MARK: - Sync Timetable Ride Time When All Same
+    // If all timetable ride times for this route are the same value, update every entry to the new ride time.
+    // If they are not all the same, do not change timetable ride times.
+    // Must be called BEFORE saving rideTimeKey (see saveAllDataToUserDefaults).
+    func syncTimetableRideTimeWhenAllSame(lineIndex: Int, newRideTime: Int) {
+        let calendarTypes = loadAvailableCalendarTypes(num: lineIndex)
+        var allRideTimes: [Int] = []
+        var slotsWithData: [(ODPTCalendarType, Int)] = []
+        for calendarType in calendarTypes {
+            let hours = validHourRange(calendarType: calendarType, num: lineIndex)
+            for hour in hours {
+                let times = loadTransportationTimes(calendarType, lineIndex, hour)
+                if !times.isEmpty {
+                    slotsWithData.append((calendarType, hour))
+                    allRideTimes.append(contentsOf: times.map { $0.rideTime })
+                }
+            }
+        }
+        guard !allRideTimes.isEmpty else { return }
+        let distinctRideTimes = Array(Set(allRideTimes))
+        guard distinctRideTimes.count == 1 else { return }
+        let previousRideTime = distinctRideTimes[0]
+        guard previousRideTime != newRideTime else { return }
+        for (calendarType, hour) in slotsWithData {
+            let times = loadTransportationTimes(calendarType, lineIndex, hour)
+            let updated: [any TransportationTime] = times.map { tt in
+                if let busTime = tt as? BusTime {
+                    return BusTime(departureTime: busTime.departureTime, arrivalTime: busTime.arrivalTime, busNumber: busTime.busNumber, routePattern: busTime.routePattern, rideTime: newRideTime)
+                } else if let trainTime = tt as? TrainTime {
+                    return TrainTime(departureTime: trainTime.departureTime, arrivalTime: trainTime.arrivalTime, trainNumber: trainTime.trainNumber, trainType: trainTime.trainType, rideTime: newRideTime)
+                } else {
+                    return tt
+                }
+            }
+            saveTransportationTimes(updated, calendarType, lineIndex, hour)
+        }
     }
     
     // MARK: - Time String Comparison

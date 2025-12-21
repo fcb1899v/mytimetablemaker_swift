@@ -17,6 +17,29 @@ import Foundation
 // Main view model for the line selection interface
 @MainActor
 final class SettingsLineSheetViewModel: ObservableObject {
+    #if DEBUG
+    private func debugStopSelectionLog(
+        _ phase: String,
+        departureInput: String,
+        departureCode: String?,
+        hasSavedDepartureCode: Bool,
+        selectedDepartureStop: TransportationStop?,
+        departureSelected: Bool,
+        arrivalInput: String,
+        arrivalCode: String?,
+        hasSavedArrivalCode: Bool,
+        selectedArrivalStop: TransportationStop?,
+        arrivalSelected: Bool
+    ) {
+        print(
+            """
+            [SettingsLineSheet][\(phase)]
+            departure input="\(departureInput)" code=\(departureCode ?? "nil") hasCode=\(hasSavedDepartureCode) selectedStop=\(selectedDepartureStop?.displayName ?? "nil") selectedFlag=\(departureSelected)
+            arrival   input="\(arrivalInput)" code=\(arrivalCode ?? "nil") hasCode=\(hasSavedArrivalCode) selectedStop=\(selectedArrivalStop?.displayName ?? "nil") selectedFlag=\(arrivalSelected)
+            """
+        )
+    }
+    #endif
     
     // MARK: - Published Properties
     // UI state properties that trigger view updates when changed
@@ -77,7 +100,41 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var departureStopSelected: Bool = false     // Flag to prevent departure suggestions re-display
     @Published var arrivalStopSelected: Bool = false       // Flag to prevent arrival suggestions re-display
     @Published var lineSelected: Bool = false                 // Flag to prevent line suggestions re-display
-    var isAllSelected: Bool { lineSelected && departureStopSelected && arrivalStopSelected }
+    
+    // Display names for "input matches selection" (checkmark Primary when input equals selected display name)
+    var selectedOperatorDisplayName: String? {
+        guard let code = selectedOperatorCode else { return nil }
+        return getOperatorDisplayName(for: code, lineKind: selectedTransportationKind)
+    }
+    var selectedLineDisplayName: String {
+        selectedLine.map { lineDisplayName(for: $0) } ?? ""
+    }
+    
+    // Checkmark Primary only when selection exists AND input text matches selected display name (Jetpack alignment)
+    var isOperatorCheckmarkSelected: Bool {
+        guard selectedOperatorCode != nil, let displayName = selectedOperatorDisplayName else { return false }
+        return operatorInput.trimmingCharacters(in: .whitespacesAndNewlines) == displayName
+    }
+    var isLineCheckmarkSelected: Bool {
+        guard selectedLine != nil else { return false }
+        return lineInput.trimmingCharacters(in: .whitespacesAndNewlines) == selectedLineDisplayName
+    }
+    var isDepartureCheckmarkSelected: Bool {
+        guard let stop = selectedDepartureStop else { return false }
+        return departureStopInput.trimmingCharacters(in: .whitespacesAndNewlines) == stop.displayName
+    }
+    var isArrivalCheckmarkSelected: Bool {
+        guard let stop = selectedArrivalStop else { return false }
+        return arrivalStopInput.trimmingCharacters(in: .whitespacesAndNewlines) == stop.displayName
+    }
+    
+    /// All four fields have selection and input text matches (all checkmarks Primary when supported). Used for auto-generate and button states.
+    var isAllSelected: Bool {
+        isOperatorCheckmarkSelected &&
+        isLineCheckmarkSelected &&
+        isDepartureCheckmarkSelected &&
+        isArrivalCheckmarkSelected
+    }
     
     // Line configuration and customization
     @Published var selectedLineColor: String? = nil           // Selected line color hex value for display
@@ -89,7 +146,9 @@ final class SettingsLineSheetViewModel: ObservableObject {
     @Published var isLineNumberChanging: Bool = false         // Flag to indicate line number is being changed
     @Published var isGoorBackChanging: Bool = false           // Flag to indicate direction is being changed
     @Published var isChangedOperator: Bool = false            // Flag to indicate operator has been changed from saved value
+    @Published var isTransportationKindSwitching: Bool = false // Flag to prevent rapid transportation kind toggles
     @Published var selectedGoorback: String = "back1"         // Currently selected route direction
+    private var isRestoringSavedFormState: Bool = false       // Guard to avoid input onChange side effects while restoring
     
     // Computed properties for UI state checking
     var hasSelectedLine: Bool { selectedLine != nil }
@@ -252,26 +311,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
     }
     
-    // Perform manual data update for both railway and bus operators
-    // Refreshes all transportation data from ODPT API
-    func performDataUpdate() async {
-        await sharedDataManager.performRailwayUpdate()
-        await sharedDataManager.performBusUpdate()
-        
-        // Reload only the selected kind's data after update
-        let updatedLines = await sharedDataManager.getLines(for: selectedTransportationKind)
-        
-        await MainActor.run {
-            self.all = updatedLines
-            self.allData = self.all
-            self.railwayLines = updatedLines.filter { $0.kind == .railway }
-            self.busLines = updatedLines.filter { $0.kind == .bus }
-            self.isLoading = sharedDataManager.isLoading
-            self.lastUpdatedDisplay = sharedDataManager.lastUpdated?.formatted()
-        }
-    }
-    
-    
     // MARK: - Search and Filtering
     // Filter railway lines based on search lineInput with performance optimizations
     func filterLine(_ q: String) async {
@@ -333,12 +372,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 
                 lineSuggestions = uniqueResults
-                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+                showLineSuggestions = !lineSuggestions.isEmpty
                 nameCounts = [:]
             } else {
                 let uniqueResults = removeDuplicates(from: searchData)
                 lineSuggestions = uniqueResults
-                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+                showLineSuggestions = !lineSuggestions.isEmpty
                 nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
                     .mapValues { $0.count }
             }
@@ -386,7 +425,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
             
             lineSuggestions = uniqueResults
-            showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+            showLineSuggestions = !lineSuggestions.isEmpty
             nameCounts = [:]
             return
         }
@@ -432,7 +471,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             .filter { dataSource in
                 // Filter by transportation type: railway or bus
                 dataSource.transportationType == selectedTransportationKind &&
-                dataSource.operatorCode != nil
+                dataSource.operatorCode != nil &&
+                dataSource.apiType != .gtfs // GTFS is paused. Remove this to restore GTFS operators.
             }
         
         // Create array of (dataSource, operatorDisplayName) tuples to maintain enum order
@@ -850,10 +890,17 @@ final class SettingsLineSheetViewModel: ObservableObject {
     func saveAllDataToUserDefaults() async {
         let lineIndex = selectedLineNumber - 1
         
+        // When all timetable ride times are the same, update all to the new ride time BEFORE saving rideTimeKey.
+        // If called after rideTimeKey is saved, loadTransportationTimes uses the new value as default when
+        // timetableRideTimeKey is empty (ODPT not used), causing previousRideTime == newRideTime and early return.
+        selectedGoorback.syncTimetableRideTimeWhenAllSame(lineIndex: lineIndex, newRideTime: selectedRideTime)
+        
         // Save line name
+        let lineNameKey = selectedGoorback.lineNameKey(lineIndex)
         if !lineInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let lineNameKey = selectedGoorback.lineNameKey(lineIndex)
             UserDefaults.standard.set(lineInput, forKey: lineNameKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: lineNameKey)
         }
         
         // Save line code for Firestore synchronization
@@ -863,44 +910,42 @@ final class SettingsLineSheetViewModel: ObservableObject {
         if let selectedLine = selectedLine {
             // Use lineCode property (short code like "JY", "TT") if available
             // If odpt:lineCode is not available, save empty string (do not extract from code)
-            let codeToSave: String
             if let lineCode = selectedLine.lineCode, !lineCode.isEmpty {
-                codeToSave = lineCode
+                UserDefaults.standard.set(lineCode, forKey: lineCodeKey)
             } else {
-                // Save empty string when odpt:lineCode is not available
-                codeToSave = ""
+                UserDefaults.standard.removeObject(forKey: lineCodeKey)
             }
-            UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
         } else {
-            // Preserve existing lineCode if selectedLine is nil (e.g., during auto-generation)
-            // Only preserve if lineCode already exists and is not empty
-            let existingLineCode = UserDefaults.standard.string(forKey: lineCodeKey) ?? ""
-            if existingLineCode.isEmpty {
-                // Try to find lineCode from saved line name using reverse lookup
-                if let foundLine = findSavedLineInData() {
-                    // Use lineCode property if available, otherwise save empty string
-                    let codeToSave: String
-                    if let lineCode = foundLine.lineCode, !lineCode.isEmpty {
-                        codeToSave = lineCode
-                    } else {
-                        // Save empty string when odpt:lineCode is not available
-                        codeToSave = ""
-                    }
-                    UserDefaults.standard.set(codeToSave, forKey: lineCodeKey)
-                }
-            }
+            // Remove stale lineCode when selected line is not available.
+            UserDefaults.standard.removeObject(forKey: lineCodeKey)
         }
+        
+        // Save line selected flag (used by SettingsTimetableSheet to detect fetched/ODPT mode)
+        let lineSelectedKey = selectedGoorback.lineSelectedKey(lineIndex)
+        UserDefaults.standard.set(selectedLine != nil, forKey: lineSelectedKey)
         
         // Save line color
+        let lineColorKey = selectedGoorback.lineColorKey(lineIndex)
         if let lineColor = selectedLineColor, !lineColor.isEmpty {
-            let lineColorKey = selectedGoorback.lineColorKey(lineIndex)
             UserDefaults.standard.set(lineColor, forKey: lineColorKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: lineColorKey)
         }
         
-        // Save operator name (consistent with other fields like line name, station names)
+        // Save operator name and code (Jetpack-aligned: operatorCode from selectedLine ?? selectedOperatorCode)
+        let operatorNameKey = selectedGoorback.operatorNameKey(lineIndex)
+        let operatorCodeKey = selectedGoorback.operatorCodeKey(lineIndex)
         if !operatorInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            let operatorNameKey = selectedGoorback.operatorNameKey(lineIndex)
             UserDefaults.standard.set(operatorInput, forKey: operatorNameKey)
+            let operatorCodeToSave = selectedLine?.operatorCode ?? selectedOperatorCode
+            if let code = operatorCodeToSave, !code.isEmpty {
+                UserDefaults.standard.set(code, forKey: operatorCodeKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: operatorCodeKey)
+            }
+        } else {
+            UserDefaults.standard.removeObject(forKey: operatorNameKey)
+            UserDefaults.standard.removeObject(forKey: operatorCodeKey)
         }
         
         // Save transportation kind
@@ -934,46 +979,88 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Save departure stop information
+        let departureCodeKey = selectedGoorback.departStationCodeKey(lineIndex)
+        let departureLineCodeKey = "\(selectedGoorback.departStationCodeKey(lineIndex))_lineCode"
         if !departureStopInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let departureKey = selectedGoorback.departStationKey(lineIndex)
             UserDefaults.standard.set(departureStopInput, forKey: departureKey)
             
             // Save departure stop ODPT code
-            if let departureStop = selectedDepartureStop,
+            if departureStopSelected,
+               let departureStop = selectedDepartureStop,
                let stationCode = departureStop.code {
-                let departureCodeKey = selectedGoorback.departStationCodeKey(lineIndex)
                 UserDefaults.standard.set(stationCode, forKey: departureCodeKey)
+            } else {
+                // Clear stale code when input exists but stop is not selected.
+                UserDefaults.standard.removeObject(forKey: departureCodeKey)
             }
             
             // Save departure stop lineCode if available
-            if let departureStop = selectedDepartureStop,
+            if departureStopSelected,
+               let departureStop = selectedDepartureStop,
                let stationLineCode = departureStop.lineCode {
-                let departureLineCodeKey = "\(selectedGoorback.departStationCodeKey(lineIndex))_lineCode"
                 UserDefaults.standard.set(stationLineCode, forKey: departureLineCodeKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: departureLineCodeKey)
             }
-            
+        } else {
+            let departureKey = selectedGoorback.departStationKey(lineIndex)
+            UserDefaults.standard.removeObject(forKey: departureKey)
+            UserDefaults.standard.removeObject(forKey: departureCodeKey)
+            UserDefaults.standard.removeObject(forKey: departureLineCodeKey)
         }
         
         // Save arrival stop information
+        let arrivalCodeKey = selectedGoorback.arriveStationCodeKey(lineIndex)
+        let arrivalLineCodeKey = "\(selectedGoorback.arriveStationCodeKey(lineIndex))_lineCode"
         if !arrivalStopInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
             UserDefaults.standard.set(arrivalStopInput, forKey: arrivalKey)
             
             // Save arrival stop ODPT code
-            if let arrivalStop = selectedArrivalStop,
+            if arrivalStopSelected,
+               let arrivalStop = selectedArrivalStop,
                let stationCode = arrivalStop.code {
-                let arrivalCodeKey = selectedGoorback.arriveStationCodeKey(lineIndex)
                 UserDefaults.standard.set(stationCode, forKey: arrivalCodeKey)
+            } else {
+                // Clear stale code when input exists but stop is not selected.
+                UserDefaults.standard.removeObject(forKey: arrivalCodeKey)
             }
             
             // Save arrival stop lineCode if available
-            if let arrivalStop = selectedArrivalStop,
+            if arrivalStopSelected,
+               let arrivalStop = selectedArrivalStop,
                let stationLineCode = arrivalStop.lineCode {
-                let arrivalLineCodeKey = "\(selectedGoorback.arriveStationCodeKey(lineIndex))_lineCode"
                 UserDefaults.standard.set(stationLineCode, forKey: arrivalLineCodeKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: arrivalLineCodeKey)
             }
-            
+        } else {
+            let arrivalKey = selectedGoorback.arriveStationKey(lineIndex)
+            UserDefaults.standard.removeObject(forKey: arrivalKey)
+            UserDefaults.standard.removeObject(forKey: arrivalCodeKey)
+            UserDefaults.standard.removeObject(forKey: arrivalLineCodeKey)
         }
+
+        #if DEBUG
+        let savedDepartureCodeAfterSave = UserDefaults.standard.string(forKey: departureCodeKey)
+        let savedArrivalCodeAfterSave = UserDefaults.standard.string(forKey: arrivalCodeKey)
+        let hasSavedDepartureCodeAfterSave = !(savedDepartureCodeAfterSave?.isEmpty ?? true)
+        let hasSavedArrivalCodeAfterSave = !(savedArrivalCodeAfterSave?.isEmpty ?? true)
+        debugStopSelectionLog(
+            "save",
+            departureInput: departureStopInput,
+            departureCode: savedDepartureCodeAfterSave,
+            hasSavedDepartureCode: hasSavedDepartureCodeAfterSave,
+            selectedDepartureStop: selectedDepartureStop,
+            departureSelected: departureStopSelected,
+            arrivalInput: arrivalStopInput,
+            arrivalCode: savedArrivalCodeAfterSave,
+            hasSavedArrivalCode: hasSavedArrivalCodeAfterSave,
+            selectedArrivalStop: selectedArrivalStop,
+            arrivalSelected: arrivalStopSelected
+        )
+        #endif
         
         // Save ride time
         let rideTimeKey = selectedGoorback.rideTimeKey(lineIndex)
@@ -1016,27 +1103,139 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // Load station settings from UserDefaults
-    // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+    // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
     private func loadStationSettings() {
+        isRestoringSavedFormState = true
+        defer { isRestoringSavedFormState = false }
+
         let currentLineIndex = selectedLineNumber - 1
-        
+
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
+        let savedDepartureCode = UserDefaults.standard.string(forKey: selectedGoorback.departStationCodeKey(currentLineIndex))
+        let savedDepartureLineCode = UserDefaults.standard.string(forKey: "\(selectedGoorback.departStationCodeKey(currentLineIndex))_lineCode")
+        let hasSavedDepartureCode = !(savedDepartureCode?.isEmpty ?? true)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             // Split by ":" and return first component for ODPT format
             let components = savedDeparture.components(separatedBy: ":")
-            self.departureStopInput = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedDeparture
+            let displayDeparture = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedDeparture
+            self.departureStopInput = displayDeparture
+
+            if !lineStops.isEmpty {
+                if hasSavedDepartureCode {
+                    self.selectedDepartureStop = lineStops.first(where: { stop in
+                        stop.code == savedDepartureCode ||
+                        stop.name == savedDeparture ||
+                        stop.name == displayDeparture ||
+                        stop.title?.ja == savedDeparture ||
+                        stop.title?.ja == displayDeparture ||
+                        stop.title?.en == savedDeparture ||
+                        stop.title?.en == displayDeparture ||
+                        stop.displayName == displayDeparture
+                    })
+                } else {
+                    self.selectedDepartureStop = nil
+                }
+            } else {
+                if hasSavedDepartureCode {
+                    self.selectedDepartureStop = TransportationStop(
+                        kind: selectedTransportationKind,
+                        name: displayDeparture,
+                        code: savedDepartureCode,
+                        index: nil,
+                        lineCode: savedDepartureLineCode
+                    )
+                } else {
+                    self.selectedDepartureStop = nil
+                }
+            }
+
+            if hasSavedDepartureCode && self.selectedDepartureStop == nil {
+                self.selectedDepartureStop = TransportationStop(
+                    kind: selectedTransportationKind,
+                    name: displayDeparture,
+                    code: savedDepartureCode,
+                    index: nil,
+                    lineCode: savedDepartureLineCode
+                )
+            }
         } else {
             self.departureStopInput = ""
+            self.selectedDepartureStop = nil
         }
-        
+
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
+        let savedArrivalCode = UserDefaults.standard.string(forKey: selectedGoorback.arriveStationCodeKey(currentLineIndex))
+        let savedArrivalLineCode = UserDefaults.standard.string(forKey: "\(selectedGoorback.arriveStationCodeKey(currentLineIndex))_lineCode")
+        let hasSavedArrivalCode = !(savedArrivalCode?.isEmpty ?? true)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             // Split by ":" and return first component for ODPT format
             let components = savedArrival.components(separatedBy: ":")
-            self.arrivalStopInput = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedArrival
+            let displayArrival = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedArrival
+            self.arrivalStopInput = displayArrival
+
+            if !lineStops.isEmpty {
+                if hasSavedArrivalCode {
+                    self.selectedArrivalStop = lineStops.first(where: { stop in
+                        stop.code == savedArrivalCode ||
+                        stop.name == savedArrival ||
+                        stop.name == displayArrival ||
+                        stop.title?.ja == savedArrival ||
+                        stop.title?.ja == displayArrival ||
+                        stop.title?.en == savedArrival ||
+                        stop.title?.en == displayArrival ||
+                        stop.displayName == displayArrival
+                    })
+                } else {
+                    self.selectedArrivalStop = nil
+                }
+            } else {
+                if hasSavedArrivalCode {
+                    self.selectedArrivalStop = TransportationStop(
+                        kind: selectedTransportationKind,
+                        name: displayArrival,
+                        code: savedArrivalCode,
+                        index: nil,
+                        lineCode: savedArrivalLineCode
+                    )
+                } else {
+                    self.selectedArrivalStop = nil
+                }
+            }
+
+            if hasSavedArrivalCode && self.selectedArrivalStop == nil {
+                self.selectedArrivalStop = TransportationStop(
+                    kind: selectedTransportationKind,
+                    name: displayArrival,
+                    code: savedArrivalCode,
+                    index: nil,
+                    lineCode: savedArrivalLineCode
+                )
+            }
         } else {
             self.arrivalStopInput = ""
+            self.selectedArrivalStop = nil
         }
+
+        // Restore selection flags from persisted selection state.
+        // If stop code was saved, this stop was selected from suggestions.
+        departureStopSelected = hasSavedDepartureCode && selectedDepartureStop != nil
+        arrivalStopSelected = hasSavedArrivalCode && selectedArrivalStop != nil
+
+        #if DEBUG
+        debugStopSelectionLog(
+            "restore-loadStationSettings",
+            departureInput: departureStopInput,
+            departureCode: savedDepartureCode,
+            hasSavedDepartureCode: hasSavedDepartureCode,
+            selectedDepartureStop: selectedDepartureStop,
+            departureSelected: departureStopSelected,
+            arrivalInput: arrivalStopInput,
+            arrivalCode: savedArrivalCode,
+            hasSavedArrivalCode: hasSavedArrivalCode,
+            selectedArrivalStop: selectedArrivalStop,
+            arrivalSelected: arrivalStopSelected
+        )
+        #endif
     }
     
     // MARK: - Line Selection Management
@@ -1106,6 +1305,16 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 $0.transportationType == selectedTransportationKind &&
                 $0.operatorDisplayName == savedOperatorName
             }) {
+                if dataSource.apiType == .gtfs {
+                    // Clear stale GTFS selection because GTFS operators are hidden in current UI.
+                    self.operatorInput = ""
+                    self.selectedOperatorCode = nil
+                    self.operatorSelected = false
+                    self.lineInput = ""
+                    self.selectedLine = nil
+                    self.lineSelected = false
+                    self.lineStops = []
+                } else {
                 self.selectedOperatorCode = dataSource.operatorCode
                 self.operatorSelected = true
                 
@@ -1169,6 +1378,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                     self.lineStops = []
                     self.lineSelected = false
                 }
+                }
             } else {
                 self.selectedOperatorCode = nil
                 self.operatorSelected = false
@@ -1219,17 +1429,20 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
 
         // Load departure station name and restore station object from station name
-        // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+        // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
         let departureKey = selectedGoorback.departStationKey(currentLineIndex)
+        let savedDepartureCodeForRestore = UserDefaults.standard.string(forKey: selectedGoorback.departStationCodeKey(currentLineIndex))
+        let hasSavedDepartureCodeForRestore = !(savedDepartureCodeForRestore?.isEmpty ?? true)
         if let savedDeparture = UserDefaults.standard.string(forKey: departureKey) {
             // Split by ":" and return first component for ODPT format
             let components = savedDeparture.components(separatedBy: ":")
             let displayDeparture = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedDeparture
             self.departureStopInput = displayDeparture
             
-            // Restore departure station object from station name if line stops are available
-            if !self.lineStops.isEmpty {
+            // Restore departure station object only when a station code was saved.
+            if hasSavedDepartureCodeForRestore && !self.lineStops.isEmpty {
                 if let foundStop = self.lineStops.first(where: { stop in
+                    stop.code == savedDepartureCodeForRestore ||
                     stop.name == savedDeparture ||
                     stop.name == displayDeparture ||
                     stop.title?.ja == savedDeparture ||
@@ -1251,17 +1464,20 @@ final class SettingsLineSheetViewModel: ObservableObject {
         }
         
         // Load arrival station name and restore station object from station name
-        // Split by ":" and return first component for ODPT format (e.g., "北朝霞駅:1887:北朝霞駅" -> "北朝霞駅")
+        // Split by ":" and return first component for ODPT format (e.g., "StationA:1887:StationA" -> "StationA")
         let arrivalKey = selectedGoorback.arriveStationKey(currentLineIndex)
+        let savedArrivalCodeForRestore = UserDefaults.standard.string(forKey: selectedGoorback.arriveStationCodeKey(currentLineIndex))
+        let hasSavedArrivalCodeForRestore = !(savedArrivalCodeForRestore?.isEmpty ?? true)
         if let savedArrival = UserDefaults.standard.string(forKey: arrivalKey) {
             // Split by ":" and return first component for ODPT format
             let components = savedArrival.components(separatedBy: ":")
             let displayArrival = components.first?.trimmingCharacters(in: .whitespacesAndNewlines) ?? savedArrival
             self.arrivalStopInput = displayArrival
             
-            // Restore arrival station object from station name if line stops are available
-            if !self.lineStops.isEmpty {
+            // Restore arrival station object only when a station code was saved.
+            if hasSavedArrivalCodeForRestore && !self.lineStops.isEmpty {
                 if let foundStop = self.lineStops.first(where: { stop in
+                    stop.code == savedArrivalCodeForRestore ||
                     stop.name == savedArrival ||
                     stop.name == displayArrival ||
                     stop.title?.ja == savedArrival ||
@@ -1281,7 +1497,11 @@ final class SettingsLineSheetViewModel: ObservableObject {
             self.arrivalStopInput = ""
             self.selectedArrivalStop = nil
         }
-        
+
+        // Restore selection flags from persisted selection state.
+        departureStopSelected = hasSavedDepartureCodeForRestore && selectedDepartureStop != nil
+        arrivalStopSelected = hasSavedArrivalCodeForRestore && selectedArrivalStop != nil
+
         let rideTimeKey = selectedGoorback.rideTimeKey(currentLineIndex)
         let savedRideTime = UserDefaults.standard.integer(forKey: rideTimeKey)
         // Use saved value or default to 0 if not set
@@ -2592,43 +2812,62 @@ final class SettingsLineSheetViewModel: ObservableObject {
     // MARK: - Transportation Kind Switching
     // Handle transportation kind switching without clearing data
     func switchTransportationKind(_ isRailway: Bool) {
+        if isTransportationKindSwitching { return }
+        let toggleKind: TransportationLine.Kind = isRailway ? .railway : .bus
+
         // Update transportation kind immediately for responsive UI
-        selectedTransportationKind = isRailway ? .railway : .bus
+        selectedTransportationKind = toggleKind
+        isTransportationKindSwitching = true
         
-        // Clear only suggestions to prevent UI conflicts
-        lineSuggestions = []
+        // Clear suggestion UI state.
+        showOperatorSuggestions = false
         showLineSuggestions = false
-        nameCounts = [:]
         showDepartureSuggestions = false
         showArrivalSuggestions = false
+
+        operatorSuggestions = []
+        lineSuggestions = []
         departureSuggestions = []
         arrivalSuggestions = []
+
+        // Reset focus-related flags.
+        showStationSelection = false
         isDepartureFieldFocused = false
         isArrivalFieldFocused = false
-        showStationSelection = false
-        
-        // Clear operator suggestions and reset operator selection when switching transportation kind
-        operatorSuggestions = []
-        showOperatorSuggestions = false
+
+        // Keep this as in-memory UI state reset only (no persistence here).
         operatorSelected = false
+        lineSelected = false
+        departureStopSelected = false
+        arrivalStopSelected = false
+
         selectedOperatorCode = nil
+        selectedLine = nil
+        selectedDepartureStop = nil
+        selectedArrivalStop = nil
+        lineStations = []
+        lineBusStops = []
         
         // Load data for the new kind from cache only (no fetch, no save)
         Task {
-            let newLines = await sharedDataManager.getLines(for: selectedTransportationKind, allowFetch: false)
-            
+            defer {
+                isTransportationKindSwitching = false
+            }
+
+            let newLines = await sharedDataManager.getLines(for: toggleKind, allowFetch: false)
+
             await MainActor.run {
                 self.all = newLines
                 self.allData = self.all
                 self.railwayLines = newLines.filter { $0.kind == .railway }
                 self.busLines = newLines.filter { $0.kind == .bus }
             }
-            
+
             // Re-filter existing data if line input exists
             if !lineInput.isEmpty && lineInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
                 await filterLine(lineInput)
             }
-            
+
             // Re-filter operator suggestions if operator input exists
             if !operatorInput.isEmpty && operatorInput.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
                 await filterOperators(operatorInput)
@@ -2640,7 +2879,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     /// Process departure station input changes and filter suggestions
     func processdepartureStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
-        if isLineNumberChanging {
+        if isLineNumberChanging || isRestoringSavedFormState {
             return
         }
         
@@ -2663,7 +2902,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     /// Process arrival station input changes and filter suggestions
     func processarrivalStopInput(_ newValue: String) {
         // Don't show suggestions if line number is being changed
-        if isLineNumberChanging {
+        if isLineNumberChanging || isRestoringSavedFormState {
             return
         }
         
@@ -2874,7 +3113,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Form Data Management
     /// Clears all form data and resets to initial state
-    /// Also resets all focus states
     func clearAllFormData() {
         // Clear operator name
         operatorInput = ""
@@ -2886,26 +3124,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Clear line name
         lineInput = ""
-        lineSuggestions = []
-        showLineSuggestions = false
-        lineSelected = false
-        selectedLine = nil
         
-        // Reset station selection (includes departure/arrival focus flags)
+        // Reset station selection
         resetStationSelection()
         
         // Clear departure and arrival station input fields
         departureStopInput = ""
-        departureSuggestions = []
-        showDepartureSuggestions = false
-        departureStopSelected = false
-        selectedDepartureStop = nil
-        
         arrivalStopInput = ""
-        arrivalSuggestions = []
-        showArrivalSuggestions = false
-        arrivalStopSelected = false
-        selectedArrivalStop = nil
         
         // Reset ride time to 0 minutes
         selectedRideTime = 0
@@ -2917,13 +3142,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         selectedTransportation = "none"
         selectedTransferTime = 0
         
-        // Hide all dropdowns and selection UIs
+        // Hide color selection UI
         showColorSelection = false
-        
-        // Reset all focus states
-        isOperatorFieldFocused = false
-        isLineFieldFocused = false
-        // isDepartureFieldFocused and isArrivalFieldFocused are reset in resetStationSelection()
     }
     
     // MARK: - Helper Functions
@@ -2933,7 +3153,14 @@ final class SettingsLineSheetViewModel: ObservableObject {
         guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return false }
         return dataSource.hasTrainTimeTable || dataSource.hasBusTimeTable
     }
-    
+
+    /// Check if the selected line supports train timetable auto-generation.
+    func hasTrainTimetableSupport() -> Bool {
+        guard let operatorCode = selectedLine?.operatorCode else { return false }
+        guard let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }) else { return false }
+        return dataSource.hasTrainTimeTable
+    }
+
     // MARK: - BusstopPole API Integration
     /// Flag to prevent multiple simultaneous API calls
     private var isFetchingJapaneseNames = false

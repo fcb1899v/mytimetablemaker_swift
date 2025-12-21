@@ -13,7 +13,6 @@
         "**/build": true,
         "**/.git": true
     },
-    "swift.path": "/usr/bin/swift",
     "swift.buildPath": "./build",
     "swift.targetBuildPath": "./build",
     "swift.debuggerPath": "/usr/bin/lldb",

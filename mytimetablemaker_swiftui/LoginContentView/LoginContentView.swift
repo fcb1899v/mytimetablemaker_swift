@@ -54,9 +54,9 @@ struct LoginContentView: View {
                 ZStack {
                     Color.primary
                         .frame(width: screen.screenWidth)
-                    AdMobBannerView()
-                        .frame(minWidth: screen.admobBannerMinWidth)
-                        .frame(width: screen.admobBannerWidth)
+//                    AdMobBannerView()
+//                        .frame(minWidth: screen.admobBannerMinWidth)
+//                        .frame(width: screen.admobBannerWidth)
                 }
                 .frame(height: screen.admobBannerHeight)
             }
