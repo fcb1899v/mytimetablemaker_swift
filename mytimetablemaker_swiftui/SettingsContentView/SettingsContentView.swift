@@ -271,15 +271,15 @@ struct SettingsContentView: View {
                 header: Text("About".localized).fontWeight(.bold)
                     .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
             ) {
-                // Version information
-                HStack {
-                    Text("Version".localized)
+                // Contact form link
+                Button(action: {
+                    if let contactURL = URL(string: contactlink) {
+                        UIApplication.shared.open(contactURL, options: [:], completionHandler: nil)
+                    }
+                }) {
+                    Text("Contact".localized)
                         .font(.system(size: screen.settingsFontSize))
                         .foregroundColor(.black)
-                    Spacer()
-                    Text(version)
-                        .font(.system(size: screen.settingsFontSize))
-                        .foregroundColor(.gray)
                 }
                 // Privacy Policy link
                 Button(action: {
@@ -291,6 +291,16 @@ struct SettingsContentView: View {
                         .font(.system(size: screen.settingsFontSize))
                         .foregroundColor(.black)
                 }
+                // Version information
+                HStack {
+                    Text("Version".localized)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.black)
+                    Spacer()
+                    Text(version)
+                        .font(.system(size: screen.settingsFontSize))
+                        .foregroundColor(.gray)
+                }
             }
         }
     }
@@ -301,7 +311,6 @@ struct SettingsContentView: View {
             Color.primary
                 .frame(maxWidth: .infinity)
                 .frame(height: screen.admobBannerHeight)
-
             AdMobBannerView()
                 .frame(minWidth: screen.admobBannerMinWidth)
                 .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)

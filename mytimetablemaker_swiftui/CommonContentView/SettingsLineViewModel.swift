@@ -333,12 +333,12 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 
                 lineSuggestions = uniqueResults
-                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+                showLineSuggestions = !lineSuggestions.isEmpty
                 nameCounts = [:]
             } else {
                 let uniqueResults = removeDuplicates(from: searchData)
                 lineSuggestions = uniqueResults
-                showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+                showLineSuggestions = !lineSuggestions.isEmpty
                 nameCounts = Dictionary(grouping: lineSuggestions) { lineDisplayName(for: $0) }
                     .mapValues { $0.count }
             }
@@ -386,7 +386,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
             
             lineSuggestions = uniqueResults
-            showLineSuggestions = isLineFieldFocused && !lineSuggestions.isEmpty
+            showLineSuggestions = !lineSuggestions.isEmpty
             nameCounts = [:]
             return
         }
@@ -2874,7 +2874,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     // MARK: - Form Data Management
     /// Clears all form data and resets to initial state
-    /// Also resets all focus states
     func clearAllFormData() {
         // Clear operator name
         operatorInput = ""
@@ -2886,26 +2885,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         
         // Clear line name
         lineInput = ""
-        lineSuggestions = []
-        showLineSuggestions = false
-        lineSelected = false
-        selectedLine = nil
         
-        // Reset station selection (includes departure/arrival focus flags)
+        // Reset station selection
         resetStationSelection()
         
         // Clear departure and arrival station input fields
         departureStopInput = ""
-        departureSuggestions = []
-        showDepartureSuggestions = false
-        departureStopSelected = false
-        selectedDepartureStop = nil
-        
         arrivalStopInput = ""
-        arrivalSuggestions = []
-        showArrivalSuggestions = false
-        arrivalStopSelected = false
-        selectedArrivalStop = nil
         
         // Reset ride time to 0 minutes
         selectedRideTime = 0
@@ -2917,13 +2903,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
         selectedTransportation = "none"
         selectedTransferTime = 0
         
-        // Hide all dropdowns and selection UIs
+        // Hide color selection UI
         showColorSelection = false
-        
-        // Reset all focus states
-        isOperatorFieldFocused = false
-        isLineFieldFocused = false
-        // isDepartureFieldFocused and isArrivalFieldFocused are reset in resetStationSelection()
     }
     
     // MARK: - Helper Functions

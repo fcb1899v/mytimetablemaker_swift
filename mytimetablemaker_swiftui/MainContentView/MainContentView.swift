@@ -223,7 +223,6 @@ struct MainContentView: View {
                 ZStack {
                     Color.primary
                         .frame(width: screen.screenWidth, height: screen.admobBannerHeight)
-
                     AdMobBannerView()
                         .frame(minWidth: screen.admobBannerMinWidth)
                         .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)

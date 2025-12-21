@@ -24,15 +24,12 @@ extension Int {
     // MARK: - Time Arithmetic
     // Addition and subtraction operations for time format calculations
     func plusHHMM(_ time: Int) -> Int { (HHMMtoMM + time.HHMMtoMM).MMtoHHMM }
-    func plusHHMMSS(_ time: Int) -> Int { (HHMMSStoSS + time.HHMMSStoSS).SStoHHMMSS }
-    func plusMMSS(_ time: Int) -> Int { (MMSStoSS + time.MMSStoSS).SStoMMSS }
     func minusHHMM(_ time: Int) -> Int { (HHMMtoMM < time.HHMMtoMM) ?
         ((self + 2400).HHMMtoMM - time.HHMMtoMM).MMtoHHMM:
         (HHMMtoMM - time.HHMMtoMM).MMtoHHMM }
     func minusHHMMSS(_ time: Int) -> Int { (self.HHMMSStoSS < time.HHMMSStoSS) ?
         ((self + 240000).HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS:
         (HHMMSStoSS - time.HHMMSStoSS).SStoHHMMSS }
-    func minusMMSS(_ time: Int) -> Int { (self.MMSStoSS - time.MMSStoSS).SStoMMSS }
     
     // MARK: - Time Display Formatting
     // Format time values for display with leading zeros and time conversion

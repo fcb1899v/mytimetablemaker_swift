@@ -40,17 +40,14 @@ let odptChallengeKey = Bundle.main.object(forInfoDictionaryKey: "ODPT_CHALLENGE_
 let version = (Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String)!
 // Terms of service URL
 let termslink = "https://nakajimamasao-appstudio.web.app/terms".localized
+// Contact form URL
+let contactlink = "https://nakajimamasao-appstudio.web.app/contact".localized
 
 // MARK: - Localization Extension
 // Multi-language support for string localization
 extension String {
     var localized: String {
         return NSLocalizedString(self, tableName: nil, bundle: Bundle.main, value: "", comment: self)
-    }
-    
-    /// Check if string contains hiragana characters
-    var containsHiragana: Bool {
-        return self.range(of: "[ぁ-ん]", options: .regularExpression) != nil
     }
     
     var normalizedForSearch: String {
@@ -250,19 +247,7 @@ extension String{
     var rideTimeArray: Array<Int> { return (0..<3).map { i in rideTime(i) } }
     var transportationArray: Array<String> { return (0..<4).map { i in transportation(i) } }
     var transferTimeArray: Array<Int> { return (0..<4).map { i in transferTime(i) } }
-    
-    // MARK: - Label Generation
-    // Dynamic label generation for UI display
-    var departurePointLabel: String { return isBack ? "Destination".localized: "Departure place".localized }
-    var destinationLabel: String { return isBack ? "Departure place".localized: "Destination".localized }
-    var stationLabelArray: Array<String> { return [departurePointLabel, destinationLabel] + (0..<3).flatMap { i in [i.departStationDefault, i.arriveStationDefault] } }
-    func transferDepartNum(_ num: Int) -> Int { return (num == 0) ? changeLineInt: num - 2 }
-    func transferDepartStation(_ num: Int) -> String { return (num == 1) ? departurePoint.localized: arriveStation(transferDepartNum(num)).localized }
-    func transferArriveStation(_ num: Int) -> String { return (num == 0) ? destination.localized: departStation(num - 1).localized }
-    func transferFromDepartStation(_ num: Int) -> String { return "\("From ".localized)\(transferDepartStation(num))\(" to ".localized)"}
-    func transferToArriveStation(_ num: Int) -> String { return "\("To ".localized)\(transferArriveStation(num))\("he".localized)" }
-    func transportationLabel(_ num: Int) -> String { return (num == 1) ? transferFromDepartStation(num): transferToArriveStation(num) }
-    
+        
 }
 
 // MARK: - Boolean Extensions

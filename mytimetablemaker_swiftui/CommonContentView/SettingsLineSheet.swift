@@ -103,7 +103,8 @@ struct SettingsLineSheet: View {
                     lineSuggestionsView
                 }
                 // MARK: - Color Selection Section
-                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected) {
+                // Show color selection when manually triggered or when line input exists but not during input (field not focused)
+                if vm.showColorSelection || (!vm.lineInput.isEmpty && vm.selectedLineColor == nil && selected?.lineColor == nil && !vm.lineSelected && !vm.isLineFieldFocused) {
                     colorSelectionSection
                 }
 
