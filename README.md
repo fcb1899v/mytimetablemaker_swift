@@ -627,39 +627,31 @@ ODPT API returns JSON data in the following format:
 
 The application parses this data into internal `TransportationLine` models for use throughout the app.
 
-### Local Railway Database
-Comprehensive offline railway data covering major operators in Japan:
+### Supported Lines
 
-**Railway Operators:**
-- **JR East**: Complete station and line data
-- **Tokyo Metro**: Full subway network coverage
-- **Toei Subway**: Full subway network coverage
-- **Yokohama Municipal Subway**: Complete subway line data
-- **Private Railways**: Tokyu Railway, Keikyu Railway, Odakyu Railway, Seibu Railway, Tobu Railway, Sotetsu Railway
-- **Monorails**: Tama Monorail, Yurikamome
-- **Regional Lines**: Tsukuba Express (TWR), Rinkai Line (MIR)
+Timetable data is provided via the [Open Data Platform for Transportation (ODPT) API](https://www.odpt.org/). Automatic timetable generation is available for the following operators.
 
-**Bus Operators:**
-- **Tokyu Bus**: Major bus routes
-- **Seibu Bus**: Complete bus network
-- **Sotetsu Bus**: Sotetsu Railway bus routes
-- **Kanachu Bus**: Kanagawa Chuo Bus routes
-- **Kokusai Kogyo**: International Kogyo Bus routes
-- **Odakyu Bus**: Odakyu Railway bus routes
-- **Toei Bus**: Comprehensive bus route coverage (GTFS format)
-- **Yokohama Municipal Bus**: Complete bus route data (GTFS format)
-- **Keio Bus**: Keio Railway bus routes (GTFS format)
-- **Nishitokyo Bus**: Nishitokyo Bus routes (GTFS format)
-- **Kawasaki Bus**: Kawasaki City Bus (GTFS format)
-- **Kawasaki Tsurumi Rinko Bus**: Kawasaki Tsurumi Rinko Bus (GTFS format)
-- **Kanto Bus**: Kanto Bus (GTFS format)
-- **Izuhakone Bus**: Izuhakone Bus (GTFS format)
-- **Keisei Transit Bus**: Keisei Transit Bus (GTFS format)
+**Railway (9 operators)**  
+JR East, Tokyo Metro, Toei Subway, Yokohama Municipal Subway, Tobu Railway, Sagami Railway, Tokyo Waterfront Area Rapid Transit (TWR), Tsukuba Express, Tama Monorail
+
+**Bus (7 operators)**  
+Toei Bus, Yokohama Municipal Bus, Tokyu Bus, Seibu Bus, Sotetsu Bus, Kanachu, Kokusai Kogyo
 
 ### Automatic Timetable Generation
-The app features automatic timetable generation for supported operators using the Open Data Platform for Transportation (ODPT) API.
+The app features automatic timetable generation for the supported operators above using the ODPT API.
 
-**Note**: Some operators (Tokyu Railway, Keikyu Railway, Odakyu Railway, Seibu Railway, Yurikamome) use proprietary algorithms for automatic generation, which may result in incorrect timetables. Manual correction is available when needed.
+- **Auto-generate button**: Enabled only when all required fields are selected and the line supports timetables (railway: train timetable support; bus: no support check). After generation, the timetable settings sheet opens.
+- **Train type selection**: For routes whose timetable was auto-generated from ODPT, the selectable train types in the timetable settings sheet are limited to those obtained at generation time. Manually entered routes show the default set of five train types.
+- **Line/operator persistence**: When saving line settings, the app persists the line-selected flag and operator code so that timetable settings can correctly distinguish fetched (ODPT) vs manual input and show the appropriate train type list.
+
+**Important**  
+The following railway operators **do not support automatic timetable generation**. Only line and station selection are available; timetables cannot be auto-generated.
+
+- Tokyu Railway
+- Keikyu Railway
+- Odakyu Railway
+- Seibu Railway
+- Yurikamome
 
 ### Data Processing
 - **Multi-format Support**: Handles various JSON data formats
@@ -672,6 +664,7 @@ The app features automatic timetable generation for supported operators using th
 ### Timetable Features
 - **Week Management**: Monday to Sunday schedule management
 - **Time Entry**: Add, edit, and delete time entries
+- **Train Type Selection**: For ODPT auto-generated routes, only train types returned by the API are available; for manual routes, the default five types are offered
 - **Station Management**: Configure departure and arrival stations
 - **Line Configuration**: Set up train lines and routes with real data
 - **Transport Options**: Various transportation modes (walking, bicycle, car)
@@ -785,8 +778,8 @@ For new developers:
 - **Target Platforms**: iOS 16.6+, iPadOS 16.6+
 - **External Dependencies**: Firebase, Google Mobile Ads, ODPT API
 - **Data Coverage**: 1000+ railway stations across Japan
-- **Supported Railway Operators**: 14 operators
-- **Supported Bus Operators**: 15 operators (10 ODPT API, 5 GTFS format)
+- **Supported Railway Operators**: 9 operators (ODPT API; 5 other railways support line/station selection only, no timetable auto-generation)
+- **Supported Bus Operators**: 7 operators (ODPT API)
 
 ---
 
