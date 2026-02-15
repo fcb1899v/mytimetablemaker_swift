@@ -333,17 +333,10 @@ struct SettingsContentView: View {
             Color.primary
                 .frame(maxWidth: .infinity)
                 .frame(height: screen.admobBannerHeight)
-<<<<<<< HEAD
-//            AdMobBannerView()
-//                .frame(minWidth: screen.admobBannerMinWidth)
-//                .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
-//                .background(Color.primary)
-=======
             AdMobBannerView()
                 .frame(minWidth: screen.admobBannerMinWidth)
                 .frame(width: screen.admobBannerWidth, height: screen.admobBannerHeight)
                 .background(Color.primary)
->>>>>>> 7b4616e7ab67b6e601620587fd401a6903da8f1f
         }
         .frame(maxWidth: .infinity)
     }
