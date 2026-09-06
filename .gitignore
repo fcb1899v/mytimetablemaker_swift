@@ -83,3 +83,9 @@ Package.resolved
 *.provisionprofile
 build/
 *.bak
+
+# The Firebase plist is deliberately NOT ignored. It holds the same identifiers
+# as the Android google services json and ships inside every copy of the app, so
+# excluding it protected nothing. A Firebase API key names the project; it does
+# not authorize access. Firestore rules and App Check do that.
+# CONFIGURATION.md lists every file a clone still has to create by hand.
