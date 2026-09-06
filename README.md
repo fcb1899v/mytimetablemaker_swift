@@ -71,19 +71,29 @@ cd mytimetablemaker_swiftui
 
 ### 2. Configuration Files Setup
 
-#### Release.xcconfig Configuration
-The release configuration file contains sensitive information and is not included in Git.
-
-1. Copy `mytimetablemaker_swiftui/Release.xcconfig.template`
-2. Save as `mytimetablemaker_swiftui/Release.xcconfig`
-3. Update the following values with your actual values:
-   - `ADMOB_BANNER_UNIT_ID`: Your actual AdMob Banner Unit ID
-   - `ODPT_ACCESS_TOKEN`: Your ODPT API access token (optional, for real-time railway data)
-   - `ODPT_CHALLENGE_TOKEN`: Your ODPT API challenge token (optional, for API authentication)
+Two build configuration files are untracked and have to be created. Copy each
+template next to itself and drop the `.example`:
 
 ```bash
-cp mytimetablemaker_swiftui/Release.xcconfig.template mytimetablemaker_swiftui/Release.xcconfig
+cp mytimetablemaker_swiftui/Debug.xcconfig.example   mytimetablemaker_swiftui/Debug.xcconfig
+cp mytimetablemaker_swiftui/Release.xcconfig.example mytimetablemaker_swiftui/Release.xcconfig
 ```
+
+Each template lists all four keys with what belongs in them, and is the one
+place that list is maintained. `CONFIGURATION.md` covers the same ground
+alongside the files that are tracked, and records which two values the Compose
+repository holds a second copy of.
+
+`Debug.xcconfig` was tracked until 2026-09-06, so the ODPT tokens and the AdMob
+unit id are in this public history from 2025-07-31 onward. Untracking does not
+remove them. `Info.plist` copies all four keys into the bundle through
+`$(KEY)`, so everything in these files ships inside the app either way, and
+nothing that grants server access belongs in them.
+
+The Xcode project names both files as its build configuration files, so a
+missing one is not a build error: the keys resolve to empty and the guards in
+`AdMobBannerView` and `mytimetablemaker_swiftuiApp` fall back instead. A release
+built that way shows no ads rather than failing.
 
 ### 3. Install Dependencies
 
@@ -180,7 +190,8 @@ mytimetablemaker_swiftui/
 ├── GoogleService-Info.plist           # Firebase configuration
 ├── Debug.xcconfig                     # Debug build configuration
 ├── Release.xcconfig                   # Release build configuration
-├── Release.xcconfig.template          # Release config template
+├── Debug.xcconfig.example             # Debug config template (copy, drop .example)
+├── Release.xcconfig.example           # Release config template (copy, drop .example)
 ├── mytimetablemaker_swiftuiRelease.entitlements
 └── mytimetablemaker_swiftui.xcdatamodeld/ # Core Data model
     └── mytimetablemaker_swiftui.xcdatamodel/
