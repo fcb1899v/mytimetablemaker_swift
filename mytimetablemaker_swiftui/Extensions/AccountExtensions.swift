@@ -54,7 +54,8 @@ extension Auth {
 
 // MARK: - AuthErrorCode Extensions
 // Helper extensions for Firebase Authentication error handling
-extension AuthErrorCode.Code {
+// Firebase 11 folded AuthErrorCode.Code into AuthErrorCode itself
+extension AuthErrorCode {
     
     // MARK: - Localized Error Message
     // Converts Firebase Auth error code to localized user-friendly message

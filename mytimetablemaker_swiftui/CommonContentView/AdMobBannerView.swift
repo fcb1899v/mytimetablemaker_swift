@@ -48,9 +48,9 @@ class BannerViewController: UIViewController {
     let currentTime = Date()
     if currentTime.timeIntervalSince(lastLoadTime) >= minimumLoadInterval {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        if let bannerView = self.view.subviews.first(where: { $0 is GADBannerView }) as? GADBannerView,
+        if let bannerView = self.view.subviews.first(where: { $0 is BannerView }) as? BannerView,
            bannerView.adUnitID != nil && !bannerView.adUnitID!.isEmpty {
-          let request = GADRequest()
+          let request = Request()
           bannerView.load(request)
           self.lastLoadTime = currentTime
         }
@@ -85,7 +85,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     @State private var lastLoadTime: Date = Date.distantPast
     
     // Google Ads banner view instance
-    private let bannerView = GADBannerView()
+    private let bannerView = BannerView()
     
     // Minimum interval between ad loads in seconds to prevent excessive requests
     private let minimumLoadInterval: TimeInterval = 60.0
@@ -112,7 +112,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         
         // Fallback to test unit ID to prevent invalid request errors
         print("🔍 AdMob Debug: ⚠️ Using fallback test unit ID")
-        return "ca-app-pub-3940256099942544/6300978111"
+        return "ca-app-pub-3940256099942544/2435281174"  // iOS adaptive demo unit
     }
     
     // MARK: - UIViewControllerRepresentable Methods
@@ -177,10 +177,10 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         }
         
         // Set ad size based on view width
-        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(viewWidth)
+        bannerView.adSize = inlineAdaptiveBanner(width: viewWidth, maxHeight: screen.admobBannerHeight)
         
         // Load the ad with error handling
-        let request = GADRequest()
+        let request = Request()
         bannerView.load(request)
         lastLoadTime = currentTime
     }
@@ -192,7 +192,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     
     // MARK: - Coordinator
     // Coordinator class to handle AdMob delegate callbacks
-    class Coordinator: NSObject, GADBannerViewDelegate, BannerViewControllerWidthDelegate {
+    class Coordinator: NSObject, BannerViewDelegate, BannerViewControllerWidthDelegate {
         // Reference to parent AdMobBannerView for state updates
         var parent: AdMobBannerView
         
@@ -201,7 +201,16 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             self.parent = parent
         }
         
-        func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+        // Inline adaptive reports the size it was actually given here, not at
+        // request time. The frame is pinned to admobBannerHeight, so a shorter
+        // ad leaves the difference as empty space
+        func bannerViewDidReceiveAd(_ bannerView: BannerView) {
+            let requested = bannerView.adSize.size
+            let served = bannerView.intrinsicContentSize
+            print("AdSize: \(Int(requested.width)) x cap \(Int(screen.admobBannerHeight)) / served: \(Int(served.width)) x \(Int(served.height))")
+        }
+
+        func bannerView(_ bannerView: BannerView, didFailToReceiveAdWithError error: Error) {
             // Only log critical errors, suppress common test environment errors
             if let nsError = error as NSError? {
                 switch nsError.code {
@@ -250,7 +259,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     // MARK: - Ad Preloading
     // Preload ads during splash screen to improve user experience
     // ATT is requested first, then ads are loaded after user response
-    static func preloadAds() -> GADBannerView? {
+    static func preloadAds() -> BannerView? {
         // Request ATT first, then load ads after user response
         requestAppTrackingTransparency {
             // This closure is called after ATT response (or immediately if already determined)
@@ -262,8 +271,8 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         let bannerWidth = screen.screenWidth
         
         // Create banner view for preloading
-        let bannerView = GADBannerView()
-        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(bannerWidth)
+        let bannerView = BannerView()
+        bannerView.adSize = inlineAdaptiveBanner(width: bannerWidth, maxHeight: screen.admobBannerHeight)
         
         // Get root view controller for banner view
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -295,7 +304,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             }
             // Fallback to test unit ID
             print("🔍 AdMob Debug: ⚠️ Using fallback test unit ID for preload")
-            return "ca-app-pub-3940256099942544/6300978111"
+            return "ca-app-pub-3940256099942544/2435281174"  // iOS adaptive demo unit
         }()
         
         // Get root view controller and banner view
@@ -307,13 +316,13 @@ struct AdMobBannerView: UIViewControllerRepresentable {
         
         // Find existing banner view or create new one
         let bannerWidth = screen.screenWidth
-        let bannerView = GADBannerView()
+        let bannerView = BannerView()
         bannerView.adUnitID = adUnitID
-        bannerView.adSize = GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(bannerWidth)
+        bannerView.adSize = inlineAdaptiveBanner(width: bannerWidth, maxHeight: screen.admobBannerHeight)
         bannerView.rootViewController = rootViewController
         
         // Load the ad
-        let request = GADRequest()
+        let request = Request()
         bannerView.load(request)
         
         print("🔍 AdMob Debug: ✅ Ad preloading started after ATT response")

@@ -38,15 +38,19 @@ iOSInjectionProject/
 *.backup2
 
 # Security - Firebase configuration files
-GoogleService-Info.plist
-GoogleService-Info-*.plist
+# Not GoogleService-Info.plist: the Xcode project lists it in its Resources
+# build phase, so the build needs it. It holds the project identifiers that ship
+# inside the app anyway, which is why hiding it protected nothing.
 
 # Security - API configuration files
 APIConfig.plist
 *APIConfig*.plist
 
-# Security - Release configuration files
+# Security - build configuration files holding real credentials.
+# Debug was tracked until 2026-09-06 while Release was not, so the ODPT
+# tokens and the AdMob unit id reached the history. Both are excluded now.
 Release.xcconfig
+Debug.xcconfig
 
 # Environment variables
 .env
@@ -60,3 +64,22 @@ xcuserdata/
 
 # Package manager
 Package.resolved 
+# Workspace tooling, not part of this app. Six of the other repos already
+# hide it; keeping one set of rules means the same review applies everywhere.
+.claude/
+.cursorignore
+
+# --- Signing assets (added 2026-09-06) ---
+# None of these are in any repository today. The rules exist so that a
+# certificate exported to the project directory for a one-off cannot be
+# committed by a later `git add -A`. Distribution certificates and the App
+# Store Connect key grant publishing rights, and a leak is not fixed by
+# deleting the file: the history keeps it.
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.mobileprovision
+*.provisionprofile
+build/
+*.bak

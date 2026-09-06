@@ -19,6 +19,7 @@ struct SettingsContentView: View {
     
     // MARK: - State Properties
     // Control visibility of sheets, alerts, and navigation state
+    @ObservedObject private var appCheck = AppCheckState.shared
     @State private var isShowLogIn = false
     @State private var showTransferSheet = false
     @State private var showLineSheet = false
@@ -201,6 +202,8 @@ struct SettingsContentView: View {
         // MARK: - Load Route 2 Setting
         .onAppear {
             loadRoute2Setting()
+            // The account section below stays hidden until App Check clears
+            appCheck.refresh()
         }
     }
     
@@ -273,17 +276,21 @@ struct SettingsContentView: View {
             }
             
             // MARK: - Account Management
-            Section(
-                header: Text("Account".localized)
-                    .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
-            ) {
-                if myLogin.isLoginSuccess {
-                    accountButton(isDeleteAccount: false)
-                    accountButton(isDeleteAccount: true)
-                } else {
-                    NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
-                        Text("Manage your data after login".localized)
-                            .font(.system(size: screen.settingsFontSize))
+            // Hidden while App Check is down: every entry here leads to
+            // Firestore, which rejects the call without it
+            if appCheck.isReady {
+                Section(
+                    header: Text("Account".localized)
+                        .font(.system(size: screen.settingsHeaderFontSize, weight: .bold))
+                ) {
+                    if myLogin.isLoginSuccess {
+                        accountButton(isDeleteAccount: false)
+                        accountButton(isDeleteAccount: true)
+                    } else {
+                        NavigationLink(destination: LoginContentView(myTransit, myLogin, myFirestore)){
+                            Text("Manage your data after login".localized)
+                                .font(.system(size: screen.settingsFontSize))
+                        }
                     }
                 }
             }

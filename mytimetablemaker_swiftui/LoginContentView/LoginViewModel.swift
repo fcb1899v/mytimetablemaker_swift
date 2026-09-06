@@ -92,7 +92,7 @@ final class LoginViewModel : ObservableObject {
                             print("🔍 Login Debug: Email not verified")
                         }
                     } else {
-                        if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
+                        if let error = error as NSError?, let errorCode = AuthErrorCode(rawValue: error.code) {
                             alertTitle = ValidationMessages.loginErrorTitle
                             alertMessage = errorCode.localizedMessage
                             isLoading = false
@@ -146,7 +146,7 @@ final class LoginViewModel : ObservableObject {
                             isShowMessage = true
                         }
                     } else {
-                        if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
+                        if let error = error as NSError?, let errorCode = AuthErrorCode(rawValue: error.code) {
                             alertTitle = ValidationMessages.signUpErrorTitle
                             alertMessage = errorCode.localizedMessage
                             isLoading = false
@@ -170,7 +170,7 @@ final class LoginViewModel : ObservableObject {
             isShowMessage = false
             Auth.auth().sendPasswordReset(withEmail: resetEmail) { [self] error in
                 Task { @MainActor in
-                    if let error = error as NSError?, let errorCode = AuthErrorCode.Code(rawValue: error.code) {
+                    if let error = error as NSError?, let errorCode = AuthErrorCode(rawValue: error.code) {
                         alertTitle = ValidationMessages.passwordResetErrorTitle
                         alertMessage = errorCode == .userNotFound ? ValidationMessages.incorrectEmail : 
                                        errorCode.localizedMessage

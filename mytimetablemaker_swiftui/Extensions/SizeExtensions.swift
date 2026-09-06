@@ -59,9 +59,14 @@ extension UIScreen {
     var lineImageForegroundSize: CGFloat { customWidth / 20 }
     var lineImageBackgroundSize: CGFloat { customWidth / 15 }
     var timeFontSize: CGFloat { customWidth / 18 }
-    var admobBannerWidth: CGFloat { customWidth - 100 }
+    // Full width, matching the size the banner actually asks for. It used to be
+    // customWidth - 100, so the ad requested more width than its frame had
+    var admobBannerWidth: CGFloat { screenWidth }
     var admobBannerMinWidth: CGFloat { 320 }
-    var admobBannerHeight: CGFloat { ((screenHeight - headerHeight - 75) < 500) ? 50 : (screenHeight - headerHeight - 75) / 10 }
+    // Same shape the Flutter apps use, so one banner decision covers the studio
+    var admobBannerHeight: CGFloat {
+        screenHeight < 600 ? 50 : (screenHeight < 1000 ? 50 + (screenHeight - 600) / 8 : 100)
+    }
     
     // MARK: - Login
     var loginTitleFontSize: CGFloat { customWidth * 0.06 }

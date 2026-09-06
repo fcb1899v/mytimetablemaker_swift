@@ -24,6 +24,8 @@
 	<string>ca-app-pub-1585283309075901~7073931852</string>
 	<key>ADMOB_BANNER_UNIT_ID</key>
 	<string>$(ADMOB_BANNER_UNIT_ID)</string>
+	<key>APP_CHECK_DEBUG_TOKEN</key>
+	<string>$(APP_CHECK_DEBUG_TOKEN)</string>
 	<key>ODPT_ACCESS_TOKEN</key>
 	<string>$(ODPT_ACCESS_TOKEN)</string>
 	<key>ODPT_CHALLENGE_TOKEN</key>

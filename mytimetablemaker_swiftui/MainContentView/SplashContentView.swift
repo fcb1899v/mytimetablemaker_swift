@@ -24,7 +24,7 @@ struct SplashContentView: View {
     // Inline splash navigation state
     @State private var isFinishSplash = false
     // Ad banner view for preloading ads during splash
-    @State private var adBannerView: GADBannerView?
+    @State private var adBannerView: BannerView?
 
     // MARK: - Initialization
     init(

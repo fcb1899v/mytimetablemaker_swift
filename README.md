@@ -102,7 +102,8 @@ xcodebuild -resolvePackageDependencies
 ### 4. Firebase Configuration
 1. Create a Firebase project
 2. Place `GoogleService-Info.plist` in `mytimetablemaker_swiftui/` directory
-3. This file is automatically excluded by .gitignore
+3. This file is tracked here: the build needs it, and it holds only
+   identifiers that ship inside the app. Real secrets stay out
 
 ### 5. Run the Application
 ```bash

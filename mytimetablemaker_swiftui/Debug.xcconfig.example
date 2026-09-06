@@ -1,0 +1,31 @@
+// Template for Debug.xcconfig, which is untracked as of 2026-09-06. Copy this
+// to that name and fill in the values. Release.xcconfig takes the same keys
+// with release values and has always been untracked.
+//
+// The Xcode project names both files as its build configuration files, so a
+// build with either missing gets empty values. The guards in AdMobBannerView
+// and mytimetablemaker_swiftuiApp fall back rather than shipping a blank id.
+//
+// Info.plist copies all four into the bundle via $(KEY), so every value here
+// ships inside the app. Nothing that grants server access belongs here.
+
+// AdMob banner UNIT id for the iOS app. Different from the Android one, which
+// lives in the Compose repo's local.properties. The AdMob APP id is not here:
+// it is in Info.plist under GADApplicationIdentifier.
+ADMOB_BANNER_UNIT_ID =
+
+// Open Data Platform for Transportation. Not platform specific, so the Compose
+// repo's local.properties holds the same two values.
+ODPT_ACCESS_TOKEN =
+ODPT_CHALLENGE_TOKEN =
+
+// App Check debug secret, registered under Firebase Console -> App Check ->
+// this iOS app -> Manage debug tokens. Android and iOS are separate App Check
+// apps, so the Android token is a different value. Debug builds only; release
+// uses DeviceCheck. Leave it empty and the SDK generates one per install and
+// logs it, which means registering a new token on every device.
+//
+// A registered debug token defeats App Check from anywhere, without the app.
+// Register one only while developing on a device, and delete it from the
+// Console when that device is done.
+APP_CHECK_DEBUG_TOKEN =

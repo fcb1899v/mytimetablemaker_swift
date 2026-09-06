@@ -1,0 +1,23 @@
+// Template for Release.xcconfig, which is untracked. Copy this to that name and
+// fill in the values. Same four keys as Debug.xcconfig.example; what differs is
+// which values belong in them.
+//
+// Info.plist copies all four into the bundle via $(KEY), so every value here
+// ships inside the shipped app. Nothing that grants server access belongs here.
+
+// AdMob banner UNIT id. The REAL one, not a demo id: a release built against
+// ca-app-pub-3940256099942544/... serves ads and earns nothing, with no error
+// anywhere. AdMobBannerView falls back rather than requesting a blank id, so an
+// empty value here shows no ads instead of failing the build.
+ADMOB_BANNER_UNIT_ID =
+
+// Open Data Platform for Transportation. Same two values as the debug config
+// and as the Compose repo's local.properties.
+ODPT_ACCESS_TOKEN =
+ODPT_CHALLENGE_TOKEN =
+
+// LEAVE THIS EMPTY. Release builds attest with DeviceCheck; the debug provider
+// is only installed in DEBUG builds. A debug token shipped in a release would
+// be readable from the bundle by anyone, and a registered debug token defeats
+// App Check from anywhere without the app.
+APP_CHECK_DEBUG_TOKEN =
