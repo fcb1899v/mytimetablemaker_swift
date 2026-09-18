@@ -9,6 +9,7 @@ A clone builds once these exist.
 |---|---|---|
 | `mytimetablemaker_swiftui/Debug.xcconfig` | `Debug.xcconfig.example` | AdMob unit id, ODPT tokens, App Check debug secret |
 | `mytimetablemaker_swiftui/Release.xcconfig` | `Release.xcconfig.example` | The same four keys with release values |
+| `mytimetablemaker_swiftui/GoogleService-Info.plist` | Firebase console | The Firebase project and app identifiers |
 
 Copy each template next to itself, drop the `.example`, and fill it in. The
 Xcode project names both files as its build configuration files, so a missing
@@ -19,11 +20,12 @@ one is not an error: the keys resolve to empty and the guards in
 **everything in these files ships inside the app.** Nothing that grants server
 access belongs in them.
 
-## Tracked, already here
-
-| File | Why it is tracked |
-|---|---|
-| `GoogleService-Info.plist` | Holds the same identifiers as the Android `google-services.json` and ships inside every copy of the app. Excluding it protected nothing and cost two sibling apps their copy in September 2026. A Firebase API key names the project; it does not authorize access. Firestore rules and App Check do that |
+Download `GoogleService-Info.plist` from the Firebase console
+(Project settings > Your apps) and add it to the Xcode target. It left the
+repository on 2026-09-19: anything the console hands back on request stays out,
+so a project's identifiers are never published for nothing. That is not a claim
+that the file is secret. Its API key names the project and ships inside every
+copy of the app; Firestore rules and App Check are what deny access.
 
 ## The Android app shares two of these values
 

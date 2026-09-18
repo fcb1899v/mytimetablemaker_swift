@@ -84,8 +84,13 @@ Package.resolved
 build/
 *.bak
 
-# The Firebase plist is deliberately NOT ignored. It holds the same identifiers
-# as the Android google services json and ships inside every copy of the app, so
-# excluding it protected nothing. A Firebase API key names the project; it does
-# not authorize access. Firestore rules and App Check do that.
+
+# --- Firebase configuration (added 2026-09-19) ---
+# Anything regenerable stays out. The console hands these back on request, so
+# tracking them only publishes the project identifiers for nothing. This does
+# not make them secret: the plist's API key ships inside every copy of the app,
+# and Firestore rules and App Check are what deny access.
 # CONFIGURATION.md lists every file a clone still has to create by hand.
+GoogleService-Info.plist
+firebase.json
+.firebaserc
