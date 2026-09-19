@@ -94,8 +94,8 @@ The project resolves these Swift packages, all declared in `mytimetablemaker_swi
 - `swift-algorithms`, up to the next major from 1.2.1, so 1.x (Algorithms)
 - `ZipArchive`, up to the next major from 2.6.0, so 2.x (linked for the GTFS code path, which is currently disabled)
 
-`Package.resolved` is tracked, so this resolves to the versions the release was built and tested against rather than to whatever is current.
-Updating a package is a deliberate act that changes that file.
+`Package.resolved` is tracked, so this resolves to the pinned versions rather than to whatever is current.
+Updating a package changes that file.
 
 ```bash
 xcodebuild -resolvePackageDependencies
@@ -158,7 +158,7 @@ mytimetablemaker_swiftui/
 ├── Services/                          # Service layer
 │   ├── CacheService.swift             # ODPT cache management; its GTFS branches are commented out
 │   ├── ODPTDataService.swift          # ODPT API integration
-│   └── GTFSDataService.swift          # GTFS download, extraction and parsing; nothing calls into it today
+│   └── GTFSDataService.swift          # GTFS download, extraction and parsing; nothing selectable in the app leads here
 ├── Assets.xcassets/                   # App assets
 ├── Font/                              # GenEiGothicN Regular, the only weight the app asks for, and its LICENSE.txt
 ├── Preview Content/                   # Preview assets for SwiftUI
@@ -191,8 +191,7 @@ Tokens are passed as the `acl:consumerKey` query parameter.
 The challenge host is not a testing switch: the operators above publish their data there, so those routes stop working without `ODPT_CHALLENGE_TOKEN`.
 
 **GTFS is currently paused, so the seven `gtfs` operators cannot be selected in the app.**
-`SettingsLineViewModel` filters them out of the operator list with `dataSource.apiType != .gtfs`, the GTFS branches in `CacheService` are commented out, and so is the GTFS branch in `SettingsLineSheet`.
-The code below describes what those paths do when they are restored, which is a matter of removing that filter and uncommenting those blocks.
+`SettingsLineViewModel` filters them out of the operator list with `dataSource.apiType != .gtfs`, and the GTFS branches in `CacheService` and `SettingsLineSheet` are commented out. Four of the calls into `GTFSDataService` sit behind `apiType == .gtfs`, and the fifth, `fetchGTFSLinesForOperator`, has its only caller commented out. None of it is maintained.
 
 ### Endpoints in Use
 
@@ -215,42 +214,12 @@ They are not repeated here: a feed date that is right in two places and wrong in
 - Timetables themselves are fetched on demand rather than cached
 - No GTFS caching happens today, because the GTFS branches in `CacheService.swift` are commented out
 
-### GTFS Processing, Currently Disabled
-
-`GTFSDataService` is still in the project, and three things keep anything from reaching it. The operator list filters GTFS operators out, so none can be chosen. A route saved before the pause loses its selection: `loadSettingsForSelectedLine` clears the operator and the line when the saved operator is GTFS, which leaves the generate button disabled. And `fetchGTFSLinesForOperator`, the only function that puts GTFS lines into the shared data, has no live caller.
-When restored, the ZIP is downloaded, extracted with ZipArchive, and the CSV files are parsed.
-
-- `routes.txt`: route id, short and long name, colour
-- `trips.txt`: trip id, route id, service id, headsign, direction id
-- `stop_times.txt`: arrival and departure times per stop, with the stop sequence
-- `stops.txt`: stop id, name and coordinates
-- `calendar.txt` and `calendar_dates.txt`: service days and exceptions
-- `translations.txt`: Japanese and English names for stops and routes
-
-Directions come from `direction_id` where present, then `trip_headsign`, and finally the first and last stop ids.
-Fullwidth digits and letters in stop names are converted to halfwidth.
-
 ### Time Handling
 
 Departure times between 00:00 and 03:00 belong to the previous service day, so 24 hours are added to them.
 This keeps early morning services sorted and displayed after the late night ones rather than at the top.
 
 Calendar types are passed as `odpt:calendar`: weekday, saturday, sunday, holiday, saturdayHoliday, and the individual weekdays.
-
-### Example Usage
-
-```swift
-let odptService = ODPTDataService()
-let gtfsService = GTFSDataService()
-
-// Railway or bus data through the ODPT API
-let data = try await odptService.fetchIndividualOperatorData(.jrEast, consumerKey: consumerKey)
-let needsUpdate = try await odptService.checkIndividualOperatorForUpdates(.jrEast, consumerKey: consumerKey)
-
-// Bus routes through GTFS, reachable only once the GTFS path is restored
-let routes = try await gtfsService.fetchGTFSData(.keioBus, consumerKey: consumerKey)
-let stops = try await gtfsService.fetchGTFSStopsForRoute("route_id_0", transportOperator: .keioBus, consumerKey: consumerKey)
-```
 
 ### Automatic Timetable Generation
 
@@ -274,35 +243,7 @@ Two behaviours follow from generation:
 - Requests time out after 30 seconds, resources after 60
 - JSON parsing failures are caught and logged
 - Non-200 responses are reported as errors
-- A redirect drops the consumer key: `ODPTDataService` declares a `willPerformHTTPRedirection` handler that would re-attach it, but the class conforms to `URLSessionDelegate` rather than `URLSessionTaskDelegate` and the method is private, so URLSession never calls it
-
-## 🎨 Customization
-
-### Timetable Features
-
-- Week management from Monday to Sunday
-- Time entry add, edit and delete
-- Train type selection, limited to the generated set for ODPT routes
-- Departure and arrival station configuration
-- Line configuration from fetched operator data
-- Transfer options: walking, bicycle, car
-- Custom images on timetables
-- Line colours, from the 24 entries in `CustomColor`
-
-### User Interface
-
-- Declarative SwiftUI with adaptive layouts
-- Portrait only, locked in the app delegate
-- Dark and light appearance
-- Japanese and English
-- GenEiGothicN Regular (SIL Open Font License 1.1)
-
-### Data Management
-
-- Firestore for cloud sync
-- UserDefaults for settings and cached HTTP validators
-- Local image storage
-- Cached operator data, which keeps previously fetched lines and stops usable offline
+- A redirect drops the consumer key, so a redirected request is unauthenticated
 
 ## 📱 Supported Platforms
 
@@ -333,20 +274,11 @@ xcodebuild analyze -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetab
 
 ### Tests
 
-The repository carries the Xcode test templates in `mytimetablemaker_swiftuiTests/` and `mytimetablemaker_swiftuiUITests/`.
+The repository carries the Xcode test templates in `mytimetablemaker_swiftuiTests/` and `mytimetablemaker_swiftuiUITests/`, so these run but check nothing of the app yet.
 
 ```bash
 xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 ```
-
-## 🔒 Security
-
-- Email and password authentication through Firebase Auth
-- App Check in front of Firebase, with DeviceCheck in release builds and the debug provider in DEBUG builds only
-- `APP_CHECK_DEBUG_TOKEN` stays empty in `Release.xcconfig`, because a registered debug token would defeat App Check from anywhere
-- `Debug.xcconfig` and `Release.xcconfig` are not tracked, so the values you fill in stay on your machine and are not committed
-- Everything in those files ships inside the app through `Info.plist`, so nothing that grants server access belongs in them
-- Secure data transmission with HTTPS
 
 ## 📄 License
 
@@ -363,22 +295,6 @@ Pull requests are not accepted, because the code is not licensed for redistribut
 ## 📞 Support
 
 If you have any problems or questions, please create an issue on GitHub.
-
-## 🚀 Getting Started
-
-For new developers:
-
-1. Follow the setup instructions above
-2. Start with `mytimetablemaker_swiftuiApp.swift` to see launch-time setup
-3. Read `Models/Enums.swift` for the operator, endpoint and feed date tables
-4. Read `Services/` for how data is fetched, cached and parsed
-5. Read `CommonContentView/SettingsLineViewModel.swift` for how a route is built from that data
-
----
-
-<div align="center">
-  <strong>My Transit Makers</strong> - Organize your commute, organize your day!
-</div>
 
 ## Licenses & Credits
 
