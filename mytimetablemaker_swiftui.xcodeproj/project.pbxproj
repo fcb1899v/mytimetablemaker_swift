@@ -15,30 +15,12 @@
 		02723E5D2E688CBB00F1528E /* AccountExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02723E5C2E688CB000F1528E /* AccountExtensions.swift */; };
 		027F23F62AC8437600852C89 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F52AC8437600852C89 /* ImagePicker.swift */; };
 		027F23F92AC8F19B00852C89 /* AdMobBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */; };
-		027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
-		027F240B2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
-		027F240C2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */; };
-		027F240D2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */; };
-		027F240E2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */; };
-		027F240F2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */; };
 		027F24102ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */; };
 		027F24112ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */; };
 		027F24122ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */; };
-		027F24132ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */; };
-		027F24142ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */; };
-		027F24152ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */; };
-		027F24162ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
-		027F24172ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
-		027F24182ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */; };
 		027F241C2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
 		027F241D2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
 		027F241E2ACB686300852C89 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 027F24072ACB686300852C89 /* LICENSE.txt */; };
-		027F241F2ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */; };
-		027F24202ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */; };
-		027F24212ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */; };
-		027F24222ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
-		027F24232ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
-		027F24242ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */ = {isa = PBXBuildFile; fileRef = 027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */; };
 		0298F55E2E3A52B100271243 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 0298F55D2E3A52B100271243 /* Algorithms */; };
 		02C15511262BC9170037EEC0 /* SplashContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C15510262BC9170037EEC0 /* SplashContentView.swift */; };
 		02D3F5BD2E3A485100C33E15 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -105,14 +87,8 @@
 		02723E5C2E688CB000F1528E /* AccountExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountExtensions.swift; sourceTree = "<group>"; };
 		027F23F52AC8437600852C89 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		027F23F82AC8F19B00852C89 /* AdMobBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobBannerView.swift; sourceTree = "<group>"; };
-		027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Heavy.otf"; sourceTree = "<group>"; };
-		027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-SemiLight.otf"; sourceTree = "<group>"; };
 		027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Regular.otf"; sourceTree = "<group>"; };
-		027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-SemiBold.otf"; sourceTree = "<group>"; };
-		027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Bold.otf"; sourceTree = "<group>"; };
 		027F24072ACB686300852C89 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-Ligh.otf"; sourceTree = "<group>"; };
-		027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GenEiGothicN-ExtraLigh.otf"; sourceTree = "<group>"; };
 		02A7302428F3A67A00BE48A5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		02C15510262BC9170037EEC0 /* SplashContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashContentView.swift; sourceTree = "<group>"; };
 		02DC90FD2E7AD4CA00EE9C42 /* SettingsTimetableSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTimetableSheet.swift; sourceTree = "<group>"; };
@@ -210,14 +186,8 @@
 		027F24002ACB686300852C89 /* Font */ = {
 			isa = PBXGroup;
 			children = (
-				027F24012ACB686300852C89 /* GenEiGothicN-Heavy.otf */,
-				027F24022ACB686300852C89 /* GenEiGothicN-SemiLight.otf */,
 				027F24032ACB686300852C89 /* GenEiGothicN-Regular.otf */,
-				027F24042ACB686300852C89 /* GenEiGothicN-SemiBold.otf */,
-				027F24052ACB686300852C89 /* GenEiGothicN-Bold.otf */,
 				027F24072ACB686300852C89 /* LICENSE.txt */,
-				027F24082ACB686300852C89 /* GenEiGothicN-Ligh.otf */,
-				027F24092ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf */,
 			);
 			path = Font;
 			sourceTree = "<group>";
@@ -490,15 +460,9 @@
 				027F241C2ACB686300852C89 /* LICENSE.txt in Resources */,
 				02F02583261BDD7F00655E54 /* Preview Assets.xcassets in Resources */,
 				02E7F69E261F35D700C00545 /* Localizable.strings in Resources */,
-				027F241F2ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
-				027F24162ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24102ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
 				02F02580261BDD7F00655E54 /* Assets.xcassets in Resources */,
-				027F24222ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */,
-				027F240A2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */,
-				027F24132ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
 				025A49EC2ED8898C00FCFACC /* README.md in Resources */,
-				027F240D2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
 				022E53422633B3C0007921D9 /* InfoPlist.strings in Resources */,
 				021A12022C70391A00B12BF1 /* GoogleService-Info.plist in Resources */,
 			);
@@ -508,13 +472,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				027F24142ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
-				027F24202ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
-				027F240E2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
-				027F24172ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24112ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
-				027F240B2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */,
-				027F24232ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */,
 				027F241D2ACB686300852C89 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -523,13 +481,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				027F24152ACB686300852C89 /* GenEiGothicN-SemiBold.otf in Resources */,
-				027F24212ACB686300852C89 /* GenEiGothicN-Ligh.otf in Resources */,
-				027F240F2ACB686300852C89 /* GenEiGothicN-SemiLight.otf in Resources */,
-				027F24182ACB686300852C89 /* GenEiGothicN-Bold.otf in Resources */,
 				027F24122ACB686300852C89 /* GenEiGothicN-Regular.otf in Resources */,
-				027F240C2ACB686300852C89 /* GenEiGothicN-Heavy.otf in Resources */,
-				027F24242ACB686300852C89 /* GenEiGothicN-ExtraLigh.otf in Resources */,
 				027F241E2ACB686300852C89 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

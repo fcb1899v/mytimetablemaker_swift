@@ -238,7 +238,6 @@
     <key>UIAppFonts</key>
 	<array>
 		<string>GenEiGothicN-Regular.otf</string>
-		<string>GenEiGothicN-Bold.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
