@@ -344,7 +344,7 @@ xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablem
 - Email and password authentication through Firebase Auth
 - App Check in front of Firebase, with DeviceCheck in release builds and the debug provider in DEBUG builds only
 - `APP_CHECK_DEBUG_TOKEN` stays empty in `Release.xcconfig`, because a registered debug token would defeat App Check from anywhere
-- `Debug.xcconfig` and `Release.xcconfig` are no longer tracked, so the values you fill in stay on your machine and are not committed
+- `Debug.xcconfig` and `Release.xcconfig` are not tracked, so the values you fill in stay on your machine and are not committed
 - Everything in those files ships inside the app through `Info.plist`, so nothing that grants server access belongs in them
 - Secure data transmission with HTTPS
 

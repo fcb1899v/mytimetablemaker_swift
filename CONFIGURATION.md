@@ -21,11 +21,11 @@ one is not an error: the keys resolve to empty and the guards in
 access belongs in them.
 
 Download `GoogleService-Info.plist` from the Firebase console
-(Project settings > Your apps) and add it to the Xcode target. It left the
-repository on 2026-09-19: anything the console hands back on request stays out,
-so a project's identifiers are never published for nothing. That is not a claim
-that the file is secret. Its API key names the project and ships inside every
-copy of the app; Firestore rules and App Check are what deny access.
+(Project settings > Your apps) and add it to the Xcode target. It is not in the
+repository: anything the console hands back on request stays out, so a project's
+identifiers are never published for nothing. That is not a claim that the file is
+secret. Its API key names the project and ships inside every copy of the app;
+Firestore rules and App Check are what deny access.
 
 ## The Android app shares two of these values
 
