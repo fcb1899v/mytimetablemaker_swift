@@ -16,7 +16,18 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-project.xcworkspace
+# Was a bare `project.xcworkspace` until 2026-09-19. That excluded the whole
+# directory, and git cannot re-include a file whose parent directory is
+# excluded, so Package.resolved could not be tracked. Opened one level at a
+# time instead, which keeps everything else in there excluded by default:
+# a file Xcode invents later stays out until someone adds a line for it
+**/project.xcworkspace/*
+!**/project.xcworkspace/contents.xcworkspacedata
+!**/project.xcworkspace/xcshareddata/
+**/project.xcworkspace/xcshareddata/*
+!**/project.xcworkspace/xcshareddata/swiftpm/
+**/project.xcworkspace/xcshareddata/swiftpm/*
+!**/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # CocoaPods
 Pods/
@@ -62,8 +73,8 @@ Debug.xcconfig
 *.xcuserdatad/
 xcuserdata/
 
-# Package manager
-Package.resolved 
+# Package manager: Package.resolved is tracked, see the rules above
+
 # Workspace tooling, not part of this app. Six of the other repos already
 # hide it; keeping one set of rules means the same review applies everywhere.
 .claude/
