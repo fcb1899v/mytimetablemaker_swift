@@ -10,7 +10,8 @@
 
 ## 📱 Application Overview
 
-My Transit Makers is a SwiftUI-based iOS application that helps users create and manage personal timetables for daily commutes and schedules. It provides a comprehensive solution with Firebase integration, user authentication, real-time railway data, and modern SwiftUI interface.
+My Transit Makers is a SwiftUI iOS application for building personal timetables for daily commutes.
+It combines Firebase authentication and Firestore storage with railway and bus data from the ODPT API.
 
 ### 🎯 Key Features
 
@@ -19,122 +20,113 @@ My Transit Makers is a SwiftUI-based iOS application that helps users create and
 - **Route Comparison**: Display and compare two routes simultaneously
 - **Home/Office Routes**: Register separate routes for commuting and return trips with easy switching
 - **Automatic Timetable Generation**: Auto-generate timetables for supported railway lines and bus routes
-- **Modern SwiftUI Interface**: Declarative UI with smooth animations
-- **Firebase Integration**: Authentication, Firestore database, Analytics
-- **User Authentication**: Sign up, login, password reset functionality
-- **Railway Data Integration**: Real-time data from ODPT API and local railway databases
-- **Timetable Management**: Create, edit, and manage personal timetables
+- **SwiftUI Interface**: Declarative UI with smooth animations
+- **Firebase Integration**: Authentication, Firestore, Analytics, App Check
+- **User Authentication**: Sign up, login, password reset
+- **Railway Data Integration**: ODPT API; the GTFS code path is present but currently disabled
 - **Multi-language Support**: Japanese and English localization
-- **Google Mobile Ads**: Banner ads integration
-- **Data Synchronization**: Cloud-based data storage and sync
-- **Customizable Settings**: Various configuration options
-- **Image Management**: Photo picker and image handling
-- **Offline Support**: Local railway data files for offline functionality
+- **Google Mobile Ads**: Banner ads
+- **Data Synchronization**: Firestore save and get (`FirestoreViewModel.setFirestore()` / `getFirestore()`), keyed on the signed-in user's uid
+- **Account Deletion**: `LoginViewModel.delete()` removes the Firebase Auth user and the Firestore document it owns
+- **Image Management**: Photo picker for timetable images
+- **Caching**: Fetched line and station data are cached on the device
 
 ## 🚀 Technology Stack
 
 ### Frameworks & Libraries
-- **SwiftUI**: Modern declarative UI framework
-- **Firebase**: Authentication, Firestore, Core (via Firebase SDK)
-- **Google Mobile Ads**: Advertisement display
-- **Swift Package Manager**: Dependency management
-- **ODPT API**: Real-time railway data from Open Data Platform for Transportation
 
-### Core Features
-- **Authentication**: Firebase Auth for user management
-- **Database**: Cloud Firestore for data storage
-- **Railway Data**: ODPT API integration with local fallback data
-- **Ads**: Google Mobile Ads SDK
-- **Localization**: Multi-language support
-- **Image Handling**: Photo picker and image processing
-- **Data Management**: UserDefaults for local storage
-- **Navigation**: SwiftUI NavigationView
-- **Caching**: Intelligent data caching for offline access
+- **SwiftUI**: UI, with `@UIApplicationDelegateAdaptor` for launch-time setup
+- **Firebase iOS SDK**: FirebaseAuth, FirebaseFirestore, FirebaseAnalytics, FirebaseAppCheck
+- **Google Mobile Ads**: Banner ads
+- **swift-algorithms**: linked by the project, but no source file imports it today
+- **ZipArchive**: Used by the GTFS code path, which is currently disabled
+- **Swift Package Manager**: The only dependency manager used here; there is no Podfile
+- **ODPT API**: Railway and bus data from the Open Data Platform for Transportation
+
+### Local Storage
+
+- **UserDefaults**: Settings, route configuration, and the cached ETag and Last-Modified values per operator
+- **On-disk cache**: Operator data fetched from the ODPT API
 
 ## 📋 Prerequisites
 
-- Xcode 14.0+
-- iOS 16.6+
-- Swift Package Manager
-- Firebase project setup
-- Google Mobile Ads account
-- ODPT API access token (optional, for real-time railway data)
-- ODPT API challenge token (optional, for ODPT API authentication)
+- An Xcode with a Swift 6.1 or later toolchain, because `firebase-ios-sdk` declares `swift-tools-version:6.1`
+- iOS 16.6 or later (`IPHONEOS_DEPLOYMENT_TARGET` on the app target)
+- iOS 17.0 or later to run the tests: the test targets are built against 17.0, so an older simulator will not run them
+- A Firebase project with Authentication, Firestore and App Check enabled
+- A Google Mobile Ads account, for the release banner unit id
+- An ODPT access token and challenge token, for railway and bus data
 
 ## 🛠️ Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/fcb1899v/mytimetablemaker_swift.git
-cd mytimetablemaker_swiftui
+cd mytimetablemaker_swift
 ```
 
 ### 2. Configuration Files Setup
 
-Two build configuration files are untracked and have to be created. Copy each
-template next to itself and drop the `.example`:
+Two build configuration files are untracked and have to be created.
+Copy each template next to itself and drop the `.example`:
 
 ```bash
 cp mytimetablemaker_swiftui/Debug.xcconfig.example   mytimetablemaker_swiftui/Debug.xcconfig
 cp mytimetablemaker_swiftui/Release.xcconfig.example mytimetablemaker_swiftui/Release.xcconfig
 ```
 
-Each template lists all four keys with what belongs in them, and is the one
-place that list is maintained. `CONFIGURATION.md` covers the same ground
-alongside the files that are tracked, and records which two values the Compose
-repository holds a second copy of.
+Each template lists all four keys with what belongs in them, and is the one place that list is maintained.
+`CONFIGURATION.md` covers the same ground alongside the files that are tracked, and records which two values the Compose repository holds a second copy of.
 
-`Debug.xcconfig` was tracked until 2026-09-06, so the ODPT tokens and the AdMob
-unit id are in this public history from 2025-07-31 onward. Untracking does not
-remove them. `Info.plist` copies all four keys into the bundle through
-`$(KEY)`, so everything in these files ships inside the app either way, and
-nothing that grants server access belongs in them.
+`Info.plist` copies all four keys into the bundle through `$(KEY)`, so everything in these files ships inside the app.
+Nothing that grants server access belongs in them.
 
-The Xcode project names both files as its build configuration files, so a
-missing one is not a build error: the keys resolve to empty and the guards in
-`AdMobBannerView` and `mytimetablemaker_swiftuiApp` fall back instead. A release
-built that way shows no ads rather than failing.
+The Xcode project names both files as its build configuration files, so a missing one is not a build error: the keys resolve to empty, and the guards in `AdMobBannerView` and `mytimetablemaker_swiftuiApp` fall back instead.
+A release built that way shows no ads rather than failing.
 
-### 3. Install Dependencies
+### 3. Resolve Dependencies
 
-This project uses Swift Package Manager for dependency management. The following packages are included:
-- Firebase iOS SDK (Authentication, Firestore)
-- Google Mobile Ads SDK
-- Swift Algorithms
+The project resolves these Swift packages, all declared in `mytimetablemaker_swiftui.xcodeproj`:
+
+- `firebase-ios-sdk`, up to the next major from 12.0.0, so 12.x (FirebaseAuth, FirebaseFirestore, FirebaseAnalytics, FirebaseAppCheck)
+- `swift-package-manager-google-mobile-ads`, up to the next major from 12.0.0, so 12.x (GoogleMobileAds)
+- `swift-algorithms`, up to the next major from 1.2.1, so 1.x (Algorithms)
+- `ZipArchive`, up to the next major from 2.6.0, so 2.x (linked for the GTFS code path, which is currently disabled)
 
 ```bash
-# Resolve Swift Package Manager dependencies
 xcodebuild -resolvePackageDependencies
 ```
 
-**Note**: A `Podfile` exists in the project root, but it is for the legacy UIKit project (`mytimetablemaker_uikit`). The current SwiftUI project (`mytimetablemaker_swiftui`) uses Swift Package Manager only.
-
 ### 4. Firebase Configuration
-1. Create a Firebase project
-2. Place `GoogleService-Info.plist` in `mytimetablemaker_swiftui/` directory
-3. This file is tracked here: the build needs it, and it holds only
-   identifiers that ship inside the app. Real secrets stay out
+
+1. Create a Firebase project and enable Email/Password authentication.
+2. Place `GoogleService-Info.plist` in the `mytimetablemaker_swiftui/` directory.
+   It is not tracked here, so download it from the Firebase Console for your own project.
+3. Register the App Check providers: a debug token for the simulator, DeviceCheck for release.
+   `AppCheckState` installs the provider before `FirebaseApp.configure()`, and debug builds print a token to register in the Firebase Console.
 
 ### 5. Run the Application
+
 ```bash
 # Open in Xcode
 open mytimetablemaker_swiftui.xcodeproj
 
-# Or build from command line
-xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 16'
+# Or build from the command line
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 ```
 
 ## 🎮 Application Structure
 
 ```
 mytimetablemaker_swiftui/
-├── mytimetablemaker_swiftuiApp.swift  # Application entry point
+├── mytimetablemaker_swiftuiApp.swift  # Entry point, Firebase and App Check setup, AppCheckState
 ├── CommonContentView/                 # Common content views and sheets
 │   ├── AdMobBannerView.swift          # AdMob banner advertisement view
 │   ├── CustomComponents.swift         # Custom reusable UI components
 │   ├── NavigationBarModifier.swift    # Navigation bar customization
 │   ├── SettingsLineSheet.swift        # Line configuration sheet
-│   ├── SettingsLineViewModel.swift    # Line settings view model
+│   ├── SettingsLineViewModel.swift    # Line settings, operator and timetable fetching
 │   └── SettingsTransferSheet.swift    # Transfer configuration sheet
 ├── LoginContentView/                  # Authentication views
 │   ├── LoginContentView.swift         # Login screen view
@@ -143,11 +135,10 @@ mytimetablemaker_swiftui/
 ├── MainContentView/                   # Main app views
 │   ├── MainContentView.swift          # Main content view
 │   ├── MainViewModel.swift            # Main view model
-│   ├── MyTransit.swift                # Transit data model
 │   └── SplashContentView.swift        # Splash screen view
 ├── SettingsContentView/               # Settings views
 │   ├── SettingsContentView.swift      # Settings screen view
-│   └── FirestoreViewModel.swift       # Firebase Firestore view model
+│   └── FirestoreViewModel.swift       # Firestore save and get
 ├── TimetableContentView/              # Timetable views
 │   ├── TimetableContentView.swift     # Timetable content view
 │   ├── SettingsTimetableSheet.swift   # Timetable settings sheet
@@ -159,639 +150,226 @@ mytimetablemaker_swiftui/
 │   ├── SizeExtensions.swift           # Size calculation extensions
 │   └── TimeExtensions.swift           # Time formatting and calculations
 ├── Models/                            # Data models
-│   ├── Enums.swift                    # App enumerations
+│   ├── Enums.swift                    # Operators, API types, endpoints, GTFS feed dates
 │   └── TransportationModels.swift     # Transportation types and models
 ├── Services/                          # Service layer
-│   ├── CacheService.swift             # Data caching management
+│   ├── CacheService.swift             # ODPT cache management; its GTFS branches are commented out
 │   ├── ODPTDataService.swift          # ODPT API integration
-│   └── GTFSDataService.swift          # GTFS data processing
+│   └── GTFSDataService.swift          # GTFS download, extraction and parsing; nothing calls into it today
 ├── Assets.xcassets/                   # App assets
-│   ├── AppIcon.appiconset/            # App icon assets
-│   ├── icon.imageset/                 # App icon image set
-│   └── splash.imageset/               # Splash screen images
-├── Font/                              # Custom fonts
-│   ├── GenEiGothicN-Bold.otf          # Bold font weight
-│   ├── GenEiGothicN-ExtraLigh.otf     # Extra light font weight
-│   ├── GenEiGothicN-Heavy.otf         # Heavy font weight
-│   ├── GenEiGothicN-Ligh.otf          # Light font weight
-│   ├── GenEiGothicN-Regular.otf       # Regular font weight
-│   ├── GenEiGothicN-SemiBold.otf      # Semi-bold font weight
-│   ├── GenEiGothicN-SemiLight.otf     # Semi-light font weight
-│   └── LICENSE.txt                    # Font license
+├── Font/                              # GenEiGothicN Regular, the only weight the app asks for, and its LICENSE.txt
 ├── Preview Content/                   # Preview assets for SwiftUI
-│   └── Preview Assets.xcassets/
 ├── en.lproj/                          # English localization
-│   ├── InfoPlist.strings              # Info.plist localization
-│   └── Localizable.strings            # App strings localization
 ├── ja.lproj/                          # Japanese localization
-│   ├── InfoPlist.strings              # Info.plist localization
-│   └── Localizable.strings            # App strings localization
-├── Info.plist                         # App configuration
-├── GoogleService-Info.plist           # Firebase configuration
-├── Debug.xcconfig                     # Debug build configuration
-├── Release.xcconfig                   # Release build configuration
+├── Info.plist                         # App configuration, reads the four xcconfig keys
+├── GoogleService-Info.plist           # Firebase configuration, not tracked; download it from the console
 ├── Debug.xcconfig.example             # Debug config template (copy, drop .example)
 ├── Release.xcconfig.example           # Release config template (copy, drop .example)
 ├── mytimetablemaker_swiftuiRelease.entitlements
-└── mytimetablemaker_swiftui.xcdatamodeld/ # Core Data model
-    └── mytimetablemaker_swiftui.xcdatamodel/
+└── mytimetablemaker_swiftui.xcdatamodeld/  # Core Data model
 ```
 
-## 🚂 Railway Data Integration
+`mytimetablemaker_uikit/` is the legacy UIKit version, kept for reference and not part of the SwiftUI target.
 
-### ODPT API Integration
-The app integrates with the Open Data Platform for Transportation (ODPT) API to provide real-time railway information:
+## 🚂 Railway and Bus Data
 
-- **Real-time Data**: Station information, line details, and operator data
-- **Automatic Caching**: Intelligent caching system for offline access
-- **Data Validation**: ETag and Last-Modified header support for efficient updates
-- **Fallback Support**: Local JSON files provide data when API is unavailable
+### How an Operator Reaches Its Data
 
-### Open Data Platform for Transportation (ODPT) API Usage
+`LocalDataSource.apiType` in `Models/Enums.swift` decides which endpoint an operator uses, and `apiLink(for:transportationKind:)` builds the URL.
+Tokens are passed as the `acl:consumerKey` query parameter.
 
-The application uses the ODPT API (公共交通オープンデータセンター API) to fetch real-time transportation data. This section explains how the API is integrated and used in the application.
+| API type | Host | Token | Operators |
+|---|---|---|---|
+| `publicAPI` | `api-public.odpt.org` | none | Toei Subway, Toei Bus |
+| `standard` | `api.odpt.org` | `ODPT_ACCESS_TOKEN` | Tokyo Metro, Yokohama Municipal Subway, Tsukuba Express, Tama Monorail, Yurikamome, TWR (Rinkai), Tokyu Bus, Seibu Bus, Sotetsu Bus, Yokohama Municipal Bus |
+| `challenge` | `api-challenge.odpt.org` | `ODPT_CHALLENGE_TOKEN` | JR East, Tokyu, Odakyu, Keikyu, Tobu, Seibu, Sotetsu, Kanachu, Kokusai Kogyo, Tobu Bus |
+| `gtfs` (disabled) | GTFS ZIP files | `ODPT_ACCESS_TOKEN` | Keio Bus, Nishitokyo Bus, Kawasaki City Bus, Kawasaki Tsurumi Rinko Bus, Kanto Bus, Izuhakone Bus, Keisei Transit Bus |
 
-#### API Endpoints
+The challenge host is not a testing switch: the operators above publish their data there, so those routes stop working without `ODPT_CHALLENGE_TOKEN`.
 
-The application uses the following ODPT API endpoints. All endpoints use query parameters for authentication (`&acl:consumerKey={token}`), except for Public API endpoints.
+**GTFS is currently paused, so the seven `gtfs` operators cannot be selected in the app.**
+`SettingsLineViewModel` filters them out of the operator list with `dataSource.apiType != .gtfs`, the GTFS branches in `CacheService` are commented out, and so is the GTFS branch in `SettingsLineSheet`.
+The code below describes what those paths do when they are restored, which is a matter of removing that filter and uncommenting those blocks.
 
-**Standard API Endpoints** (`api.odpt.org` - require `ODPT_ACCESS_TOKEN`):
-- **Railway Data**: `https://api.odpt.org/api/v4/odpt:Railway?odpt:operator={operatorCode}&acl:consumerKey={accessToken}`
-- **Bus Route Pattern**: `https://api.odpt.org/api/v4/odpt:BusroutePattern?odpt:operator={operatorCode}&acl:consumerKey={accessToken}`
-- **Train Timetable**: `https://api.odpt.org/api/v4/odpt:TrainTimetable?odpt:operator={operatorCode}&acl:consumerKey={accessToken}`
-- **Bus Timetable**: `https://api.odpt.org/api/v4/odpt:BusTimetable?odpt:operator={operatorCode}&acl:consumerKey={accessToken}`
-- **Bus Stop Pole**: `https://api.odpt.org/api/v4/odpt:BusstopPole?odpt:operator={operatorCode}&acl:consumerKey={accessToken}`
-- **Bus GTFS Files**: `https://api.odpt.org/api/v4/files/odpt/{operatorCode}?date={YYYYMMDD}&acl:consumerKey={accessToken}`
-  - Date parameter format: `YYYYMMDD` (e.g., `20251117`)
-  - Required for most GTFS operators (Yokohama Bus, Keio Bus, Nishitokyo Bus, Kawasaki Bus, etc.)
+### Endpoints in Use
 
-**Challenge API Endpoints** (`api-challenge.odpt.org` - require `ODPT_CHALLENGE_TOKEN`):
-- Same endpoints as Standard API, but replace `api.odpt.org` with `api-challenge.odpt.org` and use `{challengeToken}` instead of `{accessToken}`
-- Used for testing and development
+- **Railway lines**: `odpt:Railway`
+- **Train timetable**: `odpt:TrainTimetable`
+- **Station timetable**: `odpt:StationTimetable`
+- **Bus route pattern**: `odpt:BusroutePattern`
+- **Bus timetable**: `odpt:BusTimetable`
+- **Bus stop pole**: `odpt:BusstopPole`
+- **GTFS files**, while the path is disabled: `https://api.odpt.org/api/v4/files/odpt/KeioBus/AllLines.zip?date=20260126&acl:consumerKey={token}`
 
-**Public API Endpoints** (`api-public.odpt.org` - no authentication required):
-- **Toei Bus GTFS**: `https://api-public.odpt.org/api/v4/files/{operatorCode}`
-  - No token required
-  - No date parameter needed
+That GTFS URL looks irregular because `operatorCode` already carries the file path and the `?`, for example `KeioBus/AllLines.zip?` in `LocalDataSource`, and `apiLink` appends `date=...` straight onto it.
+GTFS feed dates are hardcoded per operator in `GTFSDates` (`Models/Enums.swift`), because the standard API serves one feed per date.
+They are not repeated here: a feed date that is right in two places and wrong in a third is worse than one place to look.
 
-**Token Configuration:**
+### Caching and Update Checks
 
-Tokens are configured in `Release.xcconfig` (not included in Git):
+- ETag and Last-Modified are stored in UserDefaults per operator, and sent back as `If-None-Match` and `If-Modified-Since`
+- A 304 response means the cached data is reused
+- Timetables themselves are fetched on demand rather than cached
+- No GTFS caching happens today, because the GTFS branches in `CacheService.swift` are commented out
 
-- **ODPT_ACCESS_TOKEN**: Used for Standard API endpoints (`api.odpt.org`)
-  - Required for most operators and GTFS ZIP downloads
-  - Provides full data access
-  - Passed as query parameter: `&acl:consumerKey={accessToken}`
+### GTFS Processing, Currently Disabled
 
-- **ODPT_CHALLENGE_TOKEN**: Used for Challenge API endpoints (`api-challenge.odpt.org`)
-  - Used for testing and development
-  - Passed as query parameter: `&acl:consumerKey={challengeToken}`
+`GTFSDataService` is still in the project, and three things keep anything from reaching it. The operator list filters GTFS operators out, so none can be chosen. A route saved before the pause loses its selection: `loadSettingsForSelectedLine` clears the operator and the line when the saved operator is GTFS, which leaves the generate button disabled. And `fetchGTFSLinesForOperator`, the only function that puts GTFS lines into the shared data, has no live caller.
+When restored, the ZIP is downloaded, extracted with ZipArchive, and the CSV files are parsed.
 
-- **No Token**: Used for Public API endpoints (`api-public.odpt.org`)
-  - Limited data access
-  - Currently only used for Toei Bus GTFS files
+- `routes.txt`: route id, short and long name, colour
+- `trips.txt`: trip id, route id, service id, headsign, direction id
+- `stop_times.txt`: arrival and departure times per stop, with the stop sequence
+- `stops.txt`: stop id, name and coordinates
+- `calendar.txt` and `calendar_dates.txt`: service days and exceptions
+- `translations.txt`: Japanese and English names for stops and routes
 
-**Note**: The application also supports Authorization header authentication as an alternative to query parameters, but query parameters are the primary method used in the codebase.
+Directions come from `direction_id` where present, then `trip_headsign`, and finally the first and last stop ids.
+Fullwidth digits and letters in stop names are converted to halfwidth.
 
-#### API Authentication
+### Time Handling
 
-The ODPT API supports multiple authentication methods:
+Departure times between 00:00 and 03:00 belong to the previous service day, so 24 hours are added to them.
+This keeps early morning services sorted and displayed after the late night ones rather than at the top.
 
-1. **Standard API** (`api.odpt.org`)
-   - Requires `ODPT_ACCESS_TOKEN` (configured in `Release.xcconfig`)
-   - Full data access
-   - Used for most operators and GTFS ZIP downloads
+Calendar types are passed as `odpt:calendar`: weekday, saturday, sunday, holiday, saturdayHoliday, and the individual weekdays.
 
-2. **Challenge API** (`api-challenge.odpt.org`)
-   - Requires `ODPT_CHALLENGE_TOKEN` (configured in `Release.xcconfig`)
-   - Used for testing and development
-
-3. **Public API** (`api-public.odpt.org`)
-   - No authentication required
-   - Limited data access
-   - Currently only used for Toei Bus GTFS files
-
-#### Request Configuration
-
-The `ODPTDataService` class handles all API communication:
-
-```swift
-// Authentication header
-request.setValue(consumerKey, forHTTPHeaderField: "Authorization")
-request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-// Conditional GET headers for efficient caching
-request.setValue(etag, forHTTPHeaderField: "If-None-Match")
-request.setValue(lastModified, forHTTPHeaderField: "If-Modified-Since")
-```
-
-#### Data Fetching Flow
-
-1. **Initial Request**: Fetch operator data using `fetchIndividualOperatorData()`
-2. **Cache Check**: Check if cached data exists
-3. **Update Check**: Use conditional GET with ETag/Last-Modified headers
-4. **Data Processing**: Parse JSON response using `ODPTParser`
-5. **Cache Update**: Save updated data and headers for future requests
-
-#### Efficient Update Checking
-
-The application implements efficient update checking using HTTP conditional requests:
-
-- **ETag Support**: Server provides ETag header, client sends `If-None-Match` header
-- **Last-Modified Support**: Server provides `Last-Modified` header, client sends `If-Modified-Since` header
-- **304 Not Modified**: Server returns 304 status when data hasn't changed
-- **Automatic Caching**: ETag and Last-Modified values are stored in UserDefaults per operator
-
-#### ODPT API Timetable Generation
-
-The application generates timetables using ODPT API endpoints for both railway and bus operators (excluding GTFS operators). This section explains the detailed process of creating timetables from ODPT API data.
-
-**Timetable Generation Overview:**
-
-The application uses three main ODPT API endpoints for timetable data:
-- **Train Timetable** (`odpt:TrainTimetable`): Railway timetable data
-- **Bus Timetable** (`odpt:BusTimetable`): Bus timetable data
-- **Station Timetable** (`odpt:StationTimetable`): Station-specific timetable data
-
-**Railway Timetable Generation Flow:**
-
-1. **API Request**: Fetch train timetable data from ODPT API
-   - Endpoint: `https://api.odpt.org/api/v4/odpt:TrainTimetable?odpt:operator={operatorCode}&odpt:railway={railwayCode}&odpt:calendar={calendarType}&odpt:railDirection={direction}&acl:consumerKey={accessToken}`
-   - Parameters:
-     - `odpt:operator`: Operator code (e.g., `odpt.Operator:JR-East`)
-     - `odpt:railway`: Railway line code (e.g., `odpt.Railway:JR-East.Yamanote`)
-     - `odpt:calendar`: Calendar type (weekday, saturday, sunday, holiday, etc.)
-     - `odpt:railDirection`: Rail direction (ascending or descending) - optional
-     - `acl:consumerKey`: Access token
-
-2. **Direction Detection**:
-   - If `odpt:railDirection` is not specified, fetch data for both directions
-   - Use `odpt:ascendingRailDirection` and `odpt:descendingRailDirection` from railway data
-   - Determine correct direction based on departure and arrival stations
-
-3. **Data Parsing**:
-   - Parse JSON response containing timetable objects
-   - Extract train information:
-     - `odpt:trainNumber`: Train number/identifier
-     - `odpt:departureTime`: Departure time from origin station
-     - `odpt:arrivalTime`: Arrival time at destination station
-     - `odpt:trainType`: Train type (Local, Rapid, Express, etc.)
-     - `odpt:destinationStation`: Destination station name
-
-4. **Time Processing**:
-   - Apply time adjustments for next-day times (0-3 AM times are adjusted by adding 24 hours)
-   - Convert time strings to internal time format
-   - Calculate ride time between departure and arrival stations
-
-5. **Route Validation**:
-   - For loop lines (e.g., Yamanote Line), both directions may have data
-   - Select direction with shorter average ride time
-   - Validate that selected stations exist in the timetable data
-
-6. **Data Conversion**: Convert parsed data to internal `TransportationTime` models:
-   - `TrainTime`: Railway timetable entries with departure/arrival times
-   - Includes train number, train type, and ride time information
-
-**Bus Timetable Generation Flow:**
-
-1. **API Request**: Fetch bus timetable data from ODPT API
-   - Endpoint: `https://api.odpt.org/api/v4/odpt:BusTimetable?odpt:operator={operatorCode}&dc:title={routeTitle}&odpt:calendar={calendarType}&acl:consumerKey={accessToken}`
-   - Parameters:
-     - `odpt:operator`: Operator code
-     - `dc:title`: Bus route title/name
-     - `odpt:calendar`: Calendar type (weekday, saturday, sunday, holiday, etc.)
-     - `acl:consumerKey`: Access token
-   - **Note**: GTFS operators do not use this API endpoint (they use GTFS files instead)
-
-2. **Data Parsing**:
-   - Parse JSON response containing bus timetable objects
-   - Extract bus information:
-     - `odpt:busNumber`: Bus number/identifier
-     - `odpt:departureTime`: Departure time from origin stop
-     - `odpt:arrivalTime`: Arrival time at destination stop
-     - `odpt:routePattern`: Route pattern identifier
-
-3. **Time Processing**:
-   - Apply time adjustments for next-day times (0-3 AM times are adjusted by adding 24 hours)
-   - Calculate ride time between departure and arrival stops
-
-4. **Data Conversion**: Convert parsed data to internal `BusTime` models:
-   - Includes bus number, route pattern, and ride time information
-
-**Station Timetable Generation Flow:**
-
-1. **API Request**: Fetch station timetable data from ODPT API
-   - Endpoint: `https://api.odpt.org/api/v4/odpt:StationTimetable?odpt:operator={operatorCode}&odpt:railway={railwayCode}&odpt:station={stationCode}&odpt:calendar={calendarType}&acl:consumerKey={accessToken}`
-   - Parameters:
-     - `odpt:operator`: Operator code
-     - `odpt:railway`: Railway line code
-     - `odpt:station`: Station code
-     - `odpt:calendar`: Calendar type
-     - `acl:consumerKey`: Access token
-
-2. **Data Parsing**:
-   - Parse JSON response containing `odpt:stationTimetableObject` array
-   - Extract train information for the specific station:
-     - `odpt:trainNumber`: Train number
-     - `odpt:departureTime`: Departure time from the station
-     - `odpt:destinationStation`: Destination station
-     - `odpt:trainType`: Train type
-
-3. **Time Processing**:
-   - Apply time adjustments for next-day times
-   - Sort by departure time in ascending order
-
-4. **Data Conversion**: Convert to internal timetable models for station-specific display
-
-**Calendar Type Handling:**
-
-The application supports multiple calendar types for timetable generation:
-
-- **weekday**: Monday to Friday (excluding holidays)
-- **saturday**: Saturday (excluding holidays)
-- **sunday**: Sunday (excluding holidays)
-- **holiday**: Japanese national holidays
-- **saturdayHoliday**: Saturday or holiday
-- **monday, tuesday, wednesday, thursday, friday**: Individual weekday types
-
-Calendar type is passed as `odpt:calendar` parameter in API requests.
-
-**Time Adjustment Logic:**
-
-- Times from 00:00 to 03:00 are treated as next-day times
-- These times are adjusted by adding 24 hours (e.g., 01:30 becomes 25:30)
-- This ensures correct sorting and display of early morning services
-
-**Error Handling:**
-
-- Network errors: Timeout after 30 seconds for requests
-- Invalid data: JSON parsing errors are caught and logged
-- HTTP errors: Non-200 status codes are handled with appropriate error messages
-- Missing data: Empty responses are handled gracefully
-
-**Caching:**
-
-- Timetable data is not cached separately (fetched on-demand)
-- Line and station data are cached for faster route selection
-- Update checking uses ETag/Last-Modified headers when available
-
-#### GTFS Data Processing
-
-The application uses GTFS (General Transit Feed Specification) format for bus operators that provide their data in this standardized format. GTFS is a common format for public transportation schedules and geographic data.
-
-**GTFS Format Overview:**
-
-GTFS data is provided as a ZIP file containing multiple CSV files. The application processes these files to extract route information, stop data, and timetable schedules.
-
-**Supported GTFS Operators:**
-
-- **Toei Bus**: Uses public API (no authentication token required)
-- **Yokohama Municipal Bus**: Uses standard API with date parameter and `ODPT_ACCESS_TOKEN`
-- **Keio Bus**: Uses standard API with date parameter (20251117) and `ODPT_ACCESS_TOKEN`
-- **Nishitokyo Bus**: Uses standard API with date parameter (20251101) and `ODPT_ACCESS_TOKEN`
-- **Kawasaki Bus**: Uses standard API with date parameter (20251201) and `ODPT_ACCESS_TOKEN`
-- **Kawasaki Tsurumi Rinko Bus**: Uses standard API with date parameter (20251117) and `ODPT_ACCESS_TOKEN`
-- **Kanto Bus**: Uses standard API with date parameter (20251110) and `ODPT_ACCESS_TOKEN`
-- **Izuhakone Bus**: Uses standard API with date parameter (20251101) and `ODPT_ACCESS_TOKEN`
-- **Keisei Transit Bus**: Uses standard API with date parameter (20250401) and `ODPT_ACCESS_TOKEN`
-
-**Note**: Most GTFS operators require `ODPT_ACCESS_TOKEN` for downloading ZIP files. Only Toei Bus uses the public API without authentication.
-
-**GTFS Data Processing Flow:**
-
-1. **ZIP Download**: Download GTFS ZIP file from ODPT API
-   - Uses the same endpoint format as described in the API Endpoints section above
-   - Standard API: Requires `ODPT_ACCESS_TOKEN` and date parameter (format: YYYYMMDD)
-   - Public API (Toei Bus only): No authentication required, no date parameter
-   - The application uses conditional GET with ETag/Last-Modified headers for efficient update checking
-
-2. **ZIP Extraction**: Extract ZIP file to temporary directory
-   - Uses ZipArchive library (SSZipArchive) for extraction
-   - Extracted files are cached for faster subsequent access
-
-3. **CSV File Parsing**: Parse required GTFS CSV files:
-   - **routes.txt**: Route information (route_id, route_short_name, route_long_name, route_color)
-   - **trips.txt**: Trip information (trip_id, route_id, service_id, trip_headsign, direction_id)
-   - **stop_times.txt**: Stop times for each trip (trip_id, stop_id, arrival_time, departure_time, stop_sequence)
-   - **stops.txt**: Stop information (stop_id, stop_name, stop_lat, stop_lon)
-   - **calendar.txt**: Service calendar (service_id, monday-sunday flags, start_date, end_date)
-   - **calendar_dates.txt**: Service exceptions (service_id, date, exception_type)
-   - **translations.txt**: Multi-language translations (table_name, field_name, language, translation)
-
-4. **Route Processing**:
-   - Extract route information from routes.txt
-   - Group trips by route_id and direction (trip_headsign, direction_id)
-   - Create separate `TransportationLine` models for each route direction
-   - Handle routes without direction information using stop sequences
-
-5. **Stop Processing**:
-   - Load stop information from stops.txt
-   - Apply translations from translations.txt for multi-language support
-   - Convert fullwidth numbers and alphabets to halfwidth
-   - Create `TransportationStop` models for route selection
-
-6. **Timetable Processing**:
-   - Filter trips by route_id and direction
-   - Match trips to calendar types (weekday, saturday, sunday, holiday)
-   - Extract departure and arrival times from stop_times.txt
-   - Handle time adjustments for next-day times (0-3 AM)
-   - Calculate ride times between stops
-
-7. **Calendar Type Detection**:
-   - Parse calendar.txt to determine service days
-   - Handle calendar_dates.txt for service exceptions
-   - Support multiple calendar types: weekday, saturday, sunday, holiday, saturdayHoliday, and individual weekdays
-
-8. **Data Conversion**: Convert GTFS data to internal models:
-   - `TransportationLine`: Route information with direction
-   - `TransportationStop`: Stop information with localization
-   - `BusTime`: Timetable entries with departure/arrival times
-
-9. **Caching**: Cache extracted directory for faster subsequent access
-   - Cache key includes operator name and date
-   - Extracted directory is cached to avoid re-extraction
-   - In-memory cache for frequently accessed CSV files
-
-**GTFS Data Structure:**
-
-The application processes GTFS data with the following key relationships:
-
-```
-routes.txt (route_id)
-  └── trips.txt (route_id → trip_id, service_id, direction_id, trip_headsign)
-      └── stop_times.txt (trip_id → stop_id, arrival_time, departure_time)
-          └── stops.txt (stop_id → stop_name)
-      └── calendar.txt (service_id → service days)
-          └── calendar_dates.txt (service_id → exceptions)
-```
-
-**Multi-language Support:**
-
-- Load translations from translations.txt
-- Support Japanese (default) and English translations
-- Convert fullwidth characters to halfwidth for consistency
-- Fallback to original text if translation not available
-
-**Direction Handling:**
-
-Routes with multiple directions are handled as follows:
-
-1. **With direction_id**: Use direction_id (0 or 1) to distinguish directions
-2. **With trip_headsign**: Use trip_headsign to distinguish directions
-3. **Without direction info**: Use first and last stop_id to create unique direction code
-
-**GTFS Update Checking:**
-
-- **Toei Bus**: Uses conditional GET with ETag/Last-Modified headers
-- **Other operators**: Cache key includes date, so cached file is already for the correct date
-- Extracted directory is cached separately for faster access
-
-#### Error Handling
-
-The application handles various error scenarios:
-
-- **Network Errors**: Timeout after 30 seconds for requests, 60 seconds for resources
-- **Invalid Data**: JSON parsing errors are caught and logged
-- **HTTP Errors**: Non-200 status codes are handled with appropriate error messages
-- **Redirect Handling**: HTTP redirects preserve authentication parameters
-
-#### Configuration
-
-API configuration is managed through:
-
-- **Release.xcconfig**: Contains ODPT access tokens (not in Git)
-- **Enums.swift**: Defines operator codes and API endpoint mappings
-- **LocalDataSource enum**: Maps operators to their ODPT operator codes
-
-#### Example Usage
-
-**ODPT API (Railway/Bus):**
+### Example Usage
 
 ```swift
 let odptService = ODPTDataService()
-let consumerKey = "your-consumer-key"
+let gtfsService = GTFSDataService()
 
-// Fetch railway data for JR East
+// Railway or bus data through the ODPT API
 let data = try await odptService.fetchIndividualOperatorData(.jrEast, consumerKey: consumerKey)
-
-// Check for updates using conditional GET
 let needsUpdate = try await odptService.checkIndividualOperatorForUpdates(.jrEast, consumerKey: consumerKey)
 
-if needsUpdate {
-    // Fetch updated data
-    let updatedData = try await odptService.fetchIndividualOperatorData(.jrEast, consumerKey: consumerKey)
-}
+// Bus routes through GTFS, reachable only once the GTFS path is restored
+let routes = try await gtfsService.fetchGTFSData(.keioBus, consumerKey: consumerKey)
+let stops = try await gtfsService.fetchGTFSStopsForRoute("route_id_0", transportOperator: .keioBus, consumerKey: consumerKey)
 ```
-
-**Bus GTFS Format:**
-
-```swift
-let gtfsService = GTFSDataService()
-let consumerKey = "your-consumer-key"
-
-// Fetch GTFS routes for Toei Bus
-let routes = try await gtfsService.fetchGTFSData(.toeiBus, consumerKey: consumerKey)
-
-// Fetch stops for a specific route
-let stops = try await gtfsService.fetchGTFSStopsForRoute(
-    "route_id_0",  // route_id with direction_id
-    transportOperator: .toeiBus,
-    consumerKey: consumerKey
-)
-
-// Fetch timetable for a route and stops
-let timetable = try await gtfsService.fetchGTFSBusTimetable(
-    routeId: "route_id_0",
-    departureStop: departureStop,
-    arrivalStop: arrivalStop,
-    calendarType: .weekday,
-    transportOperator: .toeiBus,
-    consumerKey: consumerKey
-)
-```
-
-#### API Rate Limits
-
-- The application implements intelligent caching to minimize API calls
-- Conditional GET requests reduce bandwidth usage
-- Data is cached locally for offline access
-- Update checks only occur when cached data exists
-
-#### Data Format
-
-ODPT API returns JSON data in the following format:
-
-```json
-[
-  {
-    "@type": "odpt:Railway",
-    "dc:title": "山手線",
-    "owl:sameAs": "odpt.Railway:JR-East.Yamanote",
-    "odpt:operator": "odpt.Operator:JR-East",
-    "odpt:lineColor": "#E60012",
-    "odpt:railwayTitle": {
-      "ja": "山手線",
-      "en": "Yamanote Line"
-    }
-  }
-]
-```
-
-The application parses this data into internal `TransportationLine` models for use throughout the app.
-
-### Supported Lines
-
-Timetable data is provided via the [Open Data Platform for Transportation (ODPT) API](https://www.odpt.org/). Automatic timetable generation is available for the following operators.
-
-**Railway (9 operators)**  
-JR East, Tokyo Metro, Toei Subway, Yokohama Municipal Subway, Tobu Railway, Sagami Railway, Tokyo Waterfront Area Rapid Transit (TWR), Tsukuba Express, Tama Monorail
-
-**Bus (7 operators)**  
-Toei Bus, Yokohama Municipal Bus, Tokyu Bus, Seibu Bus, Sotetsu Bus, Kanachu, Kokusai Kogyo
 
 ### Automatic Timetable Generation
-The app features automatic timetable generation for the supported operators above using the ODPT API.
 
-- **Auto-generate button**: Enabled only when all required fields are selected and the line supports timetables (railway: train timetable support; bus: no support check). After generation, the timetable settings sheet opens.
-- **Train type selection**: For routes whose timetable was auto-generated from ODPT, the selectable train types in the timetable settings sheet are limited to those obtained at generation time. Manually entered routes show the default set of five train types.
-- **Line/operator persistence**: When saving line settings, the app persists the line-selected flag and operator code so that timetable settings can correctly distinguish fetched (ODPT) vs manual input and show the appropriate train type list.
+`hasTrainTimeTable` and `hasBusTimeTable` in `Models/Enums.swift` decide whether the auto-generate button is available.
 
-**Important**  
-The following railway operators **do not support automatic timetable generation**. Only line and station selection are available; timetables cannot be auto-generated.
+**Railway, nine operators**: JR East, Tokyo Metro, Toei Subway, Yokohama Municipal Subway, Tobu Railway, Sotetsu (Sagami Railway), Tokyo Waterfront Area Rapid Transit, Tsukuba Express, Tama Monorail.
 
-- Tokyu Railway
-- Keikyu Railway
-- Odakyu Railway
-- Seibu Railway
-- Yurikamome
+**Railway, line and station selection only**: Tokyu Railway, Keikyu Railway, Odakyu Railway, Seibu Railway, Yurikamome.
+This app fetches no timetable for them, so their timetables have to be entered by hand.
 
-### Data Processing
-- **Multi-format Support**: Handles various JSON data formats
-- **Localization**: Japanese and English station/line names
-- **Color Coding**: Line color information for visual identification
-- **Station Ordering**: Maintains correct station sequence on each line
+**Bus**: `hasBusTimeTable` is true for every bus operator, but only the ODPT ones can be reached today: Tobu Bus, Toei Bus, Yokohama Municipal Bus, Tokyu Bus, Seibu Bus, Sotetsu Bus, Kanachu, Kokusai Kogyo.
+The seven GTFS operators are filtered out of the operator list, so their timetables cannot be generated while GTFS is paused.
+
+Two behaviours follow from generation:
+
+- **Train type selection**: A route generated from ODPT offers only the train types returned at generation time, while a manually entered route offers the default five
+- **Line and operator persistence**: Saving line settings stores the line-selected flag and the operator code, which is how the timetable sheet tells generated routes from manual ones
+
+### Error Handling
+
+- Requests time out after 30 seconds, resources after 60
+- JSON parsing failures are caught and logged
+- Non-200 responses are reported as errors
+- Redirects preserve the authentication parameters
 
 ## 🎨 Customization
 
 ### Timetable Features
-- **Week Management**: Monday to Sunday schedule management
-- **Time Entry**: Add, edit, and delete time entries
-- **Train Type Selection**: For ODPT auto-generated routes, only train types returned by the API are available; for manual routes, the default five types are offered
-- **Station Management**: Configure departure and arrival stations
-- **Line Configuration**: Set up train lines and routes with real data
-- **Transport Options**: Various transportation modes (walking, bicycle, car)
-- **Image Support**: Add custom images to timetables
-- **Color Customization**: 20+ color options for line identification
+
+- Week management from Monday to Sunday
+- Time entry add, edit and delete
+- Train type selection, limited to the generated set for ODPT routes
+- Departure and arrival station configuration
+- Line configuration from fetched operator data
+- Transfer options: walking, bicycle, car
+- Custom images on timetables
+- Line colours, from the 24 entries in `CustomColor`
 
 ### User Interface
-- **Modern SwiftUI Interface**: Declarative UI with smooth animations
-- **Responsive Design**: Adaptive layouts for different screen sizes
-- **Dark/Light Mode**: System appearance support
-- **Localization**: Japanese and English support
-- **Custom Fonts**: GenEiGothicN font family (SIL Open Font License)
-- **Accessibility**: VoiceOver and accessibility features support
+
+- Declarative SwiftUI with adaptive layouts
+- Portrait only, locked in the app delegate
+- Dark and light appearance
+- Japanese and English
+- GenEiGothicN Regular (SIL Open Font License 1.1)
 
 ### Data Management
-- **Cloud Sync**: Firebase Firestore integration
-- **Local Storage**: UserDefaults for settings and preferences
-- **Image Storage**: Local image management
-- **Cache Management**: Intelligent data caching for performance
-- **Offline Mode**: Full functionality without internet connection
+
+- Firestore for cloud sync
+- UserDefaults for settings and cached HTTP validators
+- Local image storage
+- Cached operator data, which keeps previously fetched lines and stops usable offline
 
 ## 📱 Supported Platforms
 
-- **iOS**: iOS 16.6+
-- **iPad**: iPadOS 16.6+
-- **Device Support**: iPhone and iPad optimized layouts
+- **iOS**: 16.6 or later
+- **iPadOS**: 16.6 or later
+- **Devices**: iPhone and iPad (`TARGETED_DEVICE_FAMILY = "1,2"`)
 
 ## 🔧 Development
 
-### Code Analysis
-```bash
-# SwiftLint (if configured)
-swiftlint
+### Build
 
-# Xcode build analysis
+```bash
+# Debug build
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Debug
+
+# Release build
+xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Release
+
+# Archive for the App Store
+xcodebuild archive -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -archivePath build/mytimetablemaker_swiftui.xcarchive
+```
+
+### Analyze
+
+```bash
 xcodebuild analyze -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui
 ```
 
-### Run Tests
+### Tests
+
+The repository carries the Xcode test templates in `mytimetablemaker_swiftuiTests/` and `mytimetablemaker_swiftuiUITests/`.
+
 ```bash
-# Unit Tests
-xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 16'
-
-# UI Tests
-xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftuiUITests -destination 'platform=iOS Simulator,name=iPhone 16'
-```
-
-### Build
-```bash
-# Debug Build
-xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Debug
-
-# Release Build
-xcodebuild build -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -configuration Release
-
-# Archive for App Store
-xcodebuild archive -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -archivePath build/mytimetablemaker_swiftui.xcarchive
+xcodebuild test -project mytimetablemaker_swiftui.xcodeproj -scheme mytimetablemaker_swiftui -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
 ```
 
 ## 🔒 Security
 
-This project includes comprehensive security measures to protect sensitive information:
-- **Environment Variables**: API keys and sensitive data stored in configuration files
-- **Git Exclusions**: Firebase configuration files excluded from version control
-- **Secure Storage**: UserDefaults for local data storage
-- **Firebase Security**: App Check and Authentication integration
-- **Code Obfuscation**: Production builds with optimized code
-
-### Security Features
-- User authentication with email/password
+- Email and password authentication through Firebase Auth
+- App Check in front of Firebase, with DeviceCheck in release builds and the debug provider in DEBUG builds only
+- `APP_CHECK_DEBUG_TOKEN` stays empty in `Release.xcconfig`, because a registered debug token would defeat App Check from anywhere
+- `Debug.xcconfig` and `Release.xcconfig` are no longer tracked, so the values you fill in stay on your machine and are not committed
+- Everything in those files ships inside the app through `Info.plist`, so nothing that grants server access belongs in them
 - Secure data transmission with HTTPS
-- Local data encryption
-- AdMob integration with secure ad serving
-- ODPT API token management
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is not open source.
+The source is published so that it can be read, and all rights are reserved.
+See [LICENSE](LICENSE) for what that permits.
+Third-party components keep their own licenses, listed below.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please feel free to submit pull requests or create issues for bugs and feature requests.
-
-### Contribution Guidelines
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Issue reports are welcome.
+Pull requests are not accepted, because the code is not licensed for redistribution.
 
 ## 📞 Support
 
-If you have any problems or questions, please create an issue on GitHub or contact the development team.
+If you have any problems or questions, please create an issue on GitHub.
 
 ## 🚀 Getting Started
 
 For new developers:
+
 1. Follow the setup instructions above
-2. Review the application structure
-3. Check the customization options
-4. Start with `mytimetablemaker_swiftuiApp.swift` to understand the app flow
-5. Explore the SwiftUI implementation
-6. Understand the Services layer for data management
-
-## 📊 Project Statistics
-
-- **Lines of Code**: 12,000+
-- **Swift Files**: 60+
-- **Railway Data Files**: 16 JSON files covering major Japanese railways
-- **Supported Languages**: 2 (Japanese, English)
-- **Target Platforms**: iOS 16.6+, iPadOS 16.6+
-- **External Dependencies**: Firebase, Google Mobile Ads, ODPT API
-- **Data Coverage**: 1000+ railway stations across Japan
-- **Supported Railway Operators**: 9 operators (ODPT API; 5 other railways support line/station selection only, no timetable auto-generation)
-- **Supported Bus Operators**: 7 operators (ODPT API)
+2. Start with `mytimetablemaker_swiftuiApp.swift` to see launch-time setup
+3. Read `Models/Enums.swift` for the operator, endpoint and feed date tables
+4. Read `Services/` for how data is fetched, cached and parsed
+5. Read `CommonContentView/SettingsLineViewModel.swift` for how a route is built from that data
 
 ---
 
@@ -801,33 +379,21 @@ For new developers:
 
 ## Licenses & Credits
 
-This app uses the following open-source libraries and frameworks:
+This app uses the following third-party components:
 
-- **SwiftUI** (Apple License)
-- **Firebase** (Apache License 2.0)
-  - firebase_core
-  - firebase_auth
-  - firebase_firestore
-- **Google Mobile Ads** (Apache License 2.0)
-- **Swift Package Manager** (Apple License)
-- **ODPT API** (Open Data Platform for Transportation)
+- **SwiftUI** (Apple)
+- **Firebase iOS SDK** (Apache License 2.0): FirebaseAuth, FirebaseFirestore, FirebaseAnalytics, FirebaseAppCheck
+- **Google Mobile Ads** (the Swift package is Apache License 2.0, but it ships no source of its own: its `Package.swift` declares a `binaryTarget` that downloads `googlemobileadsios-spm-*.zip` from `dl.google.com`, and depends on the User Messaging Platform package, which downloads `googleusermessagingplatformios-spm-*.zip` the same way)
+- **User Messaging Platform**, the consent SDK reached through Google Mobile Ads (its Swift package is Apache License 2.0; the binary it downloads is a proprietary Google distribution)
+- **swift-algorithms** (Apache License 2.0)
+- **ZipArchive** (MIT License)
 
 ### Font Licenses
-- **GenEiGothicN Font Family** (SIL Open Font License 1.1)
+
+- **GenEiGothicN Regular** (SIL Open Font License 1.1), with the full text in `mytimetablemaker_swiftui/Font/LICENSE.txt`
 
 ### Data Sources
-- **ODPT (Open Data Platform for Transportation)**: Real-time railway data
-- **Local Railway Data**: Compiled from various public transportation sources
 
-For details of each license, please refer to the respective documentation or LICENSE files in each repository.
+- **ODPT (Open Data Platform for Transportation)**: Railway and bus data, at [odpt.org](https://www.odpt.org/)
 
-## Acknowledgments
-
-- Firebase team for excellent documentation and support
-- Google Mobile Ads team for ad integration
-- Apple for SwiftUI framework
-- ODPT team for providing comprehensive transportation data
-- Open source community for various tools and libraries
-- Railway operators in Japan for providing public transportation data
-
----
+For details of each license, please refer to the respective repositories.
