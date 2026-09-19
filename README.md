@@ -94,6 +94,9 @@ The project resolves these Swift packages, all declared in `mytimetablemaker_swi
 - `swift-algorithms`, up to the next major from 1.2.1, so 1.x (Algorithms)
 - `ZipArchive`, up to the next major from 2.6.0, so 2.x (linked for the GTFS code path, which is currently disabled)
 
+`Package.resolved` is tracked, so this resolves to the versions the release was built and tested against rather than to whatever is current.
+Updating a package is a deliberate act that changes that file.
+
 ```bash
 xcodebuild -resolvePackageDependencies
 ```
@@ -271,7 +274,7 @@ Two behaviours follow from generation:
 - Requests time out after 30 seconds, resources after 60
 - JSON parsing failures are caught and logged
 - Non-200 responses are reported as errors
-- Redirects preserve the authentication parameters
+- A redirect drops the consumer key: `ODPTDataService` declares a `willPerformHTTPRedirection` handler that would re-attach it, but the class conforms to `URLSessionDelegate` rather than `URLSessionTaskDelegate` and the method is private, so URLSession never calls it
 
 ## 🎨 Customization
 
