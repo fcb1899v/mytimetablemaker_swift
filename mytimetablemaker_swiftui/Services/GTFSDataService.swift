@@ -60,8 +60,8 @@ final class GTFSDataService {
                 continue
             }
             
-            // translations.txt rows may carry record_id, field_value, or both;
-            // create keys for both so lookups succeed either way
+            // translations.txt rows may carry record_id, field_value, or both.
+            // Create keys for both so lookups succeed either way.
             if let recordId = row["record_id"], !recordId.isEmpty {
                 let key = "\(tableName)|\(fieldName)|\(recordId)"
                 // Prefer current language, but allow English as fallback
@@ -190,8 +190,8 @@ final class GTFSDataService {
             let lastStopId: String?   // Last stop_id from stop_times.txt (for routes without headsign/direction_id)
         }
         
-        // Without trip_headsign and direction_id, derive directions from stop_times.txt
-        // (first and last stop_id per trip) and stop names from stops.txt
+        // Without trip_headsign and direction_id, derive directions from stop_times.txt and stop names from stops.txt.
+        // A direction is the first and last stop_id per trip.
         var tripEndpoints: [String: (firstStopId: String, lastStopId: String)] = [:]
         var stopsDict: [String: String] = [:]  // stop_id -> stop_name mapping
         
@@ -405,8 +405,8 @@ final class GTFSDataService {
             throw ODPTError.invalidData
         }
         
-        // cacheKey includes the date, so a cached file is already for the correct date;
-        // Toei Bus has no date and uses a different key format
+        // cacheKey includes the date, so a cached file is already for the correct date.
+        // Toei Bus has no date and uses a different key format.
         let date = GTFSDates.date(for: transportOp) ?? ""
         let gtfsFileName = transportOp.gtfsFileName
         let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
@@ -661,8 +661,8 @@ final class GTFSDataService {
             }
         }
         
-        // Cache not available or invalid, download and extract
-        // downloadGTFSZip() will call extractAndCacheGTFSZip() to cache the extracted directory
+        // Cache not available or invalid, download and extract.
+        // downloadGTFSZip() will call extractAndCacheGTFSZip() to cache the extracted directory.
         print("📦 Extracted directory not in cache, downloading and extracting ZIP")
         _ = try await downloadGTFSZip(url: gtfsURL, consumerKey: consumerKey, transportOperator: transportOperator)
         
@@ -712,8 +712,8 @@ final class GTFSDataService {
             throw ODPTError.invalidData
         }
         
-        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
-        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode".
+        // Only a directionCode contains "|" (firstStopId|lastStopId) and follows the first "_".
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -721,8 +721,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
-            // split at the first "_"
+            // The ID is "route_id_directionCode" with directionCode = "firstStopId|lastStopId".
+            // Split it at the first "_".
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -1390,8 +1390,8 @@ final class GTFSDataService {
         let stopTimesData = try loadGTFSFile(from: extractedDir, filename: "stop_times.txt")
         let stopTimesRows = try parseGTFSCSV(from: stopTimesData)
         
-        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
-        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode".
+        // Only a directionCode contains "|" (firstStopId|lastStopId) and follows the first "_".
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -1399,8 +1399,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
-            // split at the first "_"
+            // The ID is "route_id_directionCode" with directionCode = "firstStopId|lastStopId".
+            // Split it at the first "_".
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -1593,8 +1593,8 @@ final class GTFSDataService {
         // Parse stop_times.txt first
         let stopTimesRows = try parseGTFSCSV(from: stopTimesData)
         
-        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
-        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode".
+        // Only a directionCode contains "|" (firstStopId|lastStopId) and follows the first "_".
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -1602,8 +1602,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
-            // split at the first "_"
+            // The ID is "route_id_directionCode" with directionCode = "firstStopId|lastStopId".
+            // Split it at the first "_".
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -1731,8 +1731,7 @@ final class GTFSDataService {
             // Sort by stop_sequence to ensure correct order
             let sortedStopTimes = tripStopTimes.sorted { $0.sequence < $1.sequence }
             
-            // Find departure and arrival stops in this trip and take departure_time
-            // and arrival_time for the selected stop_ids
+            // Find the departure and arrival stops in this trip and take their departure_time and arrival_time.
             guard let departureStopTime = sortedStopTimes.first(where: { $0.stopId == departureStopId }),
                   let arrivalStopTime = sortedStopTimes.first(where: { $0.stopId == arrivalStopId }),
                   departureStopTime.sequence < arrivalStopTime.sequence else {
@@ -1752,8 +1751,8 @@ final class GTFSDataService {
             // Calculate ride time: difference between arrival_time and departure_time
             let rideTime = adjustedDepartureTime.calculateRideTime(arrivalTime: adjustedArrivalTime)
             
-            // Add to list
-            // adjustedDepartureTime will be displayed in the timetable
+            // Add to list.
+            // adjustedDepartureTime will be displayed in the timetable.
             busTimes.append(BusTime(
                 departureTime: adjustedDepartureTime,  // This is displayed in the timetable
                 arrivalTime: adjustedArrivalTime,

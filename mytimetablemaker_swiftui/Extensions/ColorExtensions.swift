@@ -211,8 +211,8 @@ extension DisplayTrainType {
 // MARK: - ODPT Calendar Type Color Extensions
 // Color extensions for ODPT calendar types
 extension ODPTCalendarType {
-    // Primary color for calendar labels (weekend = red, weekday = white);
-    // .specific types are converted to their display type first
+    // Primary color for calendar labels (weekend = red, weekday = white).
+    // The .specific types are converted to their display type first.
     var calendarColor: Color {
         let displayType = displayCalendarType
         switch displayType {
@@ -226,8 +226,8 @@ extension ODPTCalendarType {
         }
     }
     
-    // Secondary text color for calendar labels (weekend = red, weekday = black), readable
-    // against calendarColor; .specific types are converted to their display type first
+    // Secondary text color for calendar labels (weekend = red, weekday = black), readable against calendarColor.
+    // The .specific types are converted to their display type first.
     var calendarSubColor: Color {
         let displayType = displayCalendarType
         switch displayType {

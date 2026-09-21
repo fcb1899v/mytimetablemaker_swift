@@ -4,8 +4,8 @@
 //
 //  Created by Nakajima Masao on 2025/08/21.
 // 
-//  Sheet for configuring transfer time and transportation methods between lines,
-//  with time range selection, method toggles, and persistent storage.
+//  Sheet for configuring transfer time and transportation methods between lines.
+//  It offers time range selection, method toggles, and persistent storage.
 //
 
 import SwiftUI

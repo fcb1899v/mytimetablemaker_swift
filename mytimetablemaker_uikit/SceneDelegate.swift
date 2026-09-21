@@ -19,8 +19,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // MARK: - Scene Lifecycle
     // Called when a new scene is being created
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Configure and attach `window` to `scene` (automatic with a storyboard). The scene or
-        // session is not necessarily new; see application:configurationForConnectingSceneSession
+        // Configure and attach `window` to `scene` (automatic with a storyboard).
+        // The scene or session is not necessarily new; see application:configurationForConnectingSceneSession.
         guard let _ = (scene as? UIWindowScene) else { return }
     }
 
@@ -51,8 +51,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // Called as the scene transitions from the foreground to the background
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called on foreground -> background. Save data, release shared resources, and store
-        // enough scene-specific state to restore the scene later
+        // Called on foreground -> background.
+        // Save data, release shared resources, and store enough scene-specific state to restore the scene later.
     }
 }
 

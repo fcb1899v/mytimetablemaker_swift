@@ -201,8 +201,8 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             self.parent = parent
         }
         
-        // Inline adaptive reports its real size only here, not at request time. The frame
-        // is pinned to admobBannerHeight, so a shorter ad leaves the difference empty
+        // Inline adaptive reports its real size only here, not at request time.
+        // The frame is pinned to admobBannerHeight, so a shorter ad leaves the gap empty.
         func bannerViewDidReceiveAd(_ bannerView: BannerView) {
             let requested = bannerView.adSize.size
             let served = bannerView.intrinsicContentSize

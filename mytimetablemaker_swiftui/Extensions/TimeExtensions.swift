@@ -639,8 +639,7 @@ extension String {
     // MARK: - Timetable Data Existence Check
     // Check timetable data for calendar type and line; .specific uses the identifier-based key
     func hasTimetableDataForType(_ calendarType: ODPTCalendarType, num: Int) -> Bool {
-        // Use the original calendarType so .specific checks the identifier-based key
-        // and standard types check the standard key
+        // Use the original calendarType so .specific checks the identifier-based key.
         
         // Check all hours (4-25) to see if data exists
         for hour in 4...25 {
@@ -716,8 +715,8 @@ extension String {
             return detectedTypes
         }
         
-        // IMPORTANT: never search all keys; each route uses only its own cached calendar types
-        // to avoid cross-route contamination. Fall back to detection from data if no cache
+        // IMPORTANT: never search all keys; each route uses only its own cached calendar types.
+        // Searching all keys contaminates one route with another's types.
         
         // Final fallback to default calendar types
         return [.weekday, .saturdayHoliday]

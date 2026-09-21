@@ -4,8 +4,8 @@
 //
 //  Created by Nakajima  on 2025/08/12.
 //
-//  ViewModel for SettingsLineSheet: loads lines from ODPT API and local JSON,
-//  handles search, station selection, and user preference persistence.
+//  ViewModel for SettingsLineSheet that loads lines from ODPT API and local JSON.
+//  It handles search, station selection, and user preference persistence.
 //
 
 import SwiftUI
@@ -549,13 +549,13 @@ final class SettingsLineSheetViewModel: ObservableObject {
         showArrivalSuggestions = isArrivalFieldFocused && !filtered.isEmpty && !arrivalStopSelected
     }
     
-    // Unified filtering logic for both railway stations and bus stops
-    // isDeparture: true for departure stops, false for arrival stops
+    // Unified filtering logic for both railway stations and bus stops.
+    // isDeparture is true for departure stops and false for arrival stops.
     private func filterStops(_ lineInput: String, excludeStop: TransportationStop?, isDeparture: Bool) -> [TransportationStop] {
         var filtered = lineStops
         
-        // Order constraint when excludeStop is selected: bus lines require departure before
-        // arrival; railway lines allow any station
+        // Order constraint when excludeStop is selected: bus lines require departure before arrival.
+        // Railway lines allow any station.
         let isRailway = selectedLine?.kind == .railway || selectedTransportationKind == .railway
         if !isRailway, let excludeStop = excludeStop, let excludeIndex = lineStops.firstIndex(where: { $0.id == excludeStop.id }) {
             if isDeparture {
@@ -643,8 +643,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 return stops
             } else {
-                // lineBusStops is empty and busstopPoleOrder is unavailable: return empty,
-                // bus stops are fetched in selectLine to avoid duplicate fetching
+                // Both sources are empty; selectLine fetches bus stops, so return empty to avoid duplicate fetching.
                 return []
             }
         } else {
@@ -829,8 +828,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 self.lineStations = busStops
                 self.lineStops = getStopsForSelectedLine()
             } else {
-                // For GTFS routes, don't fetch bus stops here - they will be loaded when needed
-                // (e.g., when user starts typing in departure/arrival stop fields)
+                // For GTFS routes, don't fetch bus stops here.
+                // They are loaded when needed, e.g., when user starts typing in departure/arrival stop fields.
                 self.lineBusStops = []
                 self.lineStations = []
                 self.lineStops = getStopsForSelectedLine()
@@ -884,8 +883,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
     func saveAllDataToUserDefaults() async {
         let lineIndex = selectedLineNumber - 1
         
-        // When all timetable ride times match, update them BEFORE saving rideTimeKey; otherwise
-        // loadTransportationTimes defaults to the new value and the sync returns early
+        // When all timetable ride times match, update them BEFORE saving rideTimeKey.
+        // Otherwise loadTransportationTimes defaults to the new value and the sync returns early.
         selectedGoorback.syncTimetableRideTimeWhenAllSame(lineIndex: lineIndex, newRideTime: selectedRideTime)
         
         // Save line name
@@ -896,8 +895,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             UserDefaults.standard.removeObject(forKey: lineNameKey)
         }
         
-        // Save lineCode for Firestore sync whenever selectedLine exists, regardless of lineInput;
-        // empty string when the odpt:lineCode property is missing
+        // Save lineCode for Firestore sync whenever selectedLine exists, regardless of lineInput.
+        // It is an empty string when the odpt:lineCode property is missing.
         let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
         if let selectedLine = selectedLine {
             // Use lineCode property (short code like "JY", "TT") if available
@@ -1310,8 +1309,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 self.selectedOperatorCode = dataSource.operatorCode
                 self.operatorSelected = true
                 
-                // Load operator line list from UserDefaults for GTFS bus routes only (display only,
-                // no GTFS ZIP access); suggestions appear only once the user starts typing
+                // Load operator line list from UserDefaults for GTFS bus routes only (display only, no GTFS ZIP access).
+                // Suggestions appear only once the user starts typing.
                 if selectedTransportationKind == .bus && dataSource.apiType == .gtfs {
                     if let savedLineList = loadOperatorLineList(goorback: selectedGoorback, num: currentLineIndex) {
                         self.lineSuggestions = savedLineList
@@ -3049,8 +3048,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 if let operatorCode = line.operatorCode,
                    let dataSource = LocalDataSource.allCases.first(where: { $0.operatorCode == operatorCode }),
                    dataSource.apiType == .gtfs {
-                    // Clear line bus stops first to avoid showing old data while loading
-                    // lineStops will be updated automatically when fetchGTFSStopsForRoute completes
+                    // Clear line bus stops first to avoid showing old data while loading.
+                    // lineStops will be updated automatically when fetchGTFSStopsForRoute completes.
                     lineBusStops = []
                     
                     Task {

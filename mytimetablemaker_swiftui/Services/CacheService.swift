@@ -130,8 +130,8 @@ final class SharedDataManager: ObservableObject {
         // Process each operator's cached data and parse into transportation lines
         // Filter by kind to ensure only relevant data is loaded
         for transportOperator in operators {
-            // GTFS operators: only ensure the ZIP cache exists at startup;
-            // lines are fetched lazily when the user selects the operator
+            // GTFS operators: only ensure the ZIP cache exists at startup.
+            // Lines are fetched lazily when the user selects the operator.
             if transportOperator.apiType == .gtfs {
                 // GTFS is paused for now.
                 // Restore by uncommenting this block:
@@ -278,8 +278,8 @@ final class SharedDataManager: ObservableObject {
         var cacheResults: [(LocalDataSource, [TransportationLine])] = []
         
         for transportOperator in LocalDataSource.allCases {
-            // GTFS operators: download the ZIP for caching if missing (no extraction);
-            // lines are fetched lazily when the user selects the operator
+            // GTFS operators: download the ZIP for caching if missing (no extraction).
+            // Lines are fetched lazily when the user selects the operator.
             if transportOperator.apiType == .gtfs {
                 // GTFS is paused for now.
                 // Restore by uncommenting this block:

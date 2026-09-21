@@ -59,8 +59,8 @@ extension UIScreen {
     var lineImageForegroundSize: CGFloat { customWidth / 20 }
     var lineImageBackgroundSize: CGFloat { customWidth / 15 }
     var timeFontSize: CGFloat { customWidth / 18 }
-    // Full width, matching the size the banner actually asks for. A narrower
-    // frame makes the ad request more width than it is given
+    // Full width, matching the size the banner actually asks for.
+    // A narrower frame makes the ad request more width than it is given.
     var admobBannerWidth: CGFloat { screenWidth }
     var admobBannerMinWidth: CGFloat { 320 }
     // Same shape the Flutter apps use, so one banner decision covers the studio

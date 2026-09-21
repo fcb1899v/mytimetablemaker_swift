@@ -4,8 +4,8 @@
 //
 //  Created by Nakajima Masao on 2025/08/12.
 //
-//  Sheet for configuring railway lines and bus routes: ODPT line search, station
-//  selection, custom lines, multi-language support, and line color customization.
+//  Sheet for configuring railway lines and bus routes.
+//  It covers ODPT line search, station selection, custom lines, multi-language support, and line color customization.
 //
 
 import SwiftUI

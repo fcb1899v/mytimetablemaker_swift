@@ -51,8 +51,7 @@ struct SettingsContentView: View {
         contentWithAlerts
     }
 
-    // Split large view composition into smaller chunks
-    // to avoid Swift compiler type-check timeouts.
+    // Split the large view composition into smaller chunks to avoid Swift compiler type-check timeouts.
     private var navigationConfiguredContent: some View {
         ZStack {
             mainContent

@@ -18,8 +18,7 @@ struct mytimetablemaker_swiftuiApp: App {
     
     // UIKit integration for handling app lifecycle events
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    // Coming back from background is the one moment the network can change
-    // without the app doing anything
+    // Coming back from background is the one moment the network can change without the app doing anything.
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some Scene {
@@ -48,8 +47,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // App Check must be installed before configure(), or the first token request has no
-        // provider. Debug prints a token; register it in Firebase Console -> App Check per install
+        // App Check must be installed before configure(), or the first token request has no provider.
+        // Debug prints a token; register it in Firebase Console -> App Check per install.
         AppCheckState.seedDebugToken()
         AppCheckState.installProvider()
 
@@ -83,16 +82,16 @@ final class AppCheckState: ObservableObject {
 
     private init() {}
 
-    // A failed attestation can still hand back a non-empty placeholder, which
-    // the backend later rejects. Only a real three part JWT counts as ready
+    // A failed attestation can still hand back a non-empty placeholder, which the backend later rejects.
+    // Only a real three part JWT counts as ready.
     static func isValidJWT(_ token: String?) -> Bool {
         guard let token = token, !token.isEmpty else { return false }
         let parts = token.split(separator: ".", omittingEmptySubsequences: false)
         return parts.count == 3 && parts.allSatisfy { !$0.isEmpty }
     }
 
-    // The debug provider reads this key, so the Debug.xcconfig token is used instead of a
-    // per-install SDK token. Must run before FirebaseApp.configure()
+    // The debug provider reads this key, so the Debug.xcconfig token replaces a per-install SDK token.
+    // Must run before FirebaseApp.configure().
     static func seedDebugToken() {
         #if DEBUG
         guard let token = Bundle.main.infoDictionary?["APP_CHECK_DEBUG_TOKEN"] as? String,
@@ -104,8 +103,8 @@ final class AppCheckState: ObservableObject {
         #endif
     }
 
-    // Staged, not one call repeated: a stale cache needs a forced refresh, a provider that
-    // never installed needs reinstalling. Repeating one call repeats one failure
+    // Staged: a stale cache needs a forced refresh, a provider that never installed needs reinstalling.
+    // Repeating one call repeats one failure.
     func refresh() {
         if isReady { return }
         token(forcingRefresh: false) { [weak self] cached in
