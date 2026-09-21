@@ -395,10 +395,8 @@ struct MainContentView: View {
                     if num < 2 {
                         isShowingTransferSheet = true
                     } else {
-                    // Calculate and store values for sheet initialization when showing line sheet
-                    // num - 2: Convert transfer num to line index (0-based)
-                    // Offset 2 skips departure transfer (num=1) and arrival transfer (num=0)
-                    // Use DispatchQueue to ensure state is updated before showing sheet
+                    // Line sheet init: num - 2 maps transfer num to a 0-based line index (skips
+                    // transfers num=1/0); DispatchQueue updates state before the sheet shows
                     DispatchQueue.main.async {
                         sheetGoorback = goorback
                         sheetLineIndex = max(num - 2, 0)
@@ -454,9 +452,8 @@ struct MainContentView: View {
                 // Ensure state updates are applied before showing sheet
                 // Use DispatchQueue to ensure state is updated before showing sheet
                 DispatchQueue.main.async {
-                    // Calculate and store values for sheet initialization
-                    // num is already line index (0-based), so (num + 2) - 2 = num
-                    // The +2 converts to transfer num, then -2 converts back to line index
+                    // Store values for sheet init: num is already the 0-based line index,
+                    // so (num + 2) - 2 == num
                     sheetGoorback = goorback
                     sheetLineIndex = max((num + 2) - 2, 0)
                     // Small delay to ensure state updates are applied

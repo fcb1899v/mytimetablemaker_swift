@@ -170,6 +170,7 @@
 "Incorrect email format" = "Incorrect email format";
 "Incorrect password format" = "Incorrect password format";
 "Incorrect email or password" = "Incorrect email or password";
+"Authentication error occurred" = "Authentication error occurred";
 "Confirm password don't match" = "Confirm password don't match";
 
 // MARK: - Login Messages
@@ -292,6 +293,7 @@
 "Clear" = "Clear";
 "Select" = "Select";
 "Save" = "Save";
+"Get" = "Get";
 "Input Save" = "Input Save";
 "Ride Time" = "Ride Time";
 "Operator Name" = "Operator Name";

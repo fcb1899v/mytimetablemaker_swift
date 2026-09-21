@@ -3,8 +3,7 @@
 //  mytimetablemaker_swiftui
 //
 //  Created by Nakajima Masao on 2025/08/24.
-//  Common UI components used across the application
-//  Provides reusable UI elements for consistent design
+//  Common reusable UI components for a consistent design across the app
 //
 
 import SwiftUI

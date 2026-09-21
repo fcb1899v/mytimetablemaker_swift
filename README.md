@@ -26,8 +26,8 @@ It combines Firebase authentication and Firestore storage with railway and bus d
 - **Railway Data Integration**: ODPT API; the GTFS code path is present but currently disabled
 - **Multi-language Support**: Japanese and English localization
 - **Google Mobile Ads**: Banner ads
-- **Data Synchronization**: Firestore save and get (`FirestoreViewModel.setFirestore()` / `getFirestore()`), keyed on the signed-in user's uid
-- **Account Deletion**: `LoginViewModel.delete()` removes the Firebase Auth user and the Firestore document it owns
+- **Data Synchronization**: Firestore save and get (`FirestoreViewModel.setFirestore(password:)` / `getFirestore(password:)`), each re-authenticating with the password before it touches the cloud
+- **Account Deletion**: `LoginViewModel.delete(password:)` re-authenticates with the password the settings screen asks for, and only then removes the Firebase Auth user
 - **Image Management**: Photo picker for timetable images
 - **Caching**: Fetched line and station data are cached on the device
 

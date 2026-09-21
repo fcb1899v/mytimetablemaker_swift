@@ -5,16 +5,14 @@
 //  Created by Nakajima Masao on 2025/08/24.
 //
 //  MARK: - Overview
-//  Service for managing local cache storage and metadata.
-//  Provides efficient data persistence and retrieval for offline access.
+//  Local cache storage and metadata service for offline data access.
 //
 
 import Foundation
 import Combine
 
 // MARK: - File Cache Management
-// Handles local storage of ODPT data and metadata.
-// Provides efficient data persistence and retrieval for offline access.
+// Local storage of ODPT data and metadata for offline access
 final class CacheStore {
     private let dir: URL
     
@@ -83,8 +81,7 @@ final class CacheStore {
 
 
 // MARK: - Shared Data Manager
-// Singleton service for managing transportation line data across the app.
-// Implements shared cache to avoid repeated loading and improve performance.
+// Singleton shared cache of transportation line data to avoid repeated loading
 @MainActor
 final class SharedDataManager: ObservableObject {
     
@@ -115,8 +112,7 @@ final class SharedDataManager: ObservableObject {
     }
     
     // MARK: - Data Access
-    // Get lines for a specific transportation kind
-    // Load only data for the requested kind to improve performance
+    // Get lines for one transportation kind, loading only that kind's data
     func getLines(for kind: TransportationLine.Kind, allowFetch: Bool = true) async -> [TransportationLine] {
         // Initialize only if needed for this kind
         if !initializedKinds.contains(kind) {
@@ -134,9 +130,8 @@ final class SharedDataManager: ObservableObject {
         // Process each operator's cached data and parse into transportation lines
         // Filter by kind to ensure only relevant data is loaded
         for transportOperator in operators {
-            // Handle GTFS operators separately
-            // For GTFS, don't fetch lines at startup - only ensure ZIP cache exists
-            // Lines will be fetched lazily when user selects the operator
+            // GTFS operators: only ensure the ZIP cache exists at startup;
+            // lines are fetched lazily when the user selects the operator
             if transportOperator.apiType == .gtfs {
                 // GTFS is paused for now.
                 // Restore by uncommenting this block:
@@ -283,9 +278,8 @@ final class SharedDataManager: ObservableObject {
         var cacheResults: [(LocalDataSource, [TransportationLine])] = []
         
         for transportOperator in LocalDataSource.allCases {
-            // Handle GTFS operators separately
-            // For GTFS, download ZIP file for caching if not exists (but don't extract)
-            // Lines will be fetched lazily when user selects the operator
+            // GTFS operators: download the ZIP for caching if missing (no extraction);
+            // lines are fetched lazily when the user selects the operator
             if transportOperator.apiType == .gtfs {
                 // GTFS is paused for now.
                 // Restore by uncommenting this block:
@@ -391,8 +385,7 @@ final class SharedDataManager: ObservableObject {
     }
     
     // MARK: - Cache Availability Check
-    // Check if any cache exists to determine if we need to fetch data
-    // Cache existence indicates that data has been fetched at least once
+    // Any existing cache means data has been fetched at least once, so no fetch is needed
     func checkCacheAvailability() -> Bool {
         return LocalDataSource.allCases.contains { transportOperator in
             if transportOperator.apiType == .gtfs {
@@ -406,9 +399,7 @@ final class SharedDataManager: ObservableObject {
     }
     
     // MARK: - Splash Initialization
-    // Perform complete initialization for splash screen
-    // Handles data loading, fetching, and update checks
-    // Note: isLoading should be set to true before calling this method
+    // Full splash init: data loading, fetching, update checks. Set isLoading = true before calling
     func performSplashInitialization() async {
         print("🔄 Starting data initialization...")
         

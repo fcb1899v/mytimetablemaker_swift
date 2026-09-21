@@ -104,8 +104,7 @@ enum LocalDataSource: CaseIterable {
     }
     
     // MARK: - GTFS File Name for Cache
-    // Generate safe file name for GTFS cache keys (without special characters)
-    // Used for cache key generation to avoid issues with special characters in file paths
+    // Safe file name for GTFS cache keys, without characters that break file paths
     var gtfsFileName: String {
         switch self {
         case .keioBus: return "keiobus"
@@ -620,8 +619,7 @@ enum ODPTCalendarType: CaseIterable, Equatable, Hashable {
     }
     
     // MARK: - Case Iterable
-    // Include all static calendar types, excluding .specific case
-    // .specific has associated value and cannot be included in allCases
+    // All static calendar types; .specific has an associated value and cannot be in allCases
     static var allCases: [ODPTCalendarType] {
         return [.weekday, .holiday, .saturdayHoliday, .sunday, .monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
     }

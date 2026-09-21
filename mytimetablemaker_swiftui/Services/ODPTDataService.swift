@@ -5,15 +5,13 @@
 //  Created by Nakajima Masao on 2025/08/24.
 //
 //  MARK: - Overview
-//  Service for managing ODPT API communication and data parsing.
-//  Handles data fetching, caching, and conversion from external API format.
+//  ODPT API communication: data fetching, caching, and parsing from the external format.
 //
 
 import Foundation
 
 // MARK: - ODPT Railway DTO
-// DTO for railway data from ODPT API.
-// Maps external JSON structure to internal data model.
+// Maps ODPT railway JSON to the internal data model
 struct RailwayDTO: Decodable {
     let title: String
     let sameAs: String
@@ -46,8 +44,7 @@ struct RailwayDTO: Decodable {
 }
 
 // MARK: - ODPT Bus Route Pattern DTO
-// DTO for bus route pattern data from ODPT API.
-// Maps external JSON structure to internal bus data model.
+// Maps ODPT bus route pattern JSON to the internal bus data model
 struct BusRoutePatternDTO: Decodable {
     let title: String
     let sameAs: String
@@ -139,8 +136,7 @@ struct ODPTParser {
     }
     
     // MARK: - Railway Data Parsing
-    // Parse railway data from JSON files with support for both API and local file formats
-    // Uses DTO pattern for type-safe decoding, consistent with bus route parsing
+    // Parse railway JSON (API or local file format) via DTOs, consistent with bus route parsing
     static func parseRailwayRoutes(_ data: Data) throws -> [TransportationLine] {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
@@ -211,8 +207,7 @@ struct ODPTParser {
 }
 
 // MARK: - ODPT Data Service
-// Handles HTTP communication with the ODPT API.
-// Manages authentication, caching, and data retrieval.
+// HTTP communication with the ODPT API: authentication, caching, and data retrieval
 final class ODPTDataService: NSObject, URLSessionDelegate {
     private var session: URLSession!
     private let cache = CacheStore()
@@ -233,8 +228,7 @@ final class ODPTDataService: NSObject, URLSessionDelegate {
     }
     
     // MARK: - URL Session Delegate Methods
-    // Handle HTTP redirects while preserving authentication parameters.
-    // Ensures consumer key is maintained across redirect chains.
+    // Keep the consumer key on HTTP redirects so authentication survives redirect chains
     private func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         // MARK: - Redirect URL Modification
         // Add consumerKey to the redirected URL to maintain authentication
@@ -275,9 +269,7 @@ final class ODPTDataService: NSObject, URLSessionDelegate {
     }
 
     // MARK: - Common Request Configuration
-    // Common function to configure request headers
-    // Sets conditional request headers for efficient caching
-    // Note: ODPT API uses URL query parameter acl:consumerKey for authentication
+    // Conditional request headers for caching; ODPT authenticates via the acl:consumerKey query
     private func configureRequest(_ request: inout URLRequest, consumerKey: String, conditionalHeaders: (etag: String?, lastModified: String?)? = nil) {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
@@ -369,8 +361,7 @@ final class ODPTDataService: NSObject, URLSessionDelegate {
     }
     
     // MARK: - Conditional GET Request Check (ODPT API Optimized)
-    // Check if individual operator data needs updating using conditional GET requests
-    // Only performs update check if cache exists and ETag/Last-Modified are available
+    // Per-operator update check via conditional GET, only when cache and ETag/Last-Modified exist
     func checkIndividualOperatorForUpdates(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> Bool {
         
         // MARK: - Cache-Based Update Check

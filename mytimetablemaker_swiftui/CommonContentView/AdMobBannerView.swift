@@ -201,9 +201,8 @@ struct AdMobBannerView: UIViewControllerRepresentable {
             self.parent = parent
         }
         
-        // Inline adaptive reports the size it was actually given here, not at
-        // request time. The frame is pinned to admobBannerHeight, so a shorter
-        // ad leaves the difference as empty space
+        // Inline adaptive reports its real size only here, not at request time. The frame
+        // is pinned to admobBannerHeight, so a shorter ad leaves the difference empty
         func bannerViewDidReceiveAd(_ bannerView: BannerView) {
             let requested = bannerView.adSize.size
             let served = bannerView.intrinsicContentSize
@@ -235,8 +234,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     }
     
     // MARK: - App Tracking Transparency
-    // Request app tracking transparency permission
-    // Must be called before ad preloading
+    // Request ATT permission; must be called before ad preloading
     private static func requestAppTrackingTransparency(completion: @escaping () -> Void) {
         guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else {
             print("🔍 AdMob Debug: ATT already determined: \(ATTrackingManager.trackingAuthorizationStatus.rawValue)")
@@ -257,8 +255,7 @@ struct AdMobBannerView: UIViewControllerRepresentable {
     }
     
     // MARK: - Ad Preloading
-    // Preload ads during splash screen to improve user experience
-    // ATT is requested first, then ads are loaded after user response
+    // Preload ads during splash: ATT is requested first, ads load after the user responds
     static func preloadAds() -> BannerView? {
         // Request ATT first, then load ads after user response
         requestAppTrackingTransparency {

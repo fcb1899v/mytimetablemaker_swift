@@ -59,10 +59,7 @@ extension String {
     }
 
     // MARK: - Bus English Name Extraction
-    // Extract English names from ODPT bus identifiers (only for English locale)
-    /// Extract English name from bus route identifier
-    /// Example: "odpt.Busroute:Toei.Mon33" → "Mon33"
-    /// Validates format and ensures route code contains English characters
+    /// Extract the English route code from an ODPT bus identifier (English locale only)
     var busRouteEnglishName: String? {
         // Only extract English name for English locale
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
@@ -104,11 +101,7 @@ extension String {
     }
     
     // MARK: - Bus Stop Multi-language Title Generation
-    /// Generate LocalizedTitle for bus stops from note and busstopPole
-    /// - Parameters:
-    ///   - note: Japanese name from odpt:note field
-    ///   - busstopPole: English name from odpt:busstopPole field (3rd component)
-    /// - Returns: LocalizedTitle with Japanese and English names
+    /// Build LocalizedTitle for a bus stop from odpt:note (Japanese) and busstopPole (English)
     static func generateBusStopTitle(note: String, busstopPole: String) -> LocalizedTitle? {
         let japaneseName: String? = note.isEmpty ? nil : note.trimmingCharacters(in: .whitespacesAndNewlines)
         let englishName: String?
@@ -310,9 +303,7 @@ extension String {
     }
     
     // MARK: - Time Format Conversion
-    // Convert HH:MM format or minutes-only format to minutes within the hour
-    // - "8:30" or "08:30" -> 30 (extract minutes from HH:MM)
-    // - "30" -> 30 (already minutes, used when loading from timetable storage "0 15 30 45")
+    // Convert "HH:MM" or minutes-only ("30", as stored in timetable "0 15 30 45") to minutes
     private func convertHHMMToMinutes(_ timeString: String) -> Int {
         let components = timeString.components(separatedBy: ":")
         if components.count == 2, let minute = Int(components[1]) {
@@ -398,8 +389,7 @@ extension String {
     }
     
     // MARK: - Load Train Type List
-    // Load existing train types from UserDefaults with color-based sorting
-    // If trainTypeListKey doesn't exist, collect train types from individual hour data
+    // Load train types from UserDefaults sorted by color; fall back to per-hour data if missing
     func loadTrainTypeList(_ calendarType: ODPTCalendarType, _ num: Int) -> [String] {
         let trainTypeListKey = self.trainTypeListKey(calendarType, num)
         
@@ -725,8 +715,7 @@ extension SettingsLineSheetViewModel {
     }
     
     // MARK: - Data Parsing Helpers
-    // Parse stations by line code
-    // Generic parser for both bus stops and railway stations by line code
+    // Generic parser for bus stops and railway stations by line code
     func parseStationsByLineCode(_ data: Data, lineCode: String, isBus: Bool) -> [TransportationStop]? {
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])

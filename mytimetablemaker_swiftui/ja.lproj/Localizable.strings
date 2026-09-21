@@ -168,6 +168,7 @@
 "Incorrect email format" = "メールアドレスの形式が正しくありません";
 "Incorrect password format"= "パスワードの形式が正しくありません";
 "Incorrect email or password" = "メールアドレスまたはパスワードが正しくありません";
+"Authentication error occurred" = "認証エラーが発生しました";
 "Confirm password don't match" = "確認用パスワードが一致しません";
 
 // MARK: - Login Messages
@@ -287,6 +288,7 @@
 "Timetable (Riding Time)" = "時刻表（乗車時間）";
 "Auto Generate Timetable" = "時刻表の自動生成";
 "Save" = "保存";
+"Get" = "取得";
 "Input Save" = "入力保存";
 "Select" = "選択";
 "Updated: " = "更新: ";

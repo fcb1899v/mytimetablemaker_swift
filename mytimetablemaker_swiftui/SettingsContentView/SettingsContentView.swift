@@ -139,7 +139,7 @@ struct SettingsContentView: View {
         } message: {
             Text(myFirestore.message)
         }
-        .tint(.primary)
+        .tint(Color(uiColor: .label))
     }
 
     private var contentWithAlerts: some View {
@@ -156,10 +156,10 @@ struct SettingsContentView: View {
         } message: {
             Text("Logout your account?".localized)
         }
-        .alert("⚠️ \("Delete Account".localized)", isPresented: $isShowDeleteAlert) {
+        .alert(Text(verbatim: "Delete Account".localized), isPresented: $isShowDeleteAlert) {
             SecureField("Enter your password".localized, text: $deleteAccountPassword)
             Button("Delete".localized, role: .destructive) {
-                myLogin.delete()
+                myLogin.delete(password: deleteAccountPassword)
                 isShowDeleteAlert = false
                 deleteAccountPassword = ""
             }
@@ -170,10 +170,10 @@ struct SettingsContentView: View {
         } message: {
             Text("Delete your account?".localized)
         }
-        .alert("⚠️ \("Get saved data".localized)", isPresented: $isShowGetFirestoreAlert) {
+        .alert(Text(verbatim: "Get saved data".localized), isPresented: $isShowGetFirestoreAlert) {
             SecureField("Enter your password".localized, text: $getFirestorePassword)
-            Button("OK".localized, role: .none) {
-                myFirestore.getFirestore()
+            Button("Get".localized, role: .destructive) {
+                myFirestore.getFirestore(password: getFirestorePassword)
                 isShowGetFirestoreAlert = false
                 getFirestorePassword = ""
             }
@@ -184,10 +184,10 @@ struct SettingsContentView: View {
         } message: {
             Text("Overwritten current data?".localized)
         }
-        .alert("⚠️ \("Save current data".localized)", isPresented: $isShowSaveFirestoreAlert) {
+        .alert(Text(verbatim: "Save current data".localized), isPresented: $isShowSaveFirestoreAlert) {
             SecureField("Enter your password".localized, text: $saveFirestorePassword)
-            Button("OK".localized, role: .none) {
-                myFirestore.setFirestore()
+            Button("Save".localized, role: .destructive) {
+                myFirestore.setFirestore(password: saveFirestorePassword)
                 isShowSaveFirestoreAlert = false
                 saveFirestorePassword = ""
             }
@@ -198,7 +198,7 @@ struct SettingsContentView: View {
         } message: {
             Text("Overwritten saved data?".localized)
         }
-        .tint(.primary)
+        .tint(Color(uiColor: .label))
         // MARK: - Load Route 2 Setting
         .onAppear {
             loadRoute2Setting()
@@ -276,8 +276,7 @@ struct SettingsContentView: View {
             }
             
             // MARK: - Account Management
-            // Hidden while App Check is down: every entry here leads to
-            // Firestore, which rejects the call without it
+            // Hidden while App Check is down: every entry leads to Firestore, which rejects it
             if appCheck.isReady {
                 Section(
                     header: Text("Account".localized)
@@ -362,9 +361,7 @@ struct SettingsContentView: View {
         showRoute2 = back2Route2Value || go2Route2Value
     }
     
-    /// Save Route 2 display setting to UserDefaults and update ViewModel
-    /// Saves the same value to both back2 and go2
-    /// - Parameter value: New Route 2 display state
+    /// Save Route 2 display setting to UserDefaults (both back2 and go2) and update ViewModel
     private func saveRoute2Setting(_ value: Bool) {
         // Save to UserDefaults for both routes
         UserDefaults.standard.set(value, forKey: "back2".isShowRoute2Key)
@@ -376,10 +373,6 @@ struct SettingsContentView: View {
     }
     
     /// Creates a settings button with consistent styling
-    /// - Parameters:
-    ///   - title: Button title text
-    ///   - action: Action to perform when button is tapped
-    /// - Returns: Configured button view
     @ViewBuilder
     private func createSettingsButton(title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -395,9 +388,7 @@ struct SettingsContentView: View {
         }
     }
     
-    /// Creates an account button (logout or delete account) with alert confirmation
-    /// - Parameter isDeleteAccount: Whether this is a delete account button (true) or logout button (false)
-    /// - Returns: Configured button view
+    /// Creates a logout or delete-account button with alert confirmation (isDeleteAccount selects)
     @ViewBuilder
     private func accountButton(isDeleteAccount: Bool) -> some View {
         Button(action: {
@@ -413,9 +404,7 @@ struct SettingsContentView: View {
         }
     }
     
-    /// Creates a Firestore button (get or save data) with alert confirmation
-    /// - Parameter isSaveFirestore: Whether this is a save button (true) or get button (false)
-    /// - Returns: Configured button view
+    /// Creates a Firestore get or save button with alert confirmation (isSaveFirestore selects)
     @ViewBuilder
     private func firestoreButton(isSaveFirestore: Bool) -> some View {
         Button(action: {

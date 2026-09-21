@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Xcodeプロジェクトにファイルを自動追加するスクリプト
-# 使用方法: ./add_files_to_xcode.sh [ファイルパス]
+# Add a file to the Xcode project automatically.
+# usage: ./add_files_to_xcode.sh <file path>
 
 PROJECT_FILE="mytimetablemaker_swiftui.xcodeproj/project.pbxproj"
 PROJECT_NAME="mytimetablemaker_swiftui"
@@ -16,7 +16,7 @@ FILE_PATH="$1"
 FILE_NAME=$(basename "$FILE_PATH")
 FILE_EXTENSION="${FILE_NAME##*.}"
 
-# ファイルタイプの判定
+# Decide the file type
 case "$FILE_EXTENSION" in
     "swift")
         FILE_TYPE="sourcecode.swift"
@@ -56,16 +56,16 @@ case "$FILE_EXTENSION" in
         ;;
 esac
 
-# 新しいUUIDを生成
+# Generate a new UUID
 NEW_UUID=$(uuidgen | tr '[:lower:]' '[:upper:]' | sed 's/-//g')
 
-# ファイル参照を追加
+# Add the file reference
 echo "プロジェクトファイルにファイル参照を追加中..."
 sed -i '' "/\/\* End PBXFileReference section \*\//i\\
 		${NEW_UUID} /* ${FILE_NAME} */ = {isa = PBXFileReference; lastKnownFileType = ${FILE_TYPE}; path = ${FILE_NAME}; sourceTree = \"<group>\"; };
 " "$PROJECT_FILE"
 
-# プロジェクトグループにファイルを追加
+# Add the file to the project group
 echo "プロジェクトグループにファイルを追加中..."
 sed -i '' "/children = (/a\\
 					${NEW_UUID} /* ${FILE_NAME} */,

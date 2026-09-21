@@ -4,10 +4,8 @@
 //
 //  Created by Nakajima Masao on 2025/08/12.
 //
-//  Sheet view for configuring railway lines and bus routes in settings
-//  Provides functionality to search, select, and configure transportation lines
-//  including predefined railway data from ODPT API and custom line configurations.
-//  Features multi-language support, station search, and line color customization.
+//  Sheet for configuring railway lines and bus routes: ODPT line search, station
+//  selection, custom lines, multi-language support, and line color customization.
 //
 
 import SwiftUI
@@ -47,8 +45,7 @@ struct SettingsLineSheet: View {
     }
     
     // MARK: - Helper Functions
-    /// Resets focus from all text fields (View-level focus states only)
-    /// ViewModel-level focus states are reset in clearAllFormData()
+    /// Resets View-level text field focus; ViewModel-level focus is reset in clearAllFormData()
     private func clearAllFocus() {
         focused = false
         operatorFocused = false
@@ -141,8 +138,7 @@ struct SettingsLineSheet: View {
         }
         .overlay {
             // MARK: - Loading Overlay
-            // Dark overlay with progress bar when loading bus stops, generating timetable, or fetching line list
-            // Displayed on top of all other views including navigation bar
+            // Dark overlay with progress bar above everything (incl. navigation bar) while loading
             if vm.isLoadingBusStops || vm.isLoadingTimetable || vm.isLoadingLines {
                 ZStack {
                     Color.black.opacity(0.7)
@@ -1181,7 +1177,6 @@ struct SettingsLineSheet_Previews: PreviewProvider {
 }
 
 // MARK: - File Summary
-// Comprehensive line configuration sheet interface for MyTimeTableMaker app
-// Features: ODPT API integration, station search, line customization, data management
+// Line configuration sheet: ODPT API integration, station search, line customization
 
 

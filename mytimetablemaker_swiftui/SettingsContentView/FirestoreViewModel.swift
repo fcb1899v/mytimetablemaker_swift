@@ -33,10 +33,56 @@ final class FirestoreViewModel: ObservableObject {
         return userdb.collection("goorback").document(goorback)
     }
  
+    // MARK: - Re-authentication
+    // The cloud data is only reachable after the password is checked again
+    private func reauthenticate(_ password: String, _ errorTitle: String, _ errorMessage: String,
+                                then work: @escaping () -> Void) {
+        isShowAlert = false
+        isShowMessage = false
+        isFirestoreSuccess = false
+        guard !password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            title = ValidationMessages.inputError
+            message = ValidationMessages.enterPassword
+            isLoading = false
+            isShowMessage = true
+            return
+        }
+        guard let user = Auth.auth().currentUser, let email = user.email, !email.isEmpty else {
+            title = errorTitle
+            message = errorMessage
+            isLoading = false
+            isShowMessage = true
+            return
+        }
+        isLoading = true
+        title = errorTitle
+        message = errorMessage
+        Task { @MainActor in
+            do {
+                let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+                try await user.reauthenticate(with: credential)
+                work()
+            } catch {
+                let error = error as NSError
+                if let errorCode = AuthErrorCode(rawValue: error.code) {
+                    message = errorCode.localizedMessage
+                }
+                isLoading = false
+                isShowMessage = true
+            }
+        }
+    }
+
     // MARK: - Data Upload
-    // Uploads all UserDefaults data to Firestore server
-    func setFirestore() {
-        
+    // Uploads all UserDefaults data to Firestore server after re-authenticating
+    func setFirestore(password: String) {
+        reauthenticate(password, "Save data error".localized, "Data could not be saved".localized) { [self] in
+            uploadAll()
+        }
+    }
+
+    private func uploadAll() {
+
         isLoading = true
         isShowAlert = false
         isShowMessage = false
@@ -194,8 +240,14 @@ final class FirestoreViewModel: ObservableObject {
         
 
     // MARK: - Data Download
-    // Downloads all data from Firestore server to UserDefaults
-    func getFirestore() {
+    // Downloads all data from Firestore server to UserDefaults after re-authenticating
+    func getFirestore(password: String) {
+        reauthenticate(password, "Get data error".localized, "Data could not be got".localized) { [self] in
+            downloadAll()
+        }
+    }
+
+    private func downloadAll() {
         isLoading = true
         isShowAlert = false
         isShowMessage = false

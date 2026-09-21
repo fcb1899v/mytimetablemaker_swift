@@ -53,8 +53,7 @@ extension Auth {
 }
 
 // MARK: - AuthErrorCode Extensions
-// Helper extensions for Firebase Authentication error handling
-// Firebase 11 folded AuthErrorCode.Code into AuthErrorCode itself
+// Firebase Auth error helpers; Firebase 11 folded AuthErrorCode.Code into AuthErrorCode
 extension AuthErrorCode {
     
     // MARK: - Localized Error Message
@@ -66,6 +65,9 @@ extension AuthErrorCode {
         case .userNotFound:
             return "Incorrect email or password".localized
         case .wrongPassword:
+            return "Incorrect email or password".localized
+        // Projects with email enumeration protection return this instead of wrongPassword
+        case .invalidCredential:
             return "Incorrect email or password".localized
         case .userDisabled:
             return "This account is disabled".localized

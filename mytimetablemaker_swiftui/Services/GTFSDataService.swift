@@ -5,8 +5,7 @@
 //  Created by Nakajima Masao on 2025/11/23.
 //
 //  MARK: - Overview
-//  Service for managing GTFS data processing and parsing.
-//  Handles GTFS ZIP download, extraction, and timetable data processing.
+//  GTFS ZIP download, extraction, and timetable data processing service.
 
 import Foundation
 import ZipArchive  // SPM: import ZipArchive, CocoaPods: import SSZipArchive
@@ -30,9 +29,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Load Translations
-    // Load translations.txt from GTFS data and return a dictionary for quick lookup
-    // Key format: "tableName|fieldName|recordId|language" or "tableName|fieldName|fieldValue|language"
-    // Loads English translations for non-Japanese languages
+    // English translations.txt lookup keyed "table|field|recordId|lang" or "table|field|value|lang"
     private func loadTranslations(from extractedDir: URL) -> [String: String] {
         guard let translationsData = try? loadGTFSFile(from: extractedDir, filename: "translations.txt") else {
             return [:]
@@ -63,9 +60,8 @@ final class GTFSDataService {
                 continue
             }
             
-            // Create key based on record_id and/or field_value
-            // GTFS translations.txt can have both record_id and field_value, or just one of them
-            // Create keys for both to ensure we can find translations regardless of which is used
+            // translations.txt rows may carry record_id, field_value, or both;
+            // create keys for both so lookups succeed either way
             if let recordId = row["record_id"], !recordId.isEmpty {
                 let key = "\(tableName)|\(fieldName)|\(recordId)"
                 // Prefer current language, but allow English as fallback
@@ -117,8 +113,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Get Localized Text
-    // Get localized text from translations, or return original if Japanese or no translation found
-    // Also converts fullwidth numbers and alphabets to halfwidth
+    // Translated text (original if Japanese or untranslated), with fullwidth chars made halfwidth
     private func getLocalizedText(
         original: String,
         tableName: String,
@@ -164,9 +159,7 @@ final class GTFSDataService {
     }
     
     // MARK: - GTFS Data Processing
-    // Download and process GTFS data for operators that use GTFS format.
-    // Returns TransportationLine models directly (no intermediate GTFS models).
-    // For routes with multiple trip_headsigns (round trips), creates separate lines for each direction.
+    // Build TransportationLine models from GTFS; multi-headsign routes get one line per direction
     func fetchGTFSData(_ transportOperator: LocalDataSource, consumerKey: String) async throws -> [TransportationLine] {
         // Get GTFS URL using apiLink
         let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
@@ -197,9 +190,8 @@ final class GTFSDataService {
             let lastStopId: String?   // Last stop_id from stop_times.txt (for routes without headsign/direction_id)
         }
         
-        // If trip_headsign and direction_id are missing, use stop_times.txt to determine directions
-        // Load stop_times.txt to get first and last stop_id for each trip
-        // Also load stops.txt to get stop names from stop_id
+        // Without trip_headsign and direction_id, derive directions from stop_times.txt
+        // (first and last stop_id per trip) and stop names from stops.txt
         var tripEndpoints: [String: (firstStopId: String, lastStopId: String)] = [:]
         var stopsDict: [String: String] = [:]  // stop_id -> stop_name mapping
         
@@ -400,26 +392,21 @@ final class GTFSDataService {
     }
     
     // MARK: - GTFS ZIP Download (Public)
-    // Download GTFS ZIP file and extract it for caching at startup.
-    // This is used to pre-download and extract ZIP files at startup for faster access later.
+    // Download and extract the GTFS ZIP at startup so later access is faster
     func downloadGTFSZipOnly(url: String, consumerKey: String, transportOperator: LocalDataSource) async throws -> Data {
         return try await downloadGTFSZip(url: url, consumerKey: consumerKey, transportOperator: transportOperator)
     }
     
     // MARK: - GTFS ZIP Download
-    // Download GTFS ZIP file from ODPT API with consumer key authentication.
-    // Uses cache to avoid re-downloading the same file.
-    // For operators with date in GTFSDates, cache key includes date.
-    // For Toei Bus (no date), uses ETag/Last-Modified for conditional GET to detect updates.
+    // Cached download with consumer key; dated operators key by date, Toei Bus uses conditional GET
     private func downloadGTFSZip(url: String, consumerKey: String, transportOperator: LocalDataSource? = nil) async throws -> Data {
         // transportOperator must be provided for GTFS
         guard let transportOp = transportOperator else {
             throw ODPTError.invalidData
         }
         
-        // Generate cache key from transport operator
-        // cacheKey includes date, so if cached file exists, it's already for the correct date
-        // For Toei Bus, date is empty, so use different cache key format
+        // cacheKey includes the date, so a cached file is already for the correct date;
+        // Toei Bus has no date and uses a different key format
         let date = GTFSDates.date(for: transportOp) ?? ""
         let gtfsFileName = transportOp.gtfsFileName
         let cacheKey = date.isEmpty ? "gtfs_\(gtfsFileName).zip" : "gtfs_\(gtfsFileName)_\(date).zip"
@@ -458,9 +445,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Check for Toei Bus GTFS Update (Conditional GET)
-    // Check if Toei Bus GTFS ZIP file has been updated on the server using conditional GET.
-    // This function is only for Toei Bus (operators without date in GTFSDates).
-    // Returns new data if updated, nil if not modified.
+    // Conditional GET for operators without a GTFSDates date; returns new data or nil if unmodified
     private func checkForToeiBusGTFSUpdate(urlString: String, cacheKey: String) async throws -> Data? {
         guard let url = URL(string: urlString) else {
             throw ODPTError.invalidData
@@ -658,9 +643,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Get Extracted GTFS Directory
-    // Get extracted GTFS directory, using cache if available, otherwise download and extract.
-    // Returns URL of extracted directory.
-    // Uses cached directory directly if available (no copying needed since it's read-only).
+    // Return the cached extracted directory (read-only, no copy) or download and extract it
     private func getExtractedGTFSDirectory(transportOperator: LocalDataSource, consumerKey: String, gtfsURL: String) async throws -> URL {
         let date = GTFSDates.date(for: transportOperator) ?? ""
         let gtfsFileName = transportOperator.gtfsFileName
@@ -699,8 +682,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Load GTFS File
-    // Load a GTFS file from extracted directory.
-    // Uses in-memory cache to avoid reading the same file multiple times.
+    // Load a file from the extracted directory, with in-memory cache to avoid repeated reads
     private func loadGTFSFile(from directory: URL, filename: String) throws -> Data {
         let cacheKey = "\(directory.path)/\(filename)"
         
@@ -722,9 +704,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Fetch GTFS Stops for Route
-    // Fetch bus stops for a specific GTFS route.
-    // Process: route_id + direction_id -> trip_id list -> stop_id list (from first trip) -> stop names
-    // Downloads and parses GTFS data to get stop information for the selected route.
+    // route_id + direction_id -> trip_ids -> stop_ids (first trip) -> stop names
     func fetchGTFSStopsForRoute(_ routeId: String, transportOperator: LocalDataSource, consumerKey: String) async throws -> [TransportationStop] {
         // Get GTFS URL using apiLink
         let gtfsURL = transportOperator.apiLink(for: .line, transportationKind: .bus)
@@ -732,11 +712,8 @@ final class GTFSDataService {
             throw ODPTError.invalidData
         }
         
-        // Extract route_id and direction info from code
-        // Format: "route_id" or "route_id_directionId" or "route_id_directionCode"
-        // Note: route_id itself never contains "|", so "|" in the code indicates directionCode format
-        // directionCode uses "|" as separator between firstStopId and lastStopId
-        // route_id and directionCode are separated by a single "_" (code = "route_id_directionCode")
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
+        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -744,9 +721,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // Format: "route_id_directionCode" where directionCode = "firstStopId|lastStopId"
-            // route_id and directionCode are separated by a single "_"
-            // Find the first "_" to separate route_id and directionCode
+            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
+            // split at the first "_"
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -964,8 +940,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Create Transportation Line from Route
-    // Creates a TransportationLine from a route row, optionally including trip_headsign and direction_id for direction distinction.
-    // directionCode: Additional code for direction distinction (used when directionId is nil, e.g., "firstStopId_lastStopId")
+    // Build a line from a route row; trip_headsign/direction_id or directionCode mark direction
     private func createTransportationLine(from route: [String: String], routeId: String, tripHeadsign: String?, directionId: Int?, directionCode: String?, operatorCode: String?, translations: [String: String] = [:]) throws -> TransportationLine? {
         // Get route name: prioritize route_short_name, fallback to route_long_name
         // Some operators (like Keisei Transit Bus) may have empty route_short_name
@@ -1087,8 +1062,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Get Available Calendar Types from GTFS
-    // Get all available calendar types from GTFS calendar.txt file.
-    // Returns all calendar types that exist in the GTFS data (weekday, saturday, sunday, holiday).
+    // All calendar types present in calendar.txt (weekday, saturday, sunday, holiday)
     func getAvailableGTFSCalendarTypes(from data: Data) throws -> [ODPTCalendarType] {
         let rows = try parseGTFSCSV(from: data)
         
@@ -1230,8 +1204,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Check Calendar Type Match from calendar.txt Row
-    // Check if a calendar.txt row matches the requested calendar type.
-    // This is a helper function to avoid code duplication.
+    // Shared helper: does a calendar.txt row match the requested calendar type
     private func calendarRowMatchesCalendarType(
         row: [String: String],
         calendarType: ODPTCalendarType
@@ -1252,8 +1225,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Check if Service ID Matches Calendar Type
-    // Check if a specific service_id matches the requested calendar type.
-    // This method is used when we have trips with known service_ids and need to filter them.
+    // Filter trips with known service_ids by the requested calendar type
     private func serviceIdMatchesCalendarType(
         serviceId: String,
         calendarData: Data?,
@@ -1313,8 +1285,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Check Calendar Dates Exceptions
-    // Check if service_id has service based on calendar_dates.txt exceptions.
-    // ODPT approach: directly apply exceptions without date calculation.
+    // Service check via calendar_dates.txt exceptions, applied directly without date calculation
     private func checkCalendarDatesExceptions(
         serviceId: String,
         calendarDatesData: Data?,
@@ -1388,8 +1359,7 @@ final class GTFSDataService {
     }
     
     // MARK: - Fetch GTFS Bus Timetable for All Calendar Types
-    // Fetch bus timetable data from GTFS files for all calendar types at once for better performance.
-    // This avoids reading the same files multiple times.
+    // Fetch all calendar types in one pass so the same files are not read repeatedly
     func fetchGTFSBusTimetableForAllCalendarTypes(
         routeId: String,
         departureStop: TransportationStop,
@@ -1420,11 +1390,8 @@ final class GTFSDataService {
         let stopTimesData = try loadGTFSFile(from: extractedDir, filename: "stop_times.txt")
         let stopTimesRows = try parseGTFSCSV(from: stopTimesData)
         
-        // Extract original route_id and direction info from code
-        // Format: "route_id" or "route_id_directionId" or "route_id_directionCode"
-        // Note: route_id itself never contains "|", so "|" in the code indicates directionCode format
-        // directionCode uses "|" as separator between firstStopId and lastStopId
-        // route_id and directionCode are separated by a single "_" (code = "route_id_directionCode")
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
+        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -1432,9 +1399,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // Format: "route_id_directionCode" where directionCode = "firstStopId|lastStopId"
-            // route_id and directionCode are separated by a single "_"
-            // Find the first "_" to separate route_id and directionCode
+            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
+            // split at the first "_"
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -1627,11 +1593,8 @@ final class GTFSDataService {
         // Parse stop_times.txt first
         let stopTimesRows = try parseGTFSCSV(from: stopTimesData)
         
-        // Extract original route_id and direction info from code
-        // Format: "route_id" or "route_id_directionId" or "route_id_directionCode"
-        // Note: route_id itself never contains "|", so "|" in the code indicates directionCode format
-        // directionCode uses "|" as separator between firstStopId and lastStopId
-        // route_id and directionCode are separated by a single "_" (code = "route_id_directionCode")
+        // Code format: "route_id", "route_id_directionId", or "route_id_directionCode"; only a
+        // directionCode contains "|" (firstStopId|lastStopId) and follows the first "_"
         let originalRouteId: String
         var targetDirectionId: Int? = nil
         var targetFirstStopId: String? = nil
@@ -1639,9 +1602,8 @@ final class GTFSDataService {
         
         // Check if code contains "|" (indicates directionCode format, since route_id never contains "|")
         if routeId.contains("|") {
-            // Format: "route_id_directionCode" where directionCode = "firstStopId|lastStopId"
-            // route_id and directionCode are separated by a single "_"
-            // Find the first "_" to separate route_id and directionCode
+            // "route_id_directionCode" with directionCode = "firstStopId|lastStopId":
+            // split at the first "_"
             if let firstUnderscoreIndex = routeId.firstIndex(of: "_") {
                 originalRouteId = String(routeId[..<firstUnderscoreIndex])
                 let directionCode = String(routeId[routeId.index(after: firstUnderscoreIndex)...])
@@ -1769,9 +1731,8 @@ final class GTFSDataService {
             // Sort by stop_sequence to ensure correct order
             let sortedStopTimes = tripStopTimes.sorted { $0.sequence < $1.sequence }
             
-            // Find departure and arrival stops in this trip
-            // Get departure_time for the selected departure stop's stop_id
-            // Get arrival_time for the selected arrival stop's stop_id
+            // Find departure and arrival stops in this trip and take departure_time
+            // and arrival_time for the selected stop_ids
             guard let departureStopTime = sortedStopTimes.first(where: { $0.stopId == departureStopId }),
                   let arrivalStopTime = sortedStopTimes.first(where: { $0.stopId == arrivalStopId }),
                   departureStopTime.sequence < arrivalStopTime.sequence else {

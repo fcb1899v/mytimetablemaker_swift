@@ -31,16 +31,18 @@ final class LoginViewModel : ObservableObject {
     @Published var isSignUpSuccess = false
 
     // MARK: - Logout Function
-    // Signs out current user and updates login state
-    func logOut() {
+    // Signs out and updates login state; preserveMessage keeps the caller's alert
+    func logOut(preserveMessage: Bool = false) {
         isShowMessage = false
-        alertTitle = ValidationMessages.logoutErrorTitle
-        alertMessage = ""
+        if !preserveMessage {
+            alertTitle = ValidationMessages.logoutErrorTitle
+            alertMessage = ""
+        }
         if (isLoginSuccess) {
             isLoading = true
             do {
                 try Auth.auth().signOut()
-                alertTitle = ValidationMessages.logoutSuccess
+                if !preserveMessage { alertTitle = ValidationMessages.logoutSuccess }
                 UserDefaults.standard.set(false, forKey: "Login")
                 isLoginSuccess = false
                 isLoading = false
@@ -202,22 +204,39 @@ final class LoginViewModel : ObservableObject {
     }
     
     // MARK: - Account Deletion
-    // Deletes current user account from Firebase Auth
-    func delete() {
+    // Re-authenticates with the entered password, then deletes the account
+    func delete(password: String) {
         isShowMessage = false
+        guard !password.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            alertTitle = ValidationMessages.inputError
+            alertMessage = ValidationMessages.enterPassword
+            isShowMessage = true
+            return
+        }
+        guard let user = Auth.auth().currentUser, let email = user.email, !email.isEmpty else {
+            alertTitle = ValidationMessages.deleteAccountErrorTitle
+            alertMessage = ValidationMessages.accountNotDeleted
+            isShowMessage = true
+            return
+        }
         isLoading = true
         alertTitle = ValidationMessages.deleteAccountErrorTitle
         alertMessage = ValidationMessages.accountNotDeleted
-        Auth.auth().currentUser?.delete { [self] error in
-            Task { @MainActor in
-                if error != nil {
-                    isLoading = false
-                    isShowMessage = true
-                } else {
-                    alertTitle = ValidationMessages.deleteAccountSuccess
-                    alertMessage = ValidationMessages.accountDeletedSuccess
-                    logOut()
+        Task { @MainActor in
+            do {
+                let credential = EmailAuthProvider.credential(withEmail: email, password: password)
+                try await user.reauthenticate(with: credential)
+                try await user.delete()
+                alertTitle = ValidationMessages.deleteAccountSuccess
+                alertMessage = ValidationMessages.accountDeletedSuccess
+                logOut(preserveMessage: true)
+            } catch {
+                let error = error as NSError
+                if let errorCode = AuthErrorCode(rawValue: error.code) {
+                    alertMessage = errorCode.localizedMessage
                 }
+                isLoading = false
+                isShowMessage = true
             }
         }
     }

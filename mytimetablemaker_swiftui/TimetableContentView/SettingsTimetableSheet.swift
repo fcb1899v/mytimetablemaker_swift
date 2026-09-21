@@ -737,8 +737,7 @@ struct SettingsTimetableSheet: View {
     }
     
     // MARK: - Time and Train Type Pair Management
-    // Adds a new time, train type, and ride time triplet, then sorts by departure time
-    // If the same time exists, it will be overwritten with new train type and ride time
+    // Add a time/train type/ride time triplet sorted by time; an existing time is overwritten
     private func addTimeAndTrainTypePair(departureTime: Int, trainType: String?, rideTime: Int) {
         let timetableKey = goorback.timetableKey(selectedCalendarType, num, hour)
         let timetableTrainTypeKey = goorback.timetableTrainTypeKey(selectedCalendarType, num, hour)

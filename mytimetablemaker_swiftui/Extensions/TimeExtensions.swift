@@ -101,8 +101,7 @@ extension Date {
     }
     
     // MARK: - ODPT Calendar Type
-    // Determine calendar type based on date with fallback to available types
-    // For .specific types, check their displayCalendarType for matching
+    // Calendar type by date with fallback to available types (.specific matches by display type)
     func odpTCalendarType(fallbackTo availableTypes: [ODPTCalendarType]) -> ODPTCalendarType {
         // Helper function to check if a type or its displayCalendarType is available
         func isAvailable(_ type: ODPTCalendarType) -> Bool {
@@ -359,8 +358,7 @@ extension String {
     }
     
     // MARK: - Calendar Type
-    // Get calendar type for route and line based on date with cached available types
-    // Uses line-level cache key (structure: goorback -> line -> calendar types)
+    // Calendar type for route/line by date, using the line-level cache (goorback -> line -> types)
     func calendarType(for date: Date, num: Int) -> ODPTCalendarType {
         // Use line-level cache key to get available types for this specific line
         let lineCacheKey = "\(self)line\(num + 1)_calendarTypes"
@@ -471,8 +469,7 @@ extension String {
     }
     
     // MARK: - Route Titles
-    // Generate localized route and timetable titles
-    // Split station name by ":" and return first component for ODPT format
+    // Localized route and timetable titles; ODPT names are split on ":" and the first part used
     func timetableLineTitle(_ num: Int) -> String {
         let stationName = stationArray[2 * num + 1]
         let components = stationName.components(separatedBy: ":")
@@ -489,8 +486,7 @@ extension String {
     var otherroute: String { self.prefix(self.count - 1) + ((self.suffix(1) == "1") ? "2": "1") }
 
     // MARK: - Timetable Data Processing
-    // Get target calendar type based on date and available calendar types for the line
-    // Cache available types per route to avoid repeated loading
+    // Target calendar type by date and the line's available types, cached per route
     private static var availableTypesCache: [String: [ODPTCalendarType]] = [:]
     
     func getTargetCalendarType(_ date: Date, _ num: Int) -> ODPTCalendarType {
@@ -531,9 +527,8 @@ extension String {
             }.sorted()
         }
     }
-    // Get ride time for a specific departure time
-    // Uses timetableRideTime if available, otherwise falls back to input rideTime
-    // Determines calendar type based on date and available calendar types for the line
+    // Ride time for a departure: timetableRideTime if available, else input rideTime.
+    // Calendar type is determined by date and the line's available types
     func getRideTime(_ date: Date, departTime: Int, num: Int) -> Int {
         // Get target calendar type based on date and available calendar types
         let targetCalendarType = getTargetCalendarType(date, num)
@@ -642,12 +637,10 @@ extension String {
     }
     
     // MARK: - Timetable Data Existence Check
-    // Check if timetable data exists for the specified calendar type and line
-    // For .specific types, use original calendarType to check with unique identifier-based key
+    // Check timetable data for calendar type and line; .specific uses the identifier-based key
     func hasTimetableDataForType(_ calendarType: ODPTCalendarType, num: Int) -> Bool {
-        // Use original calendarType directly to check with the correct key
-        // For .specific types, this ensures we check the identifier-based key
-        // For standard types, this checks the standard key
+        // Use the original calendarType so .specific checks the identifier-based key
+        // and standard types check the standard key
         
         // Check all hours (4-25) to see if data exists
         for hour in 4...25 {
@@ -723,18 +716,15 @@ extension String {
             return detectedTypes
         }
         
-        // IMPORTANT: Do NOT search all keys for calendar types, as this can cause cross-route contamination
-        // Each route should only use its own cached calendar types
-        // If the current route's cache is not available, fall back to detection from actual data
+        // IMPORTANT: never search all keys; each route uses only its own cached calendar types
+        // to avoid cross-route contamination. Fall back to detection from data if no cache
         
         // Final fallback to default calendar types
         return [.weekday, .saturdayHoliday]
     }
     
     // MARK: - Sync Timetable Ride Time When All Same
-    // If all timetable ride times for this route are the same value, update every entry to the new ride time.
-    // If they are not all the same, do not change timetable ride times.
-    // Must be called BEFORE saving rideTimeKey (see saveAllDataToUserDefaults).
+    // Update every timetable ride time only if all are equal; must run BEFORE saving rideTimeKey
     func syncTimetableRideTimeWhenAllSame(lineIndex: Int, newRideTime: Int) {
         let calendarTypes = loadAvailableCalendarTypes(num: lineIndex)
         var allRideTimes: [Int] = []
@@ -832,8 +822,7 @@ extension Array where Element == any TransportationTime {
 extension ODPTCalendarType {
     
     // MARK: - Display Calendar Type
-    // Convert .specific calendar types to standard types for display
-    // API calls use original rawValue, but display uses converted types
+    // Convert .specific types to standard types for display; API calls keep the original rawValue
     var displayCalendarType: ODPTCalendarType {
         switch self {
         
@@ -869,8 +858,7 @@ extension ODPTCalendarType {
     }
     
     // MARK: - Base Display Name
-    // Base English name for each calendar type
-    // For .specific types, include identifier to distinguish different types with same display type
+    // Base English name; .specific includes its identifier to distinguish same-display types
     var debugDisplayName: String {
         let displayType = displayCalendarType
         switch displayType {
@@ -889,15 +877,13 @@ extension ODPTCalendarType {
     }
     
     // MARK: - Display Name
-    // Localized display name for each calendar type
-    // For .specific types, shows only the display type (identifier not shown for cleaner UI)
+    // Localized display name; .specific shows only the display type for a cleaner UI
     var displayName: String {
         return displayCalendarType.debugDisplayName.localized
     }
     
     // MARK: - Calendar Tag
-    // Get calendar tag for UserDefaults keys
-    // For .specific types, use identifier to ensure unique keys and prevent data overwriting
+    // Tag for UserDefaults keys; .specific uses its identifier so keys stay unique
     var calendarTag: String {
         // Extract identifier from .specific rawValue for unique key
         if case .specific(let rawValue) = self,

@@ -4,9 +4,8 @@
 //
 //  Created by Nakajima Masao on 2025/08/21.
 // 
-//  Sheet view for configuring transfer time and transportation methods in settings.
-//  Provides functionality to set transfer times and select transportation methods for line changes.
-//  Features include time range selection, transportation method toggles, and persistent storage.
+//  Sheet for configuring transfer time and transportation methods between lines,
+//  with time range selection, method toggles, and persistent storage.
 //
 
 import SwiftUI

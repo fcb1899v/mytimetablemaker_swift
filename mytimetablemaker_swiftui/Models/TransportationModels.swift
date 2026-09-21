@@ -10,7 +10,6 @@ import SwiftUI
 
 //  MARK: - Overview
 //  Core data models for railway and bus lines, stations, and related structures.
-//  Provides the foundation for all railway data management in the application.
 
 // MARK: - Transportation Stop Model
 // Unified model for both railway stations and bus stops
@@ -137,8 +136,7 @@ struct TransportationStop: Identifiable, Hashable, Codable {
 }
 
 // MARK: - Transportation Line Model
-// Core data structure representing a railway and bus line or transportation route.
-// Contains all necessary information for line identification, display, and configuration.
+// Railway or bus line with all data needed for identification, display, and configuration
 struct TransportationLine: Identifiable, Hashable, Codable {
     var id: String { code }
     enum Kind: String, CaseIterable, Codable { 
@@ -185,8 +183,7 @@ struct TransportationLine: Identifiable, Hashable, Codable {
 }
 
 // MARK: - Localized Title Model
-// Common structure for multi-language support across all transportation entities.
-// Provides localized display names based on user's language preference.
+// Multi-language names for transportation entities, resolved by the user's language
 struct LocalizedTitle: Codable, Hashable {
     let ja: String?  // Japanese name
     let en: String?  // English name
@@ -197,8 +194,7 @@ struct LocalizedTitle: Codable, Hashable {
     }
     
     // MARK: - Localized Name Retrieval
-    /// Get localized name based on current language
-    /// Falls back to English if Japanese is not available, and vice versa
+    /// Localized name for the current language; falls back to the other language if missing
     func getLocalizedName() -> String {
         let currentLanguage = Locale.current.language.languageCode?.identifier ?? "en"
         return currentLanguage.selectLocalizedName(ja: ja, en: en)
@@ -213,8 +209,7 @@ struct LocalizedTitle: Codable, Hashable {
 
 
 // MARK: - Station Information Model
-// Data structure representing a railway station.
-// Includes station identification, localization, and metadata.
+// Railway station: identification, localization, and metadata
 struct Station: Hashable, Codable {
     let name: String
     let code: String?
@@ -263,8 +258,7 @@ struct Station: Hashable, Codable {
 }
 
 // MARK: - Bus Stop Information Model
-// Data structure representing a bus stop.
-// Includes bus stop identification, localization, and metadata.
+// Bus stop: identification, localization, and metadata
 struct BusStop: Hashable, Codable {
     let name: String
     let code: String?
@@ -481,8 +475,7 @@ func transferType(from label: String) -> TransferType {
 }
 
 // MARK: - ODPT BusstopPole DTO
-// DTO for bus stop pole data from ODPT API.
-// Only extracts dc:title for Japanese station names.
+// Bus stop pole DTO from ODPT API; only dc:title (Japanese name) is extracted
 struct BusstopPoleDTO: Decodable {
     let title: String
     let sameAs: String?

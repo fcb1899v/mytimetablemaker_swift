@@ -48,12 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // App Check must be installed before configure(), or the first token
-        // request goes out without a provider. Firestore holds one document
-        // tree per signed in user and had no protection beyond the rules.
-        //
-        // Debug prints a token to the console; register it under Firebase
-        // Console -> App Check -> Manage debug tokens, per install.
+        // App Check must be installed before configure(), or the first token request has no
+        // provider. Debug prints a token; register it in Firebase Console -> App Check per install
         AppCheckState.seedDebugToken()
         AppCheckState.installProvider()
 
@@ -78,10 +74,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-// MARK: - App Check State
-// Whether App Check has cleared. Firestore holds one document tree per signed
-// in user, so the settings account section stays hidden until this is true.
-// Lives in this file because adding a file means editing the Xcode project.
+// MARK: - App Check State (kept here: adding a file means editing the Xcode project)
+// Whether App Check has cleared; the settings account section stays hidden until true
 final class AppCheckState: ObservableObject {
     static let shared = AppCheckState()
 
@@ -97,9 +91,8 @@ final class AppCheckState: ObservableObject {
         return parts.count == 3 && parts.allSatisfy { !$0.isEmpty }
     }
 
-    // The debug provider reads this key, so the token from Debug.xcconfig is
-    // used instead of one the SDK generates per install. Must run before
-    // FirebaseApp.configure()
+    // The debug provider reads this key, so the Debug.xcconfig token is used instead of a
+    // per-install SDK token. Must run before FirebaseApp.configure()
     static func seedDebugToken() {
         #if DEBUG
         guard let token = Bundle.main.infoDictionary?["APP_CHECK_DEBUG_TOKEN"] as? String,
@@ -111,9 +104,8 @@ final class AppCheckState: ObservableObject {
         #endif
     }
 
-    // Staged, not the same call repeated: a stale cache is fixed by forcing a
-    // refresh, and a provider that never installed is fixed by installing it
-    // again. Repeating one call just repeats one failure
+    // Staged, not one call repeated: a stale cache needs a forced refresh, a provider that
+    // never installed needs reinstalling. Repeating one call repeats one failure
     func refresh() {
         if isReady { return }
         token(forcingRefresh: false) { [weak self] cached in

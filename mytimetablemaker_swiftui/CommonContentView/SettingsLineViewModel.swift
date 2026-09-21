@@ -4,9 +4,8 @@
 //
 //  Created by Nakajima  on 2025/08/12.
 //
-//  ViewModel for SettingsLineSheet view that manages railway line configuration.
-//  Handles data loading from ODPT API and local JSON files, search functionality,
-//  station selection, and user preferences persistence.
+//  ViewModel for SettingsLineSheet: loads lines from ODPT API and local JSON,
+//  handles search, station selection, and user preference persistence.
 //
 
 import SwiftUI
@@ -287,8 +286,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     
     
     // MARK: - Data Management
-    // Load data from shared manager for better performance
-    // Only load data for the currently selected transportation kind to improve efficiency
+    // Load from the shared manager, only for the currently selected transportation kind
     func loadFromSharedService() async {
         // Load only the selected kind's data to improve performance
         let sharedLines = await sharedDataManager.getLines(for: selectedTransportationKind)
@@ -518,8 +516,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Data Processing
-    /// Remove duplicates based on operator and line name combination
-    /// Ensures unique line representation in the UI
+    /// Remove duplicates by operator + line name so each line appears once in the UI
     func removeDuplicates(from lines: [TransportationLine]) -> [TransportationLine] {
         var seen = Set<String>()
         var result: [TransportationLine] = []
@@ -537,8 +534,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - Station Search and Filtering
-    // Filter candidate departure stops based on search lineInput
-    // If arrival stop is selected, only show stops before the arrival stop
+    // Filter candidate departure stops by lineInput; with an arrival stop, only stops before it
     func filterDepartureStops(_ lineInput: String) {
         let filtered = filterStops(lineInput, excludeStop: selectedArrivalStop, isDeparture: true)
         departureSuggestions = filtered
@@ -558,9 +554,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
     private func filterStops(_ lineInput: String, excludeStop: TransportationStop?, isDeparture: Bool) -> [TransportationStop] {
         var filtered = lineStops
         
-        // Filter by order: if excludeStop is selected, apply order constraint
-        // Railway lines: skip order constraint (allow any station selection)
-        // Bus lines: apply order constraint (departure must be before arrival)
+        // Order constraint when excludeStop is selected: bus lines require departure before
+        // arrival; railway lines allow any station
         let isRailway = selectedLine?.kind == .railway || selectedTransportationKind == .railway
         if !isRailway, let excludeStop = excludeStop, let excludeIndex = lineStops.firstIndex(where: { $0.id == excludeStop.id }) {
             if isDeparture {
@@ -648,9 +643,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 }
                 return stops
             } else {
-                // lineBusStops is empty and busstopPoleOrder is not available
-                // Bus stops will be fetched in selectLine method, not here
-                // Return empty array to avoid duplicate fetching
+                // lineBusStops is empty and busstopPoleOrder is unavailable: return empty,
+                // bus stops are fetched in selectLine to avoid duplicate fetching
                 return []
             }
         } else {
@@ -890,9 +884,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
     func saveAllDataToUserDefaults() async {
         let lineIndex = selectedLineNumber - 1
         
-        // When all timetable ride times are the same, update all to the new ride time BEFORE saving rideTimeKey.
-        // If called after rideTimeKey is saved, loadTransportationTimes uses the new value as default when
-        // timetableRideTimeKey is empty (ODPT not used), causing previousRideTime == newRideTime and early return.
+        // When all timetable ride times match, update them BEFORE saving rideTimeKey; otherwise
+        // loadTransportationTimes defaults to the new value and the sync returns early
         selectedGoorback.syncTimetableRideTimeWhenAllSame(lineIndex: lineIndex, newRideTime: selectedRideTime)
         
         // Save line name
@@ -903,9 +896,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             UserDefaults.standard.removeObject(forKey: lineNameKey)
         }
         
-        // Save line code for Firestore synchronization
-        // Always save lineCode if selectedLine is available, regardless of lineInput
-        // Use lineCode property (odpt:lineCode) if available, otherwise save empty string
+        // Save lineCode for Firestore sync whenever selectedLine exists, regardless of lineInput;
+        // empty string when the odpt:lineCode property is missing
         let lineCodeKey = selectedGoorback.lineCodeKey(lineIndex)
         if let selectedLine = selectedLine {
             // Use lineCode property (short code like "JY", "TT") if available
@@ -1318,9 +1310,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
                 self.selectedOperatorCode = dataSource.operatorCode
                 self.operatorSelected = true
                 
-                // Load operator line list from UserDefaults only for GTFS bus routes
-                // (for display only, no GTFS ZIP access)
-                // Don't show suggestions when sheet is opened - only show when user starts typing
+                // Load operator line list from UserDefaults for GTFS bus routes only (display only,
+                // no GTFS ZIP access); suggestions appear only once the user starts typing
                 if selectedTransportationKind == .bus && dataSource.apiType == .gtfs {
                     if let savedLineList = loadOperatorLineList(goorback: selectedGoorback, num: currentLineIndex) {
                         self.lineSuggestions = savedLineList
@@ -1670,9 +1661,8 @@ final class SettingsLineSheetViewModel: ObservableObject {
             }
         }
         
-        // Clear ALL merged source calendar types from UserDefaults (including representatives)
-        // This ensures old data is removed before new merged data is saved
-        // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
+        // Clear ALL merged source calendar types (incl. representatives) before saving new data.
+        // IMPORTANT: use the initialized goorback and lineIndex to avoid cross-route corruption
         if !mergedSourceTypes.isEmpty {
             for sourceType in mergedSourceTypes {
                 // Check if this type is actually in mergedTimes (it's the representative that will be saved)
@@ -2371,8 +2361,6 @@ final class SettingsLineSheetViewModel: ObservableObject {
         return data
     }
     
-    // MARK: - Data Fetching
-    // Simple data fetching method for API calls    
     // MARK: - Station Timetable Data Processing
     // Generate station timetable link with flexible parameters
     func stationTimetableApiLink(isDeparture: Bool, calendarType: ODPTCalendarType, direction: String? = nil) -> String {
@@ -2464,8 +2452,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
     
     // MARK: - trainNumber-less Timetable Generation
-    // Estimate departure times using simplified matching when train numbers are not available
-    // Returns array of TrainTime objects with estimated departure times
+    // Estimate departure times by simplified matching when train numbers are unavailable
     private func getEstimatedTrainTime(
         departureTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
         arrivalTimetableData: [(trainNumber: String, departureTime: String, destinationStation: String, trainType: String)],
@@ -2689,8 +2676,7 @@ final class SettingsLineSheetViewModel: ObservableObject {
     }
         
     // MARK: - Timetable Data Saving
-    // Save timetable data to UserDefaults for display in TimetableContentView
-    // Saves both departure times and ride times grouped by hour
+    // Save departure and ride times grouped by hour to UserDefaults for TimetableContentView
     private func saveTimetableToUserDefaults(transportationTimes: [any TransportationTime], calendarType: ODPTCalendarType) {
         // Clear existing timetable data for this line and calendar type
         // IMPORTANT: Use initialized goorback and lineIndex to prevent data corruption across routes
